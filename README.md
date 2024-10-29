@@ -36,9 +36,12 @@ Upon checkout, a new Order is automatically created:
 Order: Stores information about the customer's purchase, including ticket details and purchase date.
 PaymentProcessor: Handles payment validation (validatePaymentDetails) and processes transactions (processPayment). After payment is confirmed, the customer receives a summary of their processed order (showProcessedOrder).
 
-## Notification
+## Notificationt
 The Notification interface is implemented by both the Event and ShoppingCart classes, using an Observer Design Pattern. Events and the shopping cart act as subjects, while Notification serves as the observer.
 
 Event Notifications: Notifies customers when an event is almost sold out.
 ShoppingCart Notifications: Alerts customers if a ticket in their shopping cart is reserved by another user in the meantime.
 These notifications ensure customers stay informed about event availability and ticket status in real-time.
+
+## UML
+![TicketSalesCompany-2024-10-29-210642](https://github.com/user-attachments/assets/28d82a0c-89db-4c60-a3cb-9b1339dd6347)
