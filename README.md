@@ -44,4 +44,4 @@ ShoppingCart Notifications: Alerts customers if a ticket in their shopping cart 
 These notifications ensure customers stay informed about event availability and ticket status in real-time.
 
 ## UML
-![TicketSalesCompany-2024-10-29-210642](https://github.com/user-attachments/assets/28d82a0c-89db-4c60-a3cb-9b1339dd6347)
+![TicketSalesCompany-2024-10-30-065610](https://github.com/user-attachments/assets/db568905-66f4-49e5-95e4-0e6d871c96ca)
