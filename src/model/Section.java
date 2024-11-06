@@ -4,11 +4,21 @@ public class Section {
     private int sectionID;
     private String sectionName;
     private int sectionCapacity;
+    private Venue venue;
 
-    public Section(int sectionID, String sectionName, int sectionCapacity) {
+    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
+        this.venue = venue;
+    }
+
+    public Venue venue() {
+        return venue;
+    }
+
+    public void setVenue(Venue venue) {
+        this.venue = venue;
     }
 
     public int getSectionID() {
