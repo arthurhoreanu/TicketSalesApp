@@ -10,7 +10,7 @@ public class Seat {
     private Event reservedForEvent;
 
 
-    public Seat(int seatID, int rowNumber, int Section section, int sitNumber, boolean reservedForEvent) {
+    public Seat(int seatID, int rowNumber, Section section, int sitNumber, boolean reservedForEvent) {
         this.seatID = seatID;
         this.rowNumber = rowNumber;
         this.section = section;
