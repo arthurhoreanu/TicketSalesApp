@@ -45,6 +45,11 @@ public class Section {
         this.sectionCapacity = sectionCapacity;
     }
 
+    @Override
+    public String toString() {
+        return "Section{" + "sectionID=" + sectionID + ", sectionName='" + sectionName + '\'' + ", sectionCapacity=" + sectionCapacity + ", venue=" + venue + '}';
+    }
+
     // TODO method to return the list of available seats
     // public List<Seat> getAvailableSeats() {}
 }

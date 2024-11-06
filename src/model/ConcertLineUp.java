@@ -24,4 +24,12 @@ public class ConcertLineUp {
     public void setArtistId(int artistId) {
         this.artistId = artistId;
     }
+
+    @Override
+    public String toString() {
+        return "ConcertLineUp{" +
+                "eventId=" + eventId +
+                ", artistId=" + artistId +
+                '}';
+    }
 }

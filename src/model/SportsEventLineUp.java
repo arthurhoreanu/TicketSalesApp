@@ -24,4 +24,12 @@ public class SportsEventLineUp {
     public void setArtistId(int artistId) {
         this.athleteID = artistId;
     }
+
+    @Override
+    public String toString() {
+        return "SportsEventLineUp{" +
+                "eventId=" + eventId +
+                ", athleteID=" + athleteID +
+                '}';
+    }
 }

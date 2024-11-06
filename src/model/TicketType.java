@@ -1,7 +1,5 @@
 package model;
 
 public enum TicketType {
-    STANDARD,
-    VIP,
-    EARLY_ACCESS
+    STANDARD, VIP, EARLY_ACCESS
 }
