@@ -1,10 +1,17 @@
 package model;
 
-public class User {
+public abstract class User {
     private int userId;
     protected String username;
-    private String password;
+    protected String password;
     private String email;
+
+    public User(int userId, String username, String password, String email) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
     public int getUserId() {
         return userId;
@@ -37,5 +44,7 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public abstract String getAccessLevel();
 }
 
