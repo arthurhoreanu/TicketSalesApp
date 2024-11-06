@@ -10,7 +10,7 @@ public class Order {
     private List<Ticket> tickets;
     private LocalDateTime orderDate;
 
-    public Order(int orderCounter, int orderID, User user, List<Ticket> tickets, LocalDateTime orderDate) {
+    public Order(User user, List<Ticket> tickets) {
         //this.orderCounter = orderCounter;
         this.orderID = orderID;
         this.user = user;
@@ -60,6 +60,12 @@ public class Order {
         for (Ticket ticket : tickets) {
             System.out.println(" - Ticket ID: " + ticket.getTicketID() + ", Event: " + ticket.getEvent().getEventName());
         }
+    }
+//TODO solve the incremented order number problem!!! Check it out in the constructor, should we have a method to increment it? We have to convert it to string too
+
+    @Override
+    public String toString() {
+        return "Order{" + "orderID=" + orderID + ", user=" + user + ", tickets=" + tickets + ", orderDate=" + orderDate + '}';
     }
 }
 
