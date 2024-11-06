@@ -47,7 +47,7 @@ public class ShoppingCart {
         if (items.isEmpty()) {
             throw new IllegalStateException("Shopping cart is empty.");
         }
-
+//TODO check it again
         Order order = new Order(user, new ArrayList<>(items));
         clear();
         return order;

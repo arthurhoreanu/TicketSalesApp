@@ -46,5 +46,10 @@ public abstract class User {
     }
 
     public abstract String getAccessLevel();
+
+    @Override
+    public String toString() {
+        return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email + "}" ;
+    }
 }
 

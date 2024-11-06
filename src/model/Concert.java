@@ -39,4 +39,8 @@ public class Concert extends Event {
         this.setlist = setlist;
     }
 
+    @Override
+    public String toString() {
+       return "Concert{" + "artist=" + artist + ", genre=" + genre + ", setlist=" + setlist + '}';
+    }
 }
