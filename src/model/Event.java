@@ -12,7 +12,6 @@ public abstract class Event {
     private EventStatus eventStatus;
     private List<Ticket> tickets;
 
-    // Constructor
     public Event(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
                  LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets) {
         this.eventID = eventID;
