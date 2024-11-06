@@ -1,4 +1,5 @@
 package model;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,8 +13,7 @@ public abstract class Event {
     private EventStatus eventStatus;
     private List<Ticket> tickets;
 
-    public Event(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
-                 LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets) {
+    public Event(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets) {
         this.eventID = eventID;
         this.eventName = eventName;
         this.eventDescription = eventDescription;

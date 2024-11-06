@@ -35,4 +35,9 @@ public class Athlete {
     public void setAthleteSport(String athleteSport) {
         this.athleteSport = athleteSport;
     }
+
+    @Override
+    public String toString() {
+        return "Athlete{" + "athleteID=" + athleteID + ", athleteName='" + athleteName + '\'' + ", athleteSport='" + athleteSport + '\'' + '}';
+    }
 }

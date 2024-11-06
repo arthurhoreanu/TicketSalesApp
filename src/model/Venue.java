@@ -44,4 +44,9 @@ public class Venue {
     public void setVenueCapacity(int venueCapacity) {
         this.venueCapacity = venueCapacity;
     }
+
+    @Override
+    public String toString() {
+        return "Venue{" + "venueID=" + venueID + ", venueName='" + venueName + '\'' + ", location='" + location + '\'' + ", venueCapacity=" + venueCapacity + '}';
+    }
 }

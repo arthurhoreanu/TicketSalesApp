@@ -20,4 +20,9 @@ public class Customer extends User {
     public String getAccessLevel() {
         return "Customer";
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" + "role='" + role + '\'' + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
+    }
 }

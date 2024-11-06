@@ -21,4 +21,8 @@ public class Admin extends User {
         return "Admin";
     }
 
+    @Override
+    public String toString() {
+        return "Admin{" + "role='" + role + '\'' + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
+    }
 }

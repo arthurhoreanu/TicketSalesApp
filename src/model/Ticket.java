@@ -1,4 +1,5 @@
 package model;
+
 import java.time.LocalDateTime;
 
 public class Ticket {
@@ -101,4 +102,8 @@ public class Ticket {
         this.purchaseDate = LocalDateTime.now();
     }
 
+    @Override
+    public String toString() {
+        return "Ticket{" + "ticketID=" + ticketID + ", event=" + event + ", section=" + section + ", seat=" + seat + ", price=" + price + ", purchaseDate=" + purchaseDate + ", purchaserName='" + purchaserName + '\'' + ", ticketType=" + ticketType + ", isSold=" + isSold + '}';
+    }
 }

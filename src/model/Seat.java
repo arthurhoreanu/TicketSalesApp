@@ -75,5 +75,10 @@ public class Seat {
             this.reservedForEvent = null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Seat{" + "seatID=" + seatID + ", section=" + section + ", rowNumber=" + rowNumber + ", sitNumber=" + sitNumber + ", reservedForEvent=" + reservedForEvent + '}';
+    }
 }
 
