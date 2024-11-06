@@ -1,5 +1,4 @@
 package model;
-import java.util.List;
 
 public class Artist {
     private int artistID;
