@@ -7,6 +7,15 @@ public class Concert extends Event{
     private String genre;
     private List<String> setlist;
 
+    public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
+                   LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets,
+                   Artist artist, String genre, List<String> setlist) {
+        super(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets);
+        this.artist = artist;
+        this.genre = genre;
+        this.setlist = setlist;
+    }
+
     public Artist getArtist() {
         return artist;
     }
@@ -28,15 +37,6 @@ public class Concert extends Event{
     }
 
     public void setSetlist(List<String> setlist) {
-        this.setlist = setlist;
-    }
-
-    public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
-                   LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets,
-                   Artist artist, String genre, List<String> setlist) {
-        super(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets);
-        this.artist = artist;
-        this.genre = genre;
         this.setlist = setlist;
     }
 
