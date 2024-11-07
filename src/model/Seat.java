@@ -5,16 +5,15 @@ public class Seat {
     private Section section;
     private int rowNumber;
     private int sitNumber;
-    //TODO event/boolean type???
-    //TODO we have to talk about the implementation of the methods related to this- I have a plan :)
     private Event reservedForEvent;
 
 
-    public Seat(int seatID, int rowNumber, Section section, int sitNumber, boolean reservedForEvent) {
+    public Seat(int seatID, int rowNumber, Section section, int sitNumber, Event reservedForEvent) {
         this.seatID = seatID;
         this.rowNumber = rowNumber;
         this.section = section;
         this.sitNumber = sitNumber;
+        this.reservedForEvent = null; //init, the seat is not reserved
     }
 
     public int getSeatID() {
@@ -49,15 +48,15 @@ public class Seat {
         this.sitNumber = sitNumber;
     }
 
-    public boolean getReservedForEvent() {
+    public Event getReservedForEvent() {
         return this.reservedForEvent;
     }
 
-    public void setReservedForEvent(boolean reservedForEvent) {
+    public void setReservedForEvent(Event reservedForEvent) {
         this.reservedForEvent = reservedForEvent;
     }
 
-    //verifies if the seat is reserved for a specific event
+   /* //verifies if the seat is reserved for a specific event
     public boolean isReservedForEvent(Event event) {
         return reservedForEvent != null && reservedForEvent.equals(event);
     }
@@ -75,7 +74,7 @@ public class Seat {
             this.reservedForEvent = null;
         }
     }
-
+*/
     @Override
     public String toString() {
         return "Seat{" + "seatID=" + seatID + ", section=" + section + ", rowNumber=" + rowNumber + ", sitNumber=" + sitNumber + ", reservedForEvent=" + reservedForEvent + '}';
