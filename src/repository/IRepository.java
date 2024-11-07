@@ -1,5 +1,3 @@
-//TODO Identifiable interface in model package
-
 package repository;
 import model.Identifiable;
 import java.util.List;
