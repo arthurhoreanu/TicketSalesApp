@@ -27,9 +27,6 @@ public class SportsEventLineUp {
 
     @Override
     public String toString() {
-        return "SportsEventLineUp{" +
-                "eventId=" + eventId +
-                ", athleteID=" + athleteID +
-                '}';
+        return "SportsEventLineUp{" + "eventId=" + eventId + ", athleteID=" + athleteID + '}';
     }
 }

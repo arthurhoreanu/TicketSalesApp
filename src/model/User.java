@@ -14,7 +14,7 @@ public abstract class User implements Identifiable {
     }
 
     @Override
-    public Integer getID(){
+    public Integer getID() {
         return this.userId;
     }
 
@@ -50,7 +50,7 @@ public abstract class User implements Identifiable {
 
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email + "}" ;
+        return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email + "}";
     }
 }
 

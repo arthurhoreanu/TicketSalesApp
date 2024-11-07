@@ -57,25 +57,25 @@ public class Seat implements Identifiable {
         this.reservedForEvent = reservedForEvent;
     }
 
-   /* //verifies if the seat is reserved for a specific event
-    public boolean isReservedForEvent(Event event) {
-        return reservedForEvent != null && reservedForEvent.equals(event);
-    }
+    /* //verifies if the seat is reserved for a specific event
+     public boolean isReservedForEvent(Event event) {
+         return reservedForEvent != null && reservedForEvent.equals(event);
+     }
 
-    //mark the seat as reserved for a specific event
-    public void markAsReserved(Event event) {
-        if (reservedForEvent == null || !reservedForEvent.equals(event)) {
-            reservedForEvent = event;
-        }
-    }
+     //mark the seat as reserved for a specific event
+     public void markAsReserved(Event event) {
+         if (reservedForEvent == null || !reservedForEvent.equals(event)) {
+             reservedForEvent = event;
+         }
+     }
 
-    //clear the reservation for a specific event
-    public void clearReservation(Event event) {
-        if (reservedForEvent != null && reservedForEvent.equals(event)) {
-            this.reservedForEvent = null;
-        }
-    }
-*/
+     //clear the reservation for a specific event
+     public void clearReservation(Event event) {
+         if (reservedForEvent != null && reservedForEvent.equals(event)) {
+             this.reservedForEvent = null;
+         }
+     }
+ */
     @Override
     public String toString() {
         return "Seat{" + "seatID=" + seatID + ", section=" + section + ", rowNumber=" + rowNumber + ", sitNumber=" + sitNumber + ", reservedForEvent=" + reservedForEvent + '}';
