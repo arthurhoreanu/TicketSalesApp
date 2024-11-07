@@ -1,6 +1,6 @@
 package model;
 
-public class Section {
+public class Section implements Identifiable{
     private int sectionID;
     private String sectionName;
     private int sectionCapacity;
@@ -13,16 +13,17 @@ public class Section {
         this.venue = venue;
     }
 
+    @Override
+    public Integer getID() {
+        return this.sectionID;
+    }
+
     public Venue venue() {
         return venue;
     }
 
     public void setVenue(Venue venue) {
         this.venue = venue;
-    }
-
-    public int getSectionID() {
-        return sectionID;
     }
 
     public void setSectionID(int sectionID) {

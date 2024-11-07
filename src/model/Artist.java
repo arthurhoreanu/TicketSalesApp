@@ -1,6 +1,6 @@
 package model;
 
-public class Artist {
+public class Artist implements Identifiable {
     private int artistID;
     private String artistName;
     private String genre;
@@ -11,8 +11,9 @@ public class Artist {
         this.genre = genre;
     }
 
-    public int getArtistID() {
-        return artistID;
+    @Override
+    public Integer getID() {
+        return this.artistID;
     }
 
     public void setArtistID(int artistID) {

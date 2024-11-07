@@ -1,6 +1,6 @@
 package model;
 
-public class Venue {
+public class Venue implements Identifiable {
     private int venueID;
     private String venueName;
     private String location;
@@ -13,8 +13,9 @@ public class Venue {
         this.venueCapacity = venueCapacity;
     }
 
-    public int getVenueID() {
-        return venueID;
+    @Override
+    public Integer getID() {
+        return this.venueID;
     }
 
     public void setVenueID(int venueID) {
@@ -49,4 +50,5 @@ public class Venue {
     public String toString() {
         return "Venue{" + "venueID=" + venueID + ", venueName='" + venueName + '\'' + ", location='" + location + '\'' + ", venueCapacity=" + venueCapacity + '}';
     }
+
 }

@@ -1,6 +1,6 @@
 package model;
 
-public class Seat {
+public class Seat implements Identifiable {
     private int seatID;
     private Section section;
     private int rowNumber;
@@ -16,7 +16,8 @@ public class Seat {
         this.reservedForEvent = null; //init, the seat is not reserved
     }
 
-    public int getSeatID() {
+    @Override
+    public Integer getID() {
         return this.seatID;
     }
 

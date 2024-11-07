@@ -1,6 +1,6 @@
 package model;
 
-public class Athlete {
+public class Athlete implements Identifiable {
     private int athleteID;
     private String athleteName;
     private String athleteSport;
@@ -11,9 +11,9 @@ public class Athlete {
         this.athleteSport = athleteSport;
     }
 
-
-    public int getAthleteID() {
-        return athleteID;
+    @Override
+    public Integer getID() {
+        return this.athleteID;
     }
 
     public void setAthleteID(int athleteID) {

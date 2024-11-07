@@ -3,7 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Order {
+public class Order implements Identifiable {
     private static int orderCounter = 1; //this would be nice to have
     private int orderID;
     private User user;
@@ -18,8 +18,9 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public int getOrderID() {
-        return orderID;
+    @Override
+    public Integer getID() {
+        return this.orderID;
     }
 
     public void setOrderID(int orderID) {
