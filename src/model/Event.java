@@ -3,7 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public abstract class Event implements Identifiable{
+public abstract class Event implements Identifiable {
     private int eventID;
     private String eventName;
     private String eventDescription;
@@ -25,7 +25,7 @@ public abstract class Event implements Identifiable{
     }
 
     @Override
-    public Integer getID(){
+    public Integer getID() {
         return this.eventID;
     }
 
@@ -105,6 +105,6 @@ public abstract class Event implements Identifiable{
 
     @Override
     public String toString() {
-        return "Event{" +  eventID + ", eventName=" + eventName + ", eventDescription=" + eventDescription + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", venue=" + venue + ", eventStatus=" + eventStatus + ", tickets=" + tickets + '}';
+        return "Event{" + eventID + ", eventName=" + eventName + ", eventDescription=" + eventDescription + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", venue=" + venue + ", eventStatus=" + eventStatus + ", tickets=" + tickets + '}';
     }
 }

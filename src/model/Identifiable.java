@@ -1,6 +1,7 @@
 package model;
+
 import java.io.Serializable;
 
-public interface Identifiable{
+public interface Identifiable {
     Integer getID();
 }

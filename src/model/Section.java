@@ -1,6 +1,6 @@
 package model;
 
-public class Section implements Identifiable{
+public class Section implements Identifiable {
     private int sectionID;
     private String sectionName;
     private int sectionCapacity;

@@ -1,4 +1,5 @@
 package repository;
+
 import model.Identifiable;
 
 import java.util.HashMap;
@@ -6,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryRepository<T extends Identifiable> implements IRepository<T> {
-    private final Map<Integer,T> data = new HashMap<>();
+    private final Map<Integer, T> data = new HashMap<>();
 
     @Override
     public void create(T obj) {
