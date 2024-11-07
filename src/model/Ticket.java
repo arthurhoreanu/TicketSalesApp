@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 
-public class Ticket {
+public class Ticket implements Identifiable {
     private int ticketID;
     private Event event;
     private Section section;
@@ -23,8 +23,9 @@ public class Ticket {
         this.isSold = false; //the ticket is not sold initially
     }
 
-    public int getTicketID() {
-        return ticketID;
+    @Override
+    public Integer getID() {
+        return this.ticketID;
     }
 
     public void setTicketID(int ticketID) {

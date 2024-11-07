@@ -1,6 +1,6 @@
 package model;
 
-public abstract class User {
+public abstract class User implements Identifiable {
     private int userId;
     protected String username;
     protected String password;
@@ -13,8 +13,9 @@ public abstract class User {
         this.email = email;
     }
 
-    public int getUserId() {
-        return userId;
+    @Override
+    public Integer getID(){
+        return this.userId;
     }
 
     public void setUserId(int userId) {
