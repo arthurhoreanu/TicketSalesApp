@@ -13,7 +13,7 @@ Admin: Admins have permissions to create and update events, artists, and athlete
 
 ## Event: Concert and SportsEvent
 Event is an abstract class representing a generic event. Admins can create specific types of events, such as Concert or SportsEvent. Key features include:
-Ticket Availability: Customers can check if tickets are available (getAvailableTickets). If tickets are sold out, a "sold out" notification is triggered (isSoldOut).
+Ticket Availability: Customers can check if tickets are available (getAvailableTickets).
 Event Status: Events can have one of three statuses: SCHEDULED, CANCELLED, or COMPLETED.
 
 ## Artist and Athlete
@@ -35,13 +35,6 @@ Upon checkout, a new Order is automatically created:
 
 Order: Stores information about the customer's purchase, including ticket details and purchase date.
 PaymentProcessor: Handles payment validation (validatePaymentDetails) and processes transactions (processPayment). After payment is confirmed, the customer receives a summary of their processed order (showProcessedOrder).
-
-## Notificationt
-The Notification interface is implemented by both the Event and ShoppingCart classes, using an Observer Design Pattern. Events and the shopping cart act as subjects, while Notification serves as the observer.
-
-Event Notifications: Notifies customers when an event is almost sold out.
-ShoppingCart Notifications: Alerts customers if a ticket in their shopping cart is reserved by another user in the meantime.
-These notifications ensure customers stay informed about event availability and ticket status in real-time.
 
 ## UML
 ![TicketSalesCompany-2024-10-30-065610](https://github.com/user-attachments/assets/db568905-66f4-49e5-95e4-0e6d871c96ca)

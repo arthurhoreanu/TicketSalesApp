@@ -3,7 +3,7 @@ package model;
 public class Customer extends User {
     private String role;
 
-    public Customer(int userId, String username, String password, String email, String role) {
+    public Customer(int userId, String username, String password, String email) {
         super(userId, username, password, email);
         this.role = role;
     }
