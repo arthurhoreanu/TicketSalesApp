@@ -59,11 +59,10 @@ public class Order implements Identifiable {
         System.out.println("User: " + user.getUsername());
         System.out.println("Order Date: " + orderDate);
         for (Ticket ticket : tickets) {
-            System.out.println(" - Ticket ID: " + ticket.getTicketID() + ", Event: " + ticket.getEvent().getEventName());
+            System.out.println(" - Ticket ID: " + ticket.getID() + ", Event: " + ticket.getEvent().getEventName());
         }
     }
-//TODO solve the incremented order number problem!!! Check it out in the constructor, should we have a method to increment it? We have to convert it to string too
-
+// initial before Identifiable System.out.println(" - Ticket ID: " + ticket.getTicketID() + ", Event: " + ticket.getEvent().getEventName());
     @Override
     public String toString() {
         return "Order{" + "orderID=" + orderID + ", user=" + user + ", tickets=" + tickets + ", orderDate=" + orderDate + '}';
