@@ -94,3 +94,4 @@ public class VenueService {
         return totalAvailableSeats;
     }
 }
+//TODO RECOMMENDED SEAT METHOD!!!
