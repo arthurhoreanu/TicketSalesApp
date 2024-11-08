@@ -14,11 +14,8 @@ public class AccountService {
     }
 
     public boolean createAccount(String role, String username, String password, String email) {
-        // Check if username already exists
-        for (User user : userIRepository.getAll()) {
-            if (user.getUsername().equals(username)) {
-                return false; // Username exists
-            }
+        if(takenUsername(username)) {
+            return false;
         }
 
         // Generate a new unique ID for the user
@@ -82,5 +79,14 @@ public class AccountService {
             return true; // Deletion successful
         }
         return false; // User not found
+    }
+
+    public boolean takenUsername(String username) {
+        for (User user : userIRepository.getAll()) {
+            if (user.getUsername().equals(username)) {
+                return true; // Username exists
+            }
+        }
+        return false; // Username is unique
     }
 }

@@ -54,4 +54,8 @@ public class AccountController {
             System.out.println("Failed to delete account. Either the account was not found or you lack the permissions.");
         }
     }
+
+    public boolean isUsernameTaken(String username) {
+        return accountService.takenUsername(username);
+    }
 }
