@@ -5,6 +5,8 @@ import model.Customer;
 import model.User;
 import repository.IRepository;
 
+import java.util.List;
+
 public class AccountService {
     private final IRepository<User> userIRepository;
     private User currentUser;
@@ -13,23 +15,45 @@ public class AccountService {
         this.userIRepository = userIRepository;
     }
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public List<User> getAllUsers() {
+        return userIRepository.getAll();
+    }
+
+    public boolean takenUsername(String username) {
+        for (User user : userIRepository.getAll()) {
+            if (user.getUsername().equals(username)) {
+                return true; // Username exists
+            }
+        }
+        return false; // Username is unique
+    }
+
+    public static boolean domainEmail(String email) {
+        return !(email.endsWith("@ticketsalescompany.com"));
+    }
+
     public boolean createAccount(String role, String username, String password, String email) {
         if(takenUsername(username)) {
             return false;
         }
 
         // Generate a new unique ID for the user
-        int newId = userIRepository.getAll().size() + 1;
+        int newID = userIRepository.getAll().size() + 1;
 
         // Create the new user based on the specified role
         User newUser;
         if ("Customer".equalsIgnoreCase(role)) {
-            newUser = new Customer(newId, username, password, email);
-        } else if ("Admin".equalsIgnoreCase(role)) {
-            newUser = new Admin(newId, username, password, email);
-        } else {
-            return false; // Invalid role
-        }
+            newUser = new Customer(newID, username, password, email);
+        } else if ("Admin".equalsIgnoreCase(role) && !domainEmail(email)) {
+            return false;
+        } else if ("Admin".equalsIgnoreCase(role) && domainEmail(email)) {
+            newUser = new Admin(newID, username, password, email);
+        } else
+        return false;
 
         // Add the new user to the repository
         userIRepository.create(newUser);
@@ -58,6 +82,7 @@ public class AccountService {
         return false; // No user logged in
     }
 
+
     public boolean deleteAccount(int id) {
         // Check if the current user is an admin
         if (currentUser == null || !(currentUser instanceof Admin)) {
@@ -81,12 +106,4 @@ public class AccountService {
         return false; // User not found
     }
 
-    public boolean takenUsername(String username) {
-        for (User user : userIRepository.getAll()) {
-            if (user.getUsername().equals(username)) {
-                return true; // Username exists
-            }
-        }
-        return false; // Username is unique
-    }
 }

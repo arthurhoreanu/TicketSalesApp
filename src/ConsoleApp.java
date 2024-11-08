@@ -1,5 +1,7 @@
 import controller.Controller;
 import controller.AccountController;
+import model.Admin;
+import model.Customer;
 import model.User;
 import repository.IRepository;
 import repository.InMemoryRepository;
@@ -60,6 +62,17 @@ public class ConsoleApp {
     private static void handleCreateAccount(Scanner scanner, Controller controller) {
         System.out.println("=== Create Account ===");
 
+        String role;
+        while (true) {
+            System.out.print("Enter role (Admin/Customer): ");
+            role = scanner.nextLine();
+            if ("Admin".equalsIgnoreCase(role) || "Customer".equalsIgnoreCase(role)) {
+                break; // Exit loop if role is valid
+            } else {
+                System.out.println("Invalid role. Please enter 'Admin' or 'Customer'.");
+            }
+        }
+
         String username;
         while (true) {
             System.out.print("Enter username: ");
@@ -73,14 +86,23 @@ public class ConsoleApp {
             }
         }
 
-        System.out.print("Enter role (Admin/Customer): ");
-        String role = scanner.nextLine();
+        String email;
+        while (true) {
+            System.out.print("Enter email: ");
+            email = scanner.nextLine();
+
+            if("Admin".equalsIgnoreCase(role) && !controller.domainEmail(email)) {
+                System.out.println("Email not in our domain.");
+            }
+            else {
+                break;
+            }
+        }
+
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
-        System.out.print("Enter email: ");
-        String email = scanner.nextLine();
 
-        controller.createAccount(role, username, password, email);
+        controller.createAccount(role, username, email, password);
     }
 
     private static void handleLogin(Scanner scanner, Controller controller) {
@@ -97,9 +119,18 @@ public class ConsoleApp {
     private static void handleDeleteAccount(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Account ===");
 
-        System.out.print("Enter the ID of the account to delete: ");
-        int id = Integer.parseInt(scanner.nextLine());
-
-        controller.deleteAccount(id);
+        if(controller.getCurrentUser() instanceof Admin) {
+            for(User user : controller.getAllUsers()) {
+                if (user instanceof Customer) {
+                    System.out.println("ID: " + user.getID() + ", Username: " + user.getUsername());
+                }
+            }
+            System.out.print("Enter the ID of the account to delete: ");
+            int id = Integer.parseInt(scanner.nextLine());
+            controller.deleteAccount(id);
+        }
+        else {
+            System.out.print("You are not an admin. ");
+        }
     }
 }
