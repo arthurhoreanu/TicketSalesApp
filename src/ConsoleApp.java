@@ -1,23 +1,23 @@
-import controller.Controller;
-import controller.AccountController;
-import model.Admin;
-import model.Customer;
-import model.User;
+import controller.*;
+import model.*;
 import repository.IRepository;
 import repository.InMemoryRepository;
-import service.AccountService;
+import service.*;
 import java.util.Scanner;
-import presentation.StartMenu;
-import presentation.LoginMenu;
-import presentation.AdminMenu;
-import presentation.CustomerMenu;
+import presentation.*;
 
 public class ConsoleApp {
     public static void main(String[] args) {
         IRepository<User> userRepository = new InMemoryRepository<>();
+        IRepository<Event> eventRepository = new InMemoryRepository<>();
+
         AccountService accountService = new AccountService(userRepository);
+        EventService eventService = new EventService(eventRepository);
+
         AccountController accountController = new AccountController(accountService);
-        Controller controller = new Controller(accountController);
+        EventController eventController = new EventController(eventService);
+
+        Controller controller = new Controller(accountController, eventController);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
