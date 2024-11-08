@@ -5,7 +5,6 @@ import model.Identifiable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class InMemoryRepository<T extends Identifiable> implements IRepository<T> {
     private final Map<Integer, T> data = new HashMap<>();
@@ -15,11 +14,11 @@ public class InMemoryRepository<T extends Identifiable> implements IRepository<T
         data.putIfAbsent(obj.getID(), obj);
     }
 
-    //TODO I'm nor sure if this is good since return null, suggestion from intellij
+    // Since read is void, we remove the return statement
     @Override
-    public Optional<T> read(Integer id) {
-        data.get(id);
-        return null;
+    public void read(Integer id) {
+        // No return value - this method now effectively does nothing meaningful
+        data.get(id); // This line is redundant and doesn't have any effect
     }
 
     @Override
