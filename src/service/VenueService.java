@@ -6,7 +6,6 @@ import model.Venue;
 import repository.IRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public class VenueService {
     private final IRepository<Venue> venueRepository;
@@ -41,9 +40,8 @@ public class VenueService {
 
     // Updates an existing venue by ID
     public boolean updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
-        Optional<Venue> venueOptional = venueRepository.read(id);
-        if (venueOptional.isPresent()) {
-            Venue venue = venueOptional.get();
+        Venue venue = findVenueById(id);
+        if (venue != null) {
             venue.setVenueName(newName);
             venue.setLocation(newLocation);
             venue.setVenueCapacity(newCapacity);
@@ -59,8 +57,8 @@ public class VenueService {
 
     // Deletes a venue by ID
     public boolean deleteVenue(int id) {
-        Optional<Venue> venueOptional = venueRepository.read(id);
-        if (venueOptional.isPresent()) {
+        Venue venue = findVenueById(id);
+        if (venue != null) {
             venueRepository.delete(id);
             System.out.println("Venue deleted successfully.");
             return true;
@@ -75,9 +73,14 @@ public class VenueService {
         return venueRepository.getAll();
     }
 
-    // Retrieves a venue by its ID
-    public Optional<Venue> getVenueById(int id) {
-        return venueRepository.read(id);
+    // Manually finds a venue by its ID
+    private Venue findVenueById(int id) {
+        for (Venue venue : venueRepository.getAll()) {
+            if (venue.getID() == id) {
+                return venue;
+            }
+        }
+        return null;
     }
 
     // Checks available seats for a specific event in the entire venue
