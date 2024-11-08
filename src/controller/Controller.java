@@ -27,8 +27,8 @@ public class Controller {
         return accountController.domainEmail(email);
     }
 
-    public void createAccount(String role, String username, String password, String email) {
-        accountController.createAccount(role, username, password, email);
+    public void createAccount(String role, String username, String email, String password) {
+        accountController.createAccount(role, username, email, password);
     }
 
     public void login(String username, String password) {

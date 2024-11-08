@@ -28,17 +28,16 @@ public class AccountController {
         return accountService.domainEmail(email);
     }
 
-    public void createAccount(String role, String username, String password, String email) {
-        if (username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()) {
+    public void createAccount(String role, String username, String email, String password) {
+        if (username == null || username.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty()) {
             System.out.println("All fields are required for account creation.");
             return;
         }
-
         boolean success = accountService.createAccount(role, username, email, password);
         if (success) {
             System.out.println("Account created successfully.");
         } else {
-            System.out.println("Failed to create account. Admins must have a domain email.");
+            System.out.println("Failed to create account.");
         }
     }
 
