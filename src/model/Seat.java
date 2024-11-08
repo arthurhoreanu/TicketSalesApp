@@ -63,7 +63,7 @@ public class Seat implements Identifiable {
      }
 
      //mark the seat as reserved for a specific event
-     public void markAsReserved(Event event) {
+     public void reserveForEvent(Event event) {
          if (reservedForEvent == null || !reservedForEvent.equals(event)) {
              reservedForEvent = event;
          }
