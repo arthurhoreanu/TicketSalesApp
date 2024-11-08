@@ -9,6 +9,7 @@ public class AdminMenu {
         System.out.println("1. Create Account");
         System.out.println("2. Logout");
         System.out.println("3. Delete User Account");
+        System.out.println("4. Manage Events");
         System.out.println("0. Exit");
         System.out.println("====================");
 
@@ -25,6 +26,9 @@ public class AdminMenu {
                 break;
             case "3":
                 MenuActions.handleDeleteUserAccount(scanner, controller);
+                break;
+            case "4":
+                EventMenu.display(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
