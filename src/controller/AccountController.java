@@ -1,6 +1,9 @@
 package controller;
 
+import model.User;
 import service.AccountService;
+
+import java.util.List;
 
 public class AccountController {
     private final AccountService accountService;
@@ -9,17 +12,33 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    public User getCurrentUser() {
+        return accountService.getCurrentUser();
+    }
+
+    public List<User> getAllUsers() {
+        return accountService.getAllUsers();
+    }
+
+    public boolean isUsernameTaken(String username) {
+        return accountService.takenUsername(username);
+    }
+
+    public boolean domainEmail(String email) {
+        return accountService.domainEmail(email);
+    }
+
     public void createAccount(String role, String username, String password, String email) {
         if (username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()) {
             System.out.println("All fields are required for account creation.");
             return;
         }
 
-        boolean success = accountService.createAccount(role, username, password, email);
+        boolean success = accountService.createAccount(role, username, email, password);
         if (success) {
             System.out.println("Account created successfully.");
         } else {
-            System.out.println("Failed to create account. Username may already exist or role is invalid.");
+            System.out.println("Failed to create account. Admins must have a domain email.");
         }
     }
 
@@ -55,7 +74,4 @@ public class AccountController {
         }
     }
 
-    public boolean isUsernameTaken(String username) {
-        return accountService.takenUsername(username);
-    }
 }
