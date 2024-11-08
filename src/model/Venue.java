@@ -1,16 +1,20 @@
 package model;
 
+import java.util.List;
+
 public class Venue implements Identifiable {
     private int venueID;
     private String venueName;
     private String location;
     private int venueCapacity;
+    public List<Section> sections; //added fot the get available seats
 
-    public Venue(int venueID, String venueName, String location, int venueCapacity) {
+    public Venue(int venueID, String venueName, String location, int venueCapacity, List<Section> sections) {
         this.venueID = venueID;
         this.venueName = venueName;
         this.location = location;
         this.venueCapacity = venueCapacity;
+        this.sections = sections;
     }
 
     @Override
@@ -20,6 +24,10 @@ public class Venue implements Identifiable {
 
     public void setVenueID(int venueID) {
         this.venueID = venueID;
+    }
+
+    public List<Section> getSections(){
+        return this.sections;
     }
 
     public String getVenueName() {
