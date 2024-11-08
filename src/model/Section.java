@@ -9,7 +9,7 @@ public class Section implements Identifiable {
     private Venue venue;
     private List<Seat> seats;   //added for the return available seat
 
-    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
+    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue, List<Seat> seats) {
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
