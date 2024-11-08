@@ -2,8 +2,11 @@ package service;
 
 import model.Event;
 import model.Seat;
+import model.Section;
+import model.Venue;
 import repository.IRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SeatService {
@@ -25,7 +28,13 @@ public class SeatService {
 
     // Checks if a seat exists by ID
     private boolean seatExists(int seatID) {
-        return seatRepository.getAll().stream().anyMatch(seat -> seat.getID() == seatID);
+        List<Seat> seats = seatRepository.getAll();
+        for (int i = 0; i < seats.size(); i++) {
+            if (seats.get(i).getID() == seatID) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Retrieves all seats
@@ -91,5 +100,27 @@ public class SeatService {
         seat.setReservedForEvent(null);
         seatRepository.update(seat); // Update repository to clear reservation
         System.out.println("All reservations cleared for seat " + seat.getID());
+    }
+
+    // Retrieves the list of available seats for a specific event in a given venue
+    public List<Seat> getAvailableSeats(Venue venue, Event event) {
+        List<Seat> availableSeats = new ArrayList<>();
+        List<Section> sections = venue.getSections();
+
+        // Iterate through each section in the venue
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            List<Seat> seats = section.getSeats();
+
+            // Check each seat in the section
+            for (int j = 0; j < seats.size(); j++) {
+                Seat seat = seats.get(j);
+                if (!isSeatReservedForEvent(seat, event)) {
+                    availableSeats.add(seat);
+                }
+            }
+        }
+
+        return availableSeats;
     }
 }

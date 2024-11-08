@@ -89,19 +89,6 @@ public abstract class Event implements Identifiable {
         this.tickets = tickets;
     }
 
-    public boolean isSoldOut() {
-        return getAvailableTickets() == 0;
-    }
-
-    public int getAvailableTickets() {
-        int availableTickets = 0;
-        for (Ticket ticket : tickets) {
-            if (!ticket.isSold()) {
-                availableTickets++;
-            }
-        }
-        return availableTickets;
-    }
     @Override
     public String toString() {
         return "Event{" + eventID + ", eventName=" + eventName + ", eventDescription=" + eventDescription + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", venue=" + venue + ", eventStatus=" + eventStatus + ", tickets=" + tickets + '}';
