@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SectionService {
+    private final SeatService seatService;
+
+    public SectionService(SeatService seatService) {
+        this.seatService = seatService;
+    }
 
     // Retrieves the list of available seats in a section for a specific event
     public List<Seat> getAvailableSeats(Section section, Event event) {
@@ -16,8 +21,7 @@ public class SectionService {
 
         for (int i = 0; i < seats.size(); i++) {
             Seat seat = seats.get(i);
-            //TODO should we have the isReservedForEvent method and the other methods in the model??
-            if (!seat.isReservedForEvent(event)) {
+            if (!seatService.isSeatReservedForEvent(seat, event)) {
                 availableSeats.add(seat);
             }
         }
@@ -52,18 +56,18 @@ public class SectionService {
         for (int i = 0; i < seats.size(); i++) {
             Seat seat = seats.get(i);
             if (seatsToReserve.contains(seat)) {
-                seat.reserveForEvent(event);
+                seatService.reserveSeatForEvent(seat, event);
             }
         }
     }
-     //TODO important for the logic of the method itself
+
     // Releases all reserved seats in the section for a specific event
     public void releaseAllSeats(Section section, Event event) {
         List<Seat> seats = section.getSeats();
         for (int i = 0; i < seats.size(); i++) {
             Seat seat = seats.get(i);
-            if (seat.isReservedForEvent(event)) {
-                seat.clearReservation(event); // Pass the event parameter here
+            if (seatService.isSeatReservedForEvent(seat, event)) {
+                seatService.clearSeatReservationForEvent(seat, event);
             }
         }
     }
@@ -74,12 +78,10 @@ public class SectionService {
         List<Seat> seats = section.getSeats();
         for (int i = 0; i < seats.size(); i++) {
             Seat seat = seats.get(i);
-            if (seat.isReservedForEvent(event)) {
+            if (seatService.isSeatReservedForEvent(seat, event)) {
                 reservedSeats.add(seat);
             }
         }
         return reservedSeats;
     }
-
 }
-
