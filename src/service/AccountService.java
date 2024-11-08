@@ -17,8 +17,7 @@ public class AccountService {
         // Check if username already exists
         for (User user : userIRepository.getAll()) {
             if (user.getUsername().equals(username)) {
-                System.out.println("Username already exists.");
-                return false;
+                return false; // Username exists
             }
         }
 
@@ -32,14 +31,12 @@ public class AccountService {
         } else if ("Admin".equalsIgnoreCase(role)) {
             newUser = new Admin(newId, username, password, email);
         } else {
-            System.out.println("Invalid user type.");
-            return false;
+            return false; // Invalid role
         }
 
         // Add the new user to the repository
         userIRepository.create(newUser);
-        System.out.println("Account created successfully.");
-        return true;
+        return true; // Success
     }
 
     public boolean login(String username, String password) {
@@ -47,34 +44,30 @@ public class AccountService {
             if (user.getUsername().equals(username)) {
                 if (user.getPassword().equals(password)) {
                     currentUser = user;
-                    System.out.println("Login successful.");
-                    return true;
+                    return true; // Login successful
                 } else {
-                    System.out.println("Incorrect password.");
-                    return false;
+                    return false; // Incorrect password
                 }
             }
         }
-        System.out.println("Username not found.");
-        return false;
+        return false; // Username not found
     }
 
-    public void logout() {
+    public boolean logout() {
         if (currentUser != null) {
-            System.out.println("Logged out: " + currentUser.getUsername());
             currentUser = null;
-        } else {
-            System.out.println("No user is currently logged in.");
+            return true; // Logout successful
         }
+        return false; // No user logged in
     }
 
     public boolean deleteAccount(int id) {
         // Check if the current user is an admin
         if (currentUser == null || !(currentUser instanceof Admin)) {
-            System.out.println("Only an admin can delete accounts.");
-            return false;
+            return false; // Not an admin
         }
-        // Iterate over all users to find the user with the matching ID
+
+        // Check if the user with the specified ID exists
         boolean found = false;
         for (User user : userIRepository.getAll()) {
             if (user.getID() == id) {
@@ -82,15 +75,12 @@ public class AccountService {
                 break;
             }
         }
-        // If the user with the specified ID was found, proceed with deletion
+
+        // Delete if found
         if (found) {
             userIRepository.delete(id);
-            System.out.println("Account deleted successfully.");
-            return true;
-        } else {
-            System.out.println("Account not found.");
-            return false;
+            return true; // Deletion successful
         }
+        return false; // User not found
     }
-
 }
