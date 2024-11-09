@@ -13,10 +13,10 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    public void createConcert(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime,
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime,
                               LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist,
                               String genre) {
-        boolean success = eventService.createConcert(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
+        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
         if (success) {
             System.out.println("Event created successfully");
         }
@@ -61,13 +61,13 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
-//    public boolean isEventSoldOut(Event event) {
-//        return eventService.isEventSoldOut(event);
-//    }
+    public boolean isEventSoldOut(Event event) {
+        return eventService.isEventSoldOut(event);
+    }
 
-//    public int getAvailableTickets(Event event) {
-//        return eventService.getAvailableTickets(event);
-//    }
+    public int getAvailableTickets(Event event) {
+        return eventService.getAvailableTickets(event);
+    }
 
     public List<Event> getEventsByVenue(Venue venue) {
         return eventService.getEventsByVenue(venue);

@@ -1,20 +1,20 @@
 package model;
 
 public class ConcertLineUp {
-    private int eventId;
+    private int eventID;
     private int artistId;
 
-    public ConcertLineUp(int eventId, int artistId) {
-        this.eventId = eventId;
+    public ConcertLineUp(int eventID, int artistId) {
+        this.eventID = eventID;
         this.artistId = artistId;
     }
 
-    public int getEventId() {
-        return eventId;
+    public int getEventID() {
+        return eventID;
     }
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 
     public int getArtistId() {
@@ -27,6 +27,6 @@ public class ConcertLineUp {
 
     @Override
     public String toString() {
-        return "ConcertLineUp{" + "eventId=" + eventId + ", artistId=" + artistId + '}';
+        return "ConcertLineUp{" + "eventId=" + eventID + ", artistId=" + artistId + '}';
     }
 }

@@ -1,10 +1,10 @@
-package presentation.menus;
+package presentation.menus.admin;
 import controller.Controller;
 import presentation.actions.EventAction;
 
 import java.util.Scanner;
 
-public class EventMenu {
+public class AdminEventMenu {
     public static void display(Scanner scanner, Controller controller) {
         boolean inEventMenu = true;
         while (inEventMenu) {
@@ -21,7 +21,7 @@ public class EventMenu {
 
             switch (choice) {
                 case "1":
-                    //MenuActions.handleCreateEvent(scanner, controller);
+                    EventAction.handleCreateEvent(scanner, controller);
                     break;
                 case "2":
                     EventAction.handleViewEvents(controller);

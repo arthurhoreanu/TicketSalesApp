@@ -1,6 +1,6 @@
 import controller.*;
 import model.*;
-import presentation.menus.AdminMenu;
+import presentation.menus.admin.AdminMenu;
 import presentation.menus.CustomerMenu;
 import presentation.menus.LoginMenu;
 import presentation.menus.StartMenu;
@@ -15,20 +15,24 @@ public class ConsoleApp {
         IRepository<Event> eventRepository = new InMemoryRepository<>();
         IRepository<Venue> venueRepository = new InMemoryRepository<>();
         IRepository<Seat> seatRepository = new InMemoryRepository<>();
+        IRepository<Artist> artistRepository = new InMemoryRepository<>();
 
         AccountService accountService = new AccountService(userRepository);
         SeatService seatService = new SeatService(seatRepository);
         SectionService sectionService = new SectionService(seatService);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
+        ArtistService artistService = new ArtistService(artistRepository, eventRepository);
 
         AccountController accountController = new AccountController(accountService);
         EventController eventController = new EventController(eventService);
         VenueController venueController = new VenueController(venueService);
         SeatController seatController = new SeatController(seatService);
         SectionController sectionController = new SectionController(sectionService);
+        ArtistController artistController = new ArtistController(artistService);
 
-        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController);
+        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController,
+                artistController);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;

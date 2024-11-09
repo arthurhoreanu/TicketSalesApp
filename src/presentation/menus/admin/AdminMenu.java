@@ -1,4 +1,4 @@
-package presentation.menus;
+package presentation.menus.admin;
 
 import controller.Controller;
 import presentation.actions.AccountAction;
@@ -30,7 +30,7 @@ public class AdminMenu {
                 AccountAction.handleDeleteUserAccount(scanner, controller);
                 break;
             case "4":
-                EventMenu.display(scanner, controller);
+                AdminEventMenu.display(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
