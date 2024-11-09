@@ -33,7 +33,7 @@ public class AccountService {
     }
 
     public boolean domainEmail(String email) {
-        return !(email.endsWith("@ticketsalescompany.com"));
+        return email.endsWith("@ticketsalescompany.com");
     }
 
     public boolean createAccount(String role, String username, String email, String password) {
@@ -46,14 +46,12 @@ public class AccountService {
 
         // Create the new user based on the specified role
         User newUser;
-        if ("Customer".equalsIgnoreCase(role)) {
+        if ("Customer".equalsIgnoreCase(role))
             newUser = new Customer(newID, username, email, password);
-        } else if ("Admin".equalsIgnoreCase(role) && !domainEmail(email)) {
-            return false;
-        } else if ("Admin".equalsIgnoreCase(role) && domainEmail(email)) {
+        else if ("Admin".equalsIgnoreCase(role) && domainEmail(email))
             newUser = new Admin(newID, username, email, password);
-        } else
-        return false;
+        else
+            return false;
 
         // Add the new user to the repository
         userIRepository.create(newUser);

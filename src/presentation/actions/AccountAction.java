@@ -35,17 +35,18 @@ public class AccountAction {
         while (true) {
             System.out.print("Enter email: ");
             email = scanner.nextLine();
-            if(!(controller.domainEmail(email))) {
+            if ("Customer".equalsIgnoreCase(role))
                 break;
-            }
-            else {
+            else if ("Admin".equalsIgnoreCase(role) && controller.domainEmail(email))
+                break;
+            else
                 System.out.println("Admins must have a domain email.");
-            }
         }
+
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
-        controller.createAccount(role, username, password, email);
+        controller.createAccount(role, username, email, password);
     }
 
     public static void handleLogin(Scanner scanner, Controller controller) {

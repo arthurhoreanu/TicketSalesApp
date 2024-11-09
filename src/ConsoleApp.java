@@ -17,10 +17,10 @@ public class ConsoleApp {
         IRepository<Seat> seatRepository = new InMemoryRepository<>();
 
         AccountService accountService = new AccountService(userRepository);
-        EventService eventService = new EventService(eventRepository);
         SeatService seatService = new SeatService(seatRepository);
         SectionService sectionService = new SectionService(seatService);
         VenueService venueService = new VenueService(venueRepository, sectionService);
+        EventService eventService = new EventService(eventRepository, venueService);
 
         AccountController accountController = new AccountController(accountService);
         EventController eventController = new EventController(eventService);
