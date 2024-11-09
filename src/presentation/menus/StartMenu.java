@@ -1,6 +1,8 @@
-package presentation;
+package presentation.menus;
 
 import controller.Controller;
+import presentation.actions.AccountAction;
+
 import java.util.Scanner;
 
 public class StartMenu {
@@ -15,7 +17,7 @@ public class StartMenu {
 
         switch (choice) {
             case "1":
-                MenuActions.handleCreateAccount(scanner, controller);
+                AccountAction.handleCreateAccount(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");

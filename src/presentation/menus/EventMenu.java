@@ -1,5 +1,7 @@
-package presentation;
+package presentation.menus;
 import controller.Controller;
+import presentation.actions.EventAction;
+
 import java.util.Scanner;
 
 public class EventMenu {
@@ -22,13 +24,13 @@ public class EventMenu {
                     //MenuActions.handleCreateEvent(scanner, controller);
                     break;
                 case "2":
-                    MenuActions.handleViewEvents(controller);
+                    EventAction.handleViewEvents(controller);
                     break;
                 case "3":
-                    MenuActions.handleUpdateEvent(scanner, controller);
+                    EventAction.handleUpdateEvent(scanner, controller);
                     break;
                 case "4":
-                    MenuActions.handleDeleteEvent(scanner, controller);
+                    EventAction.handleDeleteEvent(scanner, controller);
                     break;
                 case "0":
                     inEventMenu = false;

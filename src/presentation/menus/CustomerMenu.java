@@ -1,25 +1,22 @@
-package presentation;
+package presentation.menus;
 
 import controller.Controller;
 import java.util.Scanner;
 
-public class LoginMenu {
+public class CustomerMenu {
     public static boolean display(Scanner scanner, Controller controller) {
-        System.out.println("==== Main Menu ====");
-        System.out.println("1. Create Account");
-        System.out.println("2. Login");
+        System.out.println("==== Customer Menu ====");
+        System.out.println("1. Logout");
         System.out.println("0. Exit");
-        System.out.println("===================");
+        System.out.println("=======================");
 
         System.out.print("Choose an option: ");
         String choice = scanner.nextLine();
 
         switch (choice) {
             case "1":
-                MenuActions.handleCreateAccount(scanner, controller);
-                break;
-            case "2":
-                MenuActions.handleLogin(scanner, controller);
+                controller.logout();
+                System.out.println("Logged out successfully.");
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
