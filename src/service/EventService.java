@@ -8,17 +8,14 @@ import java.util.List;
 
 public class EventService {
     private final IRepository<Event> eventRepository;
-    //private final VenueService venueService;
+    private final VenueService venueService;
 
-    public EventService(IRepository<Event> eventRepository
-                        //VenueService venueService
-                        ) {
+    public EventService(IRepository<Event> eventRepository, VenueService venueService) {
         this.eventRepository = eventRepository;
-        //this.venueService = venueService;
+        this.venueService = venueService;
     }
 
     // Method to add a Concert event
-    // Arthur's TODO do we keep tickets here?
     public boolean createConcert(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime,
                                  LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist,
                                  String genre) {

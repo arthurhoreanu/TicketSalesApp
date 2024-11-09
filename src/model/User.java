@@ -3,14 +3,14 @@ package model;
 public abstract class User implements Identifiable {
     private int userId;
     protected String username;
-    protected String password;
     private String email;
+    protected String password;
 
-    public User(int userId, String username, String password, String email) {
+    public User(int userId, String username, String email, String password) {
         this.userId = userId;
         this.username = username;
-        this.password = password;
         this.email = email;
+        this.password = password;
     }
 
     @Override

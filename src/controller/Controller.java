@@ -49,24 +49,34 @@ public class Controller {
 
     // Event related
     public void createConcert(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist, String genre) {
-        eventController.createConcert(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
-    }
+        eventController.createConcert(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);}
     public void createSportsEvent(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
-        eventController.createSportsEvent(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
-    }
+        eventController.createSportsEvent(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);}
     public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
-        eventController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
-    }
+        eventController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);}
     public void deleteEvent(int eventId) {
         eventController.deleteEvent(eventId);
     }
     public List<Event> getAllEvents() {
         return eventController.getAllEvents();
     }
-    //    public boolean isEventSoldOut(Event event) { return eventController.isEventSoldOut(event);}
+    // Arthur's TODO idk, i get an error here
+//    public boolean isEventSoldOut(Event event) { return eventController.isEventSoldOut(event);}
     public List<Event> getsEventByVenue(Venue venue) {
         return eventController.getEventsByVenue(venue);
     }
+
+    // Venue related
+    public void addVenue(String name, String location, int capacity, List<Section> sections) {
+        venueController.addVenue(name, location, capacity, sections);}
+    public void updateVenue(int id, String name, String location, int capacity, List<Section> sections) {
+        venueController.updateVenue(id, name, location, capacity, sections);}
+    public void deleteVenue(int id) {
+        venueController.deleteVenue(id);}
+    public List<Venue> getAllVenues() {
+        return venueController.getAllVenues();}
+    public Venue findVenueByName(String name) {
+        return venueController.findVenueByName(name);}
 
     // Section related
     public List<Seat> getAvailableSeats(Section section, Event event) { return sectionController.getAvailableSeats(section, event);}

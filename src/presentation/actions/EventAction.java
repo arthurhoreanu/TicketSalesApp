@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.List;
 
 public class EventAction {
-    // Arthur's TODO on hold - depends on other services
+// Arthur's TODO on hold - depends on other services such as Artist and Athlete
 //    public static void handleCreateEvent(Scanner scanner, Controller controller) {
 //        System.out.println("=== Create Event ===");
 //        System.out.print("Enter Event Type (Concert/Sports Event): ");
