@@ -1,4 +1,5 @@
 package model;
+
 import java.util.List;
 
 
@@ -14,7 +15,7 @@ public class Section implements Identifiable {
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
         this.venue = venue;
-        this.seats =  seats;
+        this.seats = seats;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class Section implements Identifiable {
         this.venue = venue;
     }
 
-    public List<Seat> getSeats(){
+    public List<Seat> getSeats() {
         return seats;
     }
 

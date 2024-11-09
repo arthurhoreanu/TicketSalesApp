@@ -7,6 +7,7 @@ import presentation.menus.StartMenu;
 import repository.IRepository;
 import repository.InMemoryRepository;
 import service.*;
+
 import java.util.Scanner;
 
 public class ConsoleApp {
@@ -16,6 +17,7 @@ public class ConsoleApp {
         IRepository<Venue> venueRepository = new InMemoryRepository<>();
         IRepository<Seat> seatRepository = new InMemoryRepository<>();
         IRepository<Artist> artistRepository = new InMemoryRepository<>();
+        IRepository<Athlete> athleteRepository = new InMemoryRepository<>();
 
         AccountService accountService = new AccountService(userRepository);
         SeatService seatService = new SeatService(seatRepository);
@@ -23,6 +25,7 @@ public class ConsoleApp {
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
+        AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
 
         AccountController accountController = new AccountController(accountService);
         EventController eventController = new EventController(eventService);
@@ -30,9 +33,9 @@ public class ConsoleApp {
         SeatController seatController = new SeatController(seatService);
         SectionController sectionController = new SectionController(sectionService);
         ArtistController artistController = new ArtistController(artistService);
+        AthleteController athleteController = new AthleteController(athleteService);
 
-        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController,
-                artistController);
+        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController, artistController, athleteController);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;

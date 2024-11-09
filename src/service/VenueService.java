@@ -26,7 +26,6 @@ public class VenueService {
         for (int i = 0; i < venues.size(); i++) {
             Venue venue = venues.get(i);
             if (venue.getVenueName().equalsIgnoreCase(name) && venue.getLocation().equalsIgnoreCase(location)) {
-                System.out.println("Venue with this name and location already exists.");
                 return false;
             }
         }
@@ -34,7 +33,6 @@ public class VenueService {
         // Create a new Venue object
         Venue newVenue = new Venue(newId, name, location, capacity, sections);
         venueRepository.create(newVenue);
-        System.out.println("Venue added successfully.");
         return true;
     }
 
@@ -47,10 +45,8 @@ public class VenueService {
             venue.setVenueCapacity(newCapacity);
             venue.sections = newSections;
             venueRepository.update(venue);
-            System.out.println("Venue updated successfully.");
             return true;
         } else {
-            System.out.println("Venue not found.");
             return false;
         }
     }
@@ -60,10 +56,8 @@ public class VenueService {
         Venue venue = findVenueById(id);
         if (venue != null) {
             venueRepository.delete(id);
-            System.out.println("Venue deleted successfully.");
             return true;
         } else {
-            System.out.println("Venue not found.");
             return false;
         }
     }

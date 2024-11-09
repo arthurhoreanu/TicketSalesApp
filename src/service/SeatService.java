@@ -20,9 +20,7 @@ public class SeatService {
     public void addSeat(Seat seat) {
         if (!seatExists(seat.getID())) {
             seatRepository.create(seat);
-            System.out.println("Seat added successfully.");
         } else {
-            System.out.println("Seat with this ID already exists.");
         }
     }
 
@@ -46,10 +44,8 @@ public class SeatService {
     public boolean updateSeat(Seat updatedSeat) {
         if (seatExists(updatedSeat.getID())) {
             seatRepository.update(updatedSeat);
-            System.out.println("Seat updated successfully.");
             return true;
         } else {
-            System.out.println("Seat not found.");
             return false;
         }
     }
@@ -58,10 +54,8 @@ public class SeatService {
     public boolean deleteSeat(int seatID) {
         if (seatExists(seatID)) {
             seatRepository.delete(seatID);
-            System.out.println("Seat deleted successfully.");
             return true;
         } else {
-            System.out.println("Seat not found.");
             return false;
         }
     }

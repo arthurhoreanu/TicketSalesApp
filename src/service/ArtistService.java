@@ -16,11 +16,10 @@ public class ArtistService {
     }
 
     // Method to add a new artist
-    public boolean createArtist(int artistId, String artistName, String genre) {
-        artistId = artistRepository.getAll().size() + 1;  // Generate unique ID based on the current size
-        Artist artist = new Artist(artistId, artistName, genre);
+    public boolean createArtist(String artistName, String genre) {
+        int newID = artistRepository.getAll().size() + 1;  // Generate unique ID based on the current size
+        Artist artist = new Artist(newID, artistName, genre);
         artistRepository.create(artist);
-        System.out.println("Artist added successfully.");
         return true;
     }
 
@@ -31,10 +30,8 @@ public class ArtistService {
             artist.setArtistName(newName);
             artist.setGenre(newGenre);
             artistRepository.update(artist);
-            System.out.println("Artist updated successfully.");
             return true;
         } else {
-            System.out.println("Artist not found.");
             return false;
         }
     }
@@ -44,10 +41,8 @@ public class ArtistService {
         Artist artist = findArtistById(artistId);
         if (artist != null) {
             artistRepository.delete(artistId);
-            System.out.println("Artist deleted successfully.");
             return true;
         } else {
-            System.out.println("Artist not found.");
             return false;
         }
     }
@@ -58,25 +53,18 @@ public class ArtistService {
     }
 
     private Artist findArtistById(int artistId) {
-        return artistRepository.getAll().stream()
-                .filter(artist -> artist.getID() == artistId)
-                .findFirst()
-                .orElse(null);
+        return artistRepository.getAll().stream().filter(artist -> artist.getID() == artistId).findFirst().orElse(null);
     }
 
     // Finds an artist by name
     public Artist findArtistByName(String artistName) {
-        return artistRepository.getAll().stream()
-                .filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName))
-                .findFirst()
-                .orElse(null);
+        return artistRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
     }
 
     // Method to get a list of events for a specific artist (implements showEventList)
     public List<Event> getEventsByArtist(Artist artist) {
-        return eventRepository.getAll().stream()
-                .filter(event -> event instanceof Concert)  // Filter only Concert events
-                .filter(event -> ((Concert) event).getArtist().equals(artist))  // Match the artist
+        return eventRepository.getAll().stream().filter(event -> event instanceof Concert)  // Filter only Concert events
+                .filter(event -> ((Concert) event).getArtists().equals(artist))  // Match the artist
                 .collect(Collectors.toList());
     }
 }
