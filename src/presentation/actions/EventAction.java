@@ -1,78 +1,13 @@
-package presentation;
+package presentation.actions;
 
 import controller.Controller;
 import model.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
+import java.util.List;
 
-public class MenuActions {
-    public static void handleCreateAccount(Scanner scanner, Controller controller) {
-        System.out.println("=== Create Account ===");
-
-        String role;
-        while (true) {
-            System.out.print("Enter role (Admin/Customer): ");
-            role = scanner.nextLine();
-            if ("Admin".equalsIgnoreCase(role) || "Customer".equalsIgnoreCase(role)) {
-                break;
-            } else {
-                System.out.println("Invalid role. Please enter 'Admin' or 'Customer'.");
-            }
-        }
-
-        String username;
-        while (true) {
-            System.out.print("Enter username: ");
-            username = scanner.nextLine();
-            if (!controller.isUsernameTaken(username)) {
-                break;
-            } else {
-                System.out.println("Username already exists. Please try a different username.");
-            }
-        }
-
-        String email;
-        while (true) {
-            System.out.print("Enter email: ");
-            email = scanner.nextLine();
-            if(!(controller.domainEmail(email))) {
-                break;
-            }
-            else {
-                System.out.println("Admins must have a domain email.");
-            }
-        }
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        controller.createAccount(role, username, password, email);
-    }
-
-    public static void handleLogin(Scanner scanner, Controller controller) {
-        System.out.println("=== Login ===");
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-        controller.login(username, password);
-    }
-
-    public static void handleDeleteUserAccount(Scanner scanner, Controller controller) {
-        System.out.println("=== Delete User Account ===");
-
-        for (User user : controller.getAllUsers()) {
-            if (!(user instanceof Admin)) {
-                System.out.println("ID: " + user.getID() + ", Username: " + user.getUsername());
-            }
-        }
-        System.out.print("Enter the ID of the account to delete: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        controller.deleteAccount(id);
-    }
-
+public class EventAction {
     // Arthur's TODO on hold - depends on other services
 //    public static void handleCreateEvent(Scanner scanner, Controller controller) {
 //        System.out.println("=== Create Event ===");
@@ -160,7 +95,7 @@ public class MenuActions {
             System.out.println("No events available.");
         } else {
             for (Event event : events) {
-                System.out.println(event); // Assumes Event has a meaningful toString() method
+                System.out.println(event);
             }
         }
     }
@@ -168,6 +103,16 @@ public class MenuActions {
     // Method to handle updating an event
     public static void handleUpdateEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Update Event ===");
+
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+
         System.out.print("Enter Event ID to update: ");
         int eventId = Integer.parseInt(scanner.nextLine());
 
@@ -196,9 +141,18 @@ public class MenuActions {
     // Method to handle deleting an event
     public static void handleDeleteEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Event ===");
+
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+
         System.out.print("Enter Event ID to delete: ");
         int eventId = Integer.parseInt(scanner.nextLine());
 
     }
-
 }

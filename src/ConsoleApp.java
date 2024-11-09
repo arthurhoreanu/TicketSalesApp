@@ -1,10 +1,13 @@
 import controller.*;
 import model.*;
+import presentation.menus.AdminMenu;
+import presentation.menus.CustomerMenu;
+import presentation.menus.LoginMenu;
+import presentation.menus.StartMenu;
 import repository.IRepository;
 import repository.InMemoryRepository;
 import service.*;
 import java.util.Scanner;
-import presentation.*;
 
 public class ConsoleApp {
     public static void main(String[] args) {
