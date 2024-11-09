@@ -16,24 +16,18 @@ public class EventService {
     }
 
     // Method to add a Concert event
-    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime,
-                                 LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist,
-                                 String genre) {
+    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists, String genre) {
         int eventID = eventRepository.getAll().size() + 1;
-        Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
+        Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists, genre);
         eventRepository.create(concert);
-        System.out.println("Concert added successfully.");
         return true;
     }
 
     // Method to add a SportsEvent event
-    public boolean createSportsEvent(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime,
-                                     LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes,
-                                     String sportName) {
-        eventId = eventRepository.getAll().size() + 1;
-        SportsEvent sportsEvent = new SportsEvent(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
+    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
+        int eventID = eventRepository.getAll().size() + 1;
+        SportsEvent sportsEvent = new SportsEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
         eventRepository.create(sportsEvent);
-        System.out.println("Sports event added successfully.");
         return true;
     }
 
@@ -47,10 +41,8 @@ public class EventService {
             event.setEndDateTime(newEndDateTime);
             event.setEventStatus(newStatus);
             eventRepository.update(event);
-            System.out.println("Event updated successfully.");
             return true;
         } else {
-            System.out.println("Event not found.");
             return false;
         }
     }
@@ -60,10 +52,8 @@ public class EventService {
         Event event = findEventByID(eventId);
         if (event != null) {
             eventRepository.delete(eventId);
-            System.out.println("Event deleted successfully.");
             return true;
         } else {
-            System.out.println("Event not found.");
             return false;
         }
     }
@@ -83,7 +73,7 @@ public class EventService {
         return null;
     }
 
-//     Checks if an event is sold out by calculating available tickets
+    //     Checks if an event is sold out by calculating available tickets
     public boolean isEventSoldOut(Event event) {
         int availableTickets = getAvailableTickets(event);
         return availableTickets == 0;
@@ -97,8 +87,6 @@ public class EventService {
 
     // Retrieves all events happening at a particular venue
     public List<Event> getEventsByVenue(Venue venue) {
-        return eventRepository.getAll().stream()
-                .filter(event -> event.getVenue().equals(venue))
-                .toList();
+        return eventRepository.getAll().stream().filter(event -> event.getVenue().equals(venue)).toList();
     }
 }

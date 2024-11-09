@@ -91,6 +91,6 @@ public abstract class Event implements Identifiable {
 
     @Override
     public String toString() {
-        return "Event{" + eventID + ", eventName=" + eventName + ", eventDescription=" + eventDescription + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", venue=" + venue + ", eventStatus=" + eventStatus + ", tickets=" + tickets + '}';
+        return "{" + eventID + ", eventName=" + eventName + ", eventDescription=" + eventDescription + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", venue=" + venue + ", eventStatus=" + eventStatus + ", tickets=" + tickets + '}';
     }
 }

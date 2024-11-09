@@ -35,12 +35,9 @@ public class AccountAction {
         while (true) {
             System.out.print("Enter email: ");
             email = scanner.nextLine();
-            if ("Customer".equalsIgnoreCase(role))
-                break;
-            else if ("Admin".equalsIgnoreCase(role) && controller.domainEmail(email))
-                break;
-            else
-                System.out.println("Admins must have a domain email.");
+            if ("Customer".equalsIgnoreCase(role)) break;
+            else if ("Admin".equalsIgnoreCase(role) && controller.domainEmail(email)) break;
+            else System.out.println("Admins must have a domain email.");
         }
 
         System.out.print("Enter password: ");

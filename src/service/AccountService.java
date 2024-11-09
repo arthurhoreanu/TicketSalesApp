@@ -37,7 +37,7 @@ public class AccountService {
     }
 
     public boolean createAccount(String role, String username, String email, String password) {
-        if(takenUsername(username)) {
+        if (takenUsername(username)) {
             return false;
         }
 
@@ -46,12 +46,10 @@ public class AccountService {
 
         // Create the new user based on the specified role
         User newUser;
-        if ("Customer".equalsIgnoreCase(role))
-            newUser = new Customer(newID, username, email, password);
+        if ("Customer".equalsIgnoreCase(role)) newUser = new Customer(newID, username, email, password);
         else if ("Admin".equalsIgnoreCase(role) && domainEmail(email))
             newUser = new Admin(newID, username, email, password);
-        else
-            return false;
+        else return false;
 
         // Add the new user to the repository
         userIRepository.create(newUser);

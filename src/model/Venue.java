@@ -26,7 +26,7 @@ public class Venue implements Identifiable {
         this.venueID = venueID;
     }
 
-    public List<Section> getSections(){
+    public List<Section> getSections() {
         return this.sections;
     }
 

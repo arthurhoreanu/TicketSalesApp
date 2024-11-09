@@ -13,26 +13,20 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime,
-                              LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist,
-                              String genre) {
-        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists, String genre) {
+        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists, genre);
         if (success) {
             System.out.println("Event created successfully");
-        }
-        else {
+        } else {
             System.out.println("Event creation failed");
         }
     }
 
-    public void createSportsEvent(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime,
-                                  LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes,
-                                  String sportName) {
-        boolean success = eventService.createSportsEvent(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
+        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
         if (success) {
             System.out.println("Event created successfully");
-        }
-        else {
+        } else {
             System.out.println("Event creation failed");
         }
     }
@@ -41,8 +35,7 @@ public class EventController {
         boolean success = eventService.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
         if (success) {
             System.out.println("Event updated successfully");
-        }
-        else {
+        } else {
             System.out.println("Event update failed");
         }
     }
@@ -51,8 +44,7 @@ public class EventController {
         boolean success = eventService.deleteEvent(eventId);
         if (success) {
             System.out.println("Event deleted successfully");
-        }
-        else {
+        } else {
             System.out.println("Event deletion failed");
         }
     }

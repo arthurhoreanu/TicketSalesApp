@@ -1,6 +1,5 @@
 package controller;
 
-
 import model.Event;
 import model.Section;
 import model.Venue;
@@ -16,34 +15,31 @@ public class VenueController {
     }
 
     public void addVenue(String name, String location, int capacity, List<Section> sections) {
-        if(name == null || name.isEmpty() || location == null || capacity < 0 || sections == null || sections.isEmpty()) {
+        if (name == null || name.isEmpty() || location == null || capacity < 0 || sections == null || sections.isEmpty()) {
             System.out.println("All fields are required for account creation.");
         }
         boolean success = venueService.addVenue(name, location, capacity, sections);
-        if(success) {
+        if (success) {
             System.out.println("Venue added successfully.");
-        }
-        else {
+        } else {
             System.out.println("Venue could not be added.");
         }
     }
 
     public void updateVenue(int id, String name, String location, int capacity, List<Section> sections) {
         boolean success = venueService.updateVenue(id, name, location, capacity, sections);
-        if(success) {
+        if (success) {
             System.out.println("Venue updated successfully.");
-        }
-        else {
+        } else {
             System.out.println("Venue could not be updated.");
         }
     }
 
     public void deleteVenue(int id) {
         boolean success = venueService.deleteVenue(id);
-        if(success) {
+        if (success) {
             System.out.println("Venue deleted successfully.");
-        }
-        else {
+        } else {
             System.out.println("Venue could not be deleted.");
         }
     }
