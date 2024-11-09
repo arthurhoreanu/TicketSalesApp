@@ -13,14 +13,22 @@ public class ConsoleApp {
     public static void main(String[] args) {
         IRepository<User> userRepository = new InMemoryRepository<>();
         IRepository<Event> eventRepository = new InMemoryRepository<>();
+        IRepository<Venue> venueRepository = new InMemoryRepository<>();
+        IRepository<Seat> seatRepository = new InMemoryRepository<>();
 
         AccountService accountService = new AccountService(userRepository);
         EventService eventService = new EventService(eventRepository);
+        SeatService seatService = new SeatService(seatRepository);
+        SectionService sectionService = new SectionService(seatService);
+        VenueService venueService = new VenueService(venueRepository, sectionService);
 
         AccountController accountController = new AccountController(accountService);
         EventController eventController = new EventController(eventService);
+        VenueController venueController = new VenueController(venueService);
+        SeatController seatController = new SeatController(seatService);
+        SectionController sectionController = new SectionController(sectionService);
 
-        Controller controller = new Controller(accountController, eventController);
+        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;

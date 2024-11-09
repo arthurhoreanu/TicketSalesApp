@@ -4,6 +4,7 @@ import controller.Controller;
 import model.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
 
@@ -23,7 +24,6 @@ public class EventAction {
 //        System.out.print("Enter end date and time (YYYY-MM-DDTHH:MM): ");
 //        LocalDateTime endDateTime = LocalDateTime.parse(scanner.nextLine());
 //
-////         Assuming a method to get a Venue by name exists in the controller
 //        System.out.print("Enter venue name: ");
 //        String venueName = scanner.nextLine();
 //        Venue venue = controller.findVenueByName(venueName); // Retrieve the Venue object based on user input
@@ -84,7 +84,6 @@ public class EventAction {
 //        controller.createSportsEvent(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
 //        System.out.println("Sports Event created successfully.");
 //    }
-
 
     // Method to handle viewing all events
     public static void handleViewEvents(Controller controller) {
