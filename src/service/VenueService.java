@@ -83,6 +83,15 @@ public class VenueService {
         return null;
     }
 
+    public Venue findVenueByName(String name) {
+        for (Venue venue : venueRepository.getAll()) {
+            if (venue.getVenueName().equalsIgnoreCase(name)) {
+                return venue;
+            }
+        }
+        return null;
+    }
+
     // Checks available seats for a specific event in the entire venue
     public int getAvailableSeats(Venue venue, Event event) {
         int totalAvailableSeats = 0;
