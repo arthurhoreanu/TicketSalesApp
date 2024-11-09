@@ -16,11 +16,11 @@ public class EventService {
     }
 
     // Method to add a Concert event
-    public boolean createConcert(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime,
+    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime,
                                  LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist,
                                  String genre) {
-        eventId = eventRepository.getAll().size() + 1;
-        Concert concert = new Concert(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
+        int eventID = eventRepository.getAll().size() + 1;
+        Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);
         eventRepository.create(concert);
         System.out.println("Concert added successfully.");
         return true;
@@ -39,7 +39,7 @@ public class EventService {
 
     // Updates an existing event by ID
     public boolean updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
-        Event event = findEventById(eventId);
+        Event event = findEventByID(eventId);
         if (event != null) {
             event.setEventName(newName);
             event.setEventDescription(newDescription);
@@ -57,7 +57,7 @@ public class EventService {
 
     // Deletes an event by ID
     public boolean deleteEvent(int eventId) {
-        Event event = findEventById(eventId);
+        Event event = findEventByID(eventId);
         if (event != null) {
             eventRepository.delete(eventId);
             System.out.println("Event deleted successfully.");
@@ -74,7 +74,7 @@ public class EventService {
     }
 
     // Retrieves an event by its ID
-    private Event findEventById(int eventId) {
+    private Event findEventByID(int eventId) {
         for (Event event : eventRepository.getAll()) {
             if (event.getID() == eventId) {
                 return event;
@@ -83,17 +83,17 @@ public class EventService {
         return null;
     }
 
-    // Checks if an event is sold out by calculating available tickets
-//    public boolean isEventSoldOut(Event event) {
-//        int availableTickets = getAvailableTickets(event);
-//        return availableTickets == 0;
-//    }
+//     Checks if an event is sold out by calculating available tickets
+    public boolean isEventSoldOut(Event event) {
+        int availableTickets = getAvailableTickets(event);
+        return availableTickets == 0;
+    }
 
     // Gets the number of available tickets for an event
-//    public int getAvailableTickets(Event event) {
-//        Venue venue = event.getVenue();
-//        return venueService.getAvailableSeats(venue, event);
-//    }
+    public int getAvailableTickets(Event event) {
+        Venue venue = event.getVenue();
+        return venueService.getAvailableSeats(venue, event);
+    }
 
     // Retrieves all events happening at a particular venue
     public List<Event> getEventsByVenue(Venue venue) {

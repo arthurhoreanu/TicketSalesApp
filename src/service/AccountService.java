@@ -33,7 +33,7 @@ public class AccountService {
     }
 
     public boolean domainEmail(String email) {
-        return email.endsWith("@ticketsalescompany.com");
+        return email.endsWith("@tsc.com"); // [TicketSalesCompany placeholder
     }
 
     public boolean createAccount(String role, String username, String email, String password) {

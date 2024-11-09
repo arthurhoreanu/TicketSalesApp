@@ -1,20 +1,20 @@
 package model;
 
 public class SportsEventLineUp {
-    private int eventId;
+    private int eventID;
     private int athleteID;
 
     public SportsEventLineUp(int eventId, int artistId) {
-        this.eventId = eventId;
+        this.eventID = eventId;
         this.athleteID = artistId;
     }
 
-    public int getEventId() {
-        return eventId;
+    public int getEventID() {
+        return eventID;
     }
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 
     public int getArtistId() {
@@ -27,6 +27,6 @@ public class SportsEventLineUp {
 
     @Override
     public String toString() {
-        return "SportsEventLineUp{" + "eventId=" + eventId + ", athleteID=" + athleteID + '}';
+        return "SportsEventLineUp{" + "eventId=" + eventID + ", athleteID=" + athleteID + '}';
     }
 }

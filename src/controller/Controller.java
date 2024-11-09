@@ -11,14 +11,16 @@ public class Controller {
     private final VenueController venueController;
     private final SectionController sectionController;
     private final SeatController seatController;
+    private final ArtistController artistController;
 
     public Controller(AccountController accountController, EventController eventController, VenueController venueController,
-    SectionController sectionController, SeatController seatController) {
+    SectionController sectionController, SeatController seatController, ArtistController artistController) {
         this.accountController = accountController;
         this.eventController = eventController;
         this.venueController = venueController;
         this.sectionController = sectionController;
         this.seatController = seatController;
+        this.artistController = artistController;
     }
 
     // User related
@@ -48,8 +50,8 @@ public class Controller {
     }
 
     // Event related
-    public void createConcert(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist, String genre) {
-        eventController.createConcert(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);}
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, Artist artist, String genre) {
+        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artist, genre);}
     public void createSportsEvent(int eventId, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
         eventController.createSportsEvent(eventId, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);}
     public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
@@ -60,8 +62,7 @@ public class Controller {
     public List<Event> getAllEvents() {
         return eventController.getAllEvents();
     }
-    // Arthur's TODO idk, i get an error here
-//    public boolean isEventSoldOut(Event event) { return eventController.isEventSoldOut(event);}
+    public boolean isEventSoldOut(Event event) { return eventController.isEventSoldOut(event);}
     public List<Event> getsEventByVenue(Venue venue) {
         return eventController.getEventsByVenue(venue);
     }
@@ -99,4 +100,12 @@ public class Controller {
     public void clearSeatReservationForEvent(Seat seat, Event event) {seatController.clearSeatReservationForEvent(seat, event);}
     public void clearAllReservations(Seat seat) {seatController.clearAllReservations(seat);}
     public List<Seat> getAvailableSeats(Venue venue, Event event) {return seatController.getAvailableSeats(venue, event);}
+
+    //Artist related
+    public void addArtist(String artistName, String genre) {artistController.addArtist(artistName, genre);}
+    public void updateArtist(int artistId, String newName, String newGenre) {artistController.updateArtist(artistId, newName, newGenre);}
+    public void deleteArtist(int artistId) {artistController.deleteArtist(artistId);}
+    public List<Artist> getAllArtists() {return artistController.getAllArtists();}
+    public Artist findArtistByName(String artistName) {return artistController.findArtistByName(artistName);}
+    public List<Event> getEventsByArtist(Artist artist) {return artistController.getEventsByArtist(artist);}
 }
