@@ -19,7 +19,8 @@ public class ConsoleApp {
         IRepository<Artist> artistRepository = new InMemoryRepository<>();
         IRepository<Athlete> athleteRepository = new InMemoryRepository<>();
 
-        AccountService accountService = new AccountService(userRepository);
+        CustomerService customerService = new CustomerService();
+        AccountService accountService = new AccountService(userRepository, customerService);
         SeatService seatService = new SeatService(seatRepository);
         SectionService sectionService = new SectionService(seatService);
         VenueService venueService = new VenueService(venueRepository, sectionService);
@@ -34,8 +35,10 @@ public class ConsoleApp {
         SectionController sectionController = new SectionController(sectionService);
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
+        CustomerController customerController = new CustomerController(customerService);
 
-        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController, artistController, athleteController);
+        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController,
+                artistController, athleteController, customerController);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;

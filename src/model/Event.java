@@ -3,7 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public abstract class Event implements Identifiable {
+public abstract class Event implements Identifiable, FavouriteItem {
     private int eventID;
     private String eventName;
     private String eventDescription;

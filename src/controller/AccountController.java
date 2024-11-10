@@ -46,7 +46,6 @@ public class AccountController {
             System.out.println("Username and password are required for login.");
             return;
         }
-
         boolean success = accountService.login(username, password);
         if (success) {
             System.out.println("Login successful. Welcome, " + username + "!");

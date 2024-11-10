@@ -13,8 +13,9 @@ public class AdminMenu {
         System.out.println("3. Delete User Account");
         System.out.println("4. Manage Events");
         System.out.println("5. Manage Tickets");
-        System.out.println("6. Manage Artists");
-        System.out.println("7. Manage Athletes");
+        System.out.println("6. Manage Venues");
+        System.out.println("7. Manage Artists");
+        System.out.println("8. Manage Athletes");
         System.out.println("0. Exit");
         System.out.println("====================");
 
@@ -36,13 +37,17 @@ public class AdminMenu {
                 AdminEventMenu.display(scanner, controller);
                 break;
             case "5":
-                // Arthur's TODO: need to come back here later
+                // TODO: de creat meniul AdminTicketMenu
                 // AdminTicketMenu.display(scanner, controller);
                 break;
             case "6":
-                AdminArtistMenu.display(scanner, controller);
+                // TODO: de creat meniul AdminVenueMenu
+                // AdminVenueMenu.display(scanner, controller);
                 break;
             case "7":
+                AdminArtistMenu.display(scanner, controller);
+                break;
+            case "8":
                 AdminAthleteMenu.display(scanner, controller);
                 break;
             case "0":

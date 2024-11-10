@@ -34,4 +34,9 @@ public class Concert extends Event {
         return "Concert" + super.toString() + // Call the Event's toString method
                 ", {" + "artists=" + artists + ", genre='" + genre + '\'' + '}';
     }
+
+    @Override
+    public String getName() {
+        return getName();
+    }
 }

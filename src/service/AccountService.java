@@ -2,6 +2,7 @@ package service;
 
 import model.Admin;
 import model.Customer;
+import model.FavouriteItem;
 import model.User;
 import repository.IRepository;
 
@@ -9,10 +10,12 @@ import java.util.List;
 
 public class AccountService {
     private final IRepository<User> userIRepository;
+    private final CustomerService customerService;
     private User currentUser;
 
-    public AccountService(IRepository<User> userIRepository) {
+    public AccountService(IRepository<User> userIRepository, CustomerService customerService) {
         this.userIRepository = userIRepository;
+        this.customerService = customerService;
     }
 
     public User getCurrentUser() {
@@ -61,7 +64,12 @@ public class AccountService {
             if (user.getUsername().equals(username)) {
                 if (user.getPassword().equals(password)) {
                     currentUser = user;
-                    return true; // Login successful
+                    if (currentUser instanceof Customer) {
+                        customerService.setCurrentCustomer((Customer) currentUser);
+                        return true;
+                    } else if (currentUser instanceof Admin) {
+                        return true;
+                    }
                 } else {
                     return false; // Incorrect password
                 }
@@ -70,6 +78,7 @@ public class AccountService {
         return false; // Username not found
     }
 
+
     public boolean logout() {
         if (currentUser != null) {
             currentUser = null;
@@ -77,7 +86,6 @@ public class AccountService {
         }
         return false; // No user logged in
     }
-
 
     public boolean deleteAccount(int id) {
         // Check if the current user is an admin

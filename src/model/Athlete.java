@@ -1,6 +1,6 @@
 package model;
 
-public class Athlete implements Identifiable {
+public class Athlete implements Identifiable, FavouriteItem {
     private int athleteID;
     private String athleteName;
     private String athleteSport;
@@ -14,6 +14,11 @@ public class Athlete implements Identifiable {
     @Override
     public Integer getID() {
         return this.athleteID;
+    }
+
+    @Override
+    public String getName() {
+        return this.athleteName;
     }
 
     public void setAthleteID(int athleteID) {
