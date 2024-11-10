@@ -1,10 +1,11 @@
 package service;
 
-import model.*;
+import model.*; // Import everything from the model layer
 import repository.IRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
 public class EventService {
     private final IRepository<Event> eventRepository;
@@ -85,8 +86,23 @@ public class EventService {
         return venueService.getAvailableSeats(venue, event);
     }
 
-    // Retrieves all events happening at a particular venue
+     // Lambda for this function
+    /*// Retrieves all events happening at a particular venue
     public List<Event> getEventsByVenue(Venue venue) {
         return eventRepository.getAll().stream().filter(event -> event.getVenue().equals(venue)).toList();
+    }*/
+
+    public List<Event> getEventsByVenue(Venue venue) {
+        List<Event> eventsAtVenue = new ArrayList<>();
+        List<Event> allEvents = eventRepository.getAll();
+
+        for (int i = 0; i < allEvents.size(); i++) {
+            Event event = allEvents.get(i);
+            if (event.getVenue().equals(venue)) {
+                eventsAtVenue.add(event);
+            }
+        }
+
+        return eventsAtVenue;
     }
 }

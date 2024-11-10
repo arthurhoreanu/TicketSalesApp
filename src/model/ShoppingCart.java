@@ -3,13 +3,22 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShoppingCart {
+public class ShoppingCart implements Identifiable {
+    private int shoppingCartID;
     private List<Ticket> items = new ArrayList<>();
     private double totalPrice;
 
-    public ShoppingCart(List<Ticket> items, double totalPrice) {
+    public ShoppingCart(int shoppingCartID,List<Ticket> items, double totalPrice) {
+        this.shoppingCartID = shoppingCartID;
         this.items = items;
         this.totalPrice = totalPrice;
+    }
+    @Override
+    public Integer getID() {
+        return shoppingCartID;
+    }
+    public int getShoppingCartID() {
+        return shoppingCartID;
     }
 
     public List<Ticket> getItems() {
@@ -28,33 +37,12 @@ public class ShoppingCart {
         this.totalPrice = totalPrice;
     }
 
-    public void addTicket(Ticket ticket) {
-        items.add(ticket);
-        recalculateTotalPrice();
-    }
 
-    public void removeTicket(Ticket ticket) {
-        items.remove(ticket);
-        recalculateTotalPrice();
-    }
+    //TODO check it again in service
 
-    public void clear() {
-        items.clear();
-        totalPrice = 0;
-    }
-
-    public Order checkout(User user) {
-        if (items.isEmpty()) {
-            throw new IllegalStateException("Shopping cart is empty.");
-        }
-//TODO check it again
-        Order order = new Order(user, new ArrayList<>(items));
-        clear();
-        return order;
-    }
-
-    private void recalculateTotalPrice() {
-        totalPrice = items.stream().mapToDouble(Ticket::getPrice).sum();
+    @Override
+    public String toString() {
+        return "Shopping Cart [shoppingCartID=" + shoppingCartID + ", items=" + items + ", totalPrice=" + totalPrice + "]";
     }
 }
 
