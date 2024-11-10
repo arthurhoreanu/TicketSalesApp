@@ -1,9 +1,7 @@
 package presentation.menus;
 
 import controller.Controller;
-import model.Athlete;
-import model.Event;
-import model.Artist;
+import model.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -34,7 +32,6 @@ public class CustomerMenu {
                 //handleViewSuggestedEvents(scanner, controller);
                 break;
             case "3":
-                // Arthur's TODO: need CustomerService in order for MarkAsFavourite to work
                 handleSearchArtistsAndAthletes(scanner, controller);
                 break;
             case "4":
@@ -62,21 +59,21 @@ public class CustomerMenu {
         // First, try to find the name as an artist
         Artist artist = controller.findArtistByName(name);
         if (artist != null) {
-            upcomingEventsAndMarkAsFavourite(controller, artist);
+            upcomingEventsAndMarkAsFavourite(scanner, controller, artist);
             return;
         }
 
         // If not found as an artist, try to find as an athlete
         Athlete athlete = controller.findAthleteByName(name);
         if (athlete != null) {
-            upcomingEventsAndMarkAsFavourite(controller, athlete);
+            upcomingEventsAndMarkAsFavourite(scanner, controller, athlete);
         } else {
             System.out.println("No artist or athlete found with that name.");
         }
     }
 
     // Helper method to display events and ask to mark as favorite
-    private static void upcomingEventsAndMarkAsFavourite(Controller controller, Object performer) {
+    private static void upcomingEventsAndMarkAsFavourite(Scanner scanner, Controller controller, Object performer) {
         String name;
         int id;
         List<Event> upcomingEvents;
@@ -99,22 +96,15 @@ public class CustomerMenu {
             System.out.println("Upcoming events for " + name + ":");
             upcomingEvents.forEach(System.out::println);
 
-//            System.out.print("Would you like to mark " + name + " as a favorite? (yes/no): ");
-//            String response = scanner.nextLine();
-//            if ("yes".equalsIgnoreCase(response)) {
-//                if (performer instanceof Artist) {
-//                    controller.addFavoriteArtist(name);
-//                } else {
-//                    controller.addFavoriteAthlete(name);
-//                }
-//                System.out.println(name + " has been added to your favorites.");
-//            } else {
-//                System.out.println(name + " was not added to your favorites.");
-//            }
+            System.out.print("Would you like to mark " + name + " as a favorite? (yes/no): ");
+            String response = scanner.nextLine();
+
+            if ("yes".equalsIgnoreCase(response)) {
+                // The `performer` object is already an instance of either Artist, Athlete, or Event
+                FavouriteItem favoriteItem = (FavouriteItem) performer;
+                controller.addFavorite(favoriteItem); // Pass the actual FavoriteItem object
+            }
         }
-    }
-
-
 
 //    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
 //        System.out.print("Enter location name: ");
@@ -182,4 +172,5 @@ public class CustomerMenu {
 //            }
 //        }
 //    }
+    }
 }

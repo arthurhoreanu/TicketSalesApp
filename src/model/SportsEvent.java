@@ -33,4 +33,9 @@ public class SportsEvent extends Event {
     public String toString() {
         return "SportsEvent{" + "athletes=" + athletes + ", sportName='" + sportName + '\'' + '}';
     }
+
+    @Override
+    public String getName() {
+        return this.getEventName();
+    }
 }

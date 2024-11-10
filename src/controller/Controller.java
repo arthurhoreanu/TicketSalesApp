@@ -5,6 +5,7 @@ import model.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Controller {
     private final AccountController accountController;
@@ -14,8 +15,11 @@ public class Controller {
     private final SeatController seatController;
     private final ArtistController artistController;
     private final AthleteController athleteController;
+    private final CustomerController customerController;
 
-    public Controller(AccountController accountController, EventController eventController, VenueController venueController, SectionController sectionController, SeatController seatController, ArtistController artistController, AthleteController athleteController) {
+    public Controller(AccountController accountController, EventController eventController, VenueController venueController,
+                      SectionController sectionController, SeatController seatController, ArtistController artistController,
+                      AthleteController athleteController, CustomerController customerController) {
         this.accountController = accountController;
         this.eventController = eventController;
         this.venueController = venueController;
@@ -23,9 +27,17 @@ public class Controller {
         this.seatController = seatController;
         this.artistController = artistController;
         this.athleteController = athleteController;
+        this.customerController = customerController;
     }
 
     // Rule: newest first
+    // Customer related
+    public void addFavorite(FavouriteItem item) {
+        customerController.addFavorite(item);}
+    public void removeFavorite(FavouriteItem item) {
+        customerController.removeFavorite(item);}
+    public Set<FavouriteItem> getFavorites() {
+        return customerController.getFavorites();}
 
     //Athlete related
     public void createAthlete(String athleteName, String athleteSport) {

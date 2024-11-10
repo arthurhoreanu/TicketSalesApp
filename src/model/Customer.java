@@ -1,11 +1,16 @@
 package model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Customer extends User {
     private String role;
+    private Set<FavouriteItem> favourites;
 
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
         this.role = role;
+        this.favourites = new HashSet<>();
     }
 
     public String getRole() {
@@ -19,6 +24,18 @@ public class Customer extends User {
     @Override
     public String getAccessLevel() {
         return "Customer";
+    }
+
+    public boolean addFavorite(FavouriteItem item) {
+        return favourites.add(item);
+    }
+
+    public boolean removeFavorite(FavouriteItem item) {
+        return favourites.remove(item);
+    }
+
+    public Set<FavouriteItem> getFavorites() {
+        return favourites;
     }
 
     @Override
