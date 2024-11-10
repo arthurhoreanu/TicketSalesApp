@@ -1,6 +1,5 @@
 package controller;
 
-import model.Artist;
 import model.Athlete;
 import model.Event;
 import service.AthleteService;
@@ -14,7 +13,7 @@ public class AthleteController {
         this.athleteService = athleteService;
     }
 
-    public void addAthlete(String athleteName, String athleteSport) {
+    public void createAthlete(String athleteName, String athleteSport) {
         int artistID = athleteService.getAllAthletes().size() + 1;
         boolean success = athleteService.createAthlete(athleteName, athleteSport);
         if (success) {
@@ -49,6 +48,8 @@ public class AthleteController {
     public Athlete findAthleteByName(String athleteName) {
         return athleteService.findAthleteByName(athleteName);
     }
+
+    public Athlete findAthleteByID(int athleteID) { return athleteService.findAthleteByID(athleteID); }
 
     public List<Event> getEventsByAthlete(Athlete athlete) {
         return athleteService.getEventsByAthlete(athlete);

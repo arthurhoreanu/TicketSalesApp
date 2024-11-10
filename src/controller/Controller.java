@@ -182,12 +182,12 @@ public class Controller {
     }
 
     //Artist related
-    public void addArtist(String artistName, String genre) {
-        artistController.addArtist(artistName, genre);
+    public void createArtist(String artistName, String genre) {
+        artistController.createArtist(artistName, genre);
     }
 
-    public void updateArtist(int artistId, String newName, String newGenre) {
-        artistController.updateArtist(artistId, newName, newGenre);
+    public void updateArtist(int artistID, String newName, String newGenre) {
+        artistController.updateArtist(artistID, newName, newGenre);
     }
 
     public void deleteArtist(int artistId) {
@@ -202,13 +202,15 @@ public class Controller {
         return artistController.findArtistByName(artistName);
     }
 
+    public Artist findArtistByID(int artistId) { return artistController.findArtistByID(artistId); }
+
     public List<Event> getEventsByArtist(Artist artist) {
         return artistController.getEventsByArtist(artist);
     }
 
-    //Athelete related
-    public void addAthlete(String athleteName, String athleteSport) {
-        athleteController.addAthlete(athleteName, athleteSport);
+    //Athlete related
+    public void createAthlete(String athleteName, String athleteSport) {
+        athleteController.createAthlete(athleteName, athleteSport);
     }
 
     public void updateAthlete(int athleteID, String newName, String newSport) {
@@ -226,6 +228,8 @@ public class Controller {
     public Athlete findAthleteByName(String athleteName) {
         return athleteController.findAthleteByName(athleteName);
     }
+
+    public Athlete findAthleteByID(int athleteID) { return athleteController.findAthleteByID(athleteID); }
 
     public List<Event> getEventsByAthlete(Athlete athlete) {
         return athleteController.getEventsByAthlete(athlete);

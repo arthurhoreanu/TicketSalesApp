@@ -51,7 +51,7 @@ public class AthleteService {
         return atheleteRepository.getAll();
     }
 
-    private Athlete findAthleteByID(int athleteID) {
+    public Athlete findAthleteByID(int athleteID) {
         return atheleteRepository.getAll().stream().filter(athlete -> athlete.getID() == athleteID).findFirst().orElse(null);
     }
 

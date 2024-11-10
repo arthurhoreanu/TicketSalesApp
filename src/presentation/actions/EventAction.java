@@ -49,7 +49,7 @@ public class EventAction {
 
                 Artist artist = controller.findArtistByName(artistName);
                 if (artist == null) {
-                    controller.addArtist(artistName, "No genre set.");
+                    controller.createArtist(artistName, "No genre set.");
                     System.out.println("New artist added to the repository: " + artistName);
                     artist = controller.findArtistByName(artistName);
                 }
@@ -69,7 +69,7 @@ public class EventAction {
 
                 Athlete athlete = controller.findAthleteByName(athleteName);
                 if (athlete == null) {
-                    controller.addAthlete(athleteName, "No sport set.");
+                    controller.createAthlete(athleteName, "No sport set.");
                     System.out.println("New athlete added to the repository: " + athleteName);
                     athlete = controller.findAthleteByName(athleteName);
                 }
@@ -141,6 +141,8 @@ public class EventAction {
             System.out.println("Invalid status. Please enter one of SCHEDULED, CANCELLED, or COMPLETED.");
             return;
         }
+
+        controller.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
     }
 
     // Method to handle deleting an event

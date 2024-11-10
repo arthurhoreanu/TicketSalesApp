@@ -25,7 +25,7 @@ public class ArtistService {
 
     // Method to update an existing artist
     public boolean updateArtist(int artistId, String newName, String newGenre) {
-        Artist artist = findArtistById(artistId);
+        Artist artist = findArtistByID(artistId);
         if (artist != null) {
             artist.setArtistName(newName);
             artist.setGenre(newGenre);
@@ -38,7 +38,7 @@ public class ArtistService {
 
     // Method to delete an artist by ID
     public boolean deleteArtist(int artistId) {
-        Artist artist = findArtistById(artistId);
+        Artist artist = findArtistByID(artistId);
         if (artist != null) {
             artistRepository.delete(artistId);
             return true;
@@ -52,8 +52,8 @@ public class ArtistService {
         return artistRepository.getAll();
     }
 
-    private Artist findArtistById(int artistId) {
-        return artistRepository.getAll().stream().filter(artist -> artist.getID() == artistId).findFirst().orElse(null);
+    public Artist findArtistByID(int artistID) {
+        return artistRepository.getAll().stream().filter(artist -> artist.getID() == artistID).findFirst().orElse(null);
     }
 
     // Finds an artist by name
