@@ -64,23 +64,21 @@ public class TicketService {
             ticket.markAsSold(purchaserName);
             seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
             ticketRepository.update(ticket);
-            System.out.println("Ticket " + ticket.getID() + " reserved for " + purchaserName);
             return true;
         } else {
-            System.out.println("Ticket " + ticket.getID() + " is already sold.");
             return false;
         }
     }
 
     // Releases a reserved ticket, making it available again
-    public void releaseTicket(Ticket ticket) {
+    public boolean releaseTicket(Ticket ticket) {
         if (ticket.isSold()) {
             ticket.setSold(false);
             seatService.clearSeatReservationForEvent(ticket.getSeat(), ticket.getEvent());
             ticketRepository.update(ticket);
-            System.out.println("Ticket " + ticket.getID() + " has been released.");
+            return true;
         } else {
-            System.out.println("Ticket " + ticket.getID() + " is not currently reserved.");
+            return false;
         }
     }
 
@@ -93,7 +91,6 @@ public class TicketService {
                 return ticket;
             }
         }
-        System.out.println("Ticket with ID " + ticketId + " not found.");
         return null;
     }
 
@@ -102,7 +99,6 @@ public class TicketService {
         Ticket ticket = getTicketById(ticketId);
         if (ticket != null) {
             ticketRepository.delete(ticketId);
-            System.out.println("Ticket with ID " + ticketId + " deleted.");
             return true;
         }
         return false;
