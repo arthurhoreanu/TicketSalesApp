@@ -105,4 +105,40 @@ public class EventService {
 
         return eventsAtVenue;
     }
+
+    public List<Event> getUpcomingEventsForArtist(int artistID) {
+        List<Event> allEvents = getAllEvents(); // Retrieve all events from EventService
+        List<Event> upcomingEvents = new ArrayList<>();
+
+        LocalDateTime now = LocalDateTime.now();
+        for (Event event : allEvents) {
+            if (event.getStartDateTime().isAfter(now) && event instanceof Concert concert) { // Check if event is a Concert and is upcoming
+                for (Artist artist : concert.getArtists()) {
+                    if (artist.getID() == artistID) { // Check if artist is in this event's artist list
+                        upcomingEvents.add(event);
+                        break; // Break inner loop if artist is found in this event
+                    }
+                }
+            }
+        }
+        return upcomingEvents;
+    }
+
+    public List<Event> getUpcomingEventsForAthlete(int athleteID) {
+        List<Event> allEvents = getAllEvents(); // Retrieve all events from EventService
+        List<Event> upcomingEvents = new ArrayList<>();
+
+        LocalDateTime now = LocalDateTime.now();
+        for (Event event : allEvents) {
+            if (event.getStartDateTime().isAfter(now) && event instanceof SportsEvent sportsEvent) { // Check if event is a Concert and is upcoming
+                for (Athlete athlete : sportsEvent.getAthletes()) {
+                    if (athlete.getID() == athleteID) { // Check if artist is in this event's artist list
+                        upcomingEvents.add(event);
+                        break; // Break inner loop if artist is found in this event
+                    }
+                }
+            }
+        }
+        return upcomingEvents;
+    }
 }

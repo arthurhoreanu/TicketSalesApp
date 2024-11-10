@@ -49,8 +49,7 @@ public class EventController {
         }
     }
 
-    public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+    public List<Event> getAllEvents() {return eventService.getAllEvents();
     }
 
     public boolean isEventSoldOut(Event event) {
@@ -64,4 +63,8 @@ public class EventController {
     public List<Event> getEventsByVenue(Venue venue) {
         return eventService.getEventsByVenue(venue);
     }
+
+    public List<Event> getUpcomingEventsForArtist(int artistID) { return eventService.getUpcomingEventsForArtist(artistID);}
+
+    public List<Event> getUpcomingEventsForAthlete(int athleteID) { return eventService.getUpcomingEventsForAthlete(athleteID);}
 }
