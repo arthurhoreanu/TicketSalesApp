@@ -12,6 +12,9 @@ public class AdminMenu {
         System.out.println("2. Logout");
         System.out.println("3. Delete User Account");
         System.out.println("4. Manage Events");
+        System.out.println("5. Manage Tickets");
+        System.out.println("6. Manage Artists");
+        System.out.println("7. Manage Athletes");
         System.out.println("0. Exit");
         System.out.println("====================");
 
@@ -31,6 +34,16 @@ public class AdminMenu {
                 break;
             case "4":
                 AdminEventMenu.display(scanner, controller);
+                break;
+            case "5":
+                // Arthur's TODO: need to come back here later
+                // AdminTicketMenu.display(scanner, controller);
+                break;
+            case "6":
+                AdminArtistMenu.display(scanner, controller);
+                break;
+            case "7":
+                AdminAthleteMenu.display(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");

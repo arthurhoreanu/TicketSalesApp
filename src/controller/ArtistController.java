@@ -14,7 +14,7 @@ public class ArtistController {
     }
 
     // Method to add a new artist
-    public void addArtist(String artistName, String genre) {
+    public void createArtist(String artistName, String genre) {
         int artistID = artistService.getAllArtists().size() + 1; // Generate unique ID based on the current size
         boolean success = artistService.createArtist(artistName, genre);
         if (success) {
@@ -50,6 +50,10 @@ public class ArtistController {
 
     public Artist findArtistByName(String artistName) {
         return artistService.findArtistByName(artistName);
+    }
+
+    public Artist findArtistByID(int artistID) {
+        return artistService.findArtistByID(artistID);
     }
 
     public List<Event> getEventsByArtist(Artist artist) {
