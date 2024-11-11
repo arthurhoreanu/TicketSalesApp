@@ -37,11 +37,11 @@ public class AdminMenu {
                 AdminEventMenu.display(scanner, controller);
                 break;
             case "5":
-                // TODO: de creat meniul AdminTicketMenu
+                // TODO: priority level 2
                 // AdminTicketMenu.display(scanner, controller);
                 break;
             case "6":
-                // TODO: de creat meniul AdminVenueMenu
+                // TODO: priority level 1
                 // AdminVenueMenu.display(scanner, controller);
                 break;
             case "7":
