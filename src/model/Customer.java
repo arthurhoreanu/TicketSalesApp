@@ -2,15 +2,19 @@ package model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+
 
 public class Customer extends User {
     private String role;
     private Set<FavouriteItem> favourites;
+    private ShoppingCart shoppingCart;
 
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-        this.role = role;
+        this.role = "Customer"; // default role
         this.favourites = new HashSet<>();
+        this.shoppingCart = new ShoppingCart(userId, new ArrayList<>(), 0.0); // Initialize with customer's ID
     }
 
     public String getRole() {
@@ -36,6 +40,10 @@ public class Customer extends User {
 
     public Set<FavouriteItem> getFavorites() {
         return favourites;
+    }
+
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
     }
 
     @Override
