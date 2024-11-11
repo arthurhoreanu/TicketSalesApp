@@ -89,14 +89,14 @@ public class AdminAthleteMenu {
 
         System.out.print("Enter new athlete name (or press Enter to keep current name): ");
         String newName = scanner.nextLine();
-        if (!newName.trim().isEmpty()) {
-            athlete.setAthleteName(newName);
+        if (newName.isEmpty()) {
+            newName = athlete.getAthleteName(); // Keep current name if input is empty
         }
 
         System.out.print("Enter new sport (or press Enter to keep current genre): ");
         String newSport = scanner.nextLine();
-        if (!newSport.trim().isEmpty()) {
-            athlete.setAthleteSport(newSport);
+        if (newSport.isEmpty()) {
+            newSport = athlete.getAthleteSport(); // Keep current sport if input is empty
         }
 
         controller.updateAthlete(athleteID, newName, newSport);
