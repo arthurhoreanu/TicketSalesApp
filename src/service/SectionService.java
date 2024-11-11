@@ -3,6 +3,7 @@ package service;
 import model.Event;
 import model.Seat;
 import model.Section;
+import model.Customer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,75 +15,30 @@ public class SectionService {
         this.seatService = seatService;
     }
 
-    // Retrieves the list of available seats in a section for a specific event
+    // Retrieves the list of available seats in a section for a specific event using for loop
     public List<Seat> getAvailableSeats(Section section, Event event) {
         List<Seat> availableSeats = new ArrayList<>();
         List<Seat> seats = section.getSeats();
-
         for (int i = 0; i < seats.size(); i++) {
             Seat seat = seats.get(i);
             if (!seatService.isSeatReservedForEvent(seat, event)) {
                 availableSeats.add(seat);
             }
         }
-
         return availableSeats;
     }
 
-    // Counts the number of available seats in a section for a specific event
-    public int countAvailableSeats(Section section, Event event) {
-        return getAvailableSeats(section, event).size();
-    }
+    // Recommends a seat within a section based on customer preferences using for loop
+    public Seat recommendSeat(Customer customer, Section section, Event event) {
+        List<Seat> availableSeats = getAvailableSeats(section, event);
 
-    // Adds a new seat to the section
-    public void addSeat(Section section, Seat seat) {
-        section.getSeats().add(seat);
-    }
-
-    // Removes a seat from the section
-    public boolean removeSeat(Section section, Seat seat) {
-        return section.getSeats().remove(seat);
-    }
-
-    // Checks if a section is at full capacity
-    public boolean isSectionFull(Section section, Event event) {
-        int availableSeats = countAvailableSeats(section, event);
-        return availableSeats == 0;
-    }
-
-    // Reserves a list of seats in the section for a specific event
-    public void reserveSeats(Section section, List<Seat> seatsToReserve, Event event) {
-        List<Seat> seats = section.getSeats();
-        for (int i = 0; i < seats.size(); i++) {
-            Seat seat = seats.get(i);
-            if (seatsToReserve.contains(seat)) {
-                seatService.reserveSeatForEvent(seat, event);
-            }
+        // Check if the customer has a preference for this section
+        Integer preferredCount = customer.getPreferredSections().get(section.getID());
+        if (preferredCount != null && preferredCount > 0) {
+            return availableSeats.isEmpty() ? null : availableSeats.get(0);
         }
-    }
 
-    // Releases all reserved seats in the section for a specific event
-    public void releaseAllSeats(Section section, Event event) {
-        List<Seat> seats = section.getSeats();
-        for (int i = 0; i < seats.size(); i++) {
-            Seat seat = seats.get(i);
-            if (seatService.isSeatReservedForEvent(seat, event)) {
-                seatService.clearSeatReservationForEvent(seat, event);
-            }
-        }
-    }
-
-    // Retrieves a list of seats that are reserved for a specific event
-    public List<Seat> getReservedSeats(Section section, Event event) {
-        List<Seat> reservedSeats = new ArrayList<>();
-        List<Seat> seats = section.getSeats();
-        for (int i = 0; i < seats.size(); i++) {
-            Seat seat = seats.get(i);
-            if (seatService.isSeatReservedForEvent(seat, event)) {
-                reservedSeats.add(seat);
-            }
-        }
-        return reservedSeats;
+        // Fallback: Recommend the first front-row seat
+        return seatService.recommendFrontRowSeat(availableSeats);
     }
 }
-//TODO RECOMMENDED SEAT METHOD!!!
