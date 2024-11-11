@@ -29,18 +29,17 @@ public class CustomerMenu {
                 System.out.println("Logged out successfully.");
                 break;
             case "2":
-                // Arthur's TODO: priority level 3
+                // Arthur's TODO: priority level 2
                 //handleViewSuggestedEvents(scanner, controller);
                 break;
             case "3":
                 handleSearchArtistsAndAthletes(scanner, controller);
                 break;
             case "4":
-                // Arthur's TODO: priority level 2
-                //handleViewEventsByLocation(scanner, controller);
+                handleViewEventsByLocation(scanner, controller);
                 break;
             case "5":
-                // Arthur's TODO: priority level 4
+                // Arthur's TODO: priority level 3
                 //handleViewPreviousOrders(controller);
                 break;
             case "6":
@@ -169,19 +168,19 @@ public class CustomerMenu {
         }
     }
 
-//    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
-//        System.out.print("Enter location name: ");
-//        String location = scanner.nextLine();
-//        List<Event> events = controller.getEventsByLocation(location);
-//
-//        if (events.isEmpty()) {
-//            System.out.println("No events found for this location.");
-//        } else {
-//            System.out.println("Events at " + location + ":");
-//            events.forEach(System.out::println);
-//        }
-//    }
-//
+    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
+        System.out.print("Enter location/venue name: ");
+        String location = scanner.nextLine();
+        List<Event> events = controller.getEventsByLocation(location);
+
+        if (events.isEmpty()) {
+            System.out.println("No events found for this location.");
+        } else {
+            System.out.println("Events at " + location + ":");
+            events.forEach(System.out::println);
+        }
+    }
+
 //    private static void handleViewPreviousOrders(Controller controller) {
 //        List<Order> previousOrders = controller.getPreviousOrders();
 //        if (previousOrders.isEmpty()) {
@@ -191,5 +190,5 @@ public class CustomerMenu {
 //            previousOrders.forEach(System.out::println);
 //        }
 //    }
-//
+
 }

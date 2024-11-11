@@ -55,4 +55,8 @@ public class VenueController {
     public int getAvailableSeats(Venue venue, Event event) {
         return venueService.getAvailableSeats(venue, event);
     }
+
+    public List<Venue> getVenuesByLocationOrName(String locationOrVenueName) {
+        return venueService.getVenuesByLocationOrName(locationOrVenueName);
+    }
 }
