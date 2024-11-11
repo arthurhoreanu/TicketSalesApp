@@ -1,7 +1,7 @@
 package service;
 
 import model.Customer;
-import model.FavouriteItem;
+import model.FavouriteEntity;
 
 import java.util.Set;
 
@@ -18,17 +18,17 @@ public class CustomerService {
         this.currentCustomer = customer;
     }
 
-    public boolean addFavorite(FavouriteItem item) {
+    public boolean addFavorite(FavouriteEntity item) {
         currentCustomer.addFavorite(item);
         return true;
     }
 
-    public boolean removeFavorite(FavouriteItem item) {
+    public boolean removeFavorite(FavouriteEntity item) {
         currentCustomer.removeFavorite(item);
         return true;
     }
 
-    public Set<FavouriteItem> getFavorites() {
-        return currentCustomer.getFavorites();
+    public Set<FavouriteEntity> getFavourites() {
+        return currentCustomer.getFavourites();
     }
 }

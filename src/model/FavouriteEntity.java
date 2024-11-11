@@ -1,6 +1,6 @@
 package model;
 
-public interface FavouriteItem {
+public interface FavouriteEntity {
     Integer getID();
     String getName();
 }

@@ -1,6 +1,6 @@
 package model;
 
-public class Artist implements Identifiable, FavouriteItem {
+public class Artist implements Identifiable, FavouriteEntity {
     private int artistID;
     private String artistName;
     private String genre;

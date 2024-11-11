@@ -59,4 +59,8 @@ public class ArtistController {
     public List<Event> getEventsByArtist(Artist artist) {
         return artistService.getEventsByArtist(artist);
     }
+
+    public List<Artist> findArtistsByGenre(String genre) {
+        return artistService.findArtistsByGenre(genre);
+    }
 }
