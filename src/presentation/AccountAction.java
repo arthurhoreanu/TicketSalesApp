@@ -1,4 +1,4 @@
-package presentation.actions;
+package presentation;
 
 import controller.Controller;
 import model.*;

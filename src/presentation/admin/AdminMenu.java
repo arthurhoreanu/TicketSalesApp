@@ -1,7 +1,7 @@
-package presentation.menus.admin;
+package presentation.admin;
 
 import controller.Controller;
-import presentation.actions.AccountAction;
+import presentation.AccountAction;
 
 import java.util.Scanner;
 

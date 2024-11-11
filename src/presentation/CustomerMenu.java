@@ -1,4 +1,4 @@
-package presentation.menus;
+package presentation;
 
 import controller.Controller;
 import model.*;

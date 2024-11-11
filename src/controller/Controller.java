@@ -97,24 +97,25 @@ public class Controller {
         return seatController.getAvailableSeats(venue, event);}
 
     // Section related
-    public List<Seat> getAvailableSeats(Section section, Event event) {
-        return sectionController.getAvailableSeats(section, event);}
-    public int countAvailableSeats(Section section, Event event) {
-        return sectionController.countAvailableSeats(section, event);}
-    public void addSeat(Section section, Seat seat) {
-        sectionController.addSeat(section, seat);}
-    public boolean removeSeat(Section section, Seat seat) {
-        return sectionController.removeSeat(section, seat);}
-    public boolean isSectionFull(Section section, Event event) {
-        return sectionController.isSectionFull(section, event);}
-    public void reserveSeats(Section section, List<Seat> seatsToReserve, Event event) {
-        sectionController.reserveSeats(section, seatsToReserve, event);}
-    public void releaseAllSeats(Section section, Event event) {
-        sectionController.releaseAllSeats(section, event);}
-    public List<Seat> getReservedSeats(Section section, Event event) {
-        return sectionController.getReservedSeats(section, event);}
-    public List<Seat> getRecommendedSeats(Section section, Event event) {
-        return sectionController.getRecommendedSeats(section, event);}
+    // TODO fix these errors
+//    public List<Seat> getAvailableSeats(Section section, Event event) {
+//        return sectionController.getAvailableSeats(section, event);}
+//    public int countAvailableSeats(Section section, Event event) {
+//        return sectionController.countAvailableSeats(section, event);}
+//    public void addSeat(Section section, Seat seat) {
+//        sectionController.addSeat(section, seat);}
+//    public boolean removeSeat(Section section, Seat seat) {
+//        return sectionController.removeSeat(section, seat);}
+//    public boolean isSectionFull(Section section, Event event) {
+//        return sectionController.isSectionFull(section, event);}
+//    public void reserveSeats(Section section, List<Seat> seatsToReserve, Event event) {
+//        sectionController.reserveSeats(section, seatsToReserve, event);}
+//    public void releaseAllSeats(Section section, Event event) {
+//        sectionController.releaseAllSeats(section, event);}
+//    public List<Seat> getReservedSeats(Section section, Event event) {
+//        return sectionController.getReservedSeats(section, event);}
+//    public List<Seat> getRecommendedSeats(Section section, Event event) {
+//        return sectionController.getRecommendedSeats(section, event);}
 
     // Venue related
     public List<Venue> getVenuesByLocationOrName(String locationOrVenueName) {

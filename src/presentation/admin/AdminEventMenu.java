@@ -1,16 +1,51 @@
-package presentation.actions;
-
+package presentation.admin;
 import controller.Controller;
 import model.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.List;
-import java.time.format.DateTimeParseException;
+import java.util.Scanner;
 
-public class EventAction {
+public class AdminEventMenu {
+    public static void display(Scanner scanner, Controller controller) {
+        boolean inEventMenu = true;
+        while (inEventMenu) {
+            System.out.println("==== Event Management ====");
+            System.out.println("1. Create Event");
+            System.out.println("2. View Events");
+            System.out.println("3. Update Event");
+            System.out.println("4. Delete Event");
+            System.out.println("0. Back to Admin Menu");
+            System.out.println("==========================");
+
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    handleCreateEvent(scanner, controller);
+                    break;
+                case "2":
+                    handleViewEvents(controller);
+                    break;
+                case "3":
+                    handleUpdateEvent(scanner, controller);
+                    break;
+                case "4":
+                    handleDeleteEvent(scanner, controller);
+                    break;
+                case "0":
+                    inEventMenu = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+            System.out.println();
+        }
+    }
+
     public static void handleCreateEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Create Event ===");
         System.out.print("Enter Event Type (Concert/Sports Event): ");

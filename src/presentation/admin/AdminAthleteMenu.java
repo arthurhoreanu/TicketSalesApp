@@ -1,4 +1,4 @@
-package presentation.actions;
+package presentation.admin;
 
 import controller.Controller;
 import model.Athlete;
@@ -6,7 +6,44 @@ import model.Athlete;
 import java.util.List;
 import java.util.Scanner;
 
-public class AthleteAction {
+public class AdminAthleteMenu {
+    public static void display(Scanner scanner, Controller controller) {
+        boolean inAthleteMenu = true;
+        while (inAthleteMenu) {
+            System.out.println("==== Athlete Management ====");
+            System.out.println("1. Create Athlete");
+            System.out.println("2. View Athletes");
+            System.out.println("3. Update Athlete");
+            System.out.println("4. Delete Athlete");
+            System.out.println("0. Back to Admin Menu");
+            System.out.println("==========================");
+
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    handleCreateAthlete(scanner, controller);
+                    break;
+                case "2":
+                    handleViewAthletes(controller);
+                    break;
+                case "3":
+                    handleUpdateAthlete(scanner, controller);
+                    break;
+                case "4":
+                    handleDeleteAthlete(scanner, controller);
+                    break;
+                case "0":
+                    inAthleteMenu = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+            System.out.println();
+        }
+    }
+
     public static void handleCreateAthlete(Scanner scanner, Controller controller) {
         System.out.println("=== Create Athlete ===");
         System.out.print("Enter athlete name: ");

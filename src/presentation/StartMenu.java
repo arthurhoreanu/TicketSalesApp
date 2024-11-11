@@ -1,17 +1,15 @@
-package presentation.menus;
+package presentation;
 
 import controller.Controller;
-import presentation.actions.AccountAction;
 
 import java.util.Scanner;
 
-public class LoginMenu {
+public class StartMenu {
     public static boolean display(Scanner scanner, Controller controller) {
-        System.out.println("==== Main Menu ====");
+        System.out.println("==== Welcome to the App ====");
         System.out.println("1. Create Account");
-        System.out.println("2. Login");
         System.out.println("0. Exit");
-        System.out.println("===================");
+        System.out.println("============================");
 
         System.out.print("Choose an option: ");
         String choice = scanner.nextLine();
@@ -20,12 +18,9 @@ public class LoginMenu {
             case "1":
                 AccountAction.handleCreateAccount(scanner, controller);
                 break;
-            case "2":
-                AccountAction.handleLogin(scanner, controller);
-                break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
-                return false;
+                return false; // End the application
             default:
                 System.out.println("Invalid option. Please try again.");
         }

@@ -1,9 +1,9 @@
 import controller.*;
 import model.*;
-import presentation.menus.admin.AdminMenu;
-import presentation.menus.CustomerMenu;
-import presentation.menus.LoginMenu;
-import presentation.menus.StartMenu;
+import presentation.admin.AdminMenu;
+import presentation.CustomerMenu;
+import presentation.LoginMenu;
+import presentation.StartMenu;
 import repository.IRepository;
 import repository.InMemoryRepository;
 import service.*;
