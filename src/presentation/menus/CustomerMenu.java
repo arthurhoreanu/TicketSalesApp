@@ -5,6 +5,7 @@ import model.*;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class CustomerMenu {
 
@@ -28,20 +29,22 @@ public class CustomerMenu {
                 System.out.println("Logged out successfully.");
                 break;
             case "2":
-                // Arthur's TODO: depends on other methods
+                // Arthur's TODO: priority level 3
                 //handleViewSuggestedEvents(scanner, controller);
                 break;
             case "3":
                 handleSearchArtistsAndAthletes(scanner, controller);
                 break;
             case "4":
+                // Arthur's TODO: priority level 2
                 //handleViewEventsByLocation(scanner, controller);
                 break;
             case "5":
+                // Arthur's TODO: priority level 4
                 //handleViewPreviousOrders(controller);
                 break;
             case "6":
-                //handleManageFavorites(scanner, controller);
+                handleManageFavourites(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
@@ -105,6 +108,66 @@ public class CustomerMenu {
                 controller.addFavorite(favoriteItem); // Pass the actual FavoriteItem object
             }
         }
+    }
+
+    private static void handleManageFavourites(Scanner scanner, Controller controller) {
+        boolean inFavoritesMenu = true;
+        while (inFavoritesMenu) {
+            System.out.println("==== Manage Favorites ====");
+            System.out.println("1. View Favorites");
+            System.out.println("2. Delete Favorite");
+            System.out.println("0. Back to Customer Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1": // View Favorites
+                    Set<FavouriteItem> favorites = controller.getFavorites();
+                    if (favorites.isEmpty()) {
+                        System.out.println("You have no favorites.");
+                    } else {
+                        System.out.println("Favorite Artists/Athletes:");
+                        favorites.forEach(favorite -> System.out.println("- " + favorite.getName()));
+                    }
+                    break;
+
+                case "2": // Delete Favorite
+                    favorites = controller.getFavorites();
+                    if (favorites.isEmpty()) {
+                        System.out.println("You have no favorites to delete.");
+                        break;
+                    }
+
+                    // Display all favorites before deletion
+                    System.out.println("Favorite Artists/Athletes:");
+                    favorites.forEach(favorite -> System.out.println("- " + favorite.getName()));
+
+                    System.out.print("Enter the name of the favorite to delete: ");
+                    String favoriteName = scanner.nextLine();
+
+                    // Find the favorite by name
+                    FavouriteItem itemToDelete = favorites.stream()
+                            .filter(favorite -> favorite.getName().equalsIgnoreCase(favoriteName))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (itemToDelete != null) {
+                        controller.removeFavorite(itemToDelete);
+                        System.out.println(favoriteName + " has been removed from your favorites.");
+                    } else {
+                        System.out.println("No favorite found with that name.");
+                    }
+                    break;
+
+                case "0": // Back to Customer Menu
+                    inFavoritesMenu = false;
+                    break;
+
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
 
 //    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
 //        System.out.print("Enter location name: ");
@@ -129,48 +192,4 @@ public class CustomerMenu {
 //        }
 //    }
 //
-//    private static void handleManageFavorites(Scanner scanner, Controller controller) {
-//        boolean inFavoritesMenu = true;
-//        while (inFavoritesMenu) {
-//            System.out.println("==== Manage Favorites ====");
-//            System.out.println("1. Add Artist/Athlete to Favorites");
-//            System.out.println("2. Add Event to Favorites");
-//            System.out.println("3. View Favorite Artists/Athletes");
-//            System.out.println("4. View Favorite Events");
-//            System.out.println("0. Back to Customer Menu");
-//            System.out.print("Choose an option: ");
-//            String choice = scanner.nextLine();
-//
-//            switch (choice) {
-//                case "1":
-//                    System.out.print("Enter artist/athlete name to favorite: ");
-//                    String artistName = scanner.nextLine();
-//                    controller.addFavoriteArtist(artistName);
-//                    System.out.println("Added " + artistName + " to favorites.");
-//                    break;
-//                case "2":
-//                    System.out.print("Enter event name to favorite: ");
-//                    String eventName = scanner.nextLine();
-//                    controller.addFavoriteEvent(eventName);
-//                    System.out.println("Added " + eventName + " to favorites.");
-//                    break;
-//                case "3":
-//                    List<Artist> favoriteArtists = controller.getFavoriteArtists();
-//                    System.out.println("Favorite Artists/Athletes:");
-//                    favoriteArtists.forEach(System.out::println);
-//                    break;
-//                case "4":
-//                    List<Event> favoriteEvents = controller.getFavoriteEvents();
-//                    System.out.println("Favorite Events:");
-//                    favoriteEvents.forEach(System.out::println);
-//                    break;
-//                case "0":
-//                    inFavoritesMenu = false;
-//                    break;
-//                default:
-//                    System.out.println("Invalid option. Please try again.");
-//            }
-//        }
-//    }
-    }
 }
