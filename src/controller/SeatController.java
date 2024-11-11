@@ -3,7 +3,6 @@ package controller;
 import model.Event;
 import model.Seat;
 import model.Section;
-import model.Venue;
 import service.SeatService;
 
 import java.util.List;
@@ -15,56 +14,63 @@ public class SeatController {
         this.seatService = seatService;
     }
 
-    // Adds a new seat
-    public void createSeat(int seatID, Section section, int rowNumber, int sitNumber, Event reservedForEvent) {
-        boolean success = seatService.createSeat(seatID, section, rowNumber, sitNumber, reservedForEvent);
-        if (success) {
-            System.out.println("Seat has been created");
+    // Creates a new seat in a section
+    public String createSeat(int seatID, Section section, int rowNumber, int sitNumber, Event reservedForEvent) {
+        boolean isCreated = seatService.createSeat(seatID, section, rowNumber, sitNumber, reservedForEvent);
+        if (isCreated) {
+            return "Seat created successfully with ID: " + seatID + " in section: " + section.getSectionName();
+        } else {
+            return "Seat with ID: " + seatID + " already exists.";
         }
-        else System.out.println("Seat could not be created");
     }
 
-    // Retrieves all seats
-    public List<Seat> getAllSeats() {
-        return seatService.getAllSeats();
-    }
-
-    // Updates an existing seat
-    public void updateSeat(int seatID, Section newSection, int newRowNumber, int newSitNumber, Event newReservedForEvent) {
-        boolean success = seatService.updateSeat(seatID, newSection, newRowNumber, newSitNumber, newReservedForEvent);
-        if (success) {
-            System.out.println("Seat has been created");
+    // Retrieves a seat by its ID
+    public String findSeatById(int seatID) {
+        Seat seat = seatService.findSeatById(seatID);
+        if (seat != null) {
+            return "Found seat with ID: " + seatID + " - Row: " + seat.getRowNumber() + ", Seat: " + seat.getSitNumber();
+        } else {
+            return "Seat with ID: " + seatID + " does not exist.";
         }
-        else System.out.println("Seat could not be created");
-    }
-
-    // Deletes a seat by ID
-    public boolean deleteSeat(int seatID) {
-        return seatService.deleteSeat(seatID);
     }
 
     // Checks if a seat is reserved for a specific event
-    public boolean isSeatReservedForEvent(Seat seat, Event event) {
-        return seatService.isSeatReservedForEvent(seat, event);
+    public String checkSeatReservation(Seat seat, Event event) {
+        boolean isReserved = seatService.isSeatReservedForEvent(seat, event);
+        if (isReserved) {
+            return "Seat " + seat.getSitNumber() + " in row " + seat.getRowNumber() + " is reserved for event: " + event.getEventName();
+        } else {
+            return "Seat " + seat.getSitNumber() + " in row " + seat.getRowNumber() + " is not reserved for event: " + event.getEventName();
+        }
     }
 
     // Reserves a seat for a specific event
-    public void reserveSeatForEvent(Seat seat, Event event) {
-        seatService.reserveSeatForEvent(seat, event);
+    public String reserveSeatForEvent(Seat seat, Event event) {
+        boolean isReserved = seatService.reserveSeatForEvent(seat, event);
+        if (isReserved) {
+            return "Seat " + seat.getSitNumber() + " in row " + seat.getRowNumber() + " has been successfully reserved for event: " + event.getEventName();
+        } else {
+            return "Seat " + seat.getSitNumber() + " in row " + seat.getRowNumber() + " is already reserved for event: " + event.getEventName();
+        }
     }
 
     // Clears the reservation for a specific event
-    public void clearSeatReservationForEvent(Seat seat, Event event) {
-        seatService.clearSeatReservationForEvent(seat, event);
+    public String clearSeatReservationForEvent(Seat seat, Event event) {
+        boolean isCleared = seatService.clearSeatReservationForEvent(seat, event);
+        if (isCleared) {
+            return "Reservation cleared for seat " + seat.getSitNumber() + " in row " + seat.getRowNumber() + " for event: " + event.getEventName();
+        } else {
+            return "Seat " + seat.getSitNumber() + " in row " + seat.getRowNumber() + " was not reserved for event: " + event.getEventName();
+        }
     }
 
-    // Clears any reservation on the seat
-    public void clearAllReservations(Seat seat) {
-        seatService.clearAllReservations(seat);
-    }
-
-    // Retrieves the list of available seats for a specific event in a given venue
-    public List<Seat> getAvailableSeats(Venue venue, Event event) {
-        return seatService.getAvailableSeats(venue, event);
+    // Recommends a front-row seat from a list of available seats
+    public String recommendFrontRowSeat(List<Seat> availableSeats) {
+        Seat recommendedSeat = seatService.recommendFrontRowSeat(availableSeats);
+        if (recommendedSeat != null) {
+            return "Recommended front-row seat: Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSitNumber();
+        } else {
+            return "No available seats to recommend.";
+        }
     }
 }
