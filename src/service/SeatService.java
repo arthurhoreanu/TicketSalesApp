@@ -5,6 +5,7 @@ import model.Seat;
 import model.Section;
 import model.Venue;
 import repository.IRepository;
+import model.Customer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,10 @@ public class SeatService {
 
     // Retrieves a seat by ID
     public Seat findSeatById(int seatID) {
-        List<Seat> seats = seatRepository.getAll();
-        for (Seat seat : seats) {
-            if (seat.getID() == seatID) {
-                return seat;
-            }
-        }
-        return null;
+        return seatRepository.getAll().stream()
+                .filter(seat -> seat.getID() == seatID)
+                .findFirst()
+                .orElse(null);
     }
 
     // Updates an existing seat by ID
@@ -53,8 +51,7 @@ public class SeatService {
 
     // Deletes a seat by ID
     public boolean deleteSeat(int seatID) {
-        Seat seat = findSeatById(seatID);
-        if (seat != null) {
+        if (findSeatById(seatID) != null) {
             seatRepository.delete(seatID);
             return true;
         }
@@ -100,16 +97,43 @@ public class SeatService {
     // Retrieves the list of available seats for a specific event in a given venue
     public List<Seat> getAvailableSeats(Venue venue, Event event) {
         List<Seat> availableSeats = new ArrayList<>();
-        List<Section> sections = venue.getSections();
+        for (Section section : venue.getSections()) {
+            availableSeats.addAll(getAvailableSeats(section, event));
+        }
+        return availableSeats;
+    }
 
-        for (Section section : sections) {
-            List<Seat> seats = section.getSeats();
-            for (Seat seat : seats) {
-                if (!isSeatReservedForEvent(seat, event)) {
-                    availableSeats.add(seat);
-                }
+    // Retrieves the list of available seats for a specific section and event
+    public List<Seat> getAvailableSeats(Section section, Event event) {
+        List<Seat> availableSeats = new ArrayList<>();
+        for (Seat seat : section.getSeats()) {
+            if (!isSeatReservedForEvent(seat, event)) {
+                availableSeats.add(seat);
             }
         }
         return availableSeats;
+    }
+
+    // Helper method to recommend a front-row seat
+    public Seat recommendFrontRowSeat(List<Seat> availableSeats) {
+        if (availableSeats.isEmpty()) {
+            return null;
+        }
+        Seat recommendedSeat = availableSeats.get(0);
+        for (Seat seat : availableSeats) {
+            if (seat.getRowNumber() < recommendedSeat.getRowNumber()) {
+                recommendedSeat = seat;
+            }
+        }
+        return recommendedSeat;
+    }
+
+    // Reserves a seat for a specific event and records the customer's preference
+    public boolean reserveSeatForEvent(Customer customer, Seat seat, Event event) {
+        if (reserveSeatForEvent(seat, event)) {
+            customer.addSeatPreference(seat.getSection());
+            return true;
+        }
+        return false; // Seat is already reserved for the event
     }
 }
