@@ -4,6 +4,7 @@ import model.Customer;
 import model.Event;
 import model.Seat;
 import model.Section;
+import model.Venue;
 import service.SectionService;
 
 import java.util.List;
@@ -16,52 +17,37 @@ public class SectionController {
     }
 
     // Retrieves available seats in a section for a specific event
-    public List<Seat> getAvailableSeats(Section section, Event event) {
+    public String getAvailableSeats(Section section, Event event) {
         List<Seat> availableSeats = sectionService.getAvailableSeats(section, event);
-        System.out.println("Retrieved " + availableSeats.size() + " available seats for event '"
-                + event.getEventName() + "' in section '" + section.getSectionName() + "'.");
-        return availableSeats;
+        if (availableSeats.isEmpty()) {
+            return "No available seats in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "'.";
+        }
+        StringBuilder sb = new StringBuilder("Available seats in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "':\n");
+        for (Seat seat : availableSeats) {
+            sb.append("- Row ").append(seat.getRowNumber()).append(", Seat ").append(seat.getSitNumber()).append("\n");
+        }
+        return sb.toString();
     }
 
     // Recommends a seat in a section based on customer preferences for a specific event
-    public Seat recommendSeat(Customer customer, Section section, Event event) {
+    public String recommendSeat(Customer customer, Section section, Event event) {
         Seat recommendedSeat = sectionService.recommendSeat(customer, section, event);
         if (recommendedSeat != null) {
-            System.out.println("Recommended seat " + recommendedSeat.getRowNumber() + "-" + recommendedSeat.getSitNumber() +
-                    " for customer '" + customer.getUsername() + "' in section '" + section.getSectionName() + "' for event '"
-                    + event.getEventName() + "'.");
+            return "Recommended seat for customer '" + customer.getUsername() + "' in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSitNumber();
         } else {
-            System.out.println("No recommended seat found for customer '" + customer.getUsername() +
-                    "' in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "'.");
+            return "No preferred seat available for customer '" + customer.getUsername() + "' in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "'.";
         }
-        return recommendedSeat;
     }
 
-    // Adds a new seat to a section
-    public void addSeatToSection(Section section, Seat seat) {
-        section.getSeats().add(seat);
-        System.out.println("Added seat " + seat.getRowNumber() + "-" + seat.getSitNumber() + " to section '" + section.getSectionName() + "'.");
+    // Creates a new section with a specified number of rows and seats per row within a venue
+    public String createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
+        Section section = sectionService.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);
+        return "Section '" + sectionName + "' created in venue '" + venue.getVenueName() + "' with " + rowCount + " rows and " + seatsPerRow + " seats per row.";
     }
 
-    // Removes a seat from a section
-    public boolean removeSeatFromSection(Section section, Seat seat) {
-        boolean removed = section.getSeats().remove(seat);
-        if (removed) {
-            System.out.println("Removed seat " + seat.getRowNumber() + "-" + seat.getSitNumber() + " from section '" + section.getSectionName() + "'.");
-        } else {
-            System.out.println("Seat " + seat.getRowNumber() + "-" + seat.getSitNumber() + " not found in section '" + section.getSectionName() + "'.");
-        }
-        return removed;
-    }
-
-    // Checks if a section is at full capacity for a specific event
-    public boolean isSectionFull(Section section, Event event) {
-        boolean isFull = sectionService.getAvailableSeats(section, event).isEmpty();
-        if (isFull) {
-            System.out.println("Section '" + section.getSectionName() + "' is at full capacity for event '" + event.getEventName() + "'.");
-        } else {
-            System.out.println("Section '" + section.getSectionName() + "' has available seats for event '" + event.getEventName() + "'.");
-        }
-        return isFull;
+    // Retrieves information about the section, including total capacity and available seats
+    public String getSectionInfo(Section section, Event event) {
+        int availableSeatsCount = sectionService.getAvailableSeats(section, event).size();
+        return "Section '" + section.getSectionName() + "' has a capacity of " + section.getSectionCapacity() + " seats. Currently available seats for event '" + event.getEventName() + "': " + availableSeatsCount;
     }
 }
