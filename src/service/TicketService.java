@@ -7,7 +7,6 @@ import model.Ticket;
 import model.TicketType;
 import repository.IRepository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,17 +14,27 @@ public class TicketService {
     private final IRepository<Ticket> ticketRepository;
     private final SeatService seatService;
     private final EventService eventService;
+    private final VenueService venueService; // Added dependency on VenueService
 
-    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService, EventService eventService) {
+    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService, EventService eventService, VenueService venueService) {
         this.ticketRepository = ticketRepository;
         this.seatService = seatService;
         this.eventService = eventService;
+        this.venueService = venueService; // Initialize VenueService
     }
+
+    // New method to retrieve available seats for an event using VenueService
+    public List<Seat> getAvailableSeatsForEvent(Event event) {
+        return venueService.getAvailableSeatsList(event.getVenue(), event);
+    }
+
 
     // Generates tickets for an event based on available seats in the event's venue
     public List<Ticket> generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
         List<Ticket> generatedTickets = new ArrayList<>();
-        List<Seat> availableSeats = seatService.getAvailableSeats(event.getVenue(), event);
+
+        // Use the new method to get available seats for the event
+        List<Seat> availableSeats = getAvailableSeatsForEvent(event);
 
         for (int i = 0; i < availableSeats.size(); i++) {
             Seat seat = availableSeats.get(i);

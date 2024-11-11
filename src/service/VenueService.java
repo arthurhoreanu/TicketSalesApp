@@ -106,6 +106,15 @@ public class VenueService {
                 .sum();
     }
 
+    public List<Seat> getAvailableSeatsList(Venue venue, Event event) {
+        List<Seat> availableSeats = new ArrayList<>();
+        for (Section section : venue.getSections()) {
+            availableSeats.addAll(sectionService.getAvailableSeats(section, event));
+        }
+        return availableSeats;
+    }
+
+
     // Recommends a seat in a venue based on customer preferences
     public Seat recommendSeat(Customer customer, Venue venue, Event event) {
         List<Section> sections = venue.getSections();
