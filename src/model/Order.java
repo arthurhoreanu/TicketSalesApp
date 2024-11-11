@@ -4,18 +4,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Order implements Identifiable {
-    private static int orderCounter = 1; //this would be nice to have
+    private static int orderCounter = 1;
     private int orderID;
     private User user;
     private List<Ticket> tickets;
     private LocalDateTime orderDate;
+    private OrderStatus status; // New field to track order status
 
     public Order(User user, List<Ticket> tickets) {
-        //this.orderCounter = orderCounter;
-        this.orderID = orderID;
+        this.orderID = orderCounter++;
         this.user = user;
         this.tickets = tickets;
-        this.orderDate = orderDate;
+        this.orderDate = LocalDateTime.now(); // Sets the order date to the current time
+        this.status = OrderStatus.PENDING; // Default status is PENDING
     }
 
     @Override
@@ -51,22 +52,26 @@ public class Order implements Identifiable {
         this.orderDate = orderDate;
     }
 
-    //TODO method to implement the orderCounter needed
-
-    // in service later I guess
-    public void showProcessedOrder() {
-        System.out.println("Order ID: " + orderID);
-        System.out.println("User: " + user.getUsername());
-        System.out.println("Order Date: " + orderDate);
-        for (Ticket ticket : tickets) {
-            System.out.println(" - Ticket ID: " + ticket.getID() + ", Event: " + ticket.getEvent().getEventName());
-        }
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    // initial before Identifiable System.out.println(" - Ticket ID: " + ticket.getTicketID() + ", Event: " + ticket.getEvent().getEventName());
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public boolean isCompleted() {
+        return this.status == OrderStatus.COMPLETED;
+    }
+
     @Override
     public String toString() {
-        return "Order{" + "orderID=" + orderID + ", user=" + user + ", tickets=" + tickets + ", orderDate=" + orderDate + '}';
+        return "Order{" +
+                "orderID=" + orderID +
+                ", user=" + user +
+                ", tickets=" + tickets +
+                ", orderDate=" + orderDate +
+                ", status=" + status +
+                '}';
     }
 }
-
