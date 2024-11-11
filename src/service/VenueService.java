@@ -29,8 +29,31 @@ public class VenueService {
             }
         }
 
-        venueRepository.create(new Venue(newId, name, location, capacity, sections));
+        Venue venue = new Venue(newId, name, location, capacity, sections);
+        venueRepository.create(venue);
         return true;
+    }
+
+    // Creates a new venue with sections and seats
+    public Venue createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
+        int newId = venueRepository.getAll().size() + 1;
+        List<Section> sections = new ArrayList<>();
+
+        // Create sections with seats
+        for (int sectionId = 1; sectionId <= capacity / sectionCapacity; sectionId++) {
+            Section section = sectionService.createSectionWithSeats("Section " + sectionId, sectionId, sectionCapacity, rowCount, seatsPerRow, null);
+            sections.add(section);
+        }
+
+        Venue venue = new Venue(newId, name, location, capacity, sections);
+
+        // Set the venue reference for each section and add the sections
+        for (Section section : sections) {
+            section.setVenue(venue);
+        }
+
+        venueRepository.create(venue);
+        return venue;
     }
 
     // Updates an existing venue by ID
@@ -112,4 +135,5 @@ public class VenueService {
         }
         return matchingVenues;
     }
+
 }
