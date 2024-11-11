@@ -2,6 +2,7 @@ package controller;
 
 import model.Event;
 import model.Seat;
+import model.Section;
 import model.Venue;
 import service.SeatService;
 
@@ -15,10 +16,12 @@ public class SeatController {
     }
 
     // Adds a new seat
-    public boolean addSeat(Seat seat) {
-        // TODO fix the error I get here
-        //seatService.createSeat(seat);
-        return true;
+    public void createSeat(int seatID, Section section, int rowNumber, int sitNumber, Event reservedForEvent) {
+        boolean success = seatService.createSeat(seatID, section, rowNumber, sitNumber, reservedForEvent);
+        if (success) {
+            System.out.println("Seat has been created");
+        }
+        else System.out.println("Seat could not be created");
     }
 
     // Retrieves all seats
@@ -27,9 +30,12 @@ public class SeatController {
     }
 
     // Updates an existing seat
-    public void updateSeat(Seat updatedSeat) {
-        // TODO fix the error I get here
-        //return seatService.updateSeat(updatedSeat);
+    public void updateSeat(int seatID, Section newSection, int newRowNumber, int newSitNumber, Event newReservedForEvent) {
+        boolean success = seatService.updateSeat(seatID, newSection, newRowNumber, newSitNumber, newReservedForEvent);
+        if (success) {
+            System.out.println("Seat has been created");
+        }
+        else System.out.println("Seat could not be created");
     }
 
     // Deletes a seat by ID
