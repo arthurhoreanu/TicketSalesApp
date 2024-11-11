@@ -36,6 +36,7 @@ public class ArtistAction {
         List<Artist> artists = controller.getAllArtists();
         if (artists.isEmpty()) {
             System.out.println("No artists available.");
+            return; // Exit if there are no artists to update
         } else {
             for (Artist artist : artists) {
                 System.out.println(artist);
@@ -43,7 +44,13 @@ public class ArtistAction {
         }
 
         System.out.print("Enter artist ID to update: ");
-        int artistID = Integer.parseInt(scanner.nextLine());
+        int artistID;
+        try {
+            artistID = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid artist ID.");
+            return;
+        }
 
         Artist artist = controller.findArtistByID(artistID);
         if (artist == null) {
@@ -51,20 +58,24 @@ public class ArtistAction {
             return;
         }
 
+        // Prompt for new values and keep current ones if input is empty
         System.out.print("Enter new artist name (or press Enter to keep current name): ");
-        String newName = scanner.nextLine();
-        if (!newName.trim().isEmpty()) {
-            artist.setArtistName(newName);
+        String newName = scanner.nextLine().trim();
+        if (newName.isEmpty()) {
+            newName = artist.getArtistName(); // Keep current name if input is empty
         }
 
         System.out.print("Enter new genre (or press Enter to keep current genre): ");
-        String newGenre = scanner.nextLine();
-        if (!newGenre.trim().isEmpty()) {
-            artist.setGenre(newGenre);
+        String newGenre = scanner.nextLine().trim();
+        if (newGenre.isEmpty()) {
+            newGenre = artist.getGenre(); // Keep current genre if input is empty
         }
 
+        // Update artist through controller
         controller.updateArtist(artistID, newName, newGenre);
+        System.out.println("Artist updated successfully.");
     }
+
 
     public static void handleDeleteArtist(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Artist ===");

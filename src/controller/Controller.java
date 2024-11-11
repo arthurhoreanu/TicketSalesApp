@@ -134,16 +134,18 @@ public class Controller {
     }
 
     // Event related
+    public  Event findEventByID(int eventId) {
+        return eventController.findEventByID(eventId);}
     public List<Event> getEventsByLocation(String locationOrVenueName) {
         return eventController.getEventsByLocation(locationOrVenueName);}
     public List<Event> getUpcomingEventsForArtist(int artistID) {
         return eventController.getUpcomingEventsForArtist(artistID);}
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
         return eventController.getUpcomingEventsForAthlete(athleteID);}
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists, String genre) {
-        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists, genre);}
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
-        eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);}
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists) {
+        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);}
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes) {
+        eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);}
     public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime,EventStatus newStatus) {
         eventController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);}
     public void deleteEvent(int eventId) {

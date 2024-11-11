@@ -4,9 +4,11 @@ import controller.Controller;
 import model.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
+import java.time.format.DateTimeParseException;
 
 public class EventAction {
     public static void handleCreateEvent(Scanner scanner, Controller controller) {
@@ -55,9 +57,6 @@ public class EventAction {
                 }
                 artists.add(artist);
             }
-
-            System.out.print("Enter genre: ");
-            genre = scanner.nextLine();
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
             while (true) {
                 System.out.print("Enter athlete name (or type 'done' to finish): ");
@@ -75,19 +74,15 @@ public class EventAction {
                 }
                 athletes.add(athlete);
             }
-            System.out.print("Enter sport name: ");
-            sportName = scanner.nextLine();
         } else {
             System.out.println("Invalid event type. Please enter 'Concert' or 'Sports Event'.");
             return;
         }
 
         if ("Concert".equalsIgnoreCase(eventType)) {
-            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists, genre);
-            System.out.println("Concert created successfully.");
+            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
-            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
-            System.out.println("Sports Event created successfully.");
+            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);
         }
     }
 
@@ -112,6 +107,7 @@ public class EventAction {
         List<Event> events = controller.getAllEvents();
         if (events.isEmpty()) {
             System.out.println("No events available.");
+            return;
         } else {
             for (Event event : events) {
                 System.out.println(event);
@@ -119,31 +115,75 @@ public class EventAction {
         }
 
         System.out.print("Enter Event ID to update: ");
-        int eventId = Integer.parseInt(scanner.nextLine());
-
-        System.out.print("Enter new event name: ");
-        String newName = scanner.nextLine();
-        System.out.print("Enter new event description: ");
-        String newDescription = scanner.nextLine();
-        System.out.print("Enter new start date and time (YYYY-MM-DDTHH:MM): ");
-        LocalDateTime newStartDateTime = LocalDateTime.parse(scanner.nextLine());
-        System.out.print("Enter new end date and time (YYYY-MM-DDTHH:MM): ");
-        LocalDateTime newEndDateTime = LocalDateTime.parse(scanner.nextLine());
-
-        // Prompting for new event status
-        System.out.print("Enter new event status (SCHEDULED, CANCELLED, COMPLETED): ");
-        String statusInput = scanner.nextLine().toUpperCase();
-        EventStatus newStatus;
-
+        int eventId;
         try {
-            newStatus = EventStatus.valueOf(statusInput);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid status. Please enter one of SCHEDULED, CANCELLED, or COMPLETED.");
+            eventId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid Event ID.");
             return;
         }
 
+        Event event = controller.findEventByID(eventId);
+        if (event == null) {
+            System.out.println("Event not found.");
+            return;
+        }
+
+        // Update name
+        System.out.print("Enter new event name (or press Enter to keep current name): ");
+        String newName = scanner.nextLine().trim();
+        if (newName.isEmpty()) {
+            newName = event.getEventName(); // Keep current name if input is empty
+        }
+
+        // Update description
+        System.out.print("Enter new event description (or press Enter to keep current description): ");
+        String newDescription = scanner.nextLine().trim();
+        if (newDescription.isEmpty()) {
+            newDescription = event.getEventDescription(); // Keep current description if input is empty
+        }
+
+        // Update start date and time
+        LocalDateTime newStartDateTime = event.getStartDateTime(); // Default to current start time
+        System.out.print("Enter new start date and time (YYYY-MM-DDTHH:MM) (or press Enter to keep current start time): ");
+        String startDateTimeInput = scanner.nextLine().trim();
+        if (!startDateTimeInput.isEmpty()) {
+            try {
+                newStartDateTime = LocalDateTime.parse(startDateTimeInput);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Start time remains unchanged.");
+            }
+        }
+
+        // Update end date and time
+        LocalDateTime newEndDateTime = event.getEndDateTime(); // Default to current end time
+        System.out.print("Enter new end date and time (YYYY-MM-DDTHH:MM) (or press Enter to keep current end time): ");
+        String endDateTimeInput = scanner.nextLine().trim();
+        if (!endDateTimeInput.isEmpty()) {
+            try {
+                newEndDateTime = LocalDateTime.parse(endDateTimeInput);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. End time remains unchanged.");
+            }
+        }
+
+        // Update event status
+        System.out.print("Enter new event status (SCHEDULED, CANCELLED, COMPLETED) (or press Enter to keep current status): ");
+        String statusInput = scanner.nextLine().trim().toUpperCase();
+        EventStatus newStatus = event.getEventStatus(); // Default to current status
+        if (!statusInput.isEmpty()) {
+            try {
+                newStatus = EventStatus.valueOf(statusInput);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid status. Status remains unchanged.");
+            }
+        }
+
+        // Update the event through the controller
         controller.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
+        System.out.println("Event updated successfully.");
     }
+
 
     // Method to handle deleting an event
     public static void handleDeleteEvent(Scanner scanner, Controller controller) {
