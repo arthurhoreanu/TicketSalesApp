@@ -17,17 +17,17 @@ public class EventService {
     }
 
     // Method to add a Concert event
-    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists, String genre) {
+    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists) {
         int eventID = eventRepository.getAll().size() + 1;
-        Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists, genre);
+        Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);
         eventRepository.create(concert);
         return true;
     }
 
     // Method to add a SportsEvent event
-    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
+    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes) {
         int eventID = eventRepository.getAll().size() + 1;
-        SportsEvent sportsEvent = new SportsEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
+        SportsEvent sportsEvent = new SportsEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);
         eventRepository.create(sportsEvent);
         return true;
     }
@@ -65,7 +65,7 @@ public class EventService {
     }
 
     // Retrieves an event by its ID
-    private Event findEventByID(int eventId) {
+    public Event findEventByID(int eventId) {
         for (Event event : eventRepository.getAll()) {
             if (event.getID() == eventId) {
                 return event;

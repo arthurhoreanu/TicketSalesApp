@@ -13,8 +13,8 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists, String genre) {
-        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists, genre);
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists) {
+        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);
         if (success) {
             System.out.println("Event created successfully");
         } else {
@@ -22,8 +22,8 @@ public class EventController {
         }
     }
 
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes, String sportName) {
-        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes, sportName);
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes) {
+        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);
         if (success) {
             System.out.println("Event created successfully");
         } else {
@@ -70,4 +70,7 @@ public class EventController {
 
     public List<Event> getEventsByLocation(String locationOrVenueName) {
         return eventService.getEventsByLocation(locationOrVenueName);}
+
+    public Event findEventByID(int eventId) {
+        return eventService.findEventByID(eventId);}
 }
