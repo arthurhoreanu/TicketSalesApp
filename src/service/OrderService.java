@@ -7,6 +7,7 @@ import model.Customer;
 import model.PaymentProcessor;
 import model.OrderStatus;
 import repository.IRepository;
+import model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,15 @@ public class OrderService {
     private final IRepository<Order> orderRepository;
     private final ShoppingCartService shoppingCartService;
     private final PaymentProcessor paymentProcessor;
+    private final SeatService seatService;
+    private final IRepository<Ticket> ticketRepository;
 
-    public OrderService(IRepository<Order> orderRepository, ShoppingCartService shoppingCartService, PaymentProcessor paymentProcessor) {
+    public OrderService(IRepository<Order> orderRepository, ShoppingCartService shoppingCartService, PaymentProcessor paymentProcessor, SeatService seatService, IRepository<Ticket> ticketRepository) {
         this.orderRepository = orderRepository;
         this.shoppingCartService = shoppingCartService;
         this.paymentProcessor = paymentProcessor;
+        this.seatService = seatService;
+        this.ticketRepository = ticketRepository;
     }
 
     // Creates a new order from a customer's shopping cart
@@ -108,4 +113,75 @@ public class OrderService {
             tickets.get(i).setSold(false);
         }
     }
+    //TODO check this
+    // Method to order all tickets from the customer's cart
+    public Order orderAllTicketsFromCart(Customer customer) {
+        // Retrieve the customer's shopping cart
+        ShoppingCart cart = customer.getShoppingCart();
+        List<Ticket> tickets = new ArrayList<>(cart.getItems());
+
+        // If cart is empty, return null or handle as needed
+        if (tickets.isEmpty()) {
+            return null;
+        }
+
+        // Create an order for all tickets in the cart
+        Order order = new Order(customer, tickets);
+        orderRepository.create(order);
+
+        // Mark tickets as sold and reserve the associated seats
+        for (int i = 0; i < tickets.size(); i++) {
+            Ticket ticket = tickets.get(i);
+            ticket.markAsSold(customer.getUsername());
+            seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
+            ticketRepository.update(ticket); // Update ticket status in repository
+        }
+
+        // Clear the shopping cart after creating the order
+        shoppingCartService.clearCart(cart);
+
+        return order; // Return the created order
+    }
+
+    // Method to order only tickets for a specific event from the customer's cart
+    public Order orderTicketsForEvent(Customer customer, Event event) {
+        // Retrieve the customer's shopping cart
+        ShoppingCart cart = customer.getShoppingCart();
+        List<Ticket> eventTickets = new ArrayList<>();
+
+        // Find tickets in the cart that belong to the specified event
+        for (int i = 0; i < cart.getItems().size(); i++) {
+            Ticket ticket = cart.getItems().get(i);
+            if (ticket.getEvent().equals(event)) {
+                eventTickets.add(ticket);
+            }
+        }
+
+        // If no tickets are found for the event, return null or handle as needed
+        if (eventTickets.isEmpty()) {
+            return null;
+        }
+
+        // Create an order for tickets associated with the event
+        Order order = new Order(customer, eventTickets);
+        orderRepository.create(order);
+
+        // Mark tickets as sold and reserve the associated seats
+        for (int i = 0; i < eventTickets.size(); i++) {
+            Ticket ticket = eventTickets.get(i);
+            ticket.markAsSold(customer.getUsername());
+            seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
+            ticketRepository.update(ticket); // Update ticket status in repository
+        }
+
+        // Remove event tickets from the shopping cart after creating the order
+        for (int i = 0; i < eventTickets.size(); i++) {
+            Ticket ticket = eventTickets.get(i);
+            cart.getItems().remove(ticket);
+        }
+        shoppingCartService.updateTotalPrice(cart); // Recalculate the cart total
+
+        return order; // Return the created order
+    }
+
 }
