@@ -10,10 +10,6 @@ public class CustomerService {
 
     public CustomerService() {}
 
-    public CustomerService(Customer currentCustomer) {
-        this.currentCustomer = currentCustomer;
-    }
-
     public void setCurrentCustomer(Customer customer) {
         this.currentCustomer = customer;
     }
