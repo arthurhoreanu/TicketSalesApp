@@ -67,4 +67,7 @@ public class EventController {
     public List<Event> getUpcomingEventsForArtist(int artistID) { return eventService.getUpcomingEventsForArtist(artistID);}
 
     public List<Event> getUpcomingEventsForAthlete(int athleteID) { return eventService.getUpcomingEventsForAthlete(athleteID);}
+
+    public List<Event> getEventsByLocation(String locationOrVenueName) {
+        return eventService.getEventsByLocation(locationOrVenueName);}
 }

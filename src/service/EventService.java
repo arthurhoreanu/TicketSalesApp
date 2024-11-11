@@ -141,4 +141,20 @@ public class EventService {
         }
         return upcomingEvents;
     }
+
+    public List<Event> getEventsByLocation(String locationOrVenueName) {
+        // Get all venues that match either the venue name or location
+        List<Venue> matchingVenues = venueService.getVenuesByLocationOrName(locationOrVenueName);
+
+        // Collect events that are scheduled at any of the matching venues and are upcoming
+        List<Event> events = new ArrayList<>();
+        for (Venue venue : matchingVenues) {
+            for (Event event : getEventsByVenue(venue)) {
+                if (event.getStartDateTime().isAfter(LocalDateTime.now())) {
+                    events.add(event); // Only add upcoming events
+                }
+            }
+        }
+        return events;
+    }
 }

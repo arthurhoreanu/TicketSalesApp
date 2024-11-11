@@ -6,6 +6,7 @@ import model.Venue;
 import repository.IRepository;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class VenueService {
     private final IRepository<Venue> venueRepository;
@@ -95,6 +96,17 @@ public class VenueService {
             totalAvailableSeats += sectionService.getAvailableSeats(section, event).size(); // Get the size of the list
         }
         return totalAvailableSeats;
+    }
+
+    public List<Venue> getVenuesByLocationOrName(String locationOrVenueName) {
+        List<Venue> matchingVenues = new ArrayList<>();
+        for (Venue venue : getAllVenues()) {
+            if (venue.getVenueName().equalsIgnoreCase(locationOrVenueName) ||
+                    venue.getLocation().equalsIgnoreCase(locationOrVenueName)) {
+                matchingVenues.add(venue);
+            }
+        }
+        return matchingVenues;
     }
 }
 //TODO RECOMMENDED SEAT METHOD!!!

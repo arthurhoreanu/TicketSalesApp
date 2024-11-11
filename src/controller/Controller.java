@@ -114,6 +114,8 @@ public class Controller {
         return sectionController.getRecommendedSeats(section, event);}
 
     // Venue related
+    public List<Venue> getVenuesByLocationOrName(String locationOrVenueName) {
+        return venueController.getVenuesByLocationOrName(locationOrVenueName);}
     public void addVenue(String name, String location, int capacity, List<Section> sections) {
         venueController.addVenue(name, location, capacity, sections);}
     public void updateVenue(int id, String name, String location, int capacity, List<Section> sections) {
@@ -129,6 +131,8 @@ public class Controller {
     }
 
     // Event related
+    public List<Event> getEventsByLocation(String locationOrVenueName) {
+        return eventController.getEventsByLocation(locationOrVenueName);}
     public List<Event> getUpcomingEventsForArtist(int artistID) {
         return eventController.getUpcomingEventsForArtist(artistID);}
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
