@@ -35,8 +35,4 @@ public class Concert extends Event {
                 ", {" + "artists=" + artists + ", genre='" + genre + '\'' + '}';
     }
 
-    @Override
-    public String getName() {
-        return getName();
-    }
 }
