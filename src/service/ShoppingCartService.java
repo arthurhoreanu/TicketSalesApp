@@ -15,8 +15,19 @@ public class ShoppingCartService {
 
     // Adds a ticket to the shopping cart
     public boolean addTicketToCart(ShoppingCart cart, Ticket ticket) {
-        if (!cart.getItems().contains(ticket)) {
-            cart.getItems().add(ticket);
+        List<Ticket> items = cart.getItems();
+        boolean ticketExists = false;
+
+        // Check if the ticket is already in the cart
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).equals(ticket)) {
+                ticketExists = true;
+                break;
+            }
+        }
+
+        if (!ticketExists) {
+            items.add(ticket);
             updateTotalPrice(cart);
             shoppingCartRepository.update(cart);
             return true;
@@ -26,10 +37,15 @@ public class ShoppingCartService {
 
     // Removes a ticket from the shopping cart
     public boolean removeTicketFromCart(ShoppingCart cart, Ticket ticket) {
-        if (cart.getItems().remove(ticket)) {
-            updateTotalPrice(cart);
-            shoppingCartRepository.update(cart);
-            return true;
+        List<Ticket> items = cart.getItems();
+
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).equals(ticket)) {
+                items.remove(i);
+                updateTotalPrice(cart);
+                shoppingCartRepository.update(cart);
+                return true;
+            }
         }
         return false;
     }
@@ -43,18 +59,24 @@ public class ShoppingCartService {
 
     // Checks out the shopping cart, marking tickets as sold
     public void checkout(ShoppingCart cart, String purchaserName) {
-        for (Ticket ticket : cart.getItems()) {
-            ticket.markAsSold(purchaserName);
+        List<Ticket> items = cart.getItems();
+
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).markAsSold(purchaserName);
         }
+
         clearCart(cart);
     }
 
     // Calculates the total price of items in the shopping cart
-    private void updateTotalPrice(ShoppingCart cart) {
+    public void updateTotalPrice(ShoppingCart cart) { // Changed from private to public
         double totalPrice = 0.0;
-        for (Ticket ticket : cart.getItems()) {
-            totalPrice += ticket.getPrice();
+        List<Ticket> items = cart.getItems();
+
+        for (int i = 0; i < items.size(); i++) {
+            totalPrice += items.get(i).getPrice();
         }
+
         cart.setTotalPrice(totalPrice);
     }
 
