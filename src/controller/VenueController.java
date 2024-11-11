@@ -1,6 +1,8 @@
 package controller;
 
+import model.Customer;
 import model.Event;
+import model.Seat;
 import model.Section;
 import model.Venue;
 import service.VenueService;
@@ -14,49 +16,95 @@ public class VenueController {
         this.venueService = venueService;
     }
 
-    public void addVenue(String name, String location, int capacity, List<Section> sections) {
-        if (name == null || name.isEmpty() || location == null || capacity < 0 || sections == null || sections.isEmpty()) {
-            System.out.println("All fields are required for account creation.");
-        }
-        boolean success = venueService.addVenue(name, location, capacity, sections);
-        if (success) {
-            System.out.println("Venue added successfully.");
+    // Adds a new venue to the repository
+    public String addVenue(String name, String location, int capacity, List<Section> sections) {
+        boolean isAdded = venueService.addVenue(name, location, capacity, sections);
+        if (isAdded) {
+            return "Venue successfully added: " + name + " at " + location;
         } else {
-            System.out.println("Venue could not be added.");
+            return "Venue with the same name and location already exists. Addition failed.";
         }
     }
 
-    public void updateVenue(int id, String name, String location, int capacity, List<Section> sections) {
-        boolean success = venueService.updateVenue(id, name, location, capacity, sections);
-        if (success) {
-            System.out.println("Venue updated successfully.");
+    // Creates a new venue with sections and seats
+    public String createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
+        Venue venue = venueService.createVenueWithSectionsAndSeats(name, location, capacity, sectionCapacity, rowCount, seatsPerRow);
+        return "Venue '" + venue.getVenueName() + "' created with " + venue.getSections().size() + " sections, each containing " + seatsPerRow + " seats per row.";
+    }
+
+    // Updates an existing venue
+    public String updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
+        boolean isUpdated = venueService.updateVenue(id, newName, newLocation, newCapacity, newSections);
+        if (isUpdated) {
+            return "Venue updated successfully: " + newName + " at " + newLocation;
         } else {
-            System.out.println("Venue could not be updated.");
+            return "Venue with ID " + id + " not found. Update failed.";
         }
     }
 
-    public void deleteVenue(int id) {
-        boolean success = venueService.deleteVenue(id);
-        if (success) {
-            System.out.println("Venue deleted successfully.");
+    // Deletes a venue by ID
+    public String deleteVenue(int id) {
+        boolean isDeleted = venueService.deleteVenue(id);
+        if (isDeleted) {
+            return "Venue with ID " + id + " has been successfully deleted.";
         } else {
-            System.out.println("Venue could not be deleted.");
+            return "Venue with ID " + id + " not found. Deletion failed.";
         }
     }
 
-    public List<Venue> getAllVenues() {
-        return venueService.getAllVenues();
+    // Retrieves a list of all venues
+    public String getAllVenues() {
+        List<Venue> venues = venueService.getAllVenues();
+        if (venues.isEmpty()) {
+            return "No venues found in the repository.";
+        }
+        StringBuilder sb = new StringBuilder("Venues in the repository:\n");
+        for (Venue venue : venues) {
+            sb.append("- ").append(venue.getVenueName()).append(" at ").append(venue.getLocation()).append("\n");
+        }
+        return sb.toString();
     }
 
-    public Venue findVenueByName(String name) {
-        return venueService.findVenueByName(name);
+    // Finds a venue by name
+    public String findVenueByName(String name) {
+        Venue venue = venueService.findVenueByName(name);
+        if (venue != null) {
+            return "Venue found: " + venue.getVenueName() + " at " + venue.getLocation();
+        } else {
+            return "Venue with name '" + name + "' not found.";
+        }
     }
 
-    public int getAvailableSeats(Venue venue, Event event) {
-        return venueService.getAvailableSeats(venue, event);
+    // Finds venues by location or name
+    public String getVenuesByLocationOrName(String locationOrVenueName) {
+        List<Venue> venues = venueService.getVenuesByLocationOrName(locationOrVenueName);
+        if (venues.isEmpty()) {
+            return "No venues found for location or name: " + locationOrVenueName;
+        }
+        StringBuilder sb = new StringBuilder("Matching venues:\n");
+        for (Venue venue : venues) {
+            sb.append("- ").append(venue.getVenueName()).append(" at ").append(venue.getLocation()).append("\n");
+        }
+        return sb.toString();
     }
 
-    public List<Venue> getVenuesByLocationOrName(String locationOrVenueName) {
-        return venueService.getVenuesByLocationOrName(locationOrVenueName);
+    // Checks the number of available seats for a specific event in a venue
+    public String getAvailableSeats(Venue venue, Event event) {
+        int availableSeats = venueService.getAvailableSeats(venue, event);
+        if (availableSeats > 0) {
+            return "Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "': " + availableSeats;
+        } else {
+            return "No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.";
+        }
+    }
+
+    // Recommends a seat in a venue based on customer preferences
+    public String recommendSeat(Customer customer, Venue venue, Event event) {
+        Seat recommendedSeat = venueService.recommendSeat(customer, venue, event);
+        if (recommendedSeat != null) {
+            return "Recommended seat for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSitNumber();
+        } else {
+            return "No preferred seat available for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "'.";
+        }
     }
 }
