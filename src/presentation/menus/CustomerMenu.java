@@ -3,6 +3,7 @@ package presentation.menus;
 import controller.Controller;
 import model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -29,8 +30,7 @@ public class CustomerMenu {
                 System.out.println("Logged out successfully.");
                 break;
             case "2":
-                // Arthur's TODO: priority level 2
-                //handleViewSuggestedEvents(scanner, controller);
+                handleViewSuggestedEvents(scanner, controller);
                 break;
             case "3":
                 handleSearchArtistsAndAthletes(scanner, controller);
@@ -39,7 +39,7 @@ public class CustomerMenu {
                 handleViewEventsByLocation(scanner, controller);
                 break;
             case "5":
-                // Arthur's TODO: priority level 3
+                // TODO: not a priority right now, order needs to work first=
                 //handleViewPreviousOrders(controller);
                 break;
             case "6":
@@ -53,6 +53,52 @@ public class CustomerMenu {
         }
         return true;
     }
+
+    private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
+        System.out.println("==== Suggested Events ====");
+
+        // Step 1: Retrieve favorites
+        Set<FavouriteEntity> favourites = controller.getFavourites();
+        List<Event> suggestedEvents = new ArrayList<>();
+
+        // Step 2: Process each favorite item (either Artist or Athlete)
+        for (FavouriteEntity entity : favourites) {
+            if (entity instanceof Artist favoriteArtist) {
+                // Add upcoming events of the favorite artist
+                suggestedEvents.addAll(controller.getUpcomingEventsForArtist(favoriteArtist.getID()));
+
+                // Find other artists in the same genre and add their upcoming events
+                List<Artist> relatedArtists = controller.findArtistsByGenre(favoriteArtist.getGenre());
+                for (Artist artist : relatedArtists) {
+                    if (!artist.equals(favoriteArtist)) { // Avoid duplicates
+                        suggestedEvents.addAll(controller.getUpcomingEventsForArtist(artist.getID()));
+                    }
+                }
+            } else if (entity instanceof Athlete favoriteAthlete) {
+                // Add upcoming events of the favorite athlete
+                suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(favoriteAthlete.getID()));
+
+                // Find other athletes in the same sport and add their upcoming events
+                List<Athlete> relatedAthletes = controller.findAthletesBySport(favoriteAthlete.getAthleteSport());
+                for (Athlete athlete : relatedAthletes) {
+                    if (!athlete.equals(favoriteAthlete)) { // Avoid duplicates
+                        suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(athlete.getID()));
+                    }
+                }
+            }
+        }
+
+        // Step 3: Display suggested events
+        if (suggestedEvents.isEmpty()) {
+            System.out.println("No suggested events found.");
+        } else {
+            System.out.println("Here are some events you might be interested in:");
+            for (Event event : suggestedEvents) {
+                System.out.println(event);
+            }
+        }
+    }
+
 
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
         System.out.print("Enter artist or athlete name: ");
@@ -73,6 +119,29 @@ public class CustomerMenu {
             System.out.println("No artist or athlete found with that name.");
         }
     }
+
+    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
+        System.out.print("Enter location/venue name: ");
+        String location = scanner.nextLine();
+        List<Event> events = controller.getEventsByLocation(location);
+
+        if (events.isEmpty()) {
+            System.out.println("No events found for this location.");
+        } else {
+            System.out.println("Events at " + location + ":");
+            events.forEach(System.out::println);
+        }
+    }
+
+    //    private static void handleViewPreviousOrders(Controller controller) {
+//        List<Order> previousOrders = controller.getPreviousOrders();
+//        if (previousOrders.isEmpty()) {
+//            System.out.println("No previous orders found.");
+//        } else {
+//            System.out.println("Your previous orders:");
+//            previousOrders.forEach(System.out::println);
+//        }
+//    }
 
     // Helper method to display events and ask to mark as favorite
     private static void upcomingEventsAndMarkAsFavourite(Scanner scanner, Controller controller, Object performer) {
@@ -103,7 +172,7 @@ public class CustomerMenu {
 
             if ("yes".equalsIgnoreCase(response)) {
                 // The `performer` object is already an instance of either Artist, Athlete, or Event
-                FavouriteItem favoriteItem = (FavouriteItem) performer;
+                FavouriteEntity favoriteItem = (FavouriteEntity) performer;
                 controller.addFavorite(favoriteItem); // Pass the actual FavoriteItem object
             }
         }
@@ -121,7 +190,7 @@ public class CustomerMenu {
 
             switch (choice) {
                 case "1": // View Favorites
-                    Set<FavouriteItem> favorites = controller.getFavorites();
+                    Set<FavouriteEntity> favorites = controller.getFavourites();
                     if (favorites.isEmpty()) {
                         System.out.println("You have no favorites.");
                     } else {
@@ -131,7 +200,7 @@ public class CustomerMenu {
                     break;
 
                 case "2": // Delete Favorite
-                    favorites = controller.getFavorites();
+                    favorites = controller.getFavourites();
                     if (favorites.isEmpty()) {
                         System.out.println("You have no favorites to delete.");
                         break;
@@ -145,7 +214,7 @@ public class CustomerMenu {
                     String favoriteName = scanner.nextLine();
 
                     // Find the favorite by name
-                    FavouriteItem itemToDelete = favorites.stream()
+                    FavouriteEntity itemToDelete = favorites.stream()
                             .filter(favorite -> favorite.getName().equalsIgnoreCase(favoriteName))
                             .findFirst()
                             .orElse(null);
@@ -167,28 +236,5 @@ public class CustomerMenu {
             }
         }
     }
-
-    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
-        System.out.print("Enter location/venue name: ");
-        String location = scanner.nextLine();
-        List<Event> events = controller.getEventsByLocation(location);
-
-        if (events.isEmpty()) {
-            System.out.println("No events found for this location.");
-        } else {
-            System.out.println("Events at " + location + ":");
-            events.forEach(System.out::println);
-        }
-    }
-
-//    private static void handleViewPreviousOrders(Controller controller) {
-//        List<Order> previousOrders = controller.getPreviousOrders();
-//        if (previousOrders.isEmpty()) {
-//            System.out.println("No previous orders found.");
-//        } else {
-//            System.out.println("Your previous orders:");
-//            previousOrders.forEach(System.out::println);
-//        }
-//    }
 
 }

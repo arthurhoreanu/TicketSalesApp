@@ -3,7 +3,6 @@ package controller;
 import model.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -32,14 +31,16 @@ public class Controller {
 
     // Rule: newest first
     // Customer related
-    public void addFavorite(FavouriteItem item) {
+    public void addFavorite(FavouriteEntity item) {
         customerController.addFavorite(item);}
-    public void removeFavorite(FavouriteItem item) {
+    public void removeFavorite(FavouriteEntity item) {
         customerController.removeFavorite(item);}
-    public Set<FavouriteItem> getFavorites() {
-        return customerController.getFavorites();}
+    public Set<FavouriteEntity> getFavourites() {
+        return customerController.getFavourites();}
 
     //Athlete related
+    public List<Athlete> findAthletesBySport(String sport) {
+        return athleteController.findAthletesBySport(sport);}
     public void createAthlete(String athleteName, String athleteSport) {
         athleteController.createAthlete(athleteName, athleteSport);}
     public void updateAthlete(int athleteID, String newName, String newSport) {
@@ -58,6 +59,8 @@ public class Controller {
         return eventController.getEventsByVenue(venue);}
 
     //Artist related
+    public List<Artist> findArtistsByGenre(String genre) {
+        return artistController.findArtistsByGenre(genre);}
     public void createArtist(String artistName, String genre) {
         artistController.createArtist(artistName, genre);}
     public void updateArtist(int artistID, String newName, String newGenre) {

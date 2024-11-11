@@ -2,7 +2,6 @@ package service;
 
 import model.Admin;
 import model.Customer;
-import model.FavouriteItem;
 import model.User;
 import repository.IRepository;
 

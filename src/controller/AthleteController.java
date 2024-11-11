@@ -54,4 +54,7 @@ public class AthleteController {
     public List<Event> getEventsByAthlete(Athlete athlete) {
         return athleteService.getEventsByAthlete(athlete);
     }
+
+    public List<Athlete> findAthletesBySport(String sport) {
+        return athleteService.findAthletesBySport(sport);}
 }

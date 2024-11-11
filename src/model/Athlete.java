@@ -1,6 +1,6 @@
 package model;
 
-public class Athlete implements Identifiable, FavouriteItem {
+public class Athlete implements Identifiable, FavouriteEntity {
     private int athleteID;
     private String athleteName;
     private String athleteSport;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Customer extends User {
     private String role;
-    private Set<FavouriteItem> favourites;
+    private Set<FavouriteEntity> favourites;
     private ShoppingCart shoppingCart;
 
     public Customer(int userId, String username, String email, String password) {
@@ -30,15 +30,15 @@ public class Customer extends User {
         return "Customer";
     }
 
-    public boolean addFavorite(FavouriteItem item) {
+    public boolean addFavorite(FavouriteEntity item) {
         return favourites.add(item);
     }
 
-    public boolean removeFavorite(FavouriteItem item) {
+    public boolean removeFavorite(FavouriteEntity item) {
         return favourites.remove(item);
     }
 
-    public Set<FavouriteItem> getFavorites() {
+    public Set<FavouriteEntity> getFavourites() {
         return favourites;
     }
 

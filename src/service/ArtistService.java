@@ -3,6 +3,7 @@ package service;
 import model.*;
 import repository.IRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,5 +67,15 @@ public class ArtistService {
         return eventRepository.getAll().stream().filter(event -> event instanceof Concert)  // Filter only Concert events
                 .filter(event -> ((Concert) event).getArtists().equals(artist))  // Match the artist
                 .collect(Collectors.toList());
+    }
+
+    public List<Artist> findArtistsByGenre(String genre) {
+        List<Artist> artistsInGenre = new ArrayList<>();
+        for (Artist artist : artistRepository.getAll()) {
+            if (artist.getGenre().equalsIgnoreCase(genre)) {
+                artistsInGenre.add(artist);
+            }
+        }
+        return artistsInGenre;
     }
 }
