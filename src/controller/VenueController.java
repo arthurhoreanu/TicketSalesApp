@@ -87,7 +87,7 @@ public class VenueController {
     public void recommendSeat(Customer customer, Venue venue, Event event) {
         Seat recommendedSeat = venueService.recommendSeat(customer, venue, event);
         if (recommendedSeat != null) {
-            System.out.println("Recommended seat for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSitNumber());
+            System.out.println("Recommended seat for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSeatNumber());
         } else {
             System.out.println("No preferred seat available for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "'.");
         }
@@ -95,7 +95,7 @@ public class VenueController {
 
     // Finds a venue by its ID
     public Venue findVenueById(int id) {
-        Venue venue = venueService.findVenueById(id);
+        Venue venue = venueService.findVenueByID(id);
         if (venue != null) {
             System.out.println("Venue found: " + venue.getVenueName() + " at " + venue.getLocation());
         } else {
@@ -111,7 +111,7 @@ public class VenueController {
             System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
         } else {
             System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "':");
-            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSitNumber()));
+            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSeatNumber()));
         }
     }
 }

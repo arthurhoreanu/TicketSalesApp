@@ -8,7 +8,6 @@ import repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 public class TicketService {
     private final IRepository<Ticket> ticketRepository;
@@ -92,7 +91,7 @@ public class TicketService {
     }
 
     // Retrieves ticket by ID
-    public Ticket getTicketById(int ticketId) {
+    public Ticket getTicketByID(int ticketId) {
         List<Ticket> tickets = ticketRepository.getAll();
         for (int i = 0; i < tickets.size(); i++) {
             Ticket ticket = tickets.get(i);
@@ -105,7 +104,7 @@ public class TicketService {
 
     // Deletes a ticket by ID
     public boolean deleteTicket(int ticketId) {
-        Ticket ticket = getTicketById(ticketId);
+        Ticket ticket = getTicketByID(ticketId);
         if (ticket != null) {
             ticketRepository.delete(ticketId);
             return true;

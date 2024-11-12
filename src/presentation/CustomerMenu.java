@@ -17,7 +17,7 @@ public class CustomerMenu {
         System.out.println("3. Search for Artists/Athletes");
         System.out.println("4. Search for Locations/Venues");
         System.out.println("5. View Previous Orders");
-        System.out.println("6. Manage Favorites");
+        System.out.println("6. Manage Favourites");
         System.out.println("7. Manage Shopping Cart");
         System.out.println("8. Checkout Shopping Cart");
         System.out.println("0. Exit");
@@ -44,7 +44,7 @@ public class CustomerMenu {
                 handleViewPreviousOrders(controller);
                 break;
             case "6":
-                handleManageFavorites(scanner, controller);
+                handleManageFavourites(scanner, controller);
                 break;
             case "7":
                 handleManageShoppingCart(scanner, controller);
@@ -151,7 +151,7 @@ public class CustomerMenu {
                         if (!ticketIdInput.isEmpty()) {
                             try {
                                 int ticketId = Integer.parseInt(ticketIdInput);
-                                Ticket ticketToAdd = controller.getTicketById(ticketId);
+                                Ticket ticketToAdd = controller.getTicketByID(ticketId);
 
                                 if (ticketToAdd != null) {
                                     controller.addTicketToCart(ticketToAdd);
@@ -178,46 +178,46 @@ public class CustomerMenu {
         controller.getOrderHistory((Customer) controller.getCurrentUser());
     }
 
-    private static void handleManageFavorites(Scanner scanner, Controller controller) {
-        boolean inFavoritesMenu = true;
-        while (inFavoritesMenu) {
-            System.out.println("==== Manage Favorites ====");
-            System.out.println("1. View Favorites");
-            System.out.println("2. Delete Favorite");
+    private static void handleManageFavourites(Scanner scanner, Controller controller) {
+        boolean inFavouritesMenu = true;
+        while (inFavouritesMenu) {
+            System.out.println("==== Manage Favourites ====");
+            System.out.println("1. View Favourites");
+            System.out.println("2. Delete Favourite");
             System.out.println("0. Back to Customer Menu");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    Set<FavouriteEntity> favorites = controller.getFavourites();
-                    if (favorites.isEmpty()) {
-                        System.out.println("You have no favorites.");
+                    Set<FavouriteEntity> favourites = controller.getFavourites();
+                    if (favourites.isEmpty()) {
+                        System.out.println("You have no favourites.");
                     } else {
-                        favorites.forEach(fav -> System.out.println("- " + fav.getName()));
+                        favourites.forEach(fav -> System.out.println("- " + fav.getName()));
                     }
                     break;
                 case "2":
-                    favorites = controller.getFavourites();
-                    if (favorites.isEmpty()) {
-                        System.out.println("You have no favorites to delete.");
+                    favourites = controller.getFavourites();
+                    if (favourites.isEmpty()) {
+                        System.out.println("You have no favourites to delete.");
                         break;
                     }
-                    System.out.print("Enter the name of the favorite to delete: ");
-                    String favoriteName = scanner.nextLine();
-                    FavouriteEntity itemToDelete = favorites.stream()
-                            .filter(fav -> fav.getName().equalsIgnoreCase(favoriteName))
+                    System.out.print("Enter the name of the favourite to delete: ");
+                    String favouriteName = scanner.nextLine();
+                    FavouriteEntity itemToDelete = favourites.stream()
+                            .filter(fav -> fav.getName().equalsIgnoreCase(favouriteName))
                             .findFirst()
                             .orElse(null);
                     if (itemToDelete != null) {
-                        controller.removeFavorite(itemToDelete);
-                        System.out.println(favoriteName + " has been removed from your favorites.");
+                        controller.removeFavourite(itemToDelete);
+                        System.out.println(favouriteName + " has been removed from your favourites.");
                     } else {
-                        System.out.println("No favorite found with that name.");
+                        System.out.println("No favourite found with that name.");
                     }
                     break;
                 case "0":
-                    inFavoritesMenu = false;
+                    inFavouritesMenu = false;
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -247,7 +247,7 @@ public class CustomerMenu {
                 case "2":
                     System.out.print("Enter Ticket ID to remove: ");
                     int ticketToRemoveId = Integer.parseInt(scanner.nextLine());
-                    Ticket ticketToRemove = controller.getTicketById(ticketToRemoveId);
+                    Ticket ticketToRemove = controller.getTicketByID(ticketToRemoveId);
                     if (ticketToRemove != null) {
                         controller.removeTicketFromCart(ticketToRemove);
                     } else {
@@ -353,7 +353,7 @@ public class CustomerMenu {
                             if (!ticketIdInput.isEmpty()) {
                                 try {
                                     int ticketId = Integer.parseInt(ticketIdInput);
-                                    Ticket ticketToAdd = controller.getTicketById(ticketId);
+                                    Ticket ticketToAdd = controller.getTicketByID(ticketId);
 
                                     if (ticketToAdd != null) {
                                         controller.addTicketToCart(ticketToAdd);
@@ -375,13 +375,13 @@ public class CustomerMenu {
             }
 
             // Mark performer as favorite
-            System.out.print("Would you like to mark " + name + " as a favorite? (yes/no): ");
+            System.out.print("Would you like to mark " + name + " as a favourite? (yes/no): ");
             String response = scanner.nextLine();
 
             if ("yes".equalsIgnoreCase(response)) {
-                FavouriteEntity favoriteItem = (FavouriteEntity) performer;
-                controller.addFavorite(favoriteItem);
-                System.out.println(name + " has been added to your favorites.");
+                FavouriteEntity favouriteItem = (FavouriteEntity) performer;
+                controller.addFavourite(favouriteItem);
+                System.out.println(name + " has been added to your favourites.");
             }
         }
     }

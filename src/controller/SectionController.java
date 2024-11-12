@@ -23,7 +23,7 @@ public class SectionController {
             System.out.println("No available seats in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "'.");
         } else {
             System.out.println("Available seats in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "':");
-            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSitNumber()));
+            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSeatNumber()));
         }
     }
 
@@ -31,7 +31,7 @@ public class SectionController {
     public void recommendSeat(Customer customer, Section section, Event event) {
         Seat recommendedSeat = sectionService.recommendSeat(customer, section, event);
         if (recommendedSeat != null) {
-            System.out.println("Recommended seat for customer '" + customer.getUsername() + "' in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSitNumber());
+            System.out.println("Recommended seat for customer '" + customer.getUsername() + "' in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSeatNumber());
         } else {
             System.out.println("No preferred seat available for customer '" + customer.getUsername() + "' in section '" + section.getSectionName() + "' for event '" + event.getEventName() + "'.");
         }

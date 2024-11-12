@@ -3,11 +3,8 @@ package service;
 import model.Event;
 import model.Seat;
 import model.Section;
-import model.Venue;
 import repository.IRepository;
-import model.Customer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SeatService {
@@ -18,9 +15,9 @@ public class SeatService {
     }
 
     // Adds a new seat
-    public boolean createSeat(int seatID, Section section, int rowNumber, int sitNumber, Event reservedForEvent) {
-        if (findSeatById(seatID) == null) {
-            Seat seat = new Seat(seatID, rowNumber, section, sitNumber, reservedForEvent);
+    public boolean createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {
+        if (findSeatByID(seatID) == null) {
+            Seat seat = new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
             seatRepository.create(seat);
             return true;
         }
@@ -28,7 +25,7 @@ public class SeatService {
     }
 
     // Retrieves a seat by ID
-    public Seat findSeatById(int seatID) {
+    public Seat findSeatByID(int seatID) {
         return seatRepository.getAll().stream()
                 .filter(seat -> seat.getID() == seatID)
                 .findFirst()

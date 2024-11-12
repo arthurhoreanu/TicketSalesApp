@@ -6,62 +6,86 @@ import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
 
+/**
+ * Represents a customer user with specific preferences, favourites, and a shopping cart.
+ */
 public class Customer extends User {
     private String role;
     private Set<FavouriteEntity> favourites;
     private ShoppingCart shoppingCart;
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
 
+    /**
+     * Constructs a Customer with the specified user details and initializes default values.
+     * @param userId   the unique ID for the customer
+     * @param username the username of the customer
+     * @param email    the email address of the customer
+     * @param password the password for the customer account
+     */
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-        this.role = "Customer"; // default role
+        this.role = "Customer";
         this.favourites = new HashSet<>();
         this.shoppingCart = new ShoppingCart(userId, new ArrayList<>(), 0.0); // Initialize with customer's ID
         this.preferredSections = new HashMap<>();
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
+    /**
+     * Gets the access level of the customer.
+     * @return a string representing the access level, which is "Customer" for this class
+     */
     @Override
     public String getAccessLevel() {
         return "Customer";
     }
 
-    public boolean addFavorite(FavouriteEntity item) {
+    /**
+     * Adds an item to the customer's list of favourite entities.
+     * @param item the favourite entity to add
+     * @return true if the item was added to favourites, false if it was already in the list
+     */
+    public boolean addFavourite(FavouriteEntity item) {
         return favourites.add(item);
     }
 
-    public boolean removeFavorite(FavouriteEntity item) {
+    /**
+     * Removes an item from the customer's list of favourite entities.
+     * @param item the favourite entity to remove
+     * @return true if the item was removed from favourites, false if it was not found
+     */
+    public boolean removeFavourite(FavouriteEntity item) {
         return favourites.remove(item);
     }
 
+    /**
+     * Gets the set of the customer's favourite entities.
+     * @return a set of favourite entities
+     */
     public Set<FavouriteEntity> getFavourites() {
         return favourites;
     }
 
+    /**
+     * Gets the customer's shopping cart.
+     * @return the customer's shopping cart
+     */
     public ShoppingCart getShoppingCart() {
         return shoppingCart;
     }
 
+    /**
+     * Gets the customer's preferred sections with preference counts.
+     * @return a map where the keys are section IDs and values are preference counts
+     */
     public Map<Integer, Integer> getPreferredSections() {
         return preferredSections;
     }
-    //TODO IMPORTANT TO TEST THIS
-    /**
-     * Adds a preference for a section based on the section ID.
-     * Each time the customer reserves a seat in a section, the preference count for that section is increased.
-     */
-    public void addSeatPreference(Section section) {
-        int sectionId = section.getID();
-        preferredSections.put(sectionId, preferredSections.getOrDefault(sectionId, 0) + 1);
-    }
 
+
+    /**
+     * Returns a string representation of the customer, including role, username, password, favourites, and preferred sections.
+     * @return a string representing the customer's details
+     */
     @Override
     public String toString() {
         return "Customer{" +

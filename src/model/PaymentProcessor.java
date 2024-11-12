@@ -1,3 +1,5 @@
+// TODO JavaDocs
+
 package model;
 
 public interface PaymentProcessor {
@@ -11,6 +13,4 @@ specifying how it's done. This gives you flexibility because you can create mult
 of PaymentProcessor (like BasicPaymentProcessor) to handle different payment processing methods or
 to work with different payment gateways.
 */
-
-//TODO think about the logic of the methods, convert their return to string ass well
 

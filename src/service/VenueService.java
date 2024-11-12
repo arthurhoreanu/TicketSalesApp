@@ -21,7 +21,7 @@ public class VenueService {
 
     // Adds a new venue to the repository
     public boolean addVenue(String name, String location, int capacity, List<Section> sections) {
-        int newId = venueRepository.getAll().size() + 1;
+        int newID = venueRepository.getAll().size() + 1;
 
         for (Venue venue : venueRepository.getAll()) {
             if (venue.getVenueName().equalsIgnoreCase(name) && venue.getLocation().equalsIgnoreCase(location)) {
@@ -29,7 +29,7 @@ public class VenueService {
             }
         }
 
-        Venue venue = new Venue(newId, name, location, capacity, sections);
+        Venue venue = new Venue(newID, name, location, capacity, sections);
         venueRepository.create(venue);
         return true;
     }
@@ -58,7 +58,7 @@ public class VenueService {
 
     // Updates an existing venue by ID
     public boolean updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
-        Venue venue = findVenueById(id);
+        Venue venue = findVenueByID(id);
         if (venue != null) {
             venue.setVenueName(newName);
             venue.setLocation(newLocation);
@@ -72,7 +72,7 @@ public class VenueService {
 
     // Deletes a venue by ID
     public boolean deleteVenue(int id) {
-        if (findVenueById(id) != null) {
+        if (findVenueByID(id) != null) {
             venueRepository.delete(id);
             return true;
         }
@@ -85,7 +85,7 @@ public class VenueService {
     }
 
     // Manually finds a venue by its ID
-    public Venue findVenueById(int id) {
+    public Venue findVenueByID(int id) {
         return venueRepository.getAll().stream()
                 .filter(venue -> venue.getID() == id)
                 .findFirst()
