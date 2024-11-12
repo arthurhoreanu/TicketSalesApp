@@ -62,8 +62,6 @@ public class AdminEventMenu {
         String venueName = scanner.nextLine();
         Venue venue = controller.findVenueByName(venueName);
         if (venue == null) {
-            controller.addVenue(venueName, "No location set.", 0, null);
-            System.out.println("New venue added to the repository: " + venueName);
             venue = controller.findVenueByName(venueName);
         }
         EventStatus eventStatus = EventStatus.SCHEDULED;

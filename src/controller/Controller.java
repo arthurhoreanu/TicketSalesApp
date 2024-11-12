@@ -132,12 +132,11 @@ public class Controller {
     public void deleteVenue(int id) {
         venueController.deleteVenue(id);
     }
-    public void getAllVenues() {
-        venueController.getAllVenues();
+    public List<Venue> getAllVenues() {
+        return venueController.getAllVenues();
     }
     public Venue findVenueByName(String name) {
-        venueController.findVenueByName(name);
-        return null;
+        return venueController.findVenueByName(name);
     }
     public void getVenuesByLocationOrName(String locationOrVenueName) {
         venueController.getVenuesByLocationOrName(locationOrVenueName);
@@ -153,15 +152,15 @@ public class Controller {
     }
 
     // Ticket related
+    public List<Ticket> getTicketsByEvent(int eventId) {
+        return ticketController.getTicketsByEvent(eventId);}
     public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
-        ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);
-    }
+        ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);}
     public void getAvailableTicketsForEvent(Event event) {
         ticketController.getAvailableTicketsForEvent(event);
     }
     public void reserveTicket(Ticket ticket, String purchaserName) {
-        ticketController.reserveTicket(ticket, purchaserName);
-    }
+        ticketController.reserveTicket(ticket, purchaserName);}
     public void releaseTicket(Ticket ticket) {
         ticketController.releaseTicket(ticket);
     }

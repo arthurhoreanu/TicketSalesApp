@@ -84,4 +84,8 @@ public class TicketController {
         double totalPrice = ticketService.calculateTotalPrice(tickets);
         System.out.println("Total price for selected tickets: $" + totalPrice);
     }
+
+    public List<Ticket> getTicketsByEvent(int eventId) {
+        return ticketService.getTicketsByEvent(eventId);
+    }
 }

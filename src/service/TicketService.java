@@ -2,13 +2,13 @@ package service;
 
 import model.Event;
 import model.Seat;
-import model.Section;
 import model.Ticket;
 import model.TicketType;
 import repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 public class TicketService {
     private final IRepository<Ticket> ticketRepository;
@@ -121,5 +121,16 @@ public class TicketService {
             totalPrice += ticket.getPrice();
         }
         return totalPrice;
+    }
+
+    // In TicketService class
+    public List<Ticket> getTicketsByEvent(int eventId) {
+        List<Ticket> ticketsForEvent = new ArrayList<>();
+        for (Ticket ticket : ticketRepository.getAll()) {
+            if (ticket.getEventId() == eventId) {
+                ticketsForEvent.add(ticket);
+            }
+        }
+        return ticketsForEvent;
     }
 }

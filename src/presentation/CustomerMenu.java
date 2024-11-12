@@ -125,6 +125,52 @@ public class CustomerMenu {
             System.out.println("Events at " + location + ":");
             events.forEach(System.out::println);
         }
+
+        // Prompt for Event ID to view tickets or skip
+        System.out.print("Enter Event ID to view tickets (or press Enter to skip): ");
+        String eventIdInput = scanner.nextLine().trim();
+
+        if (!eventIdInput.isEmpty()) {
+            try {
+                int eventId = Integer.parseInt(eventIdInput);
+                Event selectedEvent = controller.findEventByID(eventId);
+
+                if (selectedEvent != null) {
+                    List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+
+                    if (tickets.isEmpty()) {
+                        System.out.println("No tickets available for this event.");
+                    } else {
+                        System.out.println("Available tickets for event " + selectedEvent.getEventName() + ":");
+                        tickets.forEach(System.out::println);
+
+                        // Prompt for Ticket ID to add to shopping cart
+                        System.out.print("Enter Ticket ID to add to shopping cart: ");
+                        String ticketIdInput = scanner.nextLine().trim();
+
+                        if (!ticketIdInput.isEmpty()) {
+                            try {
+                                int ticketId = Integer.parseInt(ticketIdInput);
+                                Ticket ticketToAdd = controller.getTicketById(ticketId);
+
+                                if (ticketToAdd != null) {
+                                    controller.addTicketToCart(ticketToAdd);
+                                    System.out.println("Ticket added to shopping cart.");
+                                } else {
+                                    System.out.println("Ticket not found.");
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid Ticket ID.");
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println("Event not found.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Event ID.");
+            }
+        }
     }
 
     private static void handleViewPreviousOrders(Controller controller) {
@@ -184,8 +230,7 @@ public class CustomerMenu {
         while (inCartMenu) {
             System.out.println("==== Shopping Cart ====");
             System.out.println("1. View Cart");
-            System.out.println("2. Add Ticket to Cart");
-            System.out.println("3. Remove Ticket from Cart");
+            System.out.println("2. Remove Ticket from Cart");
             System.out.println("0. Back to Customer Menu");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
@@ -200,16 +245,6 @@ public class CustomerMenu {
                     }
                     break;
                 case "2":
-                    System.out.print("Enter Ticket ID to add: ");
-                    int ticketId = Integer.parseInt(scanner.nextLine());
-                    Ticket ticketToAdd = controller.getTicketById(ticketId);
-                    if (ticketToAdd != null) {
-                        controller.addTicketToCart(ticketToAdd);
-                    } else {
-                        System.out.println("Ticket not found.");
-                    }
-                    break;
-                case "3":
                     System.out.print("Enter Ticket ID to remove: ");
                     int ticketToRemoveId = Integer.parseInt(scanner.nextLine());
                     Ticket ticketToRemove = controller.getTicketById(ticketToRemoveId);
@@ -293,6 +328,53 @@ public class CustomerMenu {
             System.out.println("Upcoming events for " + name + ":");
             upcomingEvents.forEach(System.out::println);
 
+            // Prompt for Event ID to view tickets or skip
+            System.out.print("Enter Event ID to view tickets (or press Enter to skip): ");
+            String eventIdInput = scanner.nextLine().trim();
+
+            if (!eventIdInput.isEmpty()) {
+                try {
+                    int eventId = Integer.parseInt(eventIdInput);
+                    Event selectedEvent = controller.findEventByID(eventId);
+
+                    if (selectedEvent != null) {
+                        List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+
+                        if (tickets.isEmpty()) {
+                            System.out.println("No tickets available for this event.");
+                        } else {
+                            System.out.println("Available tickets for event " + selectedEvent.getEventName() + ":");
+                            tickets.forEach(System.out::println);
+
+                            // Prompt for Ticket ID to add to shopping cart
+                            System.out.print("Enter Ticket ID to add to shopping cart: ");
+                            String ticketIdInput = scanner.nextLine().trim();
+
+                            if (!ticketIdInput.isEmpty()) {
+                                try {
+                                    int ticketId = Integer.parseInt(ticketIdInput);
+                                    Ticket ticketToAdd = controller.getTicketById(ticketId);
+
+                                    if (ticketToAdd != null) {
+                                        controller.addTicketToCart(ticketToAdd);
+                                        System.out.println("Ticket added to shopping cart.");
+                                    } else {
+                                        System.out.println("Ticket not found.");
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Invalid Ticket ID.");
+                                }
+                            }
+                        }
+                    } else {
+                        System.out.println("Event not found.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid Event ID.");
+                }
+            }
+
+            // Mark performer as favorite
             System.out.print("Would you like to mark " + name + " as a favorite? (yes/no): ");
             String response = scanner.nextLine();
 
@@ -303,4 +385,5 @@ public class CustomerMenu {
             }
         }
     }
+
 }
