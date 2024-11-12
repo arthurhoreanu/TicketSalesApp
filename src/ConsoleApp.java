@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 public class ConsoleApp {
     public static void main(String[] args) {
+        // TODO repos and services need to be instantiated in order to fix this error
         IRepository<User> userRepository = new InMemoryRepository<>();
         IRepository<Event> eventRepository = new InMemoryRepository<>();
         IRepository<Venue> venueRepository = new InMemoryRepository<>();
@@ -36,9 +37,12 @@ public class ConsoleApp {
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
         CustomerController customerController = new CustomerController(customerService);
+        OrderController orderController = new OrderController(orderService);
+        ShoppingCartController shoppingCartController = new ShoppingCartController(shoppingCartService);
+        TicketController ticketController = new TicketController(ticketService);
 
         Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController,
-                artistController, athleteController, customerController);
+                artistController, athleteController, customerController, orderController, shoppingCartController, ticketController);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
