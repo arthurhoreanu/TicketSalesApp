@@ -1,4 +1,7 @@
+// TODO JavaDocs
+
 package service;
+
 
 import model.Order;
 import model.ShoppingCart;
