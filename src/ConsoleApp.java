@@ -12,14 +12,18 @@ import java.util.Scanner;
 
 public class ConsoleApp {
     public static void main(String[] args) {
-        // TODO repos and services need to be instantiated in order to fix this error
+        // Instantiate repositories
         IRepository<User> userRepository = new InMemoryRepository<>();
         IRepository<Event> eventRepository = new InMemoryRepository<>();
         IRepository<Venue> venueRepository = new InMemoryRepository<>();
         IRepository<Seat> seatRepository = new InMemoryRepository<>();
         IRepository<Artist> artistRepository = new InMemoryRepository<>();
         IRepository<Athlete> athleteRepository = new InMemoryRepository<>();
+        IRepository<Order> orderRepository = new InMemoryRepository<>();
+        IRepository<Ticket> ticketRepository = new InMemoryRepository<>();
+        IRepository<ShoppingCart> shoppingCartRepository = new InMemoryRepository<>();
 
+        // Instantiate services
         CustomerService customerService = new CustomerService();
         AccountService accountService = new AccountService(userRepository, customerService);
         SeatService seatService = new SeatService(seatRepository);
@@ -28,7 +32,11 @@ public class ConsoleApp {
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
+        TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
+        ShoppingCartService shoppingCartService = new ShoppingCartService(shoppingCartRepository, orderRepository, customerService);
+        OrderService orderService = new OrderService(orderRepository, shoppingCartService, new BasicPaymentProcessor(), seatService, ticketRepository);
 
+        // Instantiate controllers
         AccountController accountController = new AccountController(accountService);
         EventController eventController = new EventController(eventService);
         VenueController venueController = new VenueController(venueService);
@@ -38,12 +46,17 @@ public class ConsoleApp {
         AthleteController athleteController = new AthleteController(athleteService);
         CustomerController customerController = new CustomerController(customerService);
         OrderController orderController = new OrderController(orderService);
-        ShoppingCartController shoppingCartController = new ShoppingCartController(shoppingCartService);
+        ShoppingCartController shoppingCartController = new ShoppingCartController(shoppingCartService, customerService);
         TicketController ticketController = new TicketController(ticketService);
 
-        Controller controller = new Controller(accountController, eventController, venueController, sectionController, seatController,
-                artistController, athleteController, customerController, orderController, shoppingCartController, ticketController);
+        // Instantiate main Controller
+        Controller controller = new Controller(
+                accountController, eventController, venueController, sectionController, seatController,
+                artistController, athleteController, customerController, orderController,
+                shoppingCartController, ticketController
+        );
 
+        // Set up scanner and application loop
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
