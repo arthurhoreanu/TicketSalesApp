@@ -1,3 +1,5 @@
+// TODO JavaDocs
+
 package model;
 
 import java.time.LocalDateTime;
@@ -42,18 +44,6 @@ public class Order implements Identifiable {
 
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
     }
 
     public void setStatus(OrderStatus status) {

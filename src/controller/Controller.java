@@ -40,10 +40,10 @@ public class Controller {
     // Rule: newest first
 
     // Customer related
-    public void addFavorite(FavouriteEntity item) {
-        customerController.addFavorite(item);}
-    public void removeFavorite(FavouriteEntity item) {
-        customerController.removeFavorite(item);}
+    public void addFavourite(FavouriteEntity item) {
+        customerController.addFavourite(item);}
+    public void removeFavourite(FavouriteEntity item) {
+        customerController.removeFavourite(item);}
     public Set<FavouriteEntity> getFavourites() {
         return customerController.getFavourites();}
 
@@ -86,10 +86,10 @@ public class Controller {
         return artistController.getEventsByArtist(artist);}
 
     // Seat related
-    public void createSeat(int seatID, Section section, int rowNumber, int sitNumber, Event reservedForEvent) {
-        seatController.createSeat(seatID, section, rowNumber, sitNumber, reservedForEvent);}
-    public void findSeatById(int seatID) {
-        seatController.findSeatById(seatID);}
+    public void createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {
+        seatController.createSeat(seatID, section, rowNumber, seatNumber, reservedForEvent);}
+    public void findSeatByID(int seatID) {
+        seatController.findSeatByID(seatID);}
     public void checkSeatReservation(Seat seat, Event event) {
         seatController.checkSeatReservation(seat, event);}
     public void reserveSeatForEvent(Seat seat, Event event) {
@@ -142,8 +142,8 @@ public class Controller {
         ticketController.reserveTicket(ticket, purchaserName);}
     public void releaseTicket(Ticket ticket) {
         ticketController.releaseTicket(ticket);}
-    public Ticket getTicketById(int ticketId) {
-        return ticketController.getTicketById(ticketId);}
+    public Ticket getTicketByID(int ticketId) {
+        return ticketController.getTicketByID(ticketId);}
     public void deleteTicket(int ticketId) {
         ticketController.deleteTicket(ticketId);}
     public void calculateTotalPrice(List<Ticket> tickets) {
@@ -174,8 +174,8 @@ public class Controller {
         orderController.cancelOrder(orderId);}
     public void getOrderHistory(Customer customer) {
         orderController.getOrderHistory(customer);}
-    public void getOrderById(int orderId) {
-        orderController.getOrderById(orderId);}
+    public void getOrderByID(int orderID) {
+        orderController.getOrderByID(orderID);}
     public void orderAllTicketsFromCart(Customer customer) {
         orderController.orderAllTicketsFromCart(customer);}
     public Order orderTicketsForEvent(Customer customer, Event event) {
@@ -191,10 +191,10 @@ public class Controller {
         return eventController.getUpcomingEventsForArtist(artistID);}
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
         return eventController.getUpcomingEventsForAthlete(athleteID);}
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists) {
-        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);}
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes) {
-        eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);}
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Artist> artists) {
+        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);}
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Athlete> athletes) {
+        eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);}
     public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime,EventStatus newStatus) {
         eventController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);}
     public void deleteEvent(int eventId) {

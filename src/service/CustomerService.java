@@ -18,13 +18,13 @@ public class CustomerService {
         return currentCustomer;
     }
 
-    public boolean addFavorite(FavouriteEntity item) {
-        currentCustomer.addFavorite(item);
+    public boolean addFavourite(FavouriteEntity item) {
+        currentCustomer.addFavourite(item);
         return true;
     }
 
-    public boolean removeFavorite(FavouriteEntity item) {
-        currentCustomer.removeFavorite(item);
+    public boolean removeFavourite(FavouriteEntity item) {
+        currentCustomer.removeFavourite(item);
         return true;
     }
 

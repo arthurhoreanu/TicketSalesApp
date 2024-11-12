@@ -68,10 +68,8 @@ public class AdminEventMenu {
         List<Ticket> tickets = new ArrayList<>();
 
         List<Artist> artists = new ArrayList<>();
-        String genre = null;
 
         List<Athlete> athletes = new ArrayList<>();
-        String sportName = null;
 
         if ("Concert".equalsIgnoreCase(eventType)) {
             while (true) {
@@ -113,9 +111,9 @@ public class AdminEventMenu {
         }
 
         if ("Concert".equalsIgnoreCase(eventType)) {
-            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);
+            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
-            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);
+            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
         }
     }
 

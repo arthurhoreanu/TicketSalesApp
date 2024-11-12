@@ -13,8 +13,8 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Artist> artists) {
-        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, artists);
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Artist> artists) {
+        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
         if (success) {
             System.out.println("Event created successfully");
         } else {
@@ -22,8 +22,8 @@ public class EventController {
         }
     }
 
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Ticket> tickets, List<Athlete> athletes) {
-        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, tickets, athletes);
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Athlete> athletes) {
+        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
         if (success) {
             System.out.println("Event created successfully");
         } else {
@@ -54,10 +54,6 @@ public class EventController {
 
     public boolean isEventSoldOut(Event event) {
         return eventService.isEventSoldOut(event);
-    }
-
-    public int getAvailableTickets(Event event) {
-        return eventService.getAvailableTickets(event);
     }
 
     public List<Event> getEventsByVenue(Venue venue) {

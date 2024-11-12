@@ -59,7 +59,7 @@ public class OrderService {
 
     // Cancels an order and releases tickets if not completed
     public boolean cancelOrder(int orderId) {
-        Order order = getOrderById(orderId);
+        Order order = getOrderByID(orderId);
         if (order != null && !order.isCompleted()) {
             order.setStatus(OrderStatus.CANCELED);
             orderRepository.update(order);
@@ -84,12 +84,12 @@ public class OrderService {
     }
 
     // Helper method to get an order by its ID
-    public Order getOrderById(int orderId) {
+    public Order getOrderByID(int orderID) {
         List<Order> allOrders = orderRepository.getAll();
 
         for (int i = 0; i < allOrders.size(); i++) {
             Order order = allOrders.get(i);
-            if (order.getID() == orderId) {
+            if (order.getID() == orderID) {
                 return order;
             }
         }
@@ -113,8 +113,7 @@ public class OrderService {
             tickets.get(i).setSold(false);
         }
     }
-    //TODO check this
-    // Method to order all tickets from the customer's cart
+
     public Order orderAllTicketsFromCart(Customer customer) {
         // Retrieve the customer's shopping cart
         ShoppingCart cart = customer.getShoppingCart();

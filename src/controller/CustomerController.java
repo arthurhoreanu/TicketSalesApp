@@ -13,8 +13,8 @@ public class CustomerController {
     }
 
     // Adds an item to the current customer's favorites
-    public void addFavorite(FavouriteEntity item) {
-        boolean success = customerService.addFavorite(item);
+    public void addFavourite(FavouriteEntity item) {
+        boolean success = customerService.addFavourite(item);
         if (success) {
             System.out.println("Entity was marked as favourite.");
         } else {
@@ -23,8 +23,8 @@ public class CustomerController {
     }
 
     // Removes an item from the current customer's favorites
-    public void removeFavorite(FavouriteEntity item) {
-        boolean success = customerService.removeFavorite(item);
+    public void removeFavourite(FavouriteEntity item) {
+        boolean success = customerService.removeFavourite(item);
         if (success) {
             System.out.println("Entity was removed from favourites.");
         } else {

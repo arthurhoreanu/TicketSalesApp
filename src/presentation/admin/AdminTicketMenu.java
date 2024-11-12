@@ -3,7 +3,6 @@ package presentation.admin;
 import controller.Controller;
 import model.Event;
 import model.Ticket;
-import model.Venue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class AdminTicketMenu {
                     handleReleaseTicket(scanner, controller);
                     break;
                 case "5":
-                    handleViewTicketById(scanner, controller);
+                    handleViewTicketByID(scanner, controller);
                     break;
                 case "6":
                     handleDeleteTicket(scanner, controller);
@@ -141,7 +140,7 @@ public class AdminTicketMenu {
                 tickets.forEach(System.out::println);
                 System.out.print("Enter Ticket ID: ");
                 int ticketId = Integer.parseInt(scanner.nextLine());
-                Ticket ticket = controller.getTicketById(ticketId);
+                Ticket ticket = controller.getTicketByID(ticketId);
                 if (ticket == null) {
                     System.out.println("Ticket not found.");
                     return;
@@ -183,7 +182,7 @@ public class AdminTicketMenu {
                 System.out.print("Enter Ticket ID: ");
                 int ticketId = Integer.parseInt(scanner.nextLine());
 
-                Ticket ticket = controller.getTicketById(ticketId);
+                Ticket ticket = controller.getTicketByID(ticketId);
                 if (ticket == null) {
                     System.out.println("Ticket not found.");
                     return;
@@ -194,7 +193,7 @@ public class AdminTicketMenu {
         }
     }
 
-    private static void handleViewTicketById(Scanner scanner, Controller controller) {
+    private static void handleViewTicketByID(Scanner scanner, Controller controller) {
         System.out.println("=== View Ticket by ID ===");
 
         List<Event> events = controller.getAllEvents();
@@ -223,7 +222,7 @@ public class AdminTicketMenu {
                 System.out.print("Enter Ticket ID: ");
                 int ticketId = Integer.parseInt(scanner.nextLine());
 
-                Ticket ticket = controller.getTicketById(ticketId);
+                Ticket ticket = controller.getTicketByID(ticketId);
                 if (ticket != null) {
                     System.out.println("Ticket found: " + ticket);
                 } else {
@@ -303,7 +302,7 @@ public class AdminTicketMenu {
                     }
 
                     int ticketId = Integer.parseInt(input);
-                    Ticket ticketToBeCalculated = controller.getTicketById(ticketId);
+                    Ticket ticketToBeCalculated = controller.getTicketByID(ticketId);
                     if (ticketToBeCalculated != null) {
                         ticketsToBeCalculated.add(ticketToBeCalculated);
                     } else {

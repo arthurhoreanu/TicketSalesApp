@@ -54,12 +54,12 @@ public class OrderController {
     }
 
     // Retrieves an order by its ID
-    public void getOrderById(int orderId) {
-        Order order = orderService.getOrderById(orderId);
+    public void getOrderByID(int orderID) {
+        Order order = orderService.getOrderByID(orderID);
         if (order != null) {
             System.out.println("Order found: " + order.toString());
         } else {
-            System.out.println("Order with ID " + orderId + " does not exist.");
+            System.out.println("Order with ID " + orderID + " does not exist.");
         }
     }
 

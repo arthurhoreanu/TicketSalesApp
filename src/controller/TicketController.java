@@ -1,7 +1,6 @@
 package controller;
 
 import model.Event;
-import model.Seat;
 import model.Ticket;
 import service.TicketService;
 
@@ -31,7 +30,7 @@ public class TicketController {
             System.out.println("Available tickets for event: " + event.getEventName());
             for (Ticket ticket : availableTickets) {
                 System.out.println("- Ticket ID: " + ticket.getID() + ", Price: $" + ticket.getPrice() + ", Seat: " +
-                        "Row " + ticket.getSeat().getRowNumber() + ", Seat " + ticket.getSeat().getSitNumber());
+                        "Row " + ticket.getSeat().getRowNumber() + ", Seat " + ticket.getSeat().getSeatNumber());
             }
         } else {
             System.out.println("No available tickets for event: " + event.getEventName());
@@ -59,8 +58,8 @@ public class TicketController {
     }
 
     // Retrieves ticket information by ticket ID
-    public Ticket getTicketById(int ticketId) {
-        Ticket ticket = ticketService.getTicketById(ticketId);
+    public Ticket getTicketByID(int ticketId) {
+        Ticket ticket = ticketService.getTicketByID(ticketId);
         if (ticket != null) {
             System.out.println("Ticket found: " + ticket);
         } else {
