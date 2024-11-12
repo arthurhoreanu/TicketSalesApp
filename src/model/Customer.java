@@ -10,7 +10,6 @@ import java.util.ArrayList;
  * Represents a customer user with specific preferences, favourites, and a shopping cart.
  */
 public class Customer extends User {
-    private String role;
     private Set<FavouriteEntity> favourites;
     private ShoppingCart shoppingCart;
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
@@ -24,19 +23,9 @@ public class Customer extends User {
      */
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-        this.role = "Customer";
         this.favourites = new HashSet<>();
         this.shoppingCart = new ShoppingCart(userId, new ArrayList<>(), 0.0); // Initialize with customer's ID
         this.preferredSections = new HashMap<>();
-    }
-
-    /**
-     * Gets the access level of the customer.
-     * @return a string representing the access level, which is "Customer" for this class
-     */
-    @Override
-    public String getAccessLevel() {
-        return "Customer";
     }
 
     /**
@@ -81,7 +70,6 @@ public class Customer extends User {
         return preferredSections;
     }
 
-
     /**
      * Returns a string representation of the customer, including role, username, password, favourites, and preferred sections.
      * @return a string representing the customer's details
@@ -89,7 +77,6 @@ public class Customer extends User {
     @Override
     public String toString() {
         return "Customer{" +
-                "role='" + role + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", favourites=" + favourites +

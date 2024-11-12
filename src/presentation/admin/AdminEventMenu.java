@@ -1,14 +1,23 @@
 package presentation.admin;
+
 import controller.Controller;
 import model.*;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Provides a menu for admins to manage events, including creating, viewing, updating, and deleting events.
+ */
 public class AdminEventMenu {
+
+    /**
+     * Displays the event management menu and handles the selected options.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to handle event management actions
+     */
     public static void display(Scanner scanner, Controller controller) {
         boolean inEventMenu = true;
         while (inEventMenu) {
@@ -46,6 +55,11 @@ public class AdminEventMenu {
         }
     }
 
+    /**
+     * Handles the creation of a new event, either a concert or sports event.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to manage event creation
+     */
     public static void handleCreateEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Create Event ===");
         System.out.print("Enter Event Type (Concert/Sports Event): ");
@@ -61,14 +75,13 @@ public class AdminEventMenu {
         System.out.print("Enter venue name: ");
         String venueName = scanner.nextLine();
         Venue venue = controller.findVenueByName(venueName);
+
         if (venue == null) {
             venue = controller.findVenueByName(venueName);
         }
         EventStatus eventStatus = EventStatus.SCHEDULED;
         List<Ticket> tickets = new ArrayList<>();
-
         List<Artist> artists = new ArrayList<>();
-
         List<Athlete> athletes = new ArrayList<>();
 
         if ("Concert".equalsIgnoreCase(eventType)) {
@@ -88,6 +101,7 @@ public class AdminEventMenu {
                 }
                 artists.add(artist);
             }
+            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
             while (true) {
                 System.out.print("Enter athlete name (or type 'done' to finish): ");
@@ -105,19 +119,16 @@ public class AdminEventMenu {
                 }
                 athletes.add(athlete);
             }
+            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
         } else {
             System.out.println("Invalid event type. Please enter 'Concert' or 'Sports Event'.");
-            return;
-        }
-
-        if ("Concert".equalsIgnoreCase(eventType)) {
-            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
-        } else if ("Sports Event".equalsIgnoreCase(eventType)) {
-            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
         }
     }
 
-    // Method to handle viewing all events
+    /**
+     * Displays a list of all events.
+     * @param controller the controller to retrieve events from
+     */
     public static void handleViewEvents(Controller controller) {
         System.out.println("=== View Events ===");
         List<Event> events = controller.getAllEvents();
@@ -131,7 +142,11 @@ public class AdminEventMenu {
         }
     }
 
-    // Method to handle updating an event
+    /**
+     * Handles updating an existing event with new information.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to manage event updates
+     */
     public static void handleUpdateEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Update Event ===");
 
@@ -160,22 +175,19 @@ public class AdminEventMenu {
             return;
         }
 
-        // Update name
         System.out.print("Enter new event name (or press Enter to keep current name): ");
         String newName = scanner.nextLine().trim();
         if (newName.isEmpty()) {
-            newName = event.getEventName(); // Keep current name if input is empty
+            newName = event.getEventName();
         }
 
-        // Update description
         System.out.print("Enter new event description (or press Enter to keep current description): ");
         String newDescription = scanner.nextLine().trim();
         if (newDescription.isEmpty()) {
-            newDescription = event.getEventDescription(); // Keep current description if input is empty
+            newDescription = event.getEventDescription();
         }
 
-        // Update start date and time
-        LocalDateTime newStartDateTime = event.getStartDateTime(); // Default to current start time
+        LocalDateTime newStartDateTime = event.getStartDateTime();
         System.out.print("Enter new start date and time (YYYY-MM-DDTHH:MM) (or press Enter to keep current start time): ");
         String startDateTimeInput = scanner.nextLine().trim();
         if (!startDateTimeInput.isEmpty()) {
@@ -186,8 +198,7 @@ public class AdminEventMenu {
             }
         }
 
-        // Update end date and time
-        LocalDateTime newEndDateTime = event.getEndDateTime(); // Default to current end time
+        LocalDateTime newEndDateTime = event.getEndDateTime();
         System.out.print("Enter new end date and time (YYYY-MM-DDTHH:MM) (or press Enter to keep current end time): ");
         String endDateTimeInput = scanner.nextLine().trim();
         if (!endDateTimeInput.isEmpty()) {
@@ -198,10 +209,9 @@ public class AdminEventMenu {
             }
         }
 
-        // Update event status
         System.out.print("Enter new event status (SCHEDULED, CANCELLED, COMPLETED) (or press Enter to keep current status): ");
         String statusInput = scanner.nextLine().trim().toUpperCase();
-        EventStatus newStatus = event.getEventStatus(); // Default to current status
+        EventStatus newStatus = event.getEventStatus();
         if (!statusInput.isEmpty()) {
             try {
                 newStatus = EventStatus.valueOf(statusInput);
@@ -210,19 +220,22 @@ public class AdminEventMenu {
             }
         }
 
-        // Update the event through the controller
         controller.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
         System.out.println("Event updated successfully.");
     }
 
-
-    // Method to handle deleting an event
+    /**
+     * Handles deleting an event by its ID.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to manage event deletion
+     */
     public static void handleDeleteEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Event ===");
 
         List<Event> events = controller.getAllEvents();
         if (events.isEmpty()) {
             System.out.println("No events available.");
+            return;
         } else {
             for (Event event : events) {
                 System.out.println(event);
@@ -230,7 +243,13 @@ public class AdminEventMenu {
         }
 
         System.out.print("Enter Event ID to delete: ");
-        int eventID = Integer.parseInt(scanner.nextLine());
-
+        int eventID;
+        try {
+            eventID = Integer.parseInt(scanner.nextLine());
+            controller.deleteEvent(eventID);
+            System.out.println("Event deleted successfully.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid Event ID. Please enter a valid number.");
+        }
     }
 }

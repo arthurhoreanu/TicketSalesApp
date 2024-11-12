@@ -1,5 +1,3 @@
-// Arthur's TODO: need to come back here at the end
-
 package controller;
 
 import model.*;
@@ -21,8 +19,23 @@ public class Controller {
     private final ShoppingCartController shoppingCartController;
     private final TicketController ticketController;
 
-
-
+    /**
+     * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
+     * events, venues, seating, artists, athletes, customers, orders, shopping carts, and tickets. Each of these
+     * responsibilities is handled by a specific controller, which is injected into the Controller.
+     *
+     * @param accountController The controller responsible for managing user accounts.
+     * @param eventController The controller responsible for managing events.
+     * @param venueController The controller responsible for managing venues.
+     * @param sectionController The controller responsible for managing sections within venues.
+     * @param seatController The controller responsible for managing seats in venues.
+     * @param artistController The controller responsible for managing artists.
+     * @param athleteController The controller responsible for managing athletes.
+     * @param customerController The controller responsible for managing customers.
+     * @param orderController The controller responsible for managing orders.
+     * @param shoppingCartController The controller responsible for managing shopping carts.
+     * @param ticketController The controller responsible for managing tickets.
+     */
     public Controller(AccountController accountController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
                       AthleteController athleteController, CustomerController customerController, OrderController orderController, ShoppingCartController shoppingCartController, TicketController ticketController) {
@@ -40,7 +53,6 @@ public class Controller {
     }
 
     // Rule: newest first
-
     // Customer related
     public void addFavourite(FavouriteEntity item) {
         customerController.addFavourite(item);}
@@ -158,14 +170,12 @@ public class Controller {
         shoppingCartController.removeTicketFromCart(ticket);}
     public void clearCart() {
         shoppingCartController.clearCart();}
-
     public Order checkout() {
        return shoppingCartController.checkout();}
     public void updateTotalPrice() {
         shoppingCartController.updateTotalPrice();}
     public double getTotalPrice() {
         return shoppingCartController.getTotalPrice();}
-
 
     // Order related
     public void createOrder(Customer customer) {
@@ -182,7 +192,6 @@ public class Controller {
         orderController.orderAllTicketsFromCart(customer);}
     public Order orderTicketsForEvent(Customer customer, Event event) {
         return orderTicketsForEvent(customer, event);}
-
 
     // Event related
     public  Event findEventByID(int eventId) {

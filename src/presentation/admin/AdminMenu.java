@@ -2,10 +2,20 @@ package presentation.admin;
 
 import controller.Controller;
 import presentation.AccountAction;
-
 import java.util.Scanner;
 
+/**
+ * Represents the menu for admin users, providing various management options such as user account deletion,
+ * and management of events, tickets, venues, artists, and athletes.
+ */
 public class AdminMenu {
+
+    /**
+     * Displays the admin menu and processes the selected option.
+     * @param scanner    the scanner to read user input
+     * @param controller the controller to handle administrative actions
+     * @return a boolean indicating if the application should continue running (false if exit is chosen)
+     */
     public static boolean display(Scanner scanner, Controller controller) {
         System.out.println("==== Admin Menu ====");
         System.out.println("1. Logout");
@@ -21,6 +31,7 @@ public class AdminMenu {
         System.out.print("Choose an option: ");
         String choice = scanner.nextLine();
 
+        // Processes the selected menu option
         switch (choice) {
             case "1":
                 controller.logout();
@@ -46,10 +57,10 @@ public class AdminMenu {
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
-                return false;
+                return false; // Indicates the application should end
             default:
                 System.out.println("Invalid option. Please try again.");
         }
-        return true;
+        return true; // Indicates the application should continue
     }
 }

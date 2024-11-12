@@ -6,7 +6,16 @@ import model.Artist;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Provides a menu for admins to manage artists, including creating, viewing, updating, and deleting artists.
+ */
 public class AdminArtistMenu {
+
+    /**
+     * Displays the artist management menu and processes the selected options.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to handle artist management actions
+     */
     public static void display(Scanner scanner, Controller controller) {
         boolean inArtistMenu = true;
         while (inArtistMenu) {
@@ -44,6 +53,11 @@ public class AdminArtistMenu {
         }
     }
 
+    /**
+     * Handles the creation of a new artist.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to manage artist creation
+     */
     public static void handleCreateArtist(Scanner scanner, Controller controller) {
         System.out.println("=== Create Artist ===");
         System.out.print("Enter artist name: ");
@@ -53,6 +67,10 @@ public class AdminArtistMenu {
         controller.createArtist(artistName, genre);
     }
 
+    /**
+     * Displays a list of all artists.
+     * @param controller the controller to retrieve artists from
+     */
     public static void handleViewArtists(Controller controller) {
         System.out.println("=== View Artists ===");
         List<Artist> artists = controller.getAllArtists();
@@ -66,13 +84,18 @@ public class AdminArtistMenu {
         }
     }
 
+    /**
+     * Handles updating an existing artist with new information.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to manage artist updates
+     */
     public static void handleUpdateArtist(Scanner scanner, Controller controller) {
         System.out.println("=== Update Artist ===");
 
         List<Artist> artists = controller.getAllArtists();
         if (artists.isEmpty()) {
             System.out.println("No artists available.");
-            return; // Exit if there are no artists to update
+            return;
         } else {
             for (Artist artist : artists) {
                 System.out.println(artist);
@@ -94,31 +117,34 @@ public class AdminArtistMenu {
             return;
         }
 
-        // Prompt for new values and keep current ones if input is empty
         System.out.print("Enter new artist name (or press Enter to keep current name): ");
         String newName = scanner.nextLine().trim();
         if (newName.isEmpty()) {
-            newName = artist.getArtistName(); // Keep current name if input is empty
+            newName = artist.getArtistName();
         }
 
         System.out.print("Enter new genre (or press Enter to keep current genre): ");
         String newGenre = scanner.nextLine().trim();
         if (newGenre.isEmpty()) {
-            newGenre = artist.getGenre(); // Keep current genre if input is empty
+            newGenre = artist.getGenre();
         }
 
-        // Update artist through controller
         controller.updateArtist(artistID, newName, newGenre);
         System.out.println("Artist updated successfully.");
     }
 
-
+    /**
+     * Handles deleting an artist by their ID.
+     * @param scanner the scanner to read user input
+     * @param controller the controller to manage artist deletion
+     */
     public static void handleDeleteArtist(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Artist ===");
 
         List<Artist> artists = controller.getAllArtists();
         if (artists.isEmpty()) {
-            System.out.println("No events available.");
+            System.out.println("No artists available.");
+            return;
         } else {
             for (Artist artist : artists) {
                 System.out.println(artist);
@@ -126,8 +152,13 @@ public class AdminArtistMenu {
         }
 
         System.out.print("Enter artist ID to delete: ");
-        int artistID = Integer.parseInt(scanner.nextLine());
-
-        controller.deleteArtist(artistID);
+        int artistID;
+        try {
+            artistID = Integer.parseInt(scanner.nextLine());
+            controller.deleteArtist(artistID);
+            System.out.println("Artist deleted successfully.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid artist ID. Please enter a valid number.");
+        }
     }
 }
