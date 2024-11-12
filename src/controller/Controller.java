@@ -38,6 +38,7 @@ public class Controller {
     }
 
     // Rule: newest first
+
     // Customer related
     public void addFavorite(FavouriteEntity item) {
         customerController.addFavorite(item);}
@@ -86,70 +87,49 @@ public class Controller {
 
     // Seat related
     public void createSeat(int seatID, Section section, int rowNumber, int sitNumber, Event reservedForEvent) {
-        seatController.createSeat(seatID, section, rowNumber, sitNumber, reservedForEvent);
-    }
+        seatController.createSeat(seatID, section, rowNumber, sitNumber, reservedForEvent);}
     public void findSeatById(int seatID) {
-        seatController.findSeatById(seatID);
-    }
+        seatController.findSeatById(seatID);}
     public void checkSeatReservation(Seat seat, Event event) {
-        seatController.checkSeatReservation(seat, event);
-    }
+        seatController.checkSeatReservation(seat, event);}
     public void reserveSeatForEvent(Seat seat, Event event) {
-        seatController.reserveSeatForEvent(seat, event);
-    }
+        seatController.reserveSeatForEvent(seat, event);}
     public void clearSeatReservationForEvent(Seat seat, Event event) {
-        seatController.clearSeatReservationForEvent(seat, event);
-    }
+        seatController.clearSeatReservationForEvent(seat, event);}
     public void recommendFrontRowSeat(List<Seat> availableSeats) {
-        seatController.recommendFrontRowSeat(availableSeats);
-    }
-
+        seatController.recommendFrontRowSeat(availableSeats);}
 
     // Section related
     public void getAvailableSeats(Section section, Event event) {
-        sectionController.getAvailableSeats(section, event);
-    }
+        sectionController.getAvailableSeats(section, event);}
     public void recommendSeat(Customer customer, Section section, Event event) {
-        sectionController.recommendSeat(customer, section, event);
-    }
+        sectionController.recommendSeat(customer, section, event);}
     public Section createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
-        return sectionController.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);
-    }
+        return sectionController.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);}
     public void getSectionInfo(Section section, Event event) {
-        sectionController.getSectionInfo(section, event);
-    }
+        sectionController.getSectionInfo(section, event);}
 
     // Venue related
     public void addVenue(String name, String location, int capacity, List<Section> sections) {
-        venueController.addVenue(name, location, capacity, sections);
-    }
+        venueController.addVenue(name, location, capacity, sections);}
     public void createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
-        venueController.createVenueWithSectionsAndSeats(name, location, capacity, sectionCapacity, rowCount, seatsPerRow);
-    }
+        venueController.createVenueWithSectionsAndSeats(name, location, capacity, sectionCapacity, rowCount, seatsPerRow);}
     public void updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
-        venueController.updateVenue(id, newName, newLocation, newCapacity, newSections);
-    }
+        venueController.updateVenue(id, newName, newLocation, newCapacity, newSections);}
     public void deleteVenue(int id) {
-        venueController.deleteVenue(id);
-    }
+        venueController.deleteVenue(id);}
     public List<Venue> getAllVenues() {
-        return venueController.getAllVenues();
-    }
+        return venueController.getAllVenues();}
     public Venue findVenueByName(String name) {
-        return venueController.findVenueByName(name);
-    }
+        return venueController.findVenueByName(name);}
     public void getVenuesByLocationOrName(String locationOrVenueName) {
-        venueController.getVenuesByLocationOrName(locationOrVenueName);
-    }
+        venueController.getVenuesByLocationOrName(locationOrVenueName);}
     public void getAvailableSeats(Venue venue, Event event) {
-        venueController.getAvailableSeats(venue, event);
-    }
+        venueController.getAvailableSeats(venue, event);}
     public void recommendSeat(Customer customer, Venue venue, Event event) {
-        venueController.recommendSeat(customer, venue, event);
-    }
+        venueController.recommendSeat(customer, venue, event);}
     public Venue findVenueById(int id){
-        return venueController.findVenueById(id);
-    }
+        return venueController.findVenueById(id);}
 
     // Ticket related
     public List<Ticket> getTicketsByEvent(int eventId) {
@@ -157,71 +137,49 @@ public class Controller {
     public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
         ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);}
     public void getAvailableTicketsForEvent(Event event) {
-        ticketController.getAvailableTicketsForEvent(event);
-    }
+        ticketController.getAvailableTicketsForEvent(event);}
     public void reserveTicket(Ticket ticket, String purchaserName) {
         ticketController.reserveTicket(ticket, purchaserName);}
     public void releaseTicket(Ticket ticket) {
-        ticketController.releaseTicket(ticket);
-    }
+        ticketController.releaseTicket(ticket);}
     public Ticket getTicketById(int ticketId) {
-        return ticketController.getTicketById(ticketId);
-    }
+        return ticketController.getTicketById(ticketId);}
     public void deleteTicket(int ticketId) {
-        ticketController.deleteTicket(ticketId);
-    }
+        ticketController.deleteTicket(ticketId);}
     public void calculateTotalPrice(List<Ticket> tickets) {
-        ticketController.calculateTotalPrice(tickets);
-    }
+        ticketController.calculateTotalPrice(tickets);}
 
     // Shopping Cart related
     public void addTicketToCart(Ticket ticket) {
-        shoppingCartController.addTicketToCart(ticket);
-    }
-
+        shoppingCartController.addTicketToCart(ticket);}
     public void removeTicketFromCart(Ticket ticket) {
-        shoppingCartController.removeTicketFromCart(ticket);
-    }
-
+        shoppingCartController.removeTicketFromCart(ticket);}
     public void clearCart() {
-        shoppingCartController.clearCart();
-    }
+        shoppingCartController.clearCart();}
 
     public Order checkout() {
-       return shoppingCartController.checkout();
-    }
-
+       return shoppingCartController.checkout();}
     public void updateTotalPrice() {
-        shoppingCartController.updateTotalPrice();
-    }
-
+        shoppingCartController.updateTotalPrice();}
     public double getTotalPrice() {
-        return shoppingCartController.getTotalPrice();
-    }
+        return shoppingCartController.getTotalPrice();}
 
 
     // Order related
     public void createOrder(Customer customer) {
-        orderController.createOrder(customer);
-    }
+        orderController.createOrder(customer);}
     public void processOrderPayment(Order order, String cardNumber, int cvv, String cardOwner, String expirationDate) {
-        orderController.processOrderPayment(order, cardNumber, cvv, cardOwner, expirationDate);
-    }
+        orderController.processOrderPayment(order, cardNumber, cvv, cardOwner, expirationDate);}
     public void cancelOrder(int orderId) {
-        orderController.cancelOrder(orderId);
-    }
+        orderController.cancelOrder(orderId);}
     public void getOrderHistory(Customer customer) {
-        orderController.getOrderHistory(customer);
-    }
+        orderController.getOrderHistory(customer);}
     public void getOrderById(int orderId) {
-        orderController.getOrderById(orderId);
-    }
+        orderController.getOrderById(orderId);}
     public void orderAllTicketsFromCart(Customer customer) {
-        orderController.orderAllTicketsFromCart(customer);
-    }
+        orderController.orderAllTicketsFromCart(customer);}
     public Order orderTicketsForEvent(Customer customer, Event event) {
-        return orderTicketsForEvent(customer, event);
-    }
+        return orderTicketsForEvent(customer, event);}
 
 
     // Event related

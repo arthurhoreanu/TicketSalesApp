@@ -92,6 +92,17 @@ public class AdminTicketMenu {
 
     private static void handleViewAvailableTickets(Scanner scanner, Controller controller) {
         System.out.println("=== View Available Tickets for Event ===");
+
+        List<Event> events = controller.getAllEvents();
+
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+
         System.out.print("Enter Event ID: ");
         int eventId = Integer.parseInt(scanner.nextLine());
 
@@ -106,77 +117,202 @@ public class AdminTicketMenu {
 
     private static void handleReserveTicket(Scanner scanner, Controller controller) {
         System.out.println("=== Reserve Ticket ===");
-        System.out.print("Enter Ticket ID: ");
-        int ticketId = Integer.parseInt(scanner.nextLine());
-
-        Ticket ticket = controller.getTicketById(ticketId);
-        if (ticket == null) {
-            System.out.println("Ticket not found.");
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+        System.out.print("Enter Event ID: ");
+        int eventId = Integer.parseInt(scanner.nextLine());
+        Event event = controller.findEventByID(eventId);
+        if (event == null) {
+            System.out.println("Event not found.");
             return;
         }
+        if (event != null) {
+            List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+            if (tickets.isEmpty()) {
+                System.out.println("No tickets available for this event.");
+            } else {
+                System.out.println("Tickets for event " + event.getEventName() + ":");
+                tickets.forEach(System.out::println);
+                System.out.print("Enter Ticket ID: ");
+                int ticketId = Integer.parseInt(scanner.nextLine());
+                Ticket ticket = controller.getTicketById(ticketId);
+                if (ticket == null) {
+                    System.out.println("Ticket not found.");
+                    return;
+                }
+                System.out.print("Enter Purchaser Name: ");
+                String purchaserName = scanner.nextLine();
+                controller.reserveTicket(ticket, purchaserName);
+            }
+        }
 
-        System.out.print("Enter Purchaser Name: ");
-        String purchaserName = scanner.nextLine();
-
-        controller.reserveTicket(ticket, purchaserName);
     }
 
     private static void handleReleaseTicket(Scanner scanner, Controller controller) {
         System.out.println("=== Release Ticket ===");
-        System.out.print("Enter Ticket ID: ");
-        int ticketId = Integer.parseInt(scanner.nextLine());
 
-        Ticket ticket = controller.getTicketById(ticketId);
-        if (ticket == null) {
-            System.out.println("Ticket not found.");
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+        System.out.print("Enter Event ID: ");
+        int eventId = Integer.parseInt(scanner.nextLine());
+        Event event = controller.findEventByID(eventId);
+        if (event == null) {
+            System.out.println("Event not found.");
             return;
         }
+        if (event != null) {
+            List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+            if (tickets.isEmpty()) {
+                System.out.println("No tickets available for this event.");
+            } else {
+                System.out.println("Tickets for event " + event.getEventName() + ":");
+                tickets.forEach(System.out::println);
 
-        controller.releaseTicket(ticket);
+                System.out.print("Enter Ticket ID: ");
+                int ticketId = Integer.parseInt(scanner.nextLine());
+
+                Ticket ticket = controller.getTicketById(ticketId);
+                if (ticket == null) {
+                    System.out.println("Ticket not found.");
+                    return;
+                }
+
+                controller.releaseTicket(ticket);
+            }
+        }
     }
 
     private static void handleViewTicketById(Scanner scanner, Controller controller) {
         System.out.println("=== View Ticket by ID ===");
-        System.out.print("Enter Ticket ID: ");
-        int ticketId = Integer.parseInt(scanner.nextLine());
 
-        Ticket ticket = controller.getTicketById(ticketId); 
-        if (ticket != null) {
-            System.out.println("Ticket found: " + ticket);
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
         } else {
-            System.out.println("No ticket found with ID: " + ticketId);
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+        System.out.print("Enter Event ID: ");
+        int eventId = Integer.parseInt(scanner.nextLine());
+        Event event = controller.findEventByID(eventId);
+        if (event == null) {
+            System.out.println("Event not found.");
+            return;
+        }
+        if (event != null) {
+            List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+            if (tickets.isEmpty()) {
+                System.out.println("No tickets available for this event.");
+            } else {
+                System.out.println("Tickets for event " + event.getEventName() + ":");
+                tickets.forEach(System.out::println);
+
+                System.out.print("Enter Ticket ID: ");
+                int ticketId = Integer.parseInt(scanner.nextLine());
+
+                Ticket ticket = controller.getTicketById(ticketId);
+                if (ticket != null) {
+                    System.out.println("Ticket found: " + ticket);
+                } else {
+                    System.out.println("No ticket found with ID: " + ticketId);
+                }
+            }
         }
     }
 
     private static void handleDeleteTicket(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Ticket by ID ===");
-        System.out.print("Enter Ticket ID: ");
-        int ticketId = Integer.parseInt(scanner.nextLine());
 
-        controller.deleteTicket(ticketId);
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
+            }
+        }
+        System.out.print("Enter Event ID: ");
+        int eventId = Integer.parseInt(scanner.nextLine());
+        Event event = controller.findEventByID(eventId);
+        if (event == null) {
+            System.out.println("Event not found.");
+            return;
+        }
+        if (event != null) {
+            List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+            if (tickets.isEmpty()) {
+                System.out.println("No tickets available for this event.");
+            } else {
+                System.out.println("Tickets for event " + event.getEventName() + ":");
+                tickets.forEach(System.out::println);
+
+                System.out.print("Enter Ticket ID: ");
+                int ticketId = Integer.parseInt(scanner.nextLine());
+
+                controller.deleteTicket(ticketId);
+            }
+        }
     }
 
     private static void handleCalculateTotalPrice(Scanner scanner, Controller controller) {
         System.out.println("=== Calculate Total Price of Selected Tickets ===");
-        List<Ticket> tickets = new ArrayList<>();
+        List<Ticket> ticketsToBeCalculated = new ArrayList<>();
 
-        while (true) {
-            System.out.print("Enter Ticket ID (or type 'done' to finish): ");
-            String input = scanner.nextLine();
-
-            if ("done".equalsIgnoreCase(input)) {
-                break;
-            }
-
-            int ticketId = Integer.parseInt(input);
-            Ticket ticket = controller.getTicketById(ticketId);
-            if (ticket != null) {
-                tickets.add(ticket);
-            } else {
-                System.out.println("Ticket with ID " + ticketId + " not found.");
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+        } else {
+            for (Event event : events) {
+                System.out.println(event);
             }
         }
+        System.out.print("Enter Event ID: ");
+        int eventId = Integer.parseInt(scanner.nextLine());
+        Event event = controller.findEventByID(eventId);
+        if (event == null) {
+            System.out.println("Event not found.");
+            return;
+        }
+        if (event != null) {
+            List<Ticket> tickets = controller.getTicketsByEvent(eventId);
+            if (tickets.isEmpty()) {
+                System.out.println("No tickets available for this event.");
+            } else {
+                System.out.println("Tickets for event " + event.getEventName() + ":");
+                tickets.forEach(System.out::println);
 
-        controller.calculateTotalPrice(tickets);
+                while (true) {
+                    System.out.print("Enter Ticket ID (or type 'done' to finish): ");
+                    String input = scanner.nextLine();
+
+                    if ("done".equalsIgnoreCase(input)) {
+                        break;
+                    }
+
+                    int ticketId = Integer.parseInt(input);
+                    Ticket ticketToBeCalculated = controller.getTicketById(ticketId);
+                    if (ticketToBeCalculated != null) {
+                        ticketsToBeCalculated.add(ticketToBeCalculated);
+                    } else {
+                        System.out.println("Ticket with ID " + ticketId + " not found.");
+                    }
+                }
+
+                controller.calculateTotalPrice(ticketsToBeCalculated);
+            }
+        }
     }
 }
