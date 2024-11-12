@@ -4,7 +4,6 @@ package model;
  * Represents an admin user with specific access privileges.
  */
 public class Admin extends User {
-    private String role;
 
     /**
      * Constructs an Admin with the specified user details.
@@ -15,16 +14,6 @@ public class Admin extends User {
      */
     public Admin(int userID, String username, String email, String password) {
         super(userID, username, email, password);
-        this.role = role;
-    }
-
-    /**
-     * Retrieves the access level of the user, specific to admins.
-     * @return a string representing the access level, which is "Admin" for this class
-     */
-    @Override
-    public String getAccessLevel() {
-        return "Admin";
     }
 
     /**
@@ -33,6 +22,6 @@ public class Admin extends User {
      */
     @Override
     public String toString() {
-        return "Admin{" + "role='" + role + '\'' + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
+        return "Admin{" + "role='" + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
     }
 }

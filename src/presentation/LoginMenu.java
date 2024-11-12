@@ -1,10 +1,21 @@
 package presentation;
 
 import controller.Controller;
-
 import java.util.Scanner;
 
+/**
+ * Displays the main login menu, allowing users to create an account, log in, or exit the application.
+ */
 public class LoginMenu {
+
+    /**
+     * Displays the main login menu options to the user and processes their choice.
+     * Users can create an account, log in, or exit the application.
+     *
+     * @param scanner    the scanner used to read user input
+     * @param controller the controller managing account-related actions
+     * @return true if the application should continue running; false if it should exit
+     */
     public static boolean display(Scanner scanner, Controller controller) {
         System.out.println("==== Main Menu ====");
         System.out.println("1. Create Account");

@@ -1,11 +1,22 @@
 package presentation;
 
 import controller.Controller;
-import model.*;
-
+import model.Admin;
+import model.User;
 import java.util.Scanner;
 
+/**
+ * Provides actions related to account management, such as creating, logging in, and deleting user accounts.
+ */
 public class AccountAction {
+
+    /**
+     * Handles account creation by prompting for role, username, email, and password.
+     * Ensures unique usernames and valid domain emails for Admin accounts.
+     *
+     * @param scanner    the scanner to read user input
+     * @param controller the controller managing account-related actions
+     */
     public static void handleCreateAccount(Scanner scanner, Controller controller) {
         System.out.println("=== Create Account ===");
 
@@ -46,6 +57,12 @@ public class AccountAction {
         controller.createAccount(role, username, email, password);
     }
 
+    /**
+     * Handles user login by prompting for username and password.
+     *
+     * @param scanner    the scanner to read user input
+     * @param controller the controller managing login actions
+     */
     public static void handleLogin(Scanner scanner, Controller controller) {
         System.out.println("=== Login ===");
         System.out.print("Enter username: ");
@@ -55,6 +72,13 @@ public class AccountAction {
         controller.login(username, password);
     }
 
+    /**
+     * Handles deletion of a user account by listing accounts, prompting for an account ID, and deleting the selected account.
+     * Excludes Admin accounts from deletion.
+     *
+     * @param scanner    the scanner to read user input
+     * @param controller the controller managing account deletion actions
+     */
     public static void handleDeleteUserAccount(Scanner scanner, Controller controller) {
         System.out.println("=== Delete User Account ===");
 
@@ -67,6 +91,4 @@ public class AccountAction {
         int id = Integer.parseInt(scanner.nextLine());
         controller.deleteAccount(id);
     }
-
-
 }
