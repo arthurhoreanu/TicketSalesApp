@@ -103,4 +103,26 @@ public class VenueController {
             System.out.println("No preferred seat available for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "'.");
         }
     }
+
+    // Finds a venue by its ID
+    public Venue findVenueById(int id) {
+        Venue venue = venueService.findVenueById(id);
+        if (venue != null) {
+            System.out.println("Venue found: " + venue.getVenueName() + " at " + venue.getLocation());
+        } else {
+            System.out.println("Venue with ID " + id + " not found.");
+        }
+        return venue;
+    }
+
+    // Retrieves a list of available seats in the venue for a specific event
+    public void getAvailableSeatsList(Venue venue, Event event) {
+        List<Seat> availableSeats = venueService.getAvailableSeatsList(venue, event);
+        if (availableSeats.isEmpty()) {
+            System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
+        } else {
+            System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "':");
+            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSitNumber()));
+        }
+    }
 }

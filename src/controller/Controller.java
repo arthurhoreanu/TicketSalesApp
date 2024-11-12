@@ -112,8 +112,8 @@ public class Controller {
     public void recommendSeat(Customer customer, Section section, Event event) {
         sectionController.recommendSeat(customer, section, event);
     }
-    public void createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
-        sectionController.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);
+    public Section createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
+        return sectionController.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);
     }
     public void getSectionInfo(Section section, Event event) {
         sectionController.getSectionInfo(section, event);
@@ -135,8 +135,9 @@ public class Controller {
     public void getAllVenues() {
         venueController.getAllVenues();
     }
-    public void findVenueByName(String name) {
+    public Venue findVenueByName(String name) {
         venueController.findVenueByName(name);
+        return null;
     }
     public void getVenuesByLocationOrName(String locationOrVenueName) {
         venueController.getVenuesByLocationOrName(locationOrVenueName);
@@ -146,6 +147,9 @@ public class Controller {
     }
     public void recommendSeat(Customer customer, Venue venue, Event event) {
         venueController.recommendSeat(customer, venue, event);
+    }
+    public Venue findVenueById(int id){
+        return venueController.findVenueById(id);
     }
 
     // Ticket related

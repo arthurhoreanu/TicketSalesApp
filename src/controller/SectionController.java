@@ -38,10 +38,12 @@ public class SectionController {
     }
 
     // Creates a new section with a specified number of rows and seats per row within a venue
-    public void createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
+    public Section createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
         Section section = sectionService.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);
         System.out.println("Section '" + sectionName + "' created in venue '" + venue.getVenueName() + "' with " + rowCount + " rows and " + seatsPerRow + " seats per row.");
+        return section;
     }
+
 
     // Retrieves information about the section, including total capacity and available seats
     public void getSectionInfo(Section section, Event event) {
