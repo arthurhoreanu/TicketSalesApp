@@ -1,6 +1,7 @@
 package presentation.admin;
 
 import controller.Controller;
+import model.Artist;
 import model.Section;
 import model.Venue;
 import model.Event;
@@ -75,17 +76,35 @@ public class AdminVenueMenu {
 
     private static void handleViewVenues(Controller controller) {
         System.out.println("=== View Venues ===");
-        controller.getAllVenues();
+
+        List<Venue> venues = controller.getAllVenues();
+        if (venues.isEmpty()) {
+            System.out.println("No venues available.");
+            return; // Exit if there are no artists to update
+        } else {
+            for (Venue venue : venues) {
+                System.out.println(venue);
+            }
+        }
     }
 
     private static void handleUpdateVenue(Scanner scanner, Controller controller) {
         System.out.println("=== Update Venue ===");
-        handleViewVenues(controller);
+
+        List<Venue> venues = controller.getAllVenues();
+        if (venues.isEmpty()) {
+            System.out.println("No venues available.");
+            return; // Exit if there are no artists to update
+        } else {
+            for (Venue venue : venues) {
+                System.out.println(venue);
+            }
+        }
 
         System.out.print("Enter Venue ID to update: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueByName(controller.findVenueById(venueId).getVenueName());
+        Venue venue = controller.findVenueById(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
@@ -125,7 +144,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to add a section: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueByName(controller.findVenueById(venueId).getVenueName());
+        Venue venue = controller.findVenueById(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
@@ -152,7 +171,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to view sections: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueByName(controller.findVenueById(venueId).getVenueName());
+        Venue venue = controller.findVenueById(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
@@ -170,7 +189,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to check available seats: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueByName(controller.findVenueById(venueId).getVenueName());
+        Venue venue = controller.findVenueById(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;

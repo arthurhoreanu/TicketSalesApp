@@ -96,6 +96,12 @@ public class Ticket implements Identifiable {
         isSold = sold;
     }
 
+    // In Ticket class
+    public int getEventId() {
+        return event.getID(); // Assuming `event` is an `Event` object in Ticket
+    }
+
+
     //TODO why not
     public void markAsSold(String purchaserName) {
         this.isSold = true;

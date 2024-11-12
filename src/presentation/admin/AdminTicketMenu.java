@@ -3,6 +3,7 @@ package presentation.admin;
 import controller.Controller;
 import model.Event;
 import model.Ticket;
+import model.Venue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,17 @@ public class AdminTicketMenu {
 
     private static void handleGenerateTickets(Scanner scanner, Controller controller) {
         System.out.println("=== Generate Tickets for Event ===");
+
+        List<Event> events = controller.getAllEvents();
+        if (events.isEmpty()) {
+            System.out.println("No events available.");
+            return;
+        } else {
+            for (Event event : events) {
+                System.out.println(events);
+            }
+        }
+
         System.out.print("Enter Event ID: ");
         int eventId = Integer.parseInt(scanner.nextLine());
 

@@ -37,8 +37,7 @@ public class AdminMenu {
                 AdminEventMenu.display(scanner, controller);
                 break;
             case "5":
-                // TODO: priority level 2
-                // AdminTicketMenu.display(scanner, controller);
+                AdminTicketMenu.display(scanner, controller);
                 break;
             case "6":
                 AdminVenueMenu.display(scanner, controller);

@@ -53,24 +53,13 @@ public class VenueController {
     }
 
     // Retrieves a list of all venues
-    public void getAllVenues() {
-        List<Venue> venues = venueService.getAllVenues();
-        if (venues.isEmpty()) {
-            System.out.println("No venues found in the repository.");
-        } else {
-            System.out.println("Venues in the repository:");
-            venues.forEach(venue -> System.out.println("- " + venue.getVenueName() + " at " + venue.getLocation()));
-        }
+    public List<Venue> getAllVenues() {
+        return venueService.getAllVenues();
     }
 
     // Finds a venue by name
-    public void findVenueByName(String name) {
-        Venue venue = venueService.findVenueByName(name);
-        if (venue != null) {
-            System.out.println("Venue found: " + venue.getVenueName() + " at " + venue.getLocation());
-        } else {
-            System.out.println("Venue with name '" + name + "' not found.");
-        }
+    public Venue findVenueByName(String name) {
+        return venueService.findVenueByName(name);
     }
 
     // Finds venues by location or name
