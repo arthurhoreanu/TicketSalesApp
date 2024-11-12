@@ -59,13 +59,14 @@ public class TicketController {
     }
 
     // Retrieves ticket information by ticket ID
-    public void getTicketById(int ticketId) {
+    public Ticket getTicketById(int ticketId) {
         Ticket ticket = ticketService.getTicketById(ticketId);
         if (ticket != null) {
             System.out.println("Ticket found: " + ticket);
         } else {
             System.out.println("No ticket found with ID: " + ticketId);
         }
+        return ticket;
     }
 
     // Deletes a ticket by ID

@@ -165,8 +165,8 @@ public class Controller {
     public void releaseTicket(Ticket ticket) {
         ticketController.releaseTicket(ticket);
     }
-    public void getTicketById(int ticketId) {
-        ticketController.getTicketById(ticketId);
+    public Ticket getTicketById(int ticketId) {
+        return ticketController.getTicketById(ticketId);
     }
     public void deleteTicket(int ticketId) {
         ticketController.deleteTicket(ticketId);
