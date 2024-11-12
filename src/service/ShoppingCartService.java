@@ -1,53 +1,46 @@
 package service;
 
+import model.Order;
 import model.ShoppingCart;
 import model.Ticket;
+import model.Customer;
 import repository.IRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCartService {
     private final IRepository<ShoppingCart> shoppingCartRepository;
+    private final IRepository<Order> orderRepository;
+    private final CustomerService customerService; // Inject CustomerService to get the current customer
 
-    public ShoppingCartService(IRepository<ShoppingCart> shoppingCartRepository) {
+    public ShoppingCartService(IRepository<ShoppingCart> shoppingCartRepository, IRepository<Order> orderRepository, CustomerService customerService) {
         this.shoppingCartRepository = shoppingCartRepository;
+        this.orderRepository = orderRepository;
+        this.customerService = customerService;
     }
 
     // Adds a ticket to the shopping cart
     public boolean addTicketToCart(ShoppingCart cart, Ticket ticket) {
         List<Ticket> items = cart.getItems();
-        boolean ticketExists = false;
-
-        // Check if the ticket is already in the cart
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).equals(ticket)) {
-                ticketExists = true;
-                break;
-            }
+        if (items.contains(ticket)) {
+            return false; // Ticket is already in the cart
         }
-
-        if (!ticketExists) {
-            items.add(ticket);
-            updateTotalPrice(cart);
-            shoppingCartRepository.update(cart);
-            return true;
-        }
-        return false;
+        items.add(ticket);
+        updateTotalPrice(cart);
+        shoppingCartRepository.update(cart);
+        return true;
     }
 
     // Removes a ticket from the shopping cart
     public boolean removeTicketFromCart(ShoppingCart cart, Ticket ticket) {
         List<Ticket> items = cart.getItems();
-
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).equals(ticket)) {
-                items.remove(i);
-                updateTotalPrice(cart);
-                shoppingCartRepository.update(cart);
-                return true;
-            }
+        if (!items.remove(ticket)) {
+            return false; // Ticket not found in the cart
         }
-        return false;
+        updateTotalPrice(cart);
+        shoppingCartRepository.update(cart);
+        return true;
     }
 
     // Clears all tickets from the shopping cart
@@ -57,26 +50,32 @@ public class ShoppingCartService {
         shoppingCartRepository.update(cart);
     }
 
-    // Checks out the shopping cart, marking tickets as sold
-    public void checkout(ShoppingCart cart, String purchaserName) {
-        List<Ticket> items = cart.getItems();
-
-        for (int i = 0; i < items.size(); i++) {
-            items.get(i).markAsSold(purchaserName);
+    // Checks out the shopping cart, marking tickets as sold and creating an order
+    public Order checkout(ShoppingCart cart) {
+        List<Ticket> items = new ArrayList<>(cart.getItems());
+        if (items.isEmpty()) {
+            return null; // Return null if cart is empty to indicate checkout failure
         }
 
-        clearCart(cart);
+        Customer currentCustomer = customerService.getCurrentCustomer();
+
+        for (Ticket ticket : items) {
+            ticket.markAsSold(currentCustomer.getUsername());
+        }
+
+        clearCart(cart); // Clear the cart after checkout
+
+        // Create and save a new Order for the customer
+        Order order = new Order(currentCustomer, items);
+        orderRepository.create(order);
+        return order;  // Return the created Order
     }
 
     // Calculates the total price of items in the shopping cart
-    public void updateTotalPrice(ShoppingCart cart) { // Changed from private to public
-        double totalPrice = 0.0;
-        List<Ticket> items = cart.getItems();
-
-        for (int i = 0; i < items.size(); i++) {
-            totalPrice += items.get(i).getPrice();
-        }
-
+    public void updateTotalPrice(ShoppingCart cart) {
+        double totalPrice = cart.getItems().stream()
+                .mapToDouble(Ticket::getPrice)
+                .sum();
         cart.setTotalPrice(totalPrice);
     }
 
