@@ -14,6 +14,10 @@ public class CustomerService {
         this.currentCustomer = customer;
     }
 
+    public Customer getCurrentCustomer() {
+        return currentCustomer;
+    }
+
     public boolean addFavorite(FavouriteEntity item) {
         currentCustomer.addFavorite(item);
         return true;

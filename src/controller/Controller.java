@@ -175,26 +175,31 @@ public class Controller {
         ticketController.calculateTotalPrice(tickets);
     }
 
-
     // Shopping Cart related
-    public void addTicketToCart(ShoppingCart cart, Ticket ticket) {
-        shoppingCartController.addTicketToCart(cart, ticket);
+    public void addTicketToCart(Ticket ticket) {
+        shoppingCartController.addTicketToCart(ticket);
     }
-    public void removeTicketFromCart(ShoppingCart cart, Ticket ticket) {
-        shoppingCartController.removeTicketFromCart(cart, ticket);
+
+    public void removeTicketFromCart(Ticket ticket) {
+        shoppingCartController.removeTicketFromCart(ticket);
     }
-    public void clearCart(ShoppingCart cart) {
-        shoppingCartController.clearCart(cart);
+
+    public void clearCart() {
+        shoppingCartController.clearCart();
     }
-    public void checkout(ShoppingCart cart, String purchaserName) {
-        shoppingCartController.checkout(cart, purchaserName);
+
+    public Order checkout() {
+       return shoppingCartController.checkout();
     }
-    public void updateTotalPrice(ShoppingCart cart) {
-        shoppingCartController.updateTotalPrice(cart);
+
+    public void updateTotalPrice() {
+        shoppingCartController.updateTotalPrice();
     }
-    public void getTotalPrice(ShoppingCart cart) {
-        shoppingCartController.getTotalPrice(cart);
+
+    public double getTotalPrice() {
+        return shoppingCartController.getTotalPrice();
     }
+
 
     // Order related
     public void createOrder(Customer customer) {
@@ -215,8 +220,8 @@ public class Controller {
     public void orderAllTicketsFromCart(Customer customer) {
         orderController.orderAllTicketsFromCart(customer);
     }
-    public void orderTicketsForEvent(Customer customer, Event event) {
-        orderController.orderTicketsForEvent(customer, event);
+    public Order orderTicketsForEvent(Customer customer, Event event) {
+        return orderTicketsForEvent(customer, event);
     }
 
 

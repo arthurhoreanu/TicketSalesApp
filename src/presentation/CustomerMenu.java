@@ -18,6 +18,8 @@ public class CustomerMenu {
         System.out.println("4. Search for Locations/Venues");
         System.out.println("5. View Previous Orders");
         System.out.println("6. Manage Favorites");
+        System.out.println("7. Manage Shopping Cart");
+        System.out.println("8. Checkout Shopping Cart");
         System.out.println("0. Exit");
         System.out.println("=======================");
 
@@ -39,11 +41,16 @@ public class CustomerMenu {
                 handleViewEventsByLocation(scanner, controller);
                 break;
             case "5":
-                // TODO: not a priority right now, order needs to work first=
-                //handleViewPreviousOrders(controller);
+                handleViewPreviousOrders(controller);
                 break;
             case "6":
-                handleManageFavourites(scanner, controller);
+                handleManageFavorites(scanner, controller);
+                break;
+            case "7":
+                handleManageShoppingCart(scanner, controller);
+                break;
+            case "8":
+                handleCheckout(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
@@ -56,62 +63,49 @@ public class CustomerMenu {
 
     private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
         System.out.println("==== Suggested Events ====");
-
-        // Step 1: Retrieve favorites
         Set<FavouriteEntity> favourites = controller.getFavourites();
         List<Event> suggestedEvents = new ArrayList<>();
 
-        // Step 2: Process each favorite item (either Artist or Athlete)
         for (FavouriteEntity entity : favourites) {
-            if (entity instanceof Artist favoriteArtist) {
-                // Add upcoming events of the favorite artist
-                suggestedEvents.addAll(controller.getUpcomingEventsForArtist(favoriteArtist.getID()));
-
-                // Find other artists in the same genre and add their upcoming events
-                List<Artist> relatedArtists = controller.findArtistsByGenre(favoriteArtist.getGenre());
-                for (Artist artist : relatedArtists) {
-                    if (!artist.equals(favoriteArtist)) { // Avoid duplicates
-                        suggestedEvents.addAll(controller.getUpcomingEventsForArtist(artist.getID()));
+            if (entity instanceof Artist) {
+                Artist artist = (Artist) entity;
+                suggestedEvents.addAll(controller.getUpcomingEventsForArtist(artist.getID()));
+                List<Artist> relatedArtists = controller.findArtistsByGenre(artist.getGenre());
+                for (Artist related : relatedArtists) {
+                    if (!related.equals(artist)) {
+                        suggestedEvents.addAll(controller.getUpcomingEventsForArtist(related.getID()));
                     }
                 }
-            } else if (entity instanceof Athlete favoriteAthlete) {
-                // Add upcoming events of the favorite athlete
-                suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(favoriteAthlete.getID()));
-
-                // Find other athletes in the same sport and add their upcoming events
-                List<Athlete> relatedAthletes = controller.findAthletesBySport(favoriteAthlete.getAthleteSport());
-                for (Athlete athlete : relatedAthletes) {
-                    if (!athlete.equals(favoriteAthlete)) { // Avoid duplicates
-                        suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(athlete.getID()));
+            } else if (entity instanceof Athlete) {
+                Athlete athlete = (Athlete) entity;
+                suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(athlete.getID()));
+                List<Athlete> relatedAthletes = controller.findAthletesBySport(athlete.getAthleteSport());
+                for (Athlete related : relatedAthletes) {
+                    if (!related.equals(athlete)) {
+                        suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(related.getID()));
                     }
                 }
             }
         }
 
-        // Step 3: Display suggested events
         if (suggestedEvents.isEmpty()) {
             System.out.println("No suggested events found.");
         } else {
             System.out.println("Here are some events you might be interested in:");
-            for (Event event : suggestedEvents) {
-                System.out.println(event);
-            }
+            suggestedEvents.forEach(System.out::println);
         }
     }
-
 
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
         System.out.print("Enter artist or athlete name: ");
         String name = scanner.nextLine();
 
-        // First, try to find the name as an artist
         Artist artist = controller.findArtistByName(name);
         if (artist != null) {
             upcomingEventsAndMarkAsFavourite(scanner, controller, artist);
             return;
         }
 
-        // If not found as an artist, try to find as an athlete
         Athlete athlete = controller.findAthleteByName(name);
         if (athlete != null) {
             upcomingEventsAndMarkAsFavourite(scanner, controller, athlete);
@@ -133,17 +127,149 @@ public class CustomerMenu {
         }
     }
 
-    //    private static void handleViewPreviousOrders(Controller controller) {
-//        List<Order> previousOrders = controller.getPreviousOrders();
-//        if (previousOrders.isEmpty()) {
-//            System.out.println("No previous orders found.");
-//        } else {
-//            System.out.println("Your previous orders:");
-//            previousOrders.forEach(System.out::println);
-//        }
-//    }
+    private static void handleViewPreviousOrders(Controller controller) {
+        System.out.println("==== Previous Orders ====");
+        controller.getOrderHistory((Customer) controller.getCurrentUser());
+    }
 
-    // Helper method to display events and ask to mark as favorite
+    private static void handleManageFavorites(Scanner scanner, Controller controller) {
+        boolean inFavoritesMenu = true;
+        while (inFavoritesMenu) {
+            System.out.println("==== Manage Favorites ====");
+            System.out.println("1. View Favorites");
+            System.out.println("2. Delete Favorite");
+            System.out.println("0. Back to Customer Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    Set<FavouriteEntity> favorites = controller.getFavourites();
+                    if (favorites.isEmpty()) {
+                        System.out.println("You have no favorites.");
+                    } else {
+                        favorites.forEach(fav -> System.out.println("- " + fav.getName()));
+                    }
+                    break;
+                case "2":
+                    favorites = controller.getFavourites();
+                    if (favorites.isEmpty()) {
+                        System.out.println("You have no favorites to delete.");
+                        break;
+                    }
+                    System.out.print("Enter the name of the favorite to delete: ");
+                    String favoriteName = scanner.nextLine();
+                    FavouriteEntity itemToDelete = favorites.stream()
+                            .filter(fav -> fav.getName().equalsIgnoreCase(favoriteName))
+                            .findFirst()
+                            .orElse(null);
+                    if (itemToDelete != null) {
+                        controller.removeFavorite(itemToDelete);
+                        System.out.println(favoriteName + " has been removed from your favorites.");
+                    } else {
+                        System.out.println("No favorite found with that name.");
+                    }
+                    break;
+                case "0":
+                    inFavoritesMenu = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private static void handleManageShoppingCart(Scanner scanner, Controller controller) {
+        boolean inCartMenu = true;
+        while (inCartMenu) {
+            System.out.println("==== Shopping Cart ====");
+            System.out.println("1. View Cart");
+            System.out.println("2. Add Ticket to Cart");
+            System.out.println("3. Remove Ticket from Cart");
+            System.out.println("0. Back to Customer Menu");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    List<Ticket> cartItems = ((Customer) controller.getCurrentUser()).getShoppingCart().getItems();
+                    if (cartItems.isEmpty()) {
+                        System.out.println("Your shopping cart is empty.");
+                    } else {
+                        cartItems.forEach(System.out::println);
+                    }
+                    break;
+                case "2":
+                    System.out.print("Enter Ticket ID to add: ");
+                    int ticketId = Integer.parseInt(scanner.nextLine());
+                    Ticket ticketToAdd = controller.getTicketById(ticketId);
+                    if (ticketToAdd != null) {
+                        controller.addTicketToCart(ticketToAdd);
+                    } else {
+                        System.out.println("Ticket not found.");
+                    }
+                    break;
+                case "3":
+                    System.out.print("Enter Ticket ID to remove: ");
+                    int ticketToRemoveId = Integer.parseInt(scanner.nextLine());
+                    Ticket ticketToRemove = controller.getTicketById(ticketToRemoveId);
+                    if (ticketToRemove != null) {
+                        controller.removeTicketFromCart(ticketToRemove);
+                    } else {
+                        System.out.println("Ticket not found in the cart.");
+                    }
+                    break;
+                case "0":
+                    inCartMenu = false;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private static void handleCheckout(Scanner scanner, Controller controller) {
+        // Check if the shopping cart is empty
+        Customer currentCustomer = (Customer) controller.getCurrentUser();
+        if (currentCustomer.getShoppingCart().getItems().isEmpty()) {
+            System.out.println("Your shopping cart is empty. Add items before checking out.");
+            return;
+        }
+
+        // Prompt for payment details
+        System.out.println("Proceeding to checkout...");
+        System.out.print("Enter card number: ");
+        String cardNumber = scanner.nextLine();
+        System.out.print("Enter CVV: ");
+        int cvv = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter card owner name: ");
+        String cardOwner = scanner.nextLine();
+        System.out.print("Enter expiration date (MM/YY): ");
+        String expirationDate = scanner.nextLine();
+
+        // Initialize the PaymentProcessor
+        PaymentProcessor paymentProcessor = new BasicPaymentProcessor();
+
+        // Validate and process payment
+        if (!paymentProcessor.enterPaymentDetails(cardNumber, cvv, cardOwner, expirationDate)) {
+            System.out.println("Payment details are invalid. Please try again.");
+            return;
+        }
+        double totalAmount = controller.getTotalPrice(); // Assuming controller has this method to fetch cart's total price
+        if (!paymentProcessor.processPayment(totalAmount)) {
+            System.out.println("Payment failed. Please check your payment information or try a different card.");
+            return;
+        }
+
+        // Perform checkout
+        Order order = controller.checkout();
+        if (order != null) {
+            System.out.println("Checkout completed. Order created successfully: " + order);
+        } else {
+            System.out.println("Checkout failed. Please try again.");
+        }
+    }
+
     private static void upcomingEventsAndMarkAsFavourite(Scanner scanner, Controller controller, Object performer) {
         String name;
         int id;
@@ -171,70 +297,10 @@ public class CustomerMenu {
             String response = scanner.nextLine();
 
             if ("yes".equalsIgnoreCase(response)) {
-                // The `performer` object is already an instance of either Artist, Athlete, or Event
                 FavouriteEntity favoriteItem = (FavouriteEntity) performer;
-                controller.addFavorite(favoriteItem); // Pass the actual FavoriteItem object
+                controller.addFavorite(favoriteItem);
+                System.out.println(name + " has been added to your favorites.");
             }
         }
     }
-
-    private static void handleManageFavourites(Scanner scanner, Controller controller) {
-        boolean inFavoritesMenu = true;
-        while (inFavoritesMenu) {
-            System.out.println("==== Manage Favorites ====");
-            System.out.println("1. View Favorites");
-            System.out.println("2. Delete Favorite");
-            System.out.println("0. Back to Customer Menu");
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1": // View Favorites
-                    Set<FavouriteEntity> favorites = controller.getFavourites();
-                    if (favorites.isEmpty()) {
-                        System.out.println("You have no favorites.");
-                    } else {
-                        System.out.println("Favorite Artists/Athletes:");
-                        favorites.forEach(favorite -> System.out.println("- " + favorite.getName()));
-                    }
-                    break;
-
-                case "2": // Delete Favorite
-                    favorites = controller.getFavourites();
-                    if (favorites.isEmpty()) {
-                        System.out.println("You have no favorites to delete.");
-                        break;
-                    }
-
-                    // Display all favorites before deletion
-                    System.out.println("Favorite Artists/Athletes:");
-                    favorites.forEach(favorite -> System.out.println("- " + favorite.getName()));
-
-                    System.out.print("Enter the name of the favorite to delete: ");
-                    String favoriteName = scanner.nextLine();
-
-                    // Find the favorite by name
-                    FavouriteEntity itemToDelete = favorites.stream()
-                            .filter(favorite -> favorite.getName().equalsIgnoreCase(favoriteName))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (itemToDelete != null) {
-                        controller.removeFavorite(itemToDelete);
-                        System.out.println(favoriteName + " has been removed from your favorites.");
-                    } else {
-                        System.out.println("No favorite found with that name.");
-                    }
-                    break;
-
-                case "0": // Back to Customer Menu
-                    inFavoritesMenu = false;
-                    break;
-
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        }
-    }
-
 }

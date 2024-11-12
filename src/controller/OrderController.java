@@ -64,13 +64,14 @@ public class OrderController {
     }
 
     // Orders all tickets from the customer's shopping cart
-    public void orderAllTicketsFromCart(Customer customer) {
+    public Order orderAllTicketsFromCart(Customer customer) {
         Order order = orderService.orderAllTicketsFromCart(customer);
         if (order != null) {
             System.out.println("Order created successfully for all items in the cart. Order ID: " + order.getID());
         } else {
             System.out.println("Failed to create order. The shopping cart may be empty.");
         }
+        return order;
     }
 
     // Orders tickets for a specific event from the customer's cart
