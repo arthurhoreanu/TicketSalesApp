@@ -85,7 +85,7 @@ public class VenueService {
     }
 
     // Manually finds a venue by its ID
-    private Venue findVenueById(int id) {
+    public Venue findVenueById(int id) {
         return venueRepository.getAll().stream()
                 .filter(venue -> venue.getID() == id)
                 .findFirst()

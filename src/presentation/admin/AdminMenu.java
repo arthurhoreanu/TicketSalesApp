@@ -42,7 +42,7 @@ public class AdminMenu {
                 break;
             case "6":
                 // TODO: priority level 1
-                // AdminVenueMenu.display(scanner, controller);
+                AdminVenueMenu.display(scanner, controller);
                 break;
             case "7":
                 AdminArtistMenu.display(scanner, controller);
