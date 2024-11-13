@@ -1,5 +1,3 @@
-// TODO JavaDocs
-
 package controller;
 
 import model.Customer;
@@ -11,14 +9,28 @@ import service.SectionService;
 
 import java.util.List;
 
+/**
+ * The SectionController class provides methods to handle operations related to sections within a venue,
+ * including seat availability, seat recommendations, section creation, and section information retrieval.
+ */
 public class SectionController {
     private final SectionService sectionService;
 
+    /**
+     * Constructs a SectionController with the specified SectionService.
+     *
+     * @param sectionService the service handling section-related operations
+     */
     public SectionController(SectionService sectionService) {
         this.sectionService = sectionService;
     }
 
-    // Retrieves available seats in a section for a specific event
+    /**
+     * Retrieves and displays available seats in the specified section for a given event.
+     *
+     * @param section the section in which to check for available seats
+     * @param event   the event for which seat availability is checked
+     */
     public void getAvailableSeats(Section section, Event event) {
         List<Seat> availableSeats = sectionService.getAvailableSeats(section, event);
         if (availableSeats.isEmpty()) {
@@ -29,7 +41,13 @@ public class SectionController {
         }
     }
 
-    // Recommends a seat in a section based on customer preferences for a specific event
+    /**
+     * Recommends a seat in the specified section based on customer preferences for a given event.
+     *
+     * @param customer the customer for whom the seat is recommended
+     * @param section  the section in which to recommend a seat
+     * @param event    the event for which the seat recommendation is made
+     */
     public void recommendSeat(Customer customer, Section section, Event event) {
         Seat recommendedSeat = sectionService.recommendSeat(customer, section, event);
         if (recommendedSeat != null) {
@@ -39,15 +57,30 @@ public class SectionController {
         }
     }
 
-    // Creates a new section with a specified number of rows and seats per row within a venue
+    /**
+     * Creates a new section within the specified venue, with a specified number of rows and seats per row.
+     *
+     * @param sectionName   the name of the section to be created
+     * @param sectionId     the unique ID of the section
+     * @param sectionCapacity the total capacity of the section
+     * @param rowCount      the number of rows in the section
+     * @param seatsPerRow   the number of seats per row in the section
+     * @param venue         the venue where the section is created
+     * @return the created Section object
+     */
     public Section createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
         Section section = sectionService.createSectionWithSeats(sectionName, sectionId, sectionCapacity, rowCount, seatsPerRow, venue);
         System.out.println("Section '" + sectionName + "' created in venue '" + venue.getVenueName() + "' with " + rowCount + " rows and " + seatsPerRow + " seats per row.");
         return section;
     }
 
-
-    // Retrieves information about the section, including total capacity and available seats
+    /**
+     * Retrieves and displays information about the specified section, including its total capacity
+     * and the number of available seats for a given event.
+     *
+     * @param section the section for which information is retrieved
+     * @param event   the event for which available seats are counted
+     */
     public void getSectionInfo(Section section, Event event) {
         int availableSeatsCount = sectionService.getAvailableSeats(section, event).size();
         System.out.println("Section '" + section.getSectionName() + "' has a capacity of " + section.getSectionCapacity() + " seats. Currently available seats for event '" + event.getEventName() + "': " + availableSeatsCount);
