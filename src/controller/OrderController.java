@@ -1,5 +1,3 @@
-// TODO JavaDocs
-
 package controller;
 
 import model.*;
@@ -7,14 +5,27 @@ import service.OrderService;
 
 import java.util.List;
 
+/**
+ * The OrderController class provides methods to handle operations related to orders, including
+ * order creation, payment processing, cancellation, and retrieval of order history.
+ */
 public class OrderController {
     private final OrderService orderService;
 
+    /**
+     * Constructs an OrderController with the specified OrderService.
+     *
+     * @param orderService the service handling order-related operations
+     */
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
-    // Creates a new order from the customer's shopping cart
+    /**
+     * Creates a new order for the specified customer based on the items in their shopping cart.
+     *
+     * @param customer the customer for whom the order is created
+     */
     public void createOrder(Customer customer) {
         Order order = orderService.createOrder(customer);
         if (order != null) {
@@ -24,7 +35,15 @@ public class OrderController {
         }
     }
 
-    // Processes payment for an order
+    /**
+     * Processes the payment for a specified order using provided payment details.
+     *
+     * @param order       the order for which payment is to be processed
+     * @param cardNumber  the card number for the payment
+     * @param cvv         the CVV code for the card
+     * @param cardOwner   the name of the card owner
+     * @param expirationDate the expiration date of the card in MM/YY format
+     */
     public void processOrderPayment(Order order, String cardNumber, int cvv, String cardOwner, String expirationDate) {
         boolean paymentSuccessful = orderService.processOrderPayment(order, cardNumber, cvv, cardOwner, expirationDate);
         if (paymentSuccessful) {
@@ -34,7 +53,11 @@ public class OrderController {
         }
     }
 
-    // Cancels an order by its ID
+    /**
+     * Cancels an order with the specified order ID.
+     *
+     * @param orderId the ID of the order to be canceled
+     */
     public void cancelOrder(int orderId) {
         boolean canceled = orderService.cancelOrder(orderId);
         if (canceled) {
@@ -44,7 +67,11 @@ public class OrderController {
         }
     }
 
-    // Retrieves order history for a customer
+    /**
+     * Retrieves and prints the order history for a specified customer.
+     *
+     * @param customer the customer whose order history is to be retrieved
+     */
     public void getOrderHistory(Customer customer) {
         List<Order> history = orderService.getOrderHistory(customer);
         if (history.isEmpty()) {
@@ -55,7 +82,11 @@ public class OrderController {
         }
     }
 
-    // Retrieves an order by its ID
+    /**
+     * Retrieves and prints the details of an order with the specified ID.
+     *
+     * @param orderID the ID of the order to be retrieved
+     */
     public void getOrderByID(int orderID) {
         Order order = orderService.getOrderByID(orderID);
         if (order != null) {
@@ -65,7 +96,12 @@ public class OrderController {
         }
     }
 
-    // Orders all tickets from the customer's shopping cart
+    /**
+     * Creates an order for all tickets in the customer's shopping cart and prints the order ID.
+     *
+     * @param customer the customer for whom the order is created
+     * @return the created order, or null if the shopping cart is empty
+     */
     public Order orderAllTicketsFromCart(Customer customer) {
         Order order = orderService.orderAllTicketsFromCart(customer);
         if (order != null) {
@@ -76,7 +112,12 @@ public class OrderController {
         return order;
     }
 
-    // Orders tickets for a specific event from the customer's cart
+    /**
+     * Creates an order for tickets associated with a specific event in the customer's shopping cart.
+     *
+     * @param customer the customer for whom the order is created
+     * @param event    the event for which tickets are ordered
+     */
     public void orderTicketsForEvent(Customer customer, Event event) {
         Order order = orderService.orderTicketsForEvent(customer, event);
         if (order != null) {
