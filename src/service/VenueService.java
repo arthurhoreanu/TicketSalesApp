@@ -1,5 +1,3 @@
-// TODO JavaDocs
-
 package service;
 
 import model.Event;
@@ -12,16 +10,34 @@ import model.Customer;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Service class for managing venue-related operations such as creating, updating, deleting venues,
+ * and managing sections and seat availability within venues.
+ */
 public class VenueService {
     private final IRepository<Venue> venueRepository;
     private final SectionService sectionService;
 
+    /**
+     * Constructs a VenueService with the specified dependencies.
+     *
+     * @param venueRepository the repository for managing Venue persistence.
+     * @param sectionService  the service for managing sections within venues.
+     */
     public VenueService(IRepository<Venue> venueRepository, SectionService sectionService) {
         this.venueRepository = venueRepository;
         this.sectionService = sectionService;
     }
 
-    // Adds a new venue to the repository
+    /**
+     * Adds a new venue to the repository if it doesn't already exist at the specified location.
+     *
+     * @param name     the name of the venue.
+     * @param location the location of the venue.
+     * @param capacity the capacity of the venue.
+     * @param sections the list of sections within the venue.
+     * @return true if the venue was added successfully, false if a duplicate venue exists.
+     */
     public boolean addVenue(String name, String location, int capacity, List<Section> sections) {
         int newID = venueRepository.getAll().size() + 1;
 
@@ -36,12 +52,21 @@ public class VenueService {
         return true;
     }
 
-    // Creates a new venue with sections and seats
+    /**
+     * Creates a new venue with specified sections and seats and adds it to the repository.
+     *
+     * @param name           the name of the venue.
+     * @param location       the location of the venue.
+     * @param capacity       the total capacity of the venue.
+     * @param sectionCapacity the capacity of each section within the venue.
+     * @param rowCount       the number of rows in each section.
+     * @param seatsPerRow    the number of seats per row in each section.
+     * @return the created Venue object.
+     */
     public Venue createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
         int newId = venueRepository.getAll().size() + 1;
         List<Section> sections = new ArrayList<>();
 
-        // Create sections with seats
         for (int sectionId = 1; sectionId <= capacity / sectionCapacity; sectionId++) {
             Section section = sectionService.createSectionWithSeats("Section " + sectionId, sectionId, sectionCapacity, rowCount, seatsPerRow, null);
             sections.add(section);
@@ -49,7 +74,6 @@ public class VenueService {
 
         Venue venue = new Venue(newId, name, location, capacity, sections);
 
-        // Set the venue reference for each section and add the sections
         for (Section section : sections) {
             section.setVenue(venue);
         }
@@ -58,7 +82,16 @@ public class VenueService {
         return venue;
     }
 
-    // Updates an existing venue by ID
+    /**
+     * Updates an existing venue by ID with new details and sections.
+     *
+     * @param id           the ID of the venue to update.
+     * @param newName      the new name of the venue.
+     * @param newLocation  the new location of the venue.
+     * @param newCapacity  the new capacity of the venue.
+     * @param newSections  the updated list of sections within the venue.
+     * @return true if the venue was updated successfully, false if no such venue exists.
+     */
     public boolean updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
         Venue venue = findVenueByID(id);
         if (venue != null) {
@@ -72,7 +105,12 @@ public class VenueService {
         return false;
     }
 
-    // Deletes a venue by ID
+    /**
+     * Deletes a venue by ID.
+     *
+     * @param id the ID of the venue to delete.
+     * @return true if the venue was successfully deleted, false if no such venue exists.
+     */
     public boolean deleteVenue(int id) {
         if (findVenueByID(id) != null) {
             venueRepository.delete(id);
@@ -81,12 +119,21 @@ public class VenueService {
         return false;
     }
 
-    // Retrieves a list of all venues
+    /**
+     * Retrieves a list of all venues in the repository.
+     *
+     * @return a list of all venues.
+     */
     public List<Venue> getAllVenues() {
         return venueRepository.getAll();
     }
 
-    // Manually finds a venue by its ID
+    /**
+     * Finds a venue by its ID.
+     *
+     * @param id the ID of the venue to find.
+     * @return the Venue object if found, null otherwise.
+     */
     public Venue findVenueByID(int id) {
         return venueRepository.getAll().stream()
                 .filter(venue -> venue.getID() == id)
@@ -94,6 +141,12 @@ public class VenueService {
                 .orElse(null);
     }
 
+    /**
+     * Finds a venue by its name.
+     *
+     * @param name the name of the venue to find.
+     * @return the Venue object if found, null otherwise.
+     */
     public Venue findVenueByName(String name) {
         return venueRepository.getAll().stream()
                 .filter(venue -> venue.getVenueName().equalsIgnoreCase(name))
@@ -101,13 +154,26 @@ public class VenueService {
                 .orElse(null);
     }
 
-    // Checks available seats for a specific event in the entire venue
+    /**
+     * Retrieves the number of available seats for a specific event in the entire venue.
+     *
+     * @param venue the venue to check for available seats.
+     * @param event the event for which to check seat availability.
+     * @return the total number of available seats in the venue for the event.
+     */
     public int getAvailableSeats(Venue venue, Event event) {
         return venue.getSections().stream()
                 .mapToInt(section -> sectionService.getAvailableSeats(section, event).size())
                 .sum();
     }
 
+    /**
+     * Retrieves a list of available seats for a specific event in the entire venue.
+     *
+     * @param venue the venue to check for available seats.
+     * @param event the event for which to check seat availability.
+     * @return a list of available seats in the venue for the event.
+     */
     public List<Seat> getAvailableSeatsList(Venue venue, Event event) {
         List<Seat> availableSeats = new ArrayList<>();
         for (Section section : venue.getSections()) {
@@ -116,8 +182,14 @@ public class VenueService {
         return availableSeats;
     }
 
-
-    // Recommends a seat in a venue based on customer preferences
+    /**
+     * Recommends a seat in a venue based on customer preferences and seat availability for an event.
+     *
+     * @param customer the customer for whom to recommend a seat.
+     * @param venue    the venue in which to find a recommended seat.
+     * @param event    the event for which to recommend a seat.
+     * @return the recommended Seat object, or null if no preferred seat is available.
+     */
     public Seat recommendSeat(Customer customer, Venue venue, Event event) {
         List<Section> sections = venue.getSections();
 
@@ -136,6 +208,12 @@ public class VenueService {
         return null; // No preferred seat available
     }
 
+    /**
+     * Retrieves a list of venues that match the specified location or name.
+     *
+     * @param locationOrVenueName the location or name to search for.
+     * @return a list of matching venues.
+     */
     public List<Venue> getVenuesByLocationOrName(String locationOrVenueName) {
         List<Venue> matchingVenues = new ArrayList<>();
         for (Venue venue : getAllVenues()) {
@@ -146,5 +224,4 @@ public class VenueService {
         }
         return matchingVenues;
     }
-
 }
