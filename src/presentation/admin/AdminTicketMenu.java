@@ -86,7 +86,7 @@ public class AdminTicketMenu {
             return;
         } else {
             for (Event event : events) {
-                System.out.println(events);
+                System.out.println(event);
             }
         }
 
