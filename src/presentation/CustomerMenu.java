@@ -263,7 +263,6 @@ public class CustomerMenu {
      * @param controller The Controller instance used to access services for fetching suggested events.
      */
 
-    // TODO JavaDocs
     private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
         System.out.println("==== Suggested Events ====");
         Set<FavouriteEntity> favourites = controller.getFavourites();
@@ -299,7 +298,20 @@ public class CustomerMenu {
         }
     }
 
-    // TODO JavaDocs
+    /**
+     * Handles the Shopping Cart management menu, allowing the user to view the contents of their cart
+     * and remove items from it. The menu provides the following options:
+     * <ul>
+     *     <li>View Cart: Displays all tickets currently in the shopping cart.</li>
+     *     <li>Remove Ticket from Cart: Allows the user to specify a ticket ID to remove from the cart.</li>
+     *     <li>Back to Customer Menu: Exits the shopping cart menu and returns to the main customer menu.</li>
+     * </ul>
+     *
+     * @param scanner    The {@code Scanner} object used to read user input from the console.
+     * @param controller The {@code Controller} object, which provides access to methods for viewing and modifying
+     *                   the shopping cart. This includes retrieving the current user's shopping cart items,
+     *                   as well as removing tickets by ID.
+     */
     private static void handleManageShoppingCart(Scanner scanner, Controller controller) {
         boolean inCartMenu = true;
         while (inCartMenu) {
@@ -338,7 +350,21 @@ public class CustomerMenu {
         }
     }
 
-    // TODO JavaDocs
+    /**
+     * Handles the checkout process for the current customer's shopping cart. This method guides the user through:
+     * <ul>
+     *     <li>Checking if the shopping cart is empty. If so, the checkout is aborted.</li>
+     *     <li>Prompting the user for payment details, including card number, CVV, card owner name, and expiration date.</li>
+     *     <li>Validating and processing the payment using a {@code PaymentProcessor} implementation.</li>
+     *     <li>If payment is successful, creating an order with all items in the shopping cart and displaying a success message.</li>
+     * </ul>
+     *
+     * The checkout process is completed only if the payment details are valid and the payment transaction succeeds.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input, including payment details.
+     * @param controller The {@code Controller} object used to interact with the shopping cart, including calculating
+     *                   the total price, checking out the cart, and creating the order upon successful payment.
+     */
     private static void handleCheckout(Scanner scanner, Controller controller) {
         // Check if the shopping cart is empty
         Customer currentCustomer = (Customer) controller.getCurrentUser();
@@ -381,7 +407,17 @@ public class CustomerMenu {
         }
     }
 
-    // TODO JavaDocs
+    /**
+     * Displays the previous orders for the current user (customer). This method retrieves and displays
+     * the order history, including details for each order such as order ID, items, order date, and status.
+     * <ul>
+     *     <li>If there are previous orders, they are printed to the console.</li>
+     *     <li>If there are no previous orders, a message is displayed indicating this.</li>
+     * </ul>
+     *
+     * @param controller The {@code Controller} object used to retrieve the order history of the current customer.
+     *                   This includes accessing the list of {@code Order} objects associated with the customer.
+     */
     private static void handleViewPreviousOrders(Controller controller) {
         System.out.println("==== Previous Orders ====");
         controller.getOrderHistory((Customer) controller.getCurrentUser());
