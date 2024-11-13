@@ -1,5 +1,3 @@
-// TODO JavaDocs
-
 package presentation.admin;
 
 import controller.Controller;
@@ -10,7 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Provides an admin interface for managing tickets through a console menu.
+ * Allows the admin to generate tickets, view available tickets, reserve or release tickets,
+ * view ticket details by ID, delete tickets, and calculate the total price of selected tickets.
+ */
 public class AdminTicketMenu {
+
+    /**
+     * Displays the Ticket Management menu to the admin and handles menu selection.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to perform operations on tickets and events.
+     */
     public static void display(Scanner scanner, Controller controller) {
         boolean inTicketMenu = true;
 
@@ -61,6 +71,12 @@ public class AdminTicketMenu {
         }
     }
 
+    /**
+     * Handles generating tickets for a specific event.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to generate tickets for the event.
+     */
     private static void handleGenerateTickets(Scanner scanner, Controller controller) {
         System.out.println("=== Generate Tickets for Event ===");
 
@@ -91,6 +107,12 @@ public class AdminTicketMenu {
         controller.generateTicketsForEvent(event, standardPrice, vipPrice);
     }
 
+    /**
+     * Handles viewing available tickets for a specific event.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to retrieve available tickets for the event.
+     */
     private static void handleViewAvailableTickets(Scanner scanner, Controller controller) {
         System.out.println("=== View Available Tickets for Event ===");
 
@@ -116,6 +138,12 @@ public class AdminTicketMenu {
         controller.getAvailableTicketsForEvent(event);
     }
 
+    /**
+     * Handles reserving a ticket for a specific event.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to reserve a ticket.
+     */
     private static void handleReserveTicket(Scanner scanner, Controller controller) {
         System.out.println("=== Reserve Ticket ===");
         List<Event> events = controller.getAllEvents();
@@ -152,9 +180,14 @@ public class AdminTicketMenu {
                 controller.reserveTicket(ticket, purchaserName);
             }
         }
-
     }
 
+    /**
+     * Handles releasing a reserved ticket.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to release a ticket.
+     */
     private static void handleReleaseTicket(Scanner scanner, Controller controller) {
         System.out.println("=== Release Ticket ===");
 
@@ -195,6 +228,12 @@ public class AdminTicketMenu {
         }
     }
 
+    /**
+     * Handles viewing a ticket's details by its ID.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to view ticket details.
+     */
     private static void handleViewTicketByID(Scanner scanner, Controller controller) {
         System.out.println("=== View Ticket by ID ===");
 
@@ -234,6 +273,12 @@ public class AdminTicketMenu {
         }
     }
 
+    /**
+     * Handles deleting a ticket by its ID.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to delete a ticket.
+     */
     private static void handleDeleteTicket(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Ticket by ID ===");
 
@@ -268,6 +313,12 @@ public class AdminTicketMenu {
         }
     }
 
+    /**
+     * Handles calculating the total price of selected tickets.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to calculate total price of tickets.
+     */
     private static void handleCalculateTotalPrice(Scanner scanner, Controller controller) {
         System.out.println("=== Calculate Total Price of Selected Tickets ===");
         List<Ticket> ticketsToBeCalculated = new ArrayList<>();

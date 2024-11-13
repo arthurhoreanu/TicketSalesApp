@@ -1,5 +1,3 @@
-// TODO JavaDocs
-
 package presentation.admin;
 
 import controller.Controller;
@@ -12,7 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Provides an admin interface for managing venues through a console menu.
+ * Allows the admin to add, view, update, delete venues, add sections to venues,
+ * view sections within venues, and check available seats for events within venues.
+ */
 public class AdminVenueMenu {
+
+    /**
+     * Displays the Venue Management menu to the admin and handles menu selection.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to perform operations on venues and sections.
+     */
     public static void display(Scanner scanner, Controller controller) {
         boolean inVenueMenu = true;
 
@@ -63,6 +73,12 @@ public class AdminVenueMenu {
         }
     }
 
+    /**
+     * Handles adding a new venue.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to add the venue.
+     */
     private static void handleAddVenue(Scanner scanner, Controller controller) {
         System.out.println("=== Add Venue ===");
         System.out.print("Enter venue name: ");
@@ -76,13 +92,17 @@ public class AdminVenueMenu {
         System.out.println("Venue added successfully.");
     }
 
+    /**
+     * Handles viewing all available venues.
+     *
+     * @param controller The {@code Controller} object used to retrieve and display venues.
+     */
     private static void handleViewVenues(Controller controller) {
         System.out.println("=== View Venues ===");
 
         List<Venue> venues = controller.getAllVenues();
         if (venues.isEmpty()) {
             System.out.println("No venues available.");
-            return; // Exit if there are no artists to update
         } else {
             for (Venue venue : venues) {
                 System.out.println(venue);
@@ -90,18 +110,16 @@ public class AdminVenueMenu {
         }
     }
 
+    /**
+     * Handles updating an existing venue.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to update the venue.
+     */
     private static void handleUpdateVenue(Scanner scanner, Controller controller) {
         System.out.println("=== Update Venue ===");
 
-        List<Venue> venues = controller.getAllVenues();
-        if (venues.isEmpty()) {
-            System.out.println("No venues available.");
-            return; // Exit if there are no artists to update
-        } else {
-            for (Venue venue : venues) {
-                System.out.println(venue);
-            }
-        }
+        handleViewVenues(controller);
 
         System.out.print("Enter Venue ID to update: ");
         int venueId = Integer.parseInt(scanner.nextLine());
@@ -128,6 +146,12 @@ public class AdminVenueMenu {
         System.out.println("Venue updated successfully.");
     }
 
+    /**
+     * Handles deleting a venue by its ID.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to delete the venue.
+     */
     private static void handleDeleteVenue(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Venue ===");
         handleViewVenues(controller);
@@ -139,6 +163,12 @@ public class AdminVenueMenu {
         System.out.println("Venue deleted successfully.");
     }
 
+    /**
+     * Handles adding a new section to a specific venue.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to add the section to the venue.
+     */
     private static void handleAddSectionToVenue(Scanner scanner, Controller controller) {
         System.out.println("=== Add Section to Venue ===");
         handleViewVenues(controller);
@@ -166,6 +196,12 @@ public class AdminVenueMenu {
         System.out.println("Section added successfully to venue.");
     }
 
+    /**
+     * Handles viewing all sections within a specific venue.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to retrieve and display sections.
+     */
     private static void handleViewSectionsInVenue(Scanner scanner, Controller controller) {
         System.out.println("=== View Sections in Venue ===");
         handleViewVenues(controller);
@@ -184,6 +220,12 @@ public class AdminVenueMenu {
         }
     }
 
+    /**
+     * Handles viewing available seats in a specific venue for an event.
+     *
+     * @param scanner    The {@code Scanner} object used to read user input.
+     * @param controller The {@code Controller} object used to retrieve and display available seats.
+     */
     private static void handleViewAvailableSeats(Scanner scanner, Controller controller) {
         System.out.println("=== View Available Seats in Venue ===");
         handleViewVenues(controller);
