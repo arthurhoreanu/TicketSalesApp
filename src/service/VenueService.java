@@ -189,6 +189,20 @@ public class VenueService {
      * @param venue    the venue in which to find a recommended seat.
      * @param event    the event for which to recommend a seat.
      * @return the recommended Seat object, or null if no preferred seat is available.
+     *
+     * Suppose the venue has three sections:
+     *
+     * Section A (ID 1), Section B (ID 2), Section C (ID 3).
+     * The customer has preferences as follows:
+     *
+     * Section A: 5 (highest preference)
+     * Section B: 3
+     * Section C: 1
+     * The sections are sorted so that Section A is checked first, then Section B, and finally Section C.
+     *
+     * If Section A has an available seat, it is immediately recommended.
+     *
+     * If Section A is full, the method checks Section B, and so on.
      */
     public Seat recommendSeat(Customer customer, Venue venue, Event event) {
         List<Section> sections = venue.getSections();
