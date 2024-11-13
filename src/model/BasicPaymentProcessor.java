@@ -1,13 +1,25 @@
-// TODO JavaDocs
-
 package model;
 
+/**
+ * BasicPaymentProcessor is a simple, mock implementation of the PaymentProcessor interface for testing purposes.
+ * It provides functionality to simulate payment processing without needing real-world payment details
+ * The class contains simulated logic for card validation
+ * and payment limits.
+ */
 public class BasicPaymentProcessor implements PaymentProcessor {
 
+    /**
+     * Simulates entering payment details and validates them.
+     * Checks that the card number has 16 digits and the CVV is a 3-digit number.
+     *
+     * @param cardNumber      the credit card number as a 16-digit string
+     * @param cvv             the CVV code as a 3-digit integer
+     * @param cardOwner       the name of the card owner
+     * @param expirationDate  the expiration date of the card in the format MM/YY
+     * @return true if the payment details are valid; false otherwise
+     */
     @Override
     public boolean enterPaymentDetails(String cardNumber, int cvv, String cardOwner, String expirationDate) {
-        // Here you would add actual validation logic. For now, we'll simulate success.
-
         // Example validation: Check that the card number length is valid.
         if (cardNumber.length() != 16 || cvv < 100 || cvv > 999) {
             return false; // Invalid details
@@ -17,10 +29,15 @@ public class BasicPaymentProcessor implements PaymentProcessor {
         return true;
     }
 
+    /**
+     * Simulates processing a payment.
+     * For demonstration, it fails payments over a certain amount threshold (e.g., $1000).
+     *
+     * @param totalPrice the total amount to be charged
+     * @return true if the payment is successful; false if it fails due to amount limit
+     */
     @Override
     public boolean processPayment(double totalPrice) {
-        // Here you would connect to a payment gateway or processor.
-
         // For simulation purposes, assume any payment over a certain amount fails.
         if (totalPrice > 1000) { // Simulate a limit check for demonstration
             return false;
@@ -30,13 +47,3 @@ public class BasicPaymentProcessor implements PaymentProcessor {
         return true;
     }
 }
-/*
-BasicPaymentProcessor is a simple, mock implementation of PaymentProcessor for testing purposes.
-It provides the functionality to "process payments" without needing real-world details like
-secure connections to banking networks. Instead, it contains simulated logic, such as checking
-that card numbers are of a certain length or limiting the payment amount.
-
-
-
-
-*/
