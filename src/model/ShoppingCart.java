@@ -10,6 +10,11 @@ public class ShoppingCart implements Identifiable {
     private List<Ticket> items;
     private double totalPrice;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a ShoppingCart with the specified ID, list of items, and total price.
      * @param shoppingCartID the unique ID of the shopping cart

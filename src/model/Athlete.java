@@ -8,6 +8,11 @@ public class Athlete implements Identifiable, FavouriteEntity {
     private String athleteName;
     private String athleteSport;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs an Athlete with the specified ID, name, and sport.
      * @param athleteID     the unique ID of the athlete

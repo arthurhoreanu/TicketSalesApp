@@ -9,6 +9,11 @@ import java.util.List;
 public class Concert extends Event {
     private List<Artist> artists;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a Concert with the specified details and list of performing artists.
      * @param eventID          the unique ID of the concert

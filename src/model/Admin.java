@@ -27,6 +27,6 @@ public class Admin extends User {
 
     @Override
     public String toCsvFormat() {
-        return "Admin," + super.toCsvFormat() + ",";
+        return "Admin," + super.toCsvFormat();
     }
 }

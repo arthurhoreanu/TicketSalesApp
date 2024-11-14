@@ -66,6 +66,7 @@ public abstract class User implements Identifiable {
         return "User [userId=" + userID + ", username=" + username + ", password=" + password + ", email=" + email + "}";
     }
 
+    
     public String toCsvFormat() {
         return getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
     }

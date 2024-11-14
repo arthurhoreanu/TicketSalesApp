@@ -12,6 +12,11 @@ public class Section implements Identifiable {
     private Venue venue;
     private List<Seat> seats;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a Section with the specified attributes.
      * @param sectionID      the unique ID of the section

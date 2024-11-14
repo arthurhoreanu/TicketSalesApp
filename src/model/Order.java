@@ -15,6 +15,11 @@ public class Order implements Identifiable {
     private LocalDateTime orderDate;
     private OrderStatus status;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs an Order with a specified user and list of tickets.
      * Initializes the order ID, sets the order date to the current time, and defaults the status to PENDING.

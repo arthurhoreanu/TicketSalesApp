@@ -12,6 +12,11 @@ public class Venue implements Identifiable {
     private int venueCapacity;
     public List<Section> sections;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a Venue with the specified ID, name, location, capacity, and sections.
      * @param venueID       the unique ID of the venue

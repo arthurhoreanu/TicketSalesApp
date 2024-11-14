@@ -16,6 +16,11 @@ public class Ticket implements Identifiable {
     private TicketType ticketType;
     private boolean isSold;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a Ticket with the specified attributes.
      * @param ticketID   the unique ID of the ticket
