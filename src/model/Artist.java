@@ -8,6 +8,11 @@ public class Artist implements Identifiable, FavouriteEntity {
     private String artistName;
     private String genre;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs an Artist with the specified ID, name, and genre.
      * @param artistID   the unique ID of the artist

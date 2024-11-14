@@ -10,6 +10,11 @@ public class Seat implements Identifiable {
     private int seatNumber;
     private Event reservedForEvent;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a Seat with the specified attributes.
      * @param seatID          the unique ID of the seat

@@ -20,7 +20,7 @@ public class AccountService {
     public AccountService(IRepository<User> userIRepository, CustomerService customerService) {
         this.userIRepository = userIRepository;
         this.customerService = customerService;
-        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv");
+        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User.class);
     }
 
     /**
@@ -111,8 +111,7 @@ public class AccountService {
         if (newUser != null) {
             // Save user to the repository
             userIRepository.create(newUser);
-            String csvData = newUser.toCsvFormat();
-            appendToCsv(csvData);  // Manually appends to the CSV file
+            userFileRepository.create(newUser);
             return true;
         }
         return false; // If role is invalid or user creation failed

@@ -9,6 +9,11 @@ import java.util.List;
 public class SportsEvent extends Event {
     private List<Athlete> athletes;
 
+    @Override
+    public String toCsvFormat() {
+        return "";
+    }
+
     /**
      * Constructs a SportsEvent with the specified attributes.
      * @param eventID         the unique ID of the event

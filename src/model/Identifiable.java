@@ -10,4 +10,6 @@ public interface Identifiable {
      * @return the ID of the entity
      */
     Integer getID();
+
+    String toCsvFormat();
 }
