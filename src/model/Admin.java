@@ -24,4 +24,9 @@ public class Admin extends User {
     public String toString() {
         return "Admin{" + "role='" + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
     }
+
+    @Override
+    public String toCsvFormat() {
+        return "Admin," + super.toCsvFormat() + ",";
+    }
 }
