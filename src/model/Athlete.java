@@ -9,6 +9,11 @@ public class Athlete implements Identifiable, FavouriteEntity {
     private String athleteSport;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

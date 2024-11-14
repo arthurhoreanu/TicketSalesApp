@@ -12,6 +12,12 @@ import java.util.ArrayList;
 public class Customer extends User {
     private Set<FavouriteEntity> favourites;
     private ShoppingCart shoppingCart;
+
+    @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
 
     /**

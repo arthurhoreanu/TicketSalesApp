@@ -12,4 +12,6 @@ public interface Identifiable {
     Integer getID();
 
     String toCsvFormat();
+
+    <T> T fromCsvFormat(String csvLine);
 }

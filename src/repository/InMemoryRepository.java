@@ -23,8 +23,8 @@ public class InMemoryRepository<T extends Identifiable> implements IRepository<T
      * @param id The ID of the object to be retrieved.
      */
     @Override
-    public void read(Integer id) {
-        data.get(id);
+    public T read(Integer id) {
+        return data.get(id);
     }
 
     /**

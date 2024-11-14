@@ -6,9 +6,6 @@ import model.User;
 import repository.FileRepository;
 import repository.IRepository;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 
 public class AccountService {
@@ -62,31 +59,6 @@ public class AccountService {
         return email.endsWith("@tsc.com"); // [TicketSalesCompany placeholder]
     }
 
-    private void appendToCsv(String csvData) {
-        File file = new File("src/repository/data/users.csv");
-
-        // Ensure that the parent directory exists
-        File parentDir = file.getParentFile();
-        if (!parentDir.exists()) {
-            parentDir.mkdirs(); // Create the necessary directories
-        }
-
-        try {
-            // If the file doesn't exist, create it
-            if (!file.exists()) {
-                file.createNewFile(); // Create the CSV file
-            }
-
-            // Now append the CSV data
-            try (FileWriter writer = new FileWriter(file, true)) {
-                writer.append(csvData).append("\n");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace(); // Log any I/O exception
-        }
-    }
-
     /**
      * Creates a new user account with the specified details.
      * @param role The role of the new user ("Customer" or "Admin").
@@ -109,7 +81,6 @@ public class AccountService {
             newUser = new Admin(newID, username, email, password);
         }
         if (newUser != null) {
-            // Save user to the repository
             userIRepository.create(newUser);
             userFileRepository.create(newUser);
             return true;
@@ -174,10 +145,10 @@ public class AccountService {
                 break;
             }
         }
-
         // Delete if found
         if (found) {
             userIRepository.delete(id);
+            userFileRepository.delete(id); // Arthur's TODO
             return true; // Deletion successful
         }
         return false; // User not found

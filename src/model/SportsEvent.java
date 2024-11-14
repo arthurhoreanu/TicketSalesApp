@@ -10,6 +10,11 @@ public class SportsEvent extends Event {
     private List<Athlete> athletes;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }
