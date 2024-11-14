@@ -3,18 +3,24 @@ package service;
 import model.Admin;
 import model.Customer;
 import model.User;
+import repository.FileRepository;
 import repository.IRepository;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class AccountService {
     private final IRepository<User> userIRepository;
     private final CustomerService customerService;
     private User currentUser;
+    private final FileRepository<User> userFileRepository;
 
     public AccountService(IRepository<User> userIRepository, CustomerService customerService) {
         this.userIRepository = userIRepository;
         this.customerService = customerService;
+        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv");
     }
 
     /**
@@ -56,6 +62,31 @@ public class AccountService {
         return email.endsWith("@tsc.com"); // [TicketSalesCompany placeholder]
     }
 
+    private void appendToCsv(String csvData) {
+        File file = new File("src/repository/data/users.csv");
+
+        // Ensure that the parent directory exists
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            parentDir.mkdirs(); // Create the necessary directories
+        }
+
+        try {
+            // If the file doesn't exist, create it
+            if (!file.exists()) {
+                file.createNewFile(); // Create the CSV file
+            }
+
+            // Now append the CSV data
+            try (FileWriter writer = new FileWriter(file, true)) {
+                writer.append(csvData).append("\n");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Log any I/O exception
+        }
+    }
+
     /**
      * Creates a new user account with the specified details.
      * @param role The role of the new user ("Customer" or "Admin").
@@ -68,21 +99,25 @@ public class AccountService {
         if (takenUsername(username)) {
             return false;
         }
-
         // Generate a new unique ID for the user
         int newID = userIRepository.getAll().size() + 1;
-
         // Create the new user based on the specified role
-        User newUser;
-        if ("Customer".equalsIgnoreCase(role)) newUser = new Customer(newID, username, email, password);
-        else if ("Admin".equalsIgnoreCase(role) && domainEmail(email))
+        User newUser = null;
+        if ("Customer".equalsIgnoreCase(role)) {
+            newUser = new Customer(newID, username, email, password);
+        } else if ("Admin".equalsIgnoreCase(role) && domainEmail(email)) {
             newUser = new Admin(newID, username, email, password);
-        else return false;
-
-        // Add the new user to the repository
-        userIRepository.create(newUser);
-        return true; // Success
+        }
+        if (newUser != null) {
+            // Save user to the repository
+            userIRepository.create(newUser);
+            String csvData = newUser.toCsvFormat();
+            appendToCsv(csvData);  // Manually appends to the CSV file
+            return true;
+        }
+        return false; // If role is invalid or user creation failed
     }
+
 
     /**
      * Logs in a user with the provided username and password.
