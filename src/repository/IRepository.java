@@ -16,7 +16,7 @@ public interface IRepository<T extends Identifiable> {
      * Retrieves an object from the repository by its ID.
      * @param id The ID of the object to be retrieved.
      */
-    void read(Integer id);
+    T read(Integer id);
 
     /**
      * Updates an existing object in the repository.

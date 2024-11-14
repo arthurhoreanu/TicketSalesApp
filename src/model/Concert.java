@@ -10,6 +10,11 @@ public class Concert extends Event {
     private List<Artist> artists;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

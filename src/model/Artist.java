@@ -8,9 +8,17 @@ public class Artist implements Identifiable, FavouriteEntity {
     private String artistName;
     private String genre;
 
+    public Artist fromCsvFormat(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int artistID = Integer.parseInt(fields[0]);
+        String artistName = fields[1];
+        String genre = fields[2];
+        return new Artist(artistID, artistName, genre); // Create a new Artist instance
+    }
+
     @Override
     public String toCsvFormat() {
-        return "";
+        return getID() + "," + getArtistName() + "," + getGenre();
     }
 
     /**
@@ -32,6 +40,10 @@ public class Artist implements Identifiable, FavouriteEntity {
     @Override
     public Integer getID() {
         return this.artistID;
+    }
+
+    public void setArtistID(int artistID) {
+        this.artistID = artistID;
     }
 
     /**

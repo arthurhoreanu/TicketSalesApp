@@ -16,6 +16,11 @@ public class Order implements Identifiable {
     private OrderStatus status;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

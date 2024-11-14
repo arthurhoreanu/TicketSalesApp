@@ -11,6 +11,11 @@ public class ShoppingCart implements Identifiable {
     private double totalPrice;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

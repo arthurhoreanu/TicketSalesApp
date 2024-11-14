@@ -1,6 +1,7 @@
 package service;
 
 import model.*;
+import repository.FileRepository;
 import repository.IRepository;
 
 import java.util.ArrayList;
@@ -10,10 +11,12 @@ import java.util.stream.Collectors;
 public class ArtistService {
     private final IRepository<Artist> artistRepository;
     private final IRepository<Event> eventRepository;
+    private final FileRepository<Artist> artistFileRepository;
 
     public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
         this.artistRepository = artistRepository;
         this.eventRepository = eventRepository;
+        this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist.class);
     }
 
     /**
@@ -26,6 +29,7 @@ public class ArtistService {
         int newID = artistRepository.getAll().size() + 1;  // Generate unique ID based on the current size
         Artist artist = new Artist(newID, artistName, genre);
         artistRepository.create(artist);
+        artistFileRepository.create(artist);
         return true;
     }
 
@@ -42,6 +46,7 @@ public class ArtistService {
             artist.setArtistName(newName);
             artist.setGenre(newGenre);
             artistRepository.update(artist);
+            artistFileRepository.update(artist);
             return true;
         } else {
             return false;

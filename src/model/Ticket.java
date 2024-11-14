@@ -17,6 +17,11 @@ public class Ticket implements Identifiable {
     private boolean isSold;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

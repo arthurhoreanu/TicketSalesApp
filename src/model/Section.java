@@ -13,6 +13,11 @@ public class Section implements Identifiable {
     private List<Seat> seats;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

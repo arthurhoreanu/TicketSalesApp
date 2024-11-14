@@ -13,6 +13,11 @@ public class Venue implements Identifiable {
     public List<Section> sections;
 
     @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
+    @Override
     public String toCsvFormat() {
         return "";
     }

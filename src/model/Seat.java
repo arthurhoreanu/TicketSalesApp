@@ -15,6 +15,11 @@ public class Seat implements Identifiable {
         return "";
     }
 
+    @Override
+    public <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
+
     /**
      * Constructs a Seat with the specified attributes.
      * @param seatID          the unique ID of the seat
