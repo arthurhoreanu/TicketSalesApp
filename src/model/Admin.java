@@ -27,10 +27,6 @@ public class Admin extends User {
 
     @Override
     public String toCsvFormat() {
-        return "Admin," + getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
-    }
-
-    public static Admin fromCsvFormat(String csvLine) {
-        return null;
+        return getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
     }
 }
