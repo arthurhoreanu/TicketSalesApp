@@ -86,6 +86,6 @@ public class Customer extends User {
 
     @Override
     public String toCsvFormat() {
-        return getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
+        return getID() + "," + "Customer," + getUsername() + "," + getEmail() + "," + getPassword();
     }
 }
