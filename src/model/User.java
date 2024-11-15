@@ -68,8 +68,8 @@ public abstract class User implements Identifiable {
 
     public static User fromCsvFormat(String csvLine) {
         String[] fields = csvLine.split(",");
-        String type = fields[0].trim();
-        int id = Integer.parseInt(fields[1].trim());
+        int id = Integer.parseInt(fields[0].trim());
+        String type = fields[1].trim();
         String username = fields[2].trim();
         String email = fields[3].trim();
         String password = fields[4].trim();
