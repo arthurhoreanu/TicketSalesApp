@@ -15,8 +15,7 @@ public class Seat implements Identifiable {
         return "";
     }
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public Seat fromCsvFormat(String csvLine) {
         return null;
     }
 

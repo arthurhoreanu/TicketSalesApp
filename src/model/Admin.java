@@ -16,11 +16,6 @@ public class Admin extends User {
         super(userID, username, email, password);
     }
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
-        return null;
-    }
-
     /**
      * Returns a string representation of the admin, including role, username, and password.
      * @return a string representing the admin's details
@@ -32,6 +27,10 @@ public class Admin extends User {
 
     @Override
     public String toCsvFormat() {
-        return "Admin," + super.toCsvFormat();
+        return "Admin," + getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
+    }
+
+    public static Admin fromCsvFormat(String csvLine) {
+        return null;
     }
 }

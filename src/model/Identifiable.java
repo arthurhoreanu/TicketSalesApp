@@ -13,5 +13,7 @@ public interface Identifiable {
 
     String toCsvFormat();
 
-    <T> T fromCsvFormat(String csvLine);
+    static <T> T fromCsvFormat(String csvLine) {
+        return null;
+    }
 }
