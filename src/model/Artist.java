@@ -7,8 +7,8 @@ public class Artist implements Identifiable, FavouriteEntity {
     private int artistID;
     private String artistName;
     private String genre;
-
-    public Artist fromCsvFormat(String csvLine) {
+    
+    public static Artist fromCsvFormat(String csvLine) {
         String[] fields = csvLine.split(",");
         int artistID = Integer.parseInt(fields[0]);
         String artistName = fields[1];

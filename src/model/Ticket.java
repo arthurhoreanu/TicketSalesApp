@@ -16,8 +16,7 @@ public class Ticket implements Identifiable {
     private TicketType ticketType;
     private boolean isSold;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public static Ticket fromCsvFormat(String csvLine) {
         return null;
     }
 

@@ -66,9 +66,21 @@ public abstract class User implements Identifiable {
         return "User [userId=" + userID + ", username=" + username + ", password=" + password + ", email=" + email + "}";
     }
 
-    @Override
-    public String toCsvFormat() {
-        return getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
+    public static User fromCsvFormat(String csvLine) {
+        String[] fields = csvLine.split(",");
+        String type = fields[0].trim();
+        int id = Integer.parseInt(fields[1].trim());
+        String username = fields[2].trim();
+        String email = fields[3].trim();
+        String password = fields[4].trim();
+        switch (type) {
+            case "Admin":
+                return new Admin(id, username, email, password);
+            case "Customer":
+                return new Customer(id, username, email, password);
+            default:
+                throw new IllegalArgumentException("Unknown user type: " + type);
+        }
     }
 
 }

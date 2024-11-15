@@ -15,8 +15,7 @@ public class Order implements Identifiable {
     private LocalDateTime orderDate;
     private OrderStatus status;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public static Order fromCsvFormat(String csvLine) {
         return null;
     }
 

@@ -17,7 +17,11 @@ public class AccountService {
     public AccountService(IRepository<User> userIRepository, CustomerService customerService) {
         this.userIRepository = userIRepository;
         this.customerService = customerService;
-        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User.class);
+        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User::fromCsvFormat);
+        List<User> usersFromFile = userFileRepository.getAll();
+        for (User user : usersFromFile) {
+            userIRepository.create(user);
+        }
     }
 
     /**
@@ -148,7 +152,7 @@ public class AccountService {
         // Delete if found
         if (found) {
             userIRepository.delete(id);
-            userFileRepository.delete(id); // Arthur's TODO
+            userFileRepository.delete(id);
             return true; // Deletion successful
         }
         return false; // User not found

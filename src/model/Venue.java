@@ -12,8 +12,7 @@ public class Venue implements Identifiable {
     private int venueCapacity;
     public List<Section> sections;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public Venue fromCsvFormat(String csvLine) {
         return null;
     }
 

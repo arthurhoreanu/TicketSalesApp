@@ -16,7 +16,11 @@ public class ArtistService {
     public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
         this.artistRepository = artistRepository;
         this.eventRepository = eventRepository;
-        this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist.class);
+        this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsvFormat);
+        List<Artist> artistsFromFile = artistFileRepository.getAll();
+        for (Artist artist : artistsFromFile) {
+            artistRepository.create(artist);
+        }
     }
 
     /**
@@ -62,6 +66,7 @@ public class ArtistService {
         Artist artist = findArtistByID(artistId);
         if (artist != null) {
             artistRepository.delete(artistId);
+            artistFileRepository.delete(artistId);
             return true;
         } else {
             return false;

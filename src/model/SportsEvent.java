@@ -9,8 +9,7 @@ import java.util.List;
 public class SportsEvent extends Event {
     private List<Athlete> athletes;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public static SportsEvent fromCsvFormat(String csvLine) {
         return null;
     }
 

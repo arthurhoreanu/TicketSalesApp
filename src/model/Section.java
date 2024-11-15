@@ -12,8 +12,7 @@ public class Section implements Identifiable {
     private Venue venue;
     private List<Seat> seats;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public Section fromCsvFormat(String csvLine) {
         return null;
     }
 

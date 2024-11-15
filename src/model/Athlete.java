@@ -8,8 +8,7 @@ public class Athlete implements Identifiable, FavouriteEntity {
     private String athleteName;
     private String athleteSport;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public static Athlete fromCsvFormat(String csvLine) {
         return null;
     }
 

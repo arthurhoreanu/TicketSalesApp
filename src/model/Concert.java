@@ -9,8 +9,7 @@ import java.util.List;
 public class Concert extends Event {
     private List<Artist> artists;
 
-    @Override
-    public <T> T fromCsvFormat(String csvLine) {
+    public static Concert fromCsvFormat(String csvLine) {
         return null;
     }
 

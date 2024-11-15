@@ -6,6 +6,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Repository for managing persistence of objects to and from CSV files.
@@ -15,16 +16,15 @@ import java.util.List;
  */
 public class FileRepository<T extends Identifiable> implements IRepository<T> {
     private final String filePath;
-    private final Class<T> type;
+    private final Function<String, T> fromCsvFormat;
 
     /**
      * Constructs a new repository with a specified file path and type.
      * @param filePath The path to the CSV file where data will be stored.
-     * @param type     The class type of the objects stored in this repository.
      */
-    public FileRepository(String filePath, Class<T> type) {
+    public FileRepository(String filePath, Function<String, T> fromCsvFormat) {
         this.filePath = filePath;
-        this.type = type;
+        this.fromCsvFormat = fromCsvFormat;
     }
 
     /**
@@ -71,27 +71,19 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
     public void delete(Integer id) {
         File originalFile = new File(filePath);
         File tempFile = new File("tempfile.csv");
-        boolean found = false; // Flag pentru a verifica dacă ID-ul a fost găsit
-
+        boolean found = false;
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(originalFile));
                 BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))
         ) {
             String line;
-
-            // Citește fiecare linie din fișierul original
             while ((line = reader.readLine()) != null) {
-                // Extrage ID-ul din linie (presupunând că ID-ul este primul câmp)
                 String[] values = line.split(",");
                 Integer lineId = Integer.parseInt(values[0].trim());
-
-                // Dacă ID-ul este cel pe care vrem să-l ștergem, îl sărim
                 if (lineId.equals(id)) {
                     found = true;
-                    continue; // Trecem la următoarea linie, astfel "ștergând-o"
+                    continue;
                 }
-
-                // Scriem în fișierul temporar dacă ID-ul nu corespunde celui de șters
                 writer.write(line);
                 writer.newLine();
             }
@@ -99,7 +91,6 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
             System.out.println("Error processing file: " + e.getMessage());
             e.printStackTrace();
         }
-
         // Înlocuiește fișierul original doar dacă linia a fost găsită și ștersă
         if (found) {
             if (originalFile.delete()) { // Ștergem fișierul original
@@ -123,33 +114,21 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
     @Override
     public List<T> getAll() {
         List<T> items = new ArrayList<>();
-        try {
-            // Obtain the static `fromCsvFormat` method
-            Method fromCsvFormatMethod = type.getDeclaredMethod("fromCsvFormat", String.class);
-
-            // Read each line from the file and convert it to an object
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    try {
-                        @SuppressWarnings("unchecked")
-                        T item = (T) fromCsvFormatMethod.invoke(null, line);
-                        if (item != null) {
-                            items.add(item);
-                        } else {
-                            System.out.println("Warning: Skipping null or malformed line: " + line);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Error parsing line, skipping: " + line);
-                        e.printStackTrace();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    T item = fromCsvFormat.apply(line);
+                    if (item != null) {
+                        items.add(item);
                     }
+                } catch (Exception e) {
+                    System.err.println("Error parsing line, skipping: " + line);
+                    e.printStackTrace();
                 }
             }
-        } catch (ReflectiveOperationException e) {
-            System.out.println("Reflection error invoking fromCsvFormat: " + e.getMessage());
-            e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            System.err.println("Error reading file: " + e.getMessage());
             e.printStackTrace();
         }
         return items;
