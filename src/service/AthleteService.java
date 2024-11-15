@@ -3,6 +3,7 @@ package service;
 import model.Athlete;
 import model.Event;
 import model.SportsEvent;
+import repository.FileRepository;
 import repository.IRepository;
 
 import java.util.ArrayList;
@@ -12,10 +13,16 @@ import java.util.stream.Collectors;
 public class AthleteService {
     private final IRepository<Athlete> athleteRepository;
     private final IRepository<Event> eventRepository;
+    private final FileRepository<Athlete> athleteFileRepository;
 
     public AthleteService(IRepository<Athlete> athleteRepository, IRepository<Event> eventRepository) {
         this.athleteRepository = athleteRepository;
         this.eventRepository = eventRepository;
+        this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsvFormat);
+        List<Athlete> athletesFromFile = athleteFileRepository.getAll();
+        for (Athlete athlete : athletesFromFile) {
+            athleteRepository.create(athlete);
+        }
     }
 
     /**
@@ -28,6 +35,7 @@ public class AthleteService {
         int newID = athleteRepository.getAll().size() + 1;
         Athlete athlete = new Athlete(newID, athleteName, genre);
         athleteRepository.create(athlete);
+        athleteFileRepository.create(athlete);
         return true;
     }
 
@@ -44,6 +52,7 @@ public class AthleteService {
             athlete.setAthleteName(newName);
             athlete.setAthleteSport(newGenre);
             athleteRepository.update(athlete);
+            athleteFileRepository.update(athlete);
             return true;
         } else {
             return false;
@@ -59,6 +68,7 @@ public class AthleteService {
         Athlete athlete = findAthleteByID(athelteID);
         if (athlete != null) {
             athleteRepository.delete(athelteID);
+            athleteFileRepository.delete(athelteID);
             return true;
         } else {
             return false;

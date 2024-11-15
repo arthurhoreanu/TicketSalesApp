@@ -8,15 +8,6 @@ public class Athlete implements Identifiable, FavouriteEntity {
     private String athleteName;
     private String athleteSport;
 
-    public static Athlete fromCsvFormat(String csvLine) {
-        return null;
-    }
-
-    @Override
-    public String toCsvFormat() {
-        return "";
-    }
-
     /**
      * Constructs an Athlete with the specified ID, name, and sport.
      * @param athleteID     the unique ID of the athlete
@@ -86,5 +77,18 @@ public class Athlete implements Identifiable, FavouriteEntity {
     @Override
     public String toString() {
         return "Athlete{" + "athleteID=" + athleteID + ", athleteName='" + athleteName + '\'' + ", athleteSport='" + athleteSport + '\'' + '}';
+    }
+
+    public static Athlete fromCsvFormat(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int athleteID = Integer.parseInt(fields[0]);
+        String athleteName = fields[1];
+        String athleteSport = fields[2];
+        return new Athlete(athleteID, athleteName, athleteSport);
+    }
+
+    @Override
+    public String toCsvFormat() {
+        return getID() + "," + getName() + "," + getAthleteSport();
     }
 }
