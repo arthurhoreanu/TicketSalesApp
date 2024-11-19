@@ -1,14 +1,9 @@
 package service;
 
 
-import model.Order;
-import model.ShoppingCart;
-import model.Ticket;
-import model.Customer;
-import model.PaymentProcessor;
-import model.OrderStatus;
+import model.*;
+import repository.FileRepository;
 import repository.IRepository;
-import model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +21,7 @@ public class OrderService {
     private final PaymentProcessor paymentProcessor;
     private final SeatService seatService;
     private final IRepository<Ticket> ticketRepository;
+    private final FileRepository<Order> orderFileRepository;
 
     public OrderService(IRepository<Order> orderRepository, ShoppingCartService shoppingCartService, PaymentProcessor paymentProcessor, SeatService seatService, IRepository<Ticket> ticketRepository) {
         this.orderRepository = orderRepository;
@@ -33,8 +29,12 @@ public class OrderService {
         this.paymentProcessor = paymentProcessor;
         this.seatService = seatService;
         this.ticketRepository = ticketRepository;
+        this.orderFileRepository = new FileRepository<>("src/repository/data/orders.csv", Order::fromCsvFormat);
+        List<Order> ordersfromFile = orderFileRepository.getAll();
+        for (Order order : ordersfromFile) {
+            orderRepository.create(order);
+        }
     }
-
 
     /**
      * Creates a new order from a customer's shopping cart. Clears the shopping cart after the order is created.

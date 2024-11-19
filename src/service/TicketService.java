@@ -1,9 +1,7 @@
 package service;
 
-import model.Event;
-import model.Seat;
-import model.Ticket;
-import model.TicketType;
+import model.*;
+import repository.FileRepository;
 import repository.IRepository;
 
 import java.util.ArrayList;
@@ -18,6 +16,7 @@ public class TicketService {
     private final SeatService seatService;
     private final EventService eventService;
     private final VenueService venueService; // Dependency on VenueService for seat management
+    private final FileRepository<Ticket> ticketFileRepository;
 
     /**
      * Constructs a TicketService with the specified dependencies.
@@ -32,6 +31,11 @@ public class TicketService {
         this.seatService = seatService;
         this.eventService = eventService;
         this.venueService = venueService;
+        this.ticketFileRepository = new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsvFormat);
+        List<Ticket> ticketsFromFile = ticketFileRepository.getAll();
+        for (Ticket ticket : ticketsFromFile) {
+            ticketRepository.create(ticket);
+        }
     }
 
     /**

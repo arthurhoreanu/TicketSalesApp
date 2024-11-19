@@ -47,7 +47,18 @@ public class SportsEvent extends Event {
 
     @Override
     public String toCsvFormat() {
-        return getID() + "," + "Sports Event" + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
-                getEndDateTime() + "," + getVenue() + "," + getEventStatus() + "," + getAthletes();
+        String athletesNames = getAthletes().stream()
+                .map(Athlete::getAthleteName)
+                .reduce((name1, name2) -> name1 + ";" + name2)
+                .orElse("");
+        return getID() + "," +
+                "Sports Event," +
+                getEventName() + "," +
+                getEventDescription() + "," +
+                getStartDateTime() + "," +
+                getEndDateTime() + "," +
+                getVenue().getVenueName() + "," +
+                getEventStatus() + "," +
+                athletesNames;
     }
 }
