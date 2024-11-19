@@ -10,13 +10,51 @@ public class Seat implements Identifiable {
     private int seatNumber;
     private Event reservedForEvent;
 
-    @Override
-    public String toCsvFormat() {
-        return "";
+    /**
+     * Converts a CSV line into a Seat object.
+     *
+     * @param csvLine the CSV line containing the serialized Seat data. Expected format:
+     *                {seatID, rowNumber, section, seatNumber, reservedForEvent}.
+     *                - `seatID` is the unique identifier for the seat (integer).
+     *                - `rowNumber` is the row where the seat is located (integer).
+     *                - `section` is the serialized representation of the Section object.
+     *                - `seatNumber` is the seat number within the row (integer).
+     *                - `reservedForEvent` is the serialized representation of the Event object or "null" if not reserved.
+     * @return the deserialized Seat object.
+     * @throws NumberFormatException if numeric fields (e.g., seatID, rowNumber, seatNumber) cannot be parsed.
+     * @throws IllegalArgumentException if the CSV format is invalid or the referenced section/event cannot be deserialized.
+     */
+    public static Seat fromCsvFormat(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int seatID = Integer.parseInt(fields[0]);
+        int rowNumber = Integer.parseInt(fields[1]);
+        Section section = Section.fromCsvFormat(fields[2]);
+        int seatNumber = Integer.parseInt(fields[3]);
+        Event reservedForEvent = fields[4].equals("null") ? null : Event.fromCsvFormat(fields[4]);
+
+        return new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
     }
 
-    public Seat fromCsvFormat(String csvLine) {
-        return null;
+    /**
+     * Converts the Seat object into a CSV format string.
+     *
+     * @return the CSV representation of the Seat object. The format is:
+     *         {seatID, rowNumber, section, seatNumber, reservedForEvent}.
+     *         - `seatID` is the unique identifier for the seat (integer).
+     *         - `rowNumber` is the row where the seat is located (integer).
+     *         - `section` is the serialized representation of the Section object.
+     *         - `seatNumber` is the seat number within the row (integer).
+     *         - `reservedForEvent` is the serialized representation of the Event object or "null" if not reserved.
+     */
+    @Override
+    public String toCsvFormat() {
+        return String.join(",",
+                String.valueOf(seatID),
+                String.valueOf(rowNumber),
+                section.toCsvFormat(),
+                String.valueOf(seatNumber),
+                reservedForEvent == null ? "null" : reservedForEvent.toCsvFormat()
+        );
     }
 
     /**
