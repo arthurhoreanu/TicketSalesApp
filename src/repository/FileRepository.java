@@ -1,9 +1,9 @@
 package repository;
 
+import controller.Controller;
 import model.Identifiable;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -11,7 +11,6 @@ import java.util.function.Function;
 /**
  * Repository for managing persistence of objects to and from CSV files.
  * Supports basic CRUD operations on any objects implementing {@link Identifiable}.
- *
  * @param <T> Type of objects managed by the repository, which must implement {@link Identifiable}.
  */
 public class FileRepository<T extends Identifiable> implements IRepository<T> {
@@ -91,10 +90,9 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
             System.out.println("Error processing file: " + e.getMessage());
             e.printStackTrace();
         }
-        // Înlocuiește fișierul original doar dacă linia a fost găsită și ștersă
         if (found) {
-            if (originalFile.delete()) { // Ștergem fișierul original
-                if (!tempFile.renameTo(originalFile)) { // Redenumim fișierul temporar
+            if (originalFile.delete()) {
+                if (!tempFile.renameTo(originalFile)) {
                     System.out.println("Error: Could not rename temp file to original file name.");
                 }
             } else {
@@ -102,7 +100,7 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
             }
         } else {
             System.out.println("ID not found: " + id);
-            tempFile.delete(); // Ștergem fișierul temporar dacă ID-ul nu a fost găsit
+            tempFile.delete();
         }
     }
 
@@ -110,7 +108,6 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
      * Retrieves all objects from the CSV file by reading each line and converting it to an object.
      * @return A list of all objects in the file.
      */
-
     @Override
     public List<T> getAll() {
         List<T> items = new ArrayList<>();

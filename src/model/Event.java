@@ -1,6 +1,10 @@
 package model;
 
+import controller.Controller;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents an abstract event with a unique ID, name, description, schedule, venue, and status.
@@ -13,6 +17,7 @@ public abstract class Event implements Identifiable {
     private LocalDateTime endDateTime;
     private Venue venue;
     private EventStatus eventStatus;
+    static Controller controller = ControllerProvider.getController();
 
     /**
      * Constructs an Event with the specified details.
@@ -150,4 +155,53 @@ public abstract class Event implements Identifiable {
                 ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", venue=" + venue +
                 ", eventStatus=" + eventStatus + '}';
     }
+
+    public static Event fromCsvFormat(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int id = Integer.parseInt(fields[0].trim());
+        String type = fields[1].trim();
+        String eventName = fields[2].trim();
+        String eventDescription = fields[3].trim();
+        LocalDateTime startDateTime = LocalDateTime.parse(fields[4].trim());
+        LocalDateTime endDateTime = LocalDateTime.parse(fields[5].trim());
+        int venueID = Integer.parseInt(fields[6].trim());
+        EventStatus status = EventStatus.valueOf(fields[7].trim());
+
+        Venue venue = controller.findVenueById(venueID);
+        if (venue == null) {
+            throw new IllegalArgumentException("Venue with ID " + venueID + " not found.");
+        }
+
+        switch (type) {
+            case "Concert": {
+                String[] artistNames = fields[8].trim().split(";");
+                List<Artist> artists = new ArrayList<>();
+                for (String artistName : artistNames) {
+                    Artist artist = controller.findArtistByName(artistName.trim());
+                    if (artist != null) {
+                        artists.add(artist);
+                    } else {
+                        System.out.println("Warning: Artist with name " + artistName + " not found. Skipping.");
+                    }
+                }
+                return new Concert(id, eventName, eventDescription, startDateTime, endDateTime, venue, status, artists);
+            }
+            case "Sports Event": {
+                String[] athleteNames = fields[8].trim().split(";");
+                List<Athlete> athletes = new ArrayList<>();
+                for (String athleteName : athleteNames) {
+                    Athlete athlete = controller.findAthleteByName(athleteName.trim());
+                    if (athlete != null) {
+                        athletes.add(athlete);
+                    } else {
+                        System.out.println("Warning: Athlete with name " + athleteName + " not found. Skipping.");
+                    }
+                }
+                return new SportsEvent(id, eventName, eventDescription, startDateTime, endDateTime, venue, status, athletes);
+            }
+            default:
+                throw new IllegalArgumentException("Unknown event type: " + type);
+        }
+    }
+
 }

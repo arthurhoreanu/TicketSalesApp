@@ -84,6 +84,13 @@ public class Customer extends User {
                 '}';
     }
 
+    /**
+     * Converts the current object into a CSV-formatted string.
+     * The resulting string contains the object's ID, type ("Customer"), username, email, and password,
+     * separated by commas.
+     * @return A CSV-formatted string representing the current object.
+     *         Format: {ID,Customer,username,email,password}
+     */
     @Override
     public String toCsvFormat() {
         return getID() + "," + "Customer," + getUsername() + "," + getEmail() + "," + getPassword();

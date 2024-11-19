@@ -56,6 +56,8 @@ public class ConsoleApp {
                 shoppingCartController, ticketController
         );
 
+        ControllerProvider.setController(controller);
+
         // Set up scanner and application loop
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
