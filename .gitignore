@@ -12,6 +12,7 @@ bin/
 
 # IntelliJ
 .idea/
+out/
 *.iml
 *.ipr
 *.iws
