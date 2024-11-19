@@ -25,6 +25,13 @@ public class Admin extends User {
         return "Admin{" + "role='" + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
     }
 
+    /**
+     * Converts the current object into a CSV-formatted string.
+     * The resulting string contains the object's ID, type ("Admin"), username, email, and password,
+     * separated by commas.
+     * @return A CSV-formatted string representing the current object.
+     *         Format: {ID,Admin,username,email,password}
+     */
     @Override
     public String toCsvFormat() {
         return getID() + "," + "Admin," + getUsername() + "," + getEmail() + "," + getPassword();

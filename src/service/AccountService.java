@@ -14,13 +14,13 @@ public class AccountService {
     private User currentUser;
     private final FileRepository<User> userFileRepository;
 
-    public AccountService(IRepository<User> userIRepository, CustomerService customerService) {
-        this.userIRepository = userIRepository;
+    public AccountService(IRepository<User> userRepository, CustomerService customerService) {
+        this.userIRepository = userRepository;
         this.customerService = customerService;
         this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User::fromCsvFormat);
         List<User> usersFromFile = userFileRepository.getAll();
         for (User user : usersFromFile) {
-            userIRepository.create(user);
+            userRepository.create(user);
         }
     }
 

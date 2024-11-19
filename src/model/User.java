@@ -66,6 +66,15 @@ public abstract class User implements Identifiable {
         return "User [userId=" + userID + ", username=" + username + ", password=" + password + ", email=" + email + "}";
     }
 
+    /**
+     * Parses a CSV-formatted string and creates a corresponding User object.
+     * The string is expected to contain fields for the user's ID, type, username, email, and password.
+     * Supported user types: Admin and Customer.
+     * @param csvLine The CSV-formatted string representing a user.
+     *                Format: {ID,type,username,email,password}.
+     * @return A User object parsed from the input string.
+     * @throws IllegalArgumentException If the user type in the CSV line is unsupported.
+     */
     public static User fromCsvFormat(String csvLine) {
         String[] fields = csvLine.split(",");
         int id = Integer.parseInt(fields[0].trim());
@@ -82,5 +91,4 @@ public abstract class User implements Identifiable {
                 throw new IllegalArgumentException("Unknown user type: " + type);
         }
     }
-
 }

@@ -1,6 +1,8 @@
 package service;
 
-import model.*; // Import everything from the model layer
+import controller.Controller;
+import model.*;
+import repository.FileRepository;
 import repository.IRepository;
 
 import java.time.LocalDateTime;
@@ -10,10 +12,16 @@ import java.util.ArrayList;
 public class EventService {
     private final IRepository<Event> eventRepository;
     private final VenueService venueService;
+    private final FileRepository<Event> eventFileRepository;
 
     public EventService(IRepository<Event> eventRepository, VenueService venueService) {
         this.eventRepository = eventRepository;
         this.venueService = venueService;
+        this.eventFileRepository = new FileRepository<>("src/repository/data/events.csv", Event::fromCsvFormat);
+        List<Event> eventsFromFile = eventFileRepository.getAll();
+        for (Event event : eventsFromFile) {
+            eventRepository.create(event);
+        }
     }
 
     /**
@@ -31,6 +39,7 @@ public class EventService {
         int eventID = eventRepository.getAll().size() + 1;
         Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
         eventRepository.create(concert);
+        eventFileRepository.create(concert);
         return true;
     }
 
@@ -49,6 +58,7 @@ public class EventService {
         int eventID = eventRepository.getAll().size() + 1;
         SportsEvent sportsEvent = new SportsEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
         eventRepository.create(sportsEvent);
+        eventFileRepository.create(sportsEvent);
         return true;
     }
 
@@ -71,6 +81,7 @@ public class EventService {
             event.setEndDateTime(newEndDateTime);
             event.setEventStatus(newStatus);
             eventRepository.update(event);
+            eventFileRepository.update(event);
             return true;
         } else {
             return false;
@@ -86,6 +97,7 @@ public class EventService {
         Event event = findEventByID(eventId);
         if (event != null) {
             eventRepository.delete(eventId);
+            eventFileRepository.delete(eventId);
             return true;
         } else {
             return false;

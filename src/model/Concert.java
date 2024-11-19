@@ -9,15 +9,6 @@ import java.util.List;
 public class Concert extends Event {
     private List<Artist> artists;
 
-    public static Concert fromCsvFormat(String csvLine) {
-        return null;
-    }
-
-    @Override
-    public String toCsvFormat() {
-        return "";
-    }
-
     /**
      * Constructs a Concert with the specified details and list of performing artists.
      * @param eventID          the unique ID of the concert
@@ -60,4 +51,9 @@ public class Concert extends Event {
                 ", {" + "artists=" + artists + '}';
     }
 
+    @Override
+    public String toCsvFormat() {
+        return getID() + "," + "Concert," + "," + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
+                getEndDateTime() + "," + getVenue() + "," + getEventStatus() + "," + getArtists() + '}';
+    }
 }

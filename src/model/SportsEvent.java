@@ -9,15 +9,6 @@ import java.util.List;
 public class SportsEvent extends Event {
     private List<Athlete> athletes;
 
-    public static SportsEvent fromCsvFormat(String csvLine) {
-        return null;
-    }
-
-    @Override
-    public String toCsvFormat() {
-        return "";
-    }
-
     /**
      * Constructs a SportsEvent with the specified attributes.
      * @param eventID         the unique ID of the event
@@ -52,5 +43,11 @@ public class SportsEvent extends Event {
                 "athletes=" + athletes +
                 ", " + super.toString() +
                 '}';
+    }
+
+    @Override
+    public String toCsvFormat() {
+        return getID() + "," + "Sports Event" + "," + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
+                getEndDateTime() + "," + getVenue() + "," + getEventStatus() + "," + getAthletes();
     }
 }
