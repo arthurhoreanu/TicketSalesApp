@@ -47,7 +47,7 @@ public class SportsEvent extends Event {
 
     @Override
     public String toCsvFormat() {
-        return getID() + "," + "Sports Event" + "," + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
+        return getID() + "," + "Sports Event" + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
                 getEndDateTime() + "," + getVenue() + "," + getEventStatus() + "," + getAthletes();
     }
 }

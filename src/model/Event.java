@@ -156,6 +156,27 @@ public abstract class Event implements Identifiable {
                 ", eventStatus=" + eventStatus + '}';
     }
 
+    /**
+     * Parses a CSV line to create an Event object: either a Concert or a Sports Event.
+     * The method uses the provided CSV data to populate the fields of the event,
+     * including associated artists or athletes for the specific event type.
+     *
+     * @param csvLine A single line from a CSV file representing an event. The fields are expected in the following order:
+     * ID (integer),
+     * Type (String: "Concert" or "Sports Event"),
+     * Event Name (String),
+     * Event Description (String),
+     * Start Date and Time (String in ISO_LOCAL_DATE_TIME format),
+     * End Date and Time (String in ISO_LOCAL_DATE_TIME format)
+     * Venue name (String)
+     * EventStatus
+     * Related entity names (String, semicolon-separated list of artist or athlete names)
+     *
+     * @return An Event object corresponding to the provided CSV data. The returned object will be an instance of
+     * Concert SportsEvent depending on the event type.
+     * @throws IllegalArgumentException If the event type is not recognized.
+     */
+
     public static Event fromCsvFormat(String csvLine) {
         String[] fields = csvLine.split(",");
         int id = Integer.parseInt(fields[0].trim());
@@ -164,12 +185,12 @@ public abstract class Event implements Identifiable {
         String eventDescription = fields[3].trim();
         LocalDateTime startDateTime = LocalDateTime.parse(fields[4].trim());
         LocalDateTime endDateTime = LocalDateTime.parse(fields[5].trim());
-        int venueID = Integer.parseInt(fields[6].trim());
+        String venueName = fields[6].trim();
         EventStatus status = EventStatus.valueOf(fields[7].trim());
 
-        Venue venue = controller.findVenueById(venueID);
+        Venue venue = controller.findVenueByName(venueName);
         if (venue == null) {
-            throw new IllegalArgumentException("Venue with ID " + venueID + " not found.");
+            throw new IllegalArgumentException("Venue with ID " + venueName + " not found.");
         }
 
         switch (type) {

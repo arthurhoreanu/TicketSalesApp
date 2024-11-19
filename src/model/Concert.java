@@ -53,7 +53,7 @@ public class Concert extends Event {
 
     @Override
     public String toCsvFormat() {
-        return getID() + "," + "Concert," + "," + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
+        return getID() + "," + "Concert," + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
                 getEndDateTime() + "," + getVenue() + "," + getEventStatus() + "," + getArtists() + '}';
     }
 }
