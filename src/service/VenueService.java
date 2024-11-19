@@ -1,11 +1,8 @@
 package service;
 
-import model.Event;
-import model.Section;
-import model.Venue;
-import model.Seat;
+import model.*;
+import repository.FileRepository;
 import repository.IRepository;
-import model.Customer;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,6 +14,9 @@ import java.util.ArrayList;
 public class VenueService {
     private final IRepository<Venue> venueRepository;
     private final SectionService sectionService;
+    private IRepository<Section> sectionRepository;
+    private final FileRepository<Venue> venueFileRepository;
+    private final FileRepository<Section> sectionFileRepository;
 
     /**
      * Constructs a VenueService with the specified dependencies.
@@ -27,6 +27,16 @@ public class VenueService {
     public VenueService(IRepository<Venue> venueRepository, SectionService sectionService) {
         this.venueRepository = venueRepository;
         this.sectionService = sectionService;
+        this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsvFormat);
+        List<Venue> venuesFromFile = venueFileRepository.getAll();
+        for (Venue venue : venuesFromFile) {
+            venueRepository.create(venue);
+        }
+        this.sectionFileRepository = new FileRepository<>("src/repository/data/sections.csv", Section::fromCsvFormat);
+        List<Section> sectionsFromFile = sectionFileRepository.getAll();
+        for (Section section : sectionsFromFile) {
+            sectionRepository.create(section);
+        }
     }
 
     /**
@@ -49,6 +59,7 @@ public class VenueService {
 
         Venue venue = new Venue(newID, name, location, capacity, sections);
         venueRepository.create(venue);
+        venueFileRepository.create(venue);
         return true;
     }
 
@@ -70,6 +81,7 @@ public class VenueService {
         for (int sectionId = 1; sectionId <= capacity / sectionCapacity; sectionId++) {
             Section section = sectionService.createSectionWithSeats("Section " + sectionId, sectionId, sectionCapacity, rowCount, seatsPerRow, null);
             sections.add(section);
+            sectionFileRepository.create(section);
         }
 
         Venue venue = new Venue(newId, name, location, capacity, sections);
@@ -79,6 +91,7 @@ public class VenueService {
         }
 
         venueRepository.create(venue);
+        venueFileRepository.create(venue);
         return venue;
     }
 
@@ -100,6 +113,7 @@ public class VenueService {
             venue.setVenueCapacity(newCapacity);
             venue.sections = newSections;
             venueRepository.update(venue);
+            venueFileRepository.update(venue);
             return true;
         }
         return false;
@@ -114,6 +128,7 @@ public class VenueService {
     public boolean deleteVenue(int id) {
         if (findVenueByID(id) != null) {
             venueRepository.delete(id);
+            venueFileRepository.delete(id);
             return true;
         }
         return false;

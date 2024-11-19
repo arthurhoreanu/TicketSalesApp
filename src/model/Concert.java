@@ -53,7 +53,19 @@ public class Concert extends Event {
 
     @Override
     public String toCsvFormat() {
-        return getID() + "," + "Concert," + getEventName() + "," + getEventDescription() + "," + getStartDateTime() + "," +
-                getEndDateTime() + "," + getVenue() + "," + getEventStatus() + "," + getArtists() + '}';
+        String artistNames = getArtists().stream()
+                .map(Artist::getArtistName)
+                .reduce((name1, name2) -> name1 + ";" + name2)
+                .orElse("");
+        return getID() + "," +
+                "Concert," +
+                getEventName() + "," +
+                getEventDescription() + "," +
+                getStartDateTime() + "," +
+                getEndDateTime() + "," +
+                getVenue().getVenueName() + "," +
+                getEventStatus() + "," +
+                artistNames;
     }
+
 }

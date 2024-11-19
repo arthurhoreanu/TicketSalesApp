@@ -1,6 +1,7 @@
 package service;
 
 import model.*;
+import repository.FileRepository;
 import repository.IRepository;
 
 
@@ -12,17 +13,14 @@ import java.util.List;
  */
 public class SectionService {
     private final SeatService seatService;
-    private final IRepository<Section> sectionRepository;
-
 
     /**
      * Constructs a SectionService with the specified SeatService dependency.
      *
      * @param seatService the SeatService used for managing seat-related operations.
      */
-    public SectionService(SeatService seatService, IRepository<Section> sectionRepository) {
+    public SectionService(SeatService seatService) {
         this.seatService = seatService;
-        this.sectionRepository = sectionRepository;
     }
 
 

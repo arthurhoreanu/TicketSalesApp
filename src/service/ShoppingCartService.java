@@ -1,9 +1,7 @@
 package service;
 
-import model.Order;
-import model.ShoppingCart;
-import model.Ticket;
-import model.Customer;
+import model.*;
+import repository.FileRepository;
 import repository.IRepository;
 
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ public class ShoppingCartService {
     private final IRepository<ShoppingCart> shoppingCartRepository;
     private final IRepository<Order> orderRepository;
     private final CustomerService customerService; // Inject CustomerService to get the current customer
+    private final FileRepository<ShoppingCart> shoppingCartFileRepository;
 
     /**
      * Constructs a ShoppingCartService with the specified dependencies.
@@ -29,6 +28,11 @@ public class ShoppingCartService {
         this.shoppingCartRepository = shoppingCartRepository;
         this.orderRepository = orderRepository;
         this.customerService = customerService;
+        this.shoppingCartFileRepository = new FileRepository<>("src/repository/data/shoppingCarts.csv", ShoppingCart::fromCsvFormat);
+        List<ShoppingCart> shoppingCartsFromFile = shoppingCartFileRepository.getAll();
+        for (ShoppingCart shoppingCart : shoppingCartsFromFile) {
+            shoppingCartRepository.create(shoppingCart);
+        }
     }
 
     /**

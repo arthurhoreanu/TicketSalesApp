@@ -1,8 +1,10 @@
 package service;
 
 import model.Event;
+import model.Order;
 import model.Seat;
 import model.Section;
+import repository.FileRepository;
 import repository.IRepository;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
  */
 public class SeatService {
     private final IRepository<Seat> seatRepository;
+    private final FileRepository<Seat> seatFileRepository;
 
     /**
      * Constructs a SeatService with the specified seat repository.
@@ -20,6 +23,11 @@ public class SeatService {
      */
     public SeatService(IRepository<Seat> seatRepository) {
         this.seatRepository = seatRepository;
+        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsvFormat);
+        List<Seat> seatsfromFile = seatFileRepository.getAll();
+        for (Seat seat : seatsfromFile) {
+            seatRepository.create(seat);
+        }
     }
 
     /**

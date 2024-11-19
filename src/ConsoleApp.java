@@ -28,7 +28,7 @@ public class ConsoleApp {
         CustomerService customerService = new CustomerService();
         AccountService accountService = new AccountService(userRepository, customerService);
         SeatService seatService = new SeatService(seatRepository);
-        SectionService sectionService = new SectionService(seatService, sectionRepository);
+        SectionService sectionService = new SectionService(seatService);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
@@ -42,7 +42,7 @@ public class ConsoleApp {
         EventController eventController = new EventController(eventService);
         VenueController venueController = new VenueController(venueService);
         SeatController seatController = new SeatController(seatService);
-        SectionController sectionController = new SectionController(sectionService);
+        SectionController sectionController = new SectionController(sectionService, sectionRepository);
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
         CustomerController customerController = new CustomerController(customerService);
