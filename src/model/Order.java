@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents an Order placed by a User, containing multiple Tickets.
@@ -15,13 +16,59 @@ public class Order implements Identifiable {
     private LocalDateTime orderDate;
     private OrderStatus status;
 
+    /**
+     * Creates an Order object from a CSV-formatted string.
+     *
+     * @param csvLine the CSV-formatted string.
+     * @return the deserialized Order object.
+     */
     public static Order fromCsvFormat(String csvLine) {
-        return null;
+        String[] fields = csvLine.split(",");
+        int orderID = Integer.parseInt(fields[0].trim());
+        String userDetails = fields[1].trim();
+        String ticketDetails = fields[2].trim();
+        LocalDateTime orderDate = LocalDateTime.parse(fields[3].trim());
+        OrderStatus status = OrderStatus.valueOf(fields[4].trim());
+
+        User user = User.fromCsvFormat(userDetails);
+        List<Ticket> tickets = new ArrayList<>();
+        if (!ticketDetails.equals("null")) {
+            String[] ticketIds = ticketDetails.split(";");
+            for (String ticketId : ticketIds) {
+                Ticket ticket = ControllerProvider.getController().getTicketByID(Integer.parseInt(ticketId.trim()));
+                if (ticket != null) {
+                    tickets.add(ticket);
+                }
+            }
+        }
+
+        Order order = new Order(user, tickets);
+        order.setOrderID(orderID);
+        order.setStatus(status);
+        order.setOrderDate(orderDate);
+
+        return order;
     }
 
+    /**
+     * Converts the Order object into a CSV-formatted string.
+     *
+     * @return the CSV-formatted string representing the Order.
+     */
     @Override
     public String toCsvFormat() {
-        return "";
+        String ticketIds = tickets.isEmpty() ? "null" : tickets.stream()
+                .map(ticket -> String.valueOf(ticket.getID()))
+                .reduce((a, b) -> a + ";" + b)
+                .orElse("null");
+
+        return String.join(",",
+                String.valueOf(orderID),
+                user.toCsvFormat(),
+                ticketIds,
+                orderDate.toString(),
+                status.name()
+        );
     }
 
     /**
@@ -74,6 +121,10 @@ public class Order implements Identifiable {
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate){
+        this.orderDate = orderDate;
     }
 
     /**

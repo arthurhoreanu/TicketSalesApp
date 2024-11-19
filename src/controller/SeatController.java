@@ -46,13 +46,8 @@ public class SeatController {
      *
      * @param seatID the ID of the seat to retrieve
      */
-    public void findSeatByID(int seatID) {
-        Seat seat = seatService.findSeatByID(seatID);
-        if (seat != null) {
-            System.out.println("Found seat with ID: " + seatID + " - Row: " + seat.getRowNumber() + ", Seat: " + seat.getSeatNumber());
-        } else {
-            System.out.println("Seat with ID: " + seatID + " does not exist.");
-        }
+    public Seat findSeatByID(int seatID) {
+        return seatService.findSeatByID(seatID);
     }
 
     /**

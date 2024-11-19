@@ -10,7 +10,7 @@ public class Controller {
     private final AccountController accountController;
     private final EventController eventController;
     private final VenueController venueController;
-    private final SectionController sectionController;
+    public final SectionController sectionController;
     private final SeatController seatController;
     private final ArtistController artistController;
     private final AthleteController athleteController;
@@ -102,8 +102,8 @@ public class Controller {
     // Seat related
     public void createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {
         seatController.createSeat(seatID, section, rowNumber, seatNumber, reservedForEvent);}
-    public void findSeatByID(int seatID) {
-        seatController.findSeatByID(seatID);}
+    public Seat findSeatByID(int seatID) {
+       return seatController.findSeatByID(seatID);}
     public void checkSeatReservation(Seat seat, Event event) {
         seatController.checkSeatReservation(seat, event);}
     public void reserveSeatForEvent(Seat seat, Event event) {

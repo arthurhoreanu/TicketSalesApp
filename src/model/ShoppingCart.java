@@ -1,6 +1,9 @@
 package model;
 
+import controller.Controller;
+
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a shopping cart for storing tickets, with an ID, list of tickets, and total price.
@@ -10,14 +13,42 @@ public class ShoppingCart implements Identifiable {
     private List<Ticket> items;
     private double totalPrice;
 
+    static Controller controller = ControllerProvider.getController();
+
     public static ShoppingCart fromCsvFormat(String csvLine) {
-        return null;
+        String[] fields = csvLine.split(",");
+        int shoppingCartID = Integer.parseInt(fields[0]);
+        List<Ticket> items = new ArrayList<>();
+
+        if (!fields[1].equals("null")) {
+            String[] ticketIds = fields[1].split(";");
+            for (String ticketId : ticketIds) {
+                Ticket ticket = controller.getTicketByID(Integer.parseInt(ticketId));
+                if (ticket != null) {
+                    items.add(ticket);
+                }
+            }
+        }
+
+        double totalPrice = Double.parseDouble(fields[2]);
+
+        return new ShoppingCart(shoppingCartID, items, totalPrice);
     }
 
     @Override
     public String toCsvFormat() {
-        return "";
+        String ticketIds = items.isEmpty() ? "null" : items.stream()
+                .map(ticket -> String.valueOf(ticket.getID()))
+                .reduce((t1, t2) -> t1 + ";" + t2)
+                .orElse("null");
+
+        return String.join(",",
+                String.valueOf(shoppingCartID),
+                ticketIds,
+                String.valueOf(totalPrice)
+        );
     }
+
 
     /**
      * Constructs a ShoppingCart with the specified ID, list of items, and total price.

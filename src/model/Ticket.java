@@ -17,16 +17,10 @@ public class Ticket implements Identifiable {
     private boolean isSold;
 
     /**
-     * Converts a CSV line into a Ticket object.
+     * Creates a Ticket object from a CSV-formatted string.
      *
-     * @param csvLine the CSV line containing the serialized Ticket data
-     * @return the Ticket object
-     */
-    /**
-     * Converts a CSV line into a Ticket object.
-     *
-     * @param csvLine the CSV line containing the serialized Ticket data
-     * @return the Ticket object
+     * @param csvLine the CSV-formatted string.
+     * @return the deserialized Ticket object.
      */
     public static Ticket fromCsvFormat(String csvLine) {
         String[] fields = csvLine.split(",");
@@ -42,16 +36,16 @@ public class Ticket implements Identifiable {
 
         Ticket ticket = new Ticket(ticketID, event, section, seat, price, ticketType);
         ticket.setSold(isSold);
-        ticket.purchaserName = purchaserName;
-        ticket.purchaseDate = purchaseDate;
+        ticket.setPurchaserName(purchaserName);
+        ticket.setPurchaseDate(purchaseDate);
 
         return ticket;
     }
 
     /**
-     * Converts the Ticket object into a CSV format string.
+     * Converts the Ticket object into a CSV-formatted string.
      *
-     * @return the CSV representation of the Ticket
+     * @return the CSV-formatted string representing the Ticket.
      */
     @Override
     public String toCsvFormat() {
@@ -187,6 +181,27 @@ public class Ticket implements Identifiable {
         this.purchaserName = purchaserName;
         this.purchaseDate = LocalDateTime.now();
     }
+
+
+    /**
+     * Sets the name of the purchaser who bought the ticket.
+     *
+     * @param purchaserName the name of the purchaser.
+     */
+    public void setPurchaserName(String purchaserName) {
+        this.purchaserName = purchaserName;
+    }
+
+
+    /**
+     * Sets the date and time when the ticket was purchased.
+     *
+     * @param purchaseDate the purchase date and time.
+     */
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
 
     /**
      * Returns a string representation of the ticket, including ID, event, section, seat, price, and sale details.

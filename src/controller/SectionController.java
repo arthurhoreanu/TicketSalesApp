@@ -5,6 +5,7 @@ import model.Event;
 import model.Seat;
 import model.Section;
 import model.Venue;
+import repository.IRepository;
 import service.SectionService;
 
 import java.util.List;
@@ -15,14 +16,16 @@ import java.util.List;
  */
 public class SectionController {
     private final SectionService sectionService;
+    private final IRepository<Section> sectionRepository;
 
     /**
      * Constructs a SectionController with the specified SectionService.
      *
      * @param sectionService the service handling section-related operations
      */
-    public SectionController(SectionService sectionService) {
+    public SectionController(SectionService sectionService, IRepository<Section> sectionRepository ) {
         this.sectionService = sectionService;
+        this.sectionRepository = sectionRepository;
     }
 
     /**
@@ -60,12 +63,12 @@ public class SectionController {
     /**
      * Creates a new section within the specified venue, with a specified number of rows and seats per row.
      *
-     * @param sectionName   the name of the section to be created
-     * @param sectionId     the unique ID of the section
+     * @param sectionName     the name of the section to be created
+     * @param sectionId       the unique ID of the section
      * @param sectionCapacity the total capacity of the section
-     * @param rowCount      the number of rows in the section
-     * @param seatsPerRow   the number of seats per row in the section
-     * @param venue         the venue where the section is created
+     * @param rowCount        the number of rows in the section
+     * @param seatsPerRow     the number of seats per row in the section
+     * @param venue           the venue where the section is created
      * @return the created Section object
      */
     public Section createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
@@ -84,5 +87,21 @@ public class SectionController {
     public void getSectionInfo(Section section, Event event) {
         int availableSeatsCount = sectionService.getAvailableSeats(section, event).size();
         System.out.println("Section '" + section.getSectionName() + "' has a capacity of " + section.getSectionCapacity() + " seats. Currently available seats for event '" + event.getEventName() + "': " + availableSeatsCount);
+    }
+
+    /**
+     * Finds a section by its unique ID.
+     *
+     * @param sectionId the ID of the section to find.
+     * @return the Section object if found, or null if no such section exists.
+     */
+    public Section findSectionById(int sectionId) {
+        List<Section> sections = sectionRepository.getAll();
+        for (Section section : sections) {
+            if (section.getID() == sectionId) {
+                return section;
+            }
+        }
+        return null;
     }
 }
