@@ -22,12 +22,13 @@ public class ConsoleApp {
         IRepository<Order> orderRepository = new InMemoryRepository<>();
         IRepository<Ticket> ticketRepository = new InMemoryRepository<>();
         IRepository<ShoppingCart> shoppingCartRepository = new InMemoryRepository<>();
+        IRepository<Section> sectionRepository = new InMemoryRepository<>();
 
         // Instantiate services
         CustomerService customerService = new CustomerService();
         AccountService accountService = new AccountService(userRepository, customerService);
         SeatService seatService = new SeatService(seatRepository);
-        SectionService sectionService = new SectionService(seatService);
+        SectionService sectionService = new SectionService(seatService, sectionRepository);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);

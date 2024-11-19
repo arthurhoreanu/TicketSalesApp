@@ -11,40 +11,29 @@ public class Seat implements Identifiable {
     private Event reservedForEvent;
 
     /**
-     * Converts a CSV line into a Seat object.
+     * Creates a Seat object from a CSV-formatted string.
      *
-     * @param csvLine the CSV line containing the serialized Seat data. Expected format:
-     *                {seatID, rowNumber, section, seatNumber, reservedForEvent}.
-     *                - `seatID` is the unique identifier for the seat (integer).
-     *                - `rowNumber` is the row where the seat is located (integer).
-     *                - `section` is the serialized representation of the Section object.
-     *                - `seatNumber` is the seat number within the row (integer).
-     *                - `reservedForEvent` is the serialized representation of the Event object or "null" if not reserved.
+     * @param csvLine the CSV-formatted string.
      * @return the deserialized Seat object.
-     * @throws NumberFormatException if numeric fields (e.g., seatID, rowNumber, seatNumber) cannot be parsed.
-     * @throws IllegalArgumentException if the CSV format is invalid or the referenced section/event cannot be deserialized.
      */
     public static Seat fromCsvFormat(String csvLine) {
         String[] fields = csvLine.split(",");
-        int seatID = Integer.parseInt(fields[0]);
-        int rowNumber = Integer.parseInt(fields[1]);
-        Section section = Section.fromCsvFormat(fields[2]);
-        int seatNumber = Integer.parseInt(fields[3]);
-        Event reservedForEvent = fields[4].equals("null") ? null : Event.fromCsvFormat(fields[4]);
+        int seatID = Integer.parseInt(fields[0].trim());
+        int rowNumber = Integer.parseInt(fields[1].trim());
+        String sectionDetails = fields[2].trim();
+        int seatNumber = Integer.parseInt(fields[3].trim());
+        String eventDetails = fields[4].trim();
+
+        Section section = Section.fromCsvFormat(sectionDetails);
+        Event reservedForEvent = eventDetails.equals("null") ? null : Event.fromCsvFormat(eventDetails);
 
         return new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
     }
 
     /**
-     * Converts the Seat object into a CSV format string.
+     * Converts the Seat object into a CSV-formatted string.
      *
-     * @return the CSV representation of the Seat object. The format is:
-     *         {seatID, rowNumber, section, seatNumber, reservedForEvent}.
-     *         - `seatID` is the unique identifier for the seat (integer).
-     *         - `rowNumber` is the row where the seat is located (integer).
-     *         - `section` is the serialized representation of the Section object.
-     *         - `seatNumber` is the seat number within the row (integer).
-     *         - `reservedForEvent` is the serialized representation of the Event object or "null" if not reserved.
+     * @return the CSV-formatted string representing the Seat.
      */
     @Override
     public String toCsvFormat() {

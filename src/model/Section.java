@@ -1,6 +1,9 @@
 package model;
 
+import controller.Controller;
+
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a section within a venue, containing details such as name, capacity, associated venue, and seats.
@@ -12,13 +15,56 @@ public class Section implements Identifiable {
     private Venue venue;
     private List<Seat> seats;
 
-    public Section fromCsvFormat(String csvLine) {
-        return null;
+    static Controller controller = ControllerProvider.getController();
+
+    /**
+     * Creates a Section object from a CSV-formatted string.
+     *
+     * @param csvLine the CSV-formatted string.
+     * @return the deserialized Section object.
+     */
+    public static Section fromCsvFormat(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int sectionID = Integer.parseInt(fields[0].trim());
+        String sectionName = fields[1].trim();
+        int sectionCapacity = Integer.parseInt(fields[2].trim());
+        String venueDetails = fields[3].trim();
+        String seatsDetails = fields[4].trim();
+
+        Venue venue = Venue.fromCsvFormat(venueDetails);
+        List<Seat> seats = new ArrayList<>();
+        if (!seatsDetails.equals("null")) {
+            String[] seatIds = seatsDetails.split(";");
+            for (String seatId : seatIds) {
+                Seat seat = controller.findSeatByID(Integer.parseInt(seatId.trim()));
+                if (seat != null) {
+                    seats.add(seat);
+                }
+            }
+        }
+
+        return new Section(sectionID, sectionName, sectionCapacity, venue, seats);
     }
 
+    /**
+     * Converts the Section object into a CSV-formatted string.
+     *
+     * @return the CSV-formatted string representing the Section.
+     */
     @Override
     public String toCsvFormat() {
-        return "";
+        String seatIds = seats.isEmpty() ? "null" : seats.stream()
+                .map(seat -> String.valueOf(seat.getID()))
+                .reduce((a, b) -> a + ";" + b)
+                .orElse("null");
+
+        return String.join(",",
+                String.valueOf(sectionID),
+                sectionName,
+                String.valueOf(sectionCapacity),
+                venue.toCsvFormat(),
+                seatIds
+        );
     }
 
     /**

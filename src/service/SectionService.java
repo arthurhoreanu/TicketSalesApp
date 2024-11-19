@@ -1,10 +1,8 @@
 package service;
 
-import model.Event;
-import model.Seat;
-import model.Section;
-import model.Customer;
-import model.Venue;
+import model.*;
+import repository.IRepository;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +12,20 @@ import java.util.List;
  */
 public class SectionService {
     private final SeatService seatService;
+    private final IRepository<Section> sectionRepository;
+
 
     /**
      * Constructs a SectionService with the specified SeatService dependency.
      *
      * @param seatService the SeatService used for managing seat-related operations.
      */
-    public SectionService(SeatService seatService) {
+    public SectionService(SeatService seatService, IRepository<Section> sectionRepository) {
         this.seatService = seatService;
+        this.sectionRepository = sectionRepository;
     }
+
+
 
     /**
      * Retrieves a list of available seats in a specified section for a specific event.
@@ -91,4 +94,7 @@ public class SectionService {
         }
         return section;
     }
+
+
+
 }
