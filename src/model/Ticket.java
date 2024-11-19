@@ -16,14 +16,59 @@ public class Ticket implements Identifiable {
     private TicketType ticketType;
     private boolean isSold;
 
+    /**
+     * Converts a CSV line into a Ticket object.
+     *
+     * @param csvLine the CSV line containing the serialized Ticket data
+     * @return the Ticket object
+     */
+    /**
+     * Converts a CSV line into a Ticket object.
+     *
+     * @param csvLine the CSV line containing the serialized Ticket data
+     * @return the Ticket object
+     */
     public static Ticket fromCsvFormat(String csvLine) {
-        return null;
+        String[] fields = csvLine.split(",");
+        int ticketID = Integer.parseInt(fields[0].trim());
+        Event event = Event.fromCsvFormat(fields[1].trim());
+        Section section = Section.fromCsvFormat(fields[2].trim());
+        Seat seat = Seat.fromCsvFormat(fields[3].trim());
+        double price = Double.parseDouble(fields[4].trim());
+        TicketType ticketType = TicketType.valueOf(fields[5].trim());
+        boolean isSold = Boolean.parseBoolean(fields[6].trim());
+        String purchaserName = fields[7].trim().equals("null") ? null : fields[7].trim();
+        LocalDateTime purchaseDate = fields[8].trim().equals("null") ? null : LocalDateTime.parse(fields[8].trim());
+
+        Ticket ticket = new Ticket(ticketID, event, section, seat, price, ticketType);
+        ticket.setSold(isSold);
+        ticket.purchaserName = purchaserName;
+        ticket.purchaseDate = purchaseDate;
+
+        return ticket;
     }
 
+    /**
+     * Converts the Ticket object into a CSV format string.
+     *
+     * @return the CSV representation of the Ticket
+     */
     @Override
     public String toCsvFormat() {
-        return "";
+        return String.join(",",
+                String.valueOf(ticketID),
+                event.toCsvFormat(),
+                section.toCsvFormat(),
+                seat.toCsvFormat(),
+                String.valueOf(price),
+                ticketType.name(),
+                String.valueOf(isSold),
+                purchaserName == null ? "null" : purchaserName,
+                purchaseDate == null ? "null" : purchaseDate.toString()
+        );
     }
+
+
 
     /**
      * Constructs a Ticket with the specified attributes.
