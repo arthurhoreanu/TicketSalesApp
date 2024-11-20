@@ -13,10 +13,10 @@ import java.util.ArrayList;
  */
 public class VenueService {
     private final IRepository<Venue> venueRepository;
-    private final VenueService venueService;
     private IRepository<Section> sectionRepository;
     private final FileRepository<Venue> venueFileRepository;
     private final FileRepository<Section> sectionFileRepository;
+    private final SectionService sectionService;
 
     /**
      * Constructs a VenueService with the specified dependencies.
@@ -26,7 +26,7 @@ public class VenueService {
      */
     public VenueService(IRepository<Venue> venueRepository, SectionService sectionService) {
         this.venueRepository = venueRepository;
-        this.venueService = venueService;
+        this.sectionService = sectionService;
         this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsvFormat);
         List<Venue> venuesFromFile = venueFileRepository.getAll();
         for (Venue venue : venuesFromFile) {
@@ -178,7 +178,7 @@ public class VenueService {
      */
     public int getAvailableSeats(Venue venue, Event event) {
         return venue.getSections().stream()
-                .mapToInt(section -> venueService.getAvailableSeats(section, event).size())
+                .mapToInt(section -> sectionService.getAvailableSeats(section, event).size())
                 .sum();
     }
 

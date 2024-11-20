@@ -93,4 +93,44 @@ public class SectionService {
     public List<Section> getAllSections() {
         return sectionRepository.getAll();
     }
+
+    /**
+     * Retrieves a list of available seats in a specified section for a specific event.
+     * A seat is considered available if it is not reserved for the given event.
+     *
+     * @param section the section to check for available seats.
+     * @param event   the event for which seat availability is being checked.
+     * @return a list of available seats for the specified event in the section.
+     */
+    public List<Seat> getAvailableSeats(Section section, Event event) {
+        List<Seat> availableSeats = new ArrayList<>();
+        List<Seat> seats = section.getSeats();
+        for (int i = 0; i < seats.size(); i++) {
+            Seat seat = seats.get(i);
+            if (!seatService.isSeatReservedForEvent(seat, event)) {
+                availableSeats.add(seat);
+            }
+        }
+        return availableSeats;
+    }
+    /**
+     * Recommends a seat within a section for a customer based on their preferences.
+     * If the customer has a preference for this section, the first available seat is recommended.
+     * Otherwise, a front-row seat is recommended as a fallback.
+     *
+     * @param customer the customer for whom the seat is being recommended.
+     * @param section  the section in which the seat recommendation is made.
+     * @param event    the event for which the seat is being recommended.
+     * @return the recommended seat, or null if no seats are available.
+     */
+    public Seat recommendSeat(Customer customer, Section section, Event event) {
+        List<Seat> availableSeats = getAvailableSeats(section, event);
+        // Check if the customer has a preference for this section
+        Integer preferredCount = customer.getPreferredSections().get(section.getID());
+        if (preferredCount != null && preferredCount > 0) {
+            return availableSeats.isEmpty() ? null : availableSeats.get(0);
+        }
+        // Fallback: Recommend the first front-row seat
+        return seatService.recommendFrontRowSeat(availableSeats);
+    }
 }
