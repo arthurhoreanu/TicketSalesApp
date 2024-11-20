@@ -4,6 +4,7 @@ import model.*;
 import repository.FileRepository;
 import repository.IRepository;
 
+import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -50,13 +51,11 @@ public class VenueService {
      */
     public boolean addVenue(String name, String location, int capacity, List<Section> sections) {
         int newID = venueRepository.getAll().size() + 1;
-
         for (Venue venue : venueRepository.getAll()) {
             if (venue.getVenueName().equalsIgnoreCase(name) && venue.getLocation().equalsIgnoreCase(location)) {
                 return false;
             }
         }
-
         Venue venue = new Venue(newID, name, location, capacity, sections);
         venueRepository.create(venue);
         venueFileRepository.create(venue);
@@ -74,26 +73,62 @@ public class VenueService {
      * @param seatsPerRow    the number of seats per row in each section.
      * @return the created Venue object.
      */
-    public Venue createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
-        int newId = venueRepository.getAll().size() + 1;
-        List<Section> sections = new ArrayList<>();
 
-        for (int sectionId = 1; sectionId <= capacity / sectionCapacity; sectionId++) {
-            Section section = sectionService.createSectionWithSeats("Section " + sectionId, sectionId, sectionCapacity, rowCount, seatsPerRow, null);
-            sections.add(section);
-            sectionFileRepository.create(section);
+    /**
+     * Appends a section name to the corresponding venue's CSV line if the sections field is null.
+     *
+     * @param newId     The ID of the venue to update.
+     * @param sectionName The name of the section to append.
+     */
+    private void appendSectionToVenueInCsv(int newId, String sectionName) {
+        File tempFile = new File("tempfile.csv");
+        File originalFile = new File("src/repository/data/sections.csv"); // Assuming FileRepository provides this method
+
+        boolean venueFound = false; // Flag to check if the venue ID is found
+
+        try (
+                BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))
+        ) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                int currentVenueId = Integer.parseInt(fields[0].trim());
+
+                if (currentVenueId == newId) {
+                    venueFound = true;
+
+                    // Handle the sections field (assume it's the 5th field)
+                    if (fields.length < 5 || fields[4].trim().equals("null") || fields[4].trim().isEmpty()) {
+                        fields[4] = sectionName; // Initialize with the first section
+                    } else {
+                        fields[4] += ";" + sectionName; // Append the new section name
+                    }
+                    line = String.join(",", fields);
+                }
+
+                writer.write(line);
+                writer.newLine();
+            }
+
+            if (!venueFound) {
+                System.out.println("Warning: Venue with ID " + newId + " not found.");
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error updating venue CSV: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        Venue venue = new Venue(newId, name, location, capacity, sections);
-
-        for (Section section : sections) {
-            section.setVenue(venue);
+        // Replace the original file with the updated file
+        if (!originalFile.delete()) {
+            System.err.println("Error deleting original file.");
+        } else if (!tempFile.renameTo(originalFile)) {
+            System.err.println("Error renaming temp file to original.");
         }
-
-        venueRepository.create(venue);
-        venueFileRepository.create(venue);
-        return venue;
     }
+
 
     /**
      * Updates an existing venue by ID with new details and sections.

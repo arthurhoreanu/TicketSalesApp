@@ -52,10 +52,6 @@ public class VenueController {
      * @param rowCount       the number of rows in each section
      * @param seatsPerRow    the number of seats per row
      */
-    public void createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
-        Venue venue = venueService.createVenueWithSectionsAndSeats(name, location, capacity, sectionCapacity, rowCount, seatsPerRow);
-        System.out.println("Venue '" + venue.getVenueName() + "' created with " + venue.getSections().size() + " sections, each containing " + seatsPerRow + " seats per row.");
-    }
 
     /**
      * Updates an existing venue by its ID.

@@ -129,8 +129,6 @@ public class Controller {
     // Venue related
     public void addVenue(String name, String location, int capacity, List<Section> sections) {
         venueController.addVenue(name, location, capacity, sections);}
-    public void createVenueWithSectionsAndSeats(String name, String location, int capacity, int sectionCapacity, int rowCount, int seatsPerRow) {
-        venueController.createVenueWithSectionsAndSeats(name, location, capacity, sectionCapacity, rowCount, seatsPerRow);}
     public void updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
         venueController.updateVenue(id, newName, newLocation, newCapacity, newSections);}
     public void deleteVenue(int id) {

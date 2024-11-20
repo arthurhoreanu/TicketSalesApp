@@ -62,7 +62,7 @@ public class Section implements Identifiable {
                 String.valueOf(sectionID),
                 sectionName,
                 String.valueOf(sectionCapacity),
-                venue.toCsvFormat(),
+                venue.getVenueName(),
                 seatIds
         );
     }
