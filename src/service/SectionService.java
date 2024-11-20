@@ -4,6 +4,7 @@ import model.*;
 import repository.FileRepository;
 import repository.IRepository;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,56 @@ public class SectionService {
         }
     }
 
+    private void appendSectionToVenueCsv(int venueId, String sectionName) {
+        File tempFile = new File("tempfile.csv");
+        File originalFile = new File("src/repository/data/venues.csv");
+
+        boolean venueFound = false; // Flag to check if the venue ID is found
+
+        try (
+                BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))
+        ) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                int currentVenueId = Integer.parseInt(fields[0].trim());
+
+                if (currentVenueId == venueId) {
+                    venueFound = true;
+
+                    // Handle the sections field (assume it's the 5th field)
+                    if (fields.length < 5 || fields[4].trim().equals("null") || fields[4].trim().isEmpty()) {
+                        fields[4] = sectionName; // Initialize with the first section
+                    } else {
+                        fields[4] += ";" + sectionName; // Append the new section name
+                    }
+                    line = String.join(",", fields);
+                }
+
+                writer.write(line);
+                writer.newLine();
+            }
+
+            if (!venueFound) {
+                System.out.println("Warning: Venue with ID " + venueId + " not found.");
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error updating venue CSV: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Replace the original file with the updated file
+        if (!originalFile.delete()) {
+            System.err.println("Error deleting original file.");
+        } else if (!tempFile.renameTo(originalFile)) {
+            System.err.println("Error renaming temp file to original.");
+        }
+    }
+
+
     /**
      * Creates a new section with a specified number of rows and seats per row.
      * The section is saved to both in-memory and file repositories.
@@ -47,7 +98,6 @@ public class SectionService {
             int rowCount,
             int seatsPerRow,
             Venue venue) {
-
         // Create seats for the section
         List<Seat> seats = new ArrayList<>();
         Section section = new Section(sectionId, sectionName, sectionCapacity, venue, seats);
@@ -57,13 +107,15 @@ public class SectionService {
                 seats.add(seat);
             }
         }
-
         // Save to both in-memory and file repositories
         sectionRepository.create(section);
         sectionFileRepository.create(section);
+        appendSectionToVenueCsv(venue.getID(), sectionName);
 
         return section;
     }
+
+
 
     /**
      * Updates a section in both repositories.
