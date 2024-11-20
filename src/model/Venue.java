@@ -16,6 +16,23 @@ public class Venue implements Identifiable {
     private int venueCapacity;
     public List<Section> sections;
 
+
+    /**
+     * Constructs a Venue with the specified ID, name, location, capacity, and sections.
+     * @param venueID       the unique ID of the venue
+     * @param venueName     the name of the venue
+     * @param location      the location of the venue
+     * @param venueCapacity the capacity of the venue
+     * @param sections      the list of sections within the venue
+     */
+    public Venue(int venueID, String venueName, String location, int venueCapacity, List<Section> sections) {
+        this.venueID = venueID;
+        this.venueName = venueName;
+        this.location = location;
+        this.venueCapacity = venueCapacity;
+        this.sections = sections;
+    }
+
     @Override
     public String toString() {
         return "Venue{" +
@@ -81,22 +98,6 @@ public class Venue implements Identifiable {
                 String.valueOf(venueCapacity),
                 sectionIds
         );
-    }
-
-    /**
-     * Constructs a Venue with the specified ID, name, location, capacity, and sections.
-     * @param venueID       the unique ID of the venue
-     * @param venueName     the name of the venue
-     * @param location      the location of the venue
-     * @param venueCapacity the capacity of the venue
-     * @param sections      the list of sections within the venue
-     */
-    public Venue(int venueID, String venueName, String location, int venueCapacity, List<Section> sections) {
-        this.venueID = venueID;
-        this.venueName = venueName;
-        this.location = location;
-        this.venueCapacity = venueCapacity;
-        this.sections = sections;
     }
 
     /**
