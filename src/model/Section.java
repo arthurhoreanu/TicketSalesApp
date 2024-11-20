@@ -28,10 +28,10 @@ public class Section implements Identifiable {
         int sectionID = Integer.parseInt(fields[0].trim());
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
-        String venueDetails = fields[3].trim();
+        String venueName = fields[3].trim();
         String seatsDetails = fields[4].trim();
 
-        Venue venue = Venue.fromCsvFormat(venueDetails);
+        Venue venue = controller.findVenueByName(venueName);
         List<Seat> seats = new ArrayList<>();
         if (!seatsDetails.equals("null")) {
             String[] seatIds = seatsDetails.split(";");
@@ -42,7 +42,6 @@ public class Section implements Identifiable {
                 }
             }
         }
-
         return new Section(sectionID, sectionName, sectionCapacity, venue, seats);
     }
 
