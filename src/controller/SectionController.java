@@ -95,7 +95,7 @@ public class SectionController {
      * @param sectionId the ID of the section to find.
      * @return the Section object if found, or null if no such section exists.
      */
-    public Section findSectionById(int sectionId) {
+    public Section findSectionByID(int sectionId) {
         List<Section> sections = sectionRepository.getAll();
         for (Section section : sections) {
             if (section.getID() == sectionId) {

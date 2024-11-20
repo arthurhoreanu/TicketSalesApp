@@ -87,7 +87,6 @@ public class AdminVenueMenu {
         String location = scanner.nextLine();
         System.out.print("Enter capacity: ");
         int capacity = Integer.parseInt(scanner.nextLine());
-
         controller.addVenue(name, location, capacity, new ArrayList<>());
         System.out.println("Venue added successfully.");
     }
