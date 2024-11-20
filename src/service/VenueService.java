@@ -14,9 +14,7 @@ import java.util.ArrayList;
  */
 public class VenueService {
     private final IRepository<Venue> venueRepository;
-    private IRepository<Section> sectionRepository;
     private final FileRepository<Venue> venueFileRepository;
-    private final FileRepository<Section> sectionFileRepository;
     private final SectionService sectionService;
 
     /**
@@ -32,11 +30,6 @@ public class VenueService {
         List<Venue> venuesFromFile = venueFileRepository.getAll();
         for (Venue venue : venuesFromFile) {
             venueRepository.create(venue);
-        }
-        this.sectionFileRepository = new FileRepository<>("src/repository/data/sections.csv", Section::fromCsvFormat);
-        List<Section> sectionsFromFile = sectionFileRepository.getAll();
-        for (Section section : sectionsFromFile) {
-            sectionRepository.create(section);
         }
     }
 

@@ -67,10 +67,10 @@ public class Venue implements Identifiable {
 
         List<Section> sections = new ArrayList<>();
         if (!sectionsDetails.equals("null")) {
-            String[] sectionIds = sectionsDetails.split(";");
-            for (String sectionId : sectionIds) {
+            String[] sectionIDs = sectionsDetails.split(";");
+            for (String sectionID : sectionIDs) {
                 // Delegate to the SectionController through the ControllerProvider
-                Section section = controller.findSectionByID(Integer.parseInt(sectionId.trim()));
+                Section section = controller.findSectionByID(Integer.parseInt(sectionID.trim()));
                 if (section != null) {
                     sections.add(section);
                 }

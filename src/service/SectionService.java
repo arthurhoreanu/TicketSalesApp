@@ -29,7 +29,7 @@ public class SectionService {
         }
     }
 
-    private void appendSectionToVenueCsv(int venueId, String sectionName) {
+    private void appendSectionToVenueCsv(int venueId, int sectionID) {
         File tempFile = new File("tempfile.csv");
         File originalFile = new File("src/repository/data/venues.csv");
 
@@ -50,9 +50,9 @@ public class SectionService {
 
                     // Handle the sections field (assume it's the 5th field)
                     if (fields.length < 5 || fields[4].trim().equals("null") || fields[4].trim().isEmpty()) {
-                        fields[4] = sectionName; // Initialize with the first section
+                        fields[4] = String.valueOf(sectionID); // Initialize with the first section
                     } else {
-                        fields[4] += ";" + sectionName; // Append the new section name
+                        fields[4] += ";" + sectionID; // Append the new section name
                     }
                     line = String.join(",", fields);
                 }
@@ -77,7 +77,6 @@ public class SectionService {
             System.err.println("Error renaming temp file to original.");
         }
     }
-
 
     /**
      * Creates a new section with a specified number of rows and seats per row.
@@ -110,7 +109,7 @@ public class SectionService {
         // Save to both in-memory and file repositories
         sectionRepository.create(section);
         sectionFileRepository.create(section);
-        appendSectionToVenueCsv(venue.getID(), sectionName);
+        appendSectionToVenueCsv(venue.getID(), sectionId);
 
         return section;
     }
@@ -185,4 +184,5 @@ public class SectionService {
         // Fallback: Recommend the first front-row seat
         return seatService.recommendFrontRowSeat(availableSeats);
     }
+
 }
