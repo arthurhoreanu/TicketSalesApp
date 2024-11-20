@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,24 @@ public class Venue implements Identifiable {
     private String location;
     private int venueCapacity;
     public List<Section> sections;
+
+    @Override
+    public String toString() {
+        return "Venue{" +
+                "venueID=" + venueID +
+                ", venueName='" + venueName + '\'' +
+                ", location='" + location + '\'' +
+                ", venueCapacity=" + venueCapacity +
+                '}';
+    }
+
+    static Controller controller = ControllerProvider.getController();
+
+    /**
+     * Returns a string representation of the venue, including the venue ID, name, location, and capacity.
+     *
+     * @return a string containing the venue details
+     */
 
     /**
      * Creates a Venue object from a CSV-formatted string.
@@ -33,7 +53,7 @@ public class Venue implements Identifiable {
             String[] sectionIds = sectionsDetails.split(";");
             for (String sectionId : sectionIds) {
                 // Delegate to the SectionController through the ControllerProvider
-                Section section = ControllerProvider.getController().sectionController.findSectionById(Integer.parseInt(sectionId.trim()));
+                Section section = controller.findSectionByID(Integer.parseInt(sectionId.trim()));
                 if (section != null) {
                     sections.add(section);
                 }
@@ -54,7 +74,6 @@ public class Venue implements Identifiable {
                 .map(section -> String.valueOf(section.getID()))
                 .reduce((a, b) -> a + ";" + b)
                 .orElse("null");
-
         return String.join(",",
                 String.valueOf(venueID),
                 venueName,
@@ -145,12 +164,4 @@ public class Venue implements Identifiable {
         this.venueCapacity = venueCapacity;
     }
 
-    /**
-     * Returns a string representation of the venue, including the venue ID, name, location, and capacity.
-     * @return a string containing the venue details
-     */
-    @Override
-    public String toString() {
-        return "Venue{" + "venueID=" + venueID + ", venueName='" + venueName + '\'' + ", location='" + location + '\'' + ", venueCapacity=" + venueCapacity + '}';
-    }
 }

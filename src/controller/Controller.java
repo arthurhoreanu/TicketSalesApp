@@ -114,6 +114,9 @@ public class Controller {
         seatController.recommendFrontRowSeat(availableSeats);}
 
     // Section related
+    public Section findSectionByID(int sectionId) {
+        return sectionController.findSectionByID(sectionId);
+    }
     public void getAvailableSeats(Section section, Event event) {
         sectionController.getAvailableSeats(section, event);}
     public void recommendSeat(Customer customer, Section section, Event event) {
