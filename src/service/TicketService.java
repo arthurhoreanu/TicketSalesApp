@@ -59,20 +59,18 @@ public class TicketService {
      */
     public List<Ticket> generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
         List<Ticket> generatedTickets = new ArrayList<>();
+        List<Seat> availableSeats = venueService.getAvailableSeatsList(event.getVenue(), event);
 
-        List<Seat> availableSeats = getAvailableSeatsForEvent(event);
-
-        for (int i = 0; i < availableSeats.size(); i++) {
-            Seat seat = availableSeats.get(i);
-            TicketType type = determineTicketType(seat);
+        for (Seat seat : availableSeats) {
+            TicketType type = seat.getRowNumber() == 1 ? TicketType.VIP : TicketType.STANDARD;
             double price = (type == TicketType.VIP) ? vipPrice : standardPrice;
             Ticket ticket = new Ticket(ticketRepository.getAll().size() + 1, event, seat.getSection(), seat, price, type);
             ticketRepository.create(ticket);
             generatedTickets.add(ticket);
         }
-
         return generatedTickets;
     }
+
 
     /**
      * Determines the type of a ticket based on the seat's characteristics.

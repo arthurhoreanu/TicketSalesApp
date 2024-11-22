@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 /**
  * Represents a seat in a venue section, with details such as row, seat number, and reservation status.
  */
@@ -9,6 +11,8 @@ public class Seat implements Identifiable {
     private int rowNumber;
     private int seatNumber;
     private Event reservedForEvent;
+    static Controller controller = ControllerProvider.getController();
+
 
     /**
      * Creates a Seat object from a CSV-formatted string.
@@ -20,12 +24,9 @@ public class Seat implements Identifiable {
         String[] fields = csvLine.split(",");
         int seatID = Integer.parseInt(fields[0].trim());
         int rowNumber = Integer.parseInt(fields[1].trim());
-        String sectionDetails = fields[2].trim();
+        Section section = controller.findSectionByID(Integer.parseInt(fields[2].trim()));
         int seatNumber = Integer.parseInt(fields[3].trim());
-        String eventDetails = fields[4].trim();
-
-        Section section = Section.fromCsvFormat(sectionDetails);
-        Event reservedForEvent = eventDetails.equals("null") ? null : Event.fromCsvFormat(eventDetails);
+        Event reservedForEvent = fields[4].trim().equals("null") ? null : Event.fromCsvFormat(fields[4].trim());
 
         return new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
     }
@@ -40,7 +41,7 @@ public class Seat implements Identifiable {
         return String.join(",",
                 String.valueOf(seatID),
                 String.valueOf(rowNumber),
-                section.toCsvFormat(),
+                section.getSectionName(),
                 String.valueOf(seatNumber),
                 reservedForEvent == null ? "null" : reservedForEvent.toCsvFormat()
         );
