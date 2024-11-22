@@ -2,8 +2,10 @@ package model;
 
 import controller.Controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Represents a section within a venue, containing details such as name, capacity, associated venue, and seats.
@@ -13,8 +15,7 @@ public class Section implements Identifiable {
     private String sectionName;
     private int sectionCapacity;
     private Venue venue;
-    private List<Seat> seats;
-
+    private List<Map<Integer, Seat>> rows;
     static Controller controller = ControllerProvider.getController();
 
     /**
@@ -28,22 +29,24 @@ public class Section implements Identifiable {
         int sectionID = Integer.parseInt(fields[0].trim());
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
-        String venueName = fields[3].trim();
-        String seatsDetails = fields[4].trim();
+        Venue venue = ControllerProvider.getController().findVenueByName(fields[3].trim());
+        List<Map<Integer, Seat>> rows = new ArrayList<>();
 
-        Venue venue = controller.findVenueByName(venueName);
-        List<Seat> seats = new ArrayList<>();
-        if (!seatsDetails.equals("null")) {
-            String[] seatIds = seatsDetails.split(";");
-            for (String seatId : seatIds) {
-                Seat seat = controller.findSeatByID(Integer.parseInt(seatId.trim()));
-                if (seat != null) {
-                    seats.add(seat);
-                }
+        if (!fields[4].trim().equals("null")) {
+            String[] rowDetails = fields[4].trim().split(";");
+            for (String detail : rowDetails) {
+                String[] parts = detail.split("-");
+                int rowNumber = Integer.parseInt(parts[0]);
+                int seatNumber = Integer.parseInt(parts[1]);
+                Seat seat = new Seat(rowNumber * 100 + seatNumber, rowNumber, null, seatNumber, null);
+                Map<Integer, Seat> row = new HashMap<>();
+                row.put(seatNumber, seat);
+                rows.add(row);
             }
         }
-        return new Section(sectionID, sectionName, sectionCapacity, venue, seats);
+        return new Section(sectionID, sectionName, sectionCapacity, venue, rows);
     }
+
 
     /**
      * Converts the Section object into a CSV-formatted string.
@@ -52,17 +55,18 @@ public class Section implements Identifiable {
      */
     @Override
     public String toCsvFormat() {
-        String seatIds = seats.isEmpty() ? "null" : seats.stream()
-                .map(seat -> String.valueOf(seat.getID()))
-                .reduce((a, b) -> a + ";" + b)
-                .orElse("null");
-
+        StringBuilder rowDetails = new StringBuilder();
+        for (Map<Integer, Seat> row : rows) {
+            for (Seat seat : row.values()) {
+                rowDetails.append(seat.getRowNumber()).append("-").append(seat.getSeatNumber()).append(";");
+            }
+        }
         return String.join(",",
                 String.valueOf(sectionID),
                 sectionName,
                 String.valueOf(sectionCapacity),
                 venue.getVenueName(),
-                seatIds
+                rowDetails.toString()
         );
     }
 
@@ -72,15 +76,14 @@ public class Section implements Identifiable {
      * @param sectionName    the name of the section
      * @param sectionCapacity the seating capacity of the section
      * @param venue          the venue where the section is located
-     * @param seats          the list of seats in this section
+     * @param rows          the list of seats in this section
      */
-    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue, List<Seat> seats) {
+    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue, List<Map<Integer, Seat>> rows) {
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
         this.venue = venue;
-        this.seats = seats;
-    }
+        this.rows = rows;    }
 
     /**
      * Gets the unique ID of the section.
@@ -90,6 +93,15 @@ public class Section implements Identifiable {
     public Integer getID() {
         return this.sectionID;
     }
+
+    public List<Map<Integer, Seat>> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<Map<Integer, Seat>> rows) {
+        this.rows = rows;
+    }
+
 
     /**
      * Gets the venue associated with the section.
@@ -105,14 +117,6 @@ public class Section implements Identifiable {
      */
     public void setVenue(Venue venue) {
         this.venue = venue;
-    }
-
-    /**
-     * Gets the list of seats in this section.
-     * @return the list of seats in the section
-     */
-    public List<Seat> getSeats() {
-        return seats;
     }
 
     /**

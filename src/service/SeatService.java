@@ -9,6 +9,9 @@ import repository.IRepository;
 
 import java.util.List;
 
+//todo nothing related to seats doesn t work, especialy recommSeat, doesn t shit anything in the Seat.csv check the to/from csv s methods
+//todo from the seat, ticket doesn t work either so ofc DOMINO FUCKING EFFECT
+
 /**
  * Service class for managing seat-related operations.
  */
@@ -113,15 +116,9 @@ public class SeatService {
      * @return the seat in the front-most row; null if the list of available seats is empty.
      */
     public Seat recommendFrontRowSeat(List<Seat> availableSeats) {
-        if (availableSeats.isEmpty()) {
-            return null;
-        }
-        Seat recommendedSeat = availableSeats.get(0);
-        for (Seat seat : availableSeats) {
-            if (seat.getRowNumber() < recommendedSeat.getRowNumber()) {
-                recommendedSeat = seat;
-            }
-        }
-        return recommendedSeat;
+        return availableSeats.stream()
+                .min((s1, s2) -> Integer.compare(s1.getRowNumber(), s2.getRowNumber()))
+                .orElse(null);
     }
+
 }
