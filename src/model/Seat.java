@@ -13,7 +13,6 @@ public class Seat implements Identifiable {
     private Event reservedForEvent;
     static Controller controller = ControllerProvider.getController();
 
-
     /**
      * Creates a Seat object from a CSV-formatted string.
      *
@@ -26,14 +25,12 @@ public class Seat implements Identifiable {
         int rowNumber = Integer.parseInt(fields[1].trim());
         Section section = controller.findSectionByID(Integer.parseInt(fields[2].trim()));
         int seatNumber = Integer.parseInt(fields[3].trim());
-        Event reservedForEvent = fields[4].trim().equals("null") ? null : Event.fromCsvFormat(fields[4].trim());
-
+        Event reservedForEvent = controller.findEventByID(Integer.parseInt(fields[4].trim()));
         return new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
     }
 
     /**
      * Converts the Seat object into a CSV-formatted string.
-     *
      * @return the CSV-formatted string representing the Seat.
      */
     @Override
@@ -41,7 +38,7 @@ public class Seat implements Identifiable {
         return String.join(",",
                 String.valueOf(seatID),
                 String.valueOf(rowNumber),
-                section.getSectionName(),
+                String.valueOf(section.getID()),
                 String.valueOf(seatNumber),
                 reservedForEvent == null ? "null" : reservedForEvent.toCsvFormat()
         );

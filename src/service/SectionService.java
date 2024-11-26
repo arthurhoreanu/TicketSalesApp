@@ -12,15 +12,23 @@ import java.util.*;
 public class SectionService {
     private final SeatService seatService;
     private final IRepository<Section> sectionRepository;
+    private final IRepository<Seat> seatRepository;
     private final FileRepository<Section> sectionFileRepository;
+    private final FileRepository<Seat> seatFileRepository;
 
-    public SectionService(SeatService seatService, IRepository<Section> sectionRepository) {
+    public SectionService(SeatService seatService, IRepository<Section> sectionRepository, IRepository<Seat> seatRepository) {
         this.seatService = seatService;
         this.sectionRepository = sectionRepository;
+        this.seatRepository = seatRepository;
         this.sectionFileRepository = new FileRepository<>("src/repository/data/sections.csv", Section::fromCsvFormat);
         List<Section> sectionsFromFile = sectionFileRepository.getAll();
         for (Section section : sectionsFromFile) {
             sectionRepository.create(section);
+        }
+        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsvFormat);
+        List<Seat> seatsFromFile = seatFileRepository.getAll();
+        for (Seat seat : seatsFromFile) {
+            seatRepository.create(seat);
         }
     }
 
@@ -64,12 +72,17 @@ public class SectionService {
      * @param seatsPerRow the number of seats per row.
      * @return a list of rows represented as maps of seat numbers to Seat objects.
      */
-    private List<Map<Integer, Seat>> initializeRowsWithSeats(Section section, int rowCount, int seatsPerRow) {
+    private List<Map<Integer, Seat>> initializeRowsWithSeats(Section section, int rowCount, int seatsPerRow, IRepository<Seat> seatRepository) {
         List<Map<Integer, Seat>> rows = new ArrayList<>();
         for (int row = 1; row <= rowCount; row++) {
             Map<Integer, Seat> rowMap = new HashMap<>();
             for (int seatNumber = 1; seatNumber <= seatsPerRow; seatNumber++) {
                 Seat seat = new Seat(row * 100 + seatNumber, row, section, seatNumber, null);
+
+                // Save seat to repository (both in-memory and file repositories if needed)
+                seatRepository.create(seat);
+                seatFileRepository.create(seat);
+
                 rowMap.put(seatNumber, seat);
             }
             rows.add(rowMap);
@@ -77,21 +90,35 @@ public class SectionService {
         return rows;
     }
 
-    public Section createSectionWithSeats(String sectionName, int sectionId, int sectionCapacity, int rowCount, int seatsPerRow, Venue venue) {
+    public Section createSectionWithSeats(
+            String sectionName,
+            int sectionId,
+            int sectionCapacity,
+            int rowCount,
+            int seatsPerRow,
+            Venue venue) {
 
         if (sectionName == null || venue == null || rowCount <= 0 || seatsPerRow <= 0) {
             throw new IllegalArgumentException("Invalid input for section creation.");
         }
+
+        // Create section
         Section section = new Section(sectionId, sectionName, sectionCapacity, venue, new ArrayList<>());
-        List<Map<Integer, Seat>> rows = initializeRowsWithSeats(section, rowCount, seatsPerRow);
+
+        // Initialize rows and save seats to repository
+        List<Map<Integer, Seat>> rows = initializeRowsWithSeats(section, rowCount, seatsPerRow, seatRepository);
         section.setRows(rows);
 
+        // Save section to both repositories
         sectionRepository.create(section);
         sectionFileRepository.create(section);
+
+        // Append section ID to the venue's CSV entry
         appendSectionToVenueCsv(venue.getID(), sectionId);
 
         return section;
     }
+
 
     public void updateSection(Section section) {
         sectionRepository.update(section);
@@ -138,5 +165,9 @@ public class SectionService {
             return row != null ? row.get(seatNumber) : null;
         }
         return null;
+    }
+
+    public Section findSectionByID(int sectionID) {
+        return sectionRepository.getAll().stream().filter(section -> section.getID() == sectionID).findFirst().orElse(null);
     }
 }

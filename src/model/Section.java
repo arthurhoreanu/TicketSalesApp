@@ -29,9 +29,8 @@ public class Section implements Identifiable {
         int sectionID = Integer.parseInt(fields[0].trim());
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
-        Venue venue = ControllerProvider.getController().findVenueByName(fields[3].trim());
+        Venue venue = controller.findVenueByName(fields[3].trim());
         List<Map<Integer, Seat>> rows = new ArrayList<>();
-
         if (!fields[4].trim().equals("null")) {
             String[] rowDetails = fields[4].trim().split(";");
             for (String detail : rowDetails) {

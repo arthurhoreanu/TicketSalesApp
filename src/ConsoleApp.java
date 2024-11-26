@@ -28,7 +28,7 @@ public class ConsoleApp {
         CustomerService customerService = new CustomerService();
         AccountService accountService = new AccountService(userRepository, customerService);
         SeatService seatService = new SeatService(seatRepository);
-        SectionService sectionService = new SectionService(seatService, sectionRepository);
+        SectionService sectionService = new SectionService(seatService, sectionRepository, seatRepository);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);

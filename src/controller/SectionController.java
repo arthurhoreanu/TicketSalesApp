@@ -92,17 +92,10 @@ public class SectionController {
     /**
      * Finds a section by its unique ID.
      *
-     * @param sectionId the ID of the section to find.
+     * @param sectionID the ID of the section to find.
      * @return the Section object if found, or null if no such section exists.
      */
-    public Section findSectionByID(int sectionId) {
-        List<Section> sections = sectionRepository.getAll();
-        for (Section section : sections) {
-            if (section.getID() == sectionId) {
-                return section;
-            }
-        }
-        return null;
+    public Section findSectionByID(int sectionID) {
+        return sectionService.findSectionByID(sectionID);
     }
-
 }
