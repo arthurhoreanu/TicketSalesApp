@@ -60,12 +60,12 @@ public class TicketService {
     public List<Ticket> generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
         List<Ticket> generatedTickets = new ArrayList<>();
         List<Seat> availableSeats = venueService.getAvailableSeatsList(event.getVenue(), event);
-
         for (Seat seat : availableSeats) {
             TicketType type = seat.getRowNumber() == 1 ? TicketType.VIP : TicketType.STANDARD;
             double price = (type == TicketType.VIP) ? vipPrice : standardPrice;
             Ticket ticket = new Ticket(ticketRepository.getAll().size() + 1, event, seat.getSection(), seat, price, type);
             ticketRepository.create(ticket);
+            ticketFileRepository.create(ticket);
             generatedTickets.add(ticket);
         }
         return generatedTickets;
@@ -114,6 +114,7 @@ public class TicketService {
             ticket.markAsSold(purchaserName);
             seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
             ticketRepository.update(ticket);
+            ticketFileRepository.update(ticket);
             return true;
         } else {
             return false;
@@ -131,6 +132,7 @@ public class TicketService {
             ticket.setSold(false);
             seatService.clearSeatReservationForEvent(ticket.getSeat(), ticket.getEvent());
             ticketRepository.update(ticket);
+            ticketFileRepository.update(ticket);
             return true;
         } else {
             return false;
@@ -164,6 +166,7 @@ public class TicketService {
         Ticket ticket = getTicketByID(ticketId);
         if (ticket != null) {
             ticketRepository.delete(ticketId);
+            ticketFileRepository.delete(ticketId);
             return true;
         }
         return false;
