@@ -115,8 +115,7 @@ public class Controller {
 
     // Section related
     public Section findSectionByID(int sectionId) {
-        return sectionController.findSectionByID(sectionId);
-    }
+        return sectionController.findSectionByID(sectionId);}
     public void getAvailableSeats(Section section, Event event) {
         sectionController.getAvailableSeats(section, event);}
     public void recommendSeat(Customer customer, Section section, Event event) {
@@ -195,7 +194,7 @@ public class Controller {
         return orderTicketsForEvent(customer, event);}
 
     // Event related
-    public  Event findEventByID(int eventId) {
+    public Event findEventByID(int eventId) {
         return eventController.findEventByID(eventId);}
     public List<Event> getEventsByLocation(String locationOrVenueName) {
         return eventController.getEventsByLocation(locationOrVenueName);}

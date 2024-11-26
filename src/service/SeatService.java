@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class SeatService {
     private final IRepository<Seat> seatRepository;
-    private final FileRepository<Seat> seatFileRepository;
 
     /**
      * Constructs a SeatService with the specified seat repository.
@@ -26,11 +25,6 @@ public class SeatService {
      */
     public SeatService(IRepository<Seat> seatRepository) {
         this.seatRepository = seatRepository;
-        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsvFormat);
-        List<Seat> seatsfromFile = seatFileRepository.getAll();
-        for (Seat seat : seatsfromFile) {
-            seatRepository.create(seat);
-        }
     }
 
     /**
@@ -43,6 +37,7 @@ public class SeatService {
      * @param reservedForEvent the event for which the seat is reserved, or null if it's not reserved.
      * @return true if the seat was successfully created; false if a seat with the specified ID already exists.
      */
+    // TODO not needed
     public boolean createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {
         if (findSeatByID(seatID) == null) {
             Seat seat = new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
