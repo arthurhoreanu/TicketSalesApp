@@ -1,5 +1,3 @@
-//TODO DONT KNOW THAT TO DO WITH THE FUCKING RECOMMENDsEAT METHOD!!!!!!!!!!!!!!!!
-
 package service;
 
 import model.*;
@@ -9,13 +7,25 @@ import repository.IRepository;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Service class for managing section-related operations, including creating sections with seats,
+ * retrieving available seats, and recommending seats based on customer preferences.
+ */
 public class SectionService {
+
     private final SeatService seatService;
     private final IRepository<Section> sectionRepository;
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Section> sectionFileRepository;
     private final FileRepository<Seat> seatFileRepository;
 
+    /**
+     * Constructs a SectionService with dependencies for managing sections and seats.
+     *
+     * @param seatService        the service for managing seat-related operations
+     * @param sectionRepository  the repository for storing and managing section data
+     * @param seatRepository     the repository for storing and managing seat data
+     */
     public SectionService(SeatService seatService, IRepository<Section> sectionRepository, IRepository<Seat> seatRepository) {
         this.seatService = seatService;
         this.sectionRepository = sectionRepository;
@@ -32,6 +42,12 @@ public class SectionService {
         }
     }
 
+    /**
+     * Updates a venue CSV file by appending a section ID to the appropriate venue entry.
+     *
+     * @param venueId   the ID of the venue to update
+     * @param sectionID the ID of the section to append
+     */
     private void appendSectionToVenueCsv(int venueId, int sectionID) {
         File tempFile = new File("tempfile.csv");
         File originalFile = new File("src/repository/data/venues.csv");
@@ -65,12 +81,13 @@ public class SectionService {
     }
 
     /**
-     * Helper method to initialize rows with seats for a section.
+     * Initializes rows with seats for a section and saves them to the repositories.
      *
-     * @param section the section for which to create rows and seats.
-     * @param rowCount the number of rows in the section.
-     * @param seatsPerRow the number of seats per row.
-     * @return a list of rows represented as maps of seat numbers to Seat objects.
+     * @param section      the section for which rows are created
+     * @param rowCount     the number of rows in the section
+     * @param seatsPerRow  the number of seats per row
+     * @param seatRepository the repository for saving seats
+     * @return a list of rows represented as maps of seat numbers to Seat objects
      */
     private List<Map<Integer, Seat>> initializeRowsWithSeats(Section section, int rowCount, int seatsPerRow, IRepository<Seat> seatRepository) {
         List<Map<Integer, Seat>> rows = new ArrayList<>();
@@ -79,7 +96,7 @@ public class SectionService {
             for (int seatNumber = 1; seatNumber <= seatsPerRow; seatNumber++) {
                 Seat seat = new Seat(row * 100 + seatNumber, row, section, seatNumber, null);
 
-                // Save seat to repository (both in-memory and file repositories if needed)
+                // Save seat to repositories
                 seatRepository.create(seat);
                 seatFileRepository.create(seat);
 
@@ -90,6 +107,17 @@ public class SectionService {
         return rows;
     }
 
+    /**
+     * Creates a section with the specified parameters, including seats, and saves it to the repositories.
+     *
+     * @param sectionName    the name of the section
+     * @param sectionId      the unique ID of the section
+     * @param sectionCapacity the capacity of the section
+     * @param rowCount       the number of rows in the section
+     * @param seatsPerRow    the number of seats per row
+     * @param venue          the venue to which the section belongs
+     * @return the created Section object
+     */
     public Section createSectionWithSeats(
             String sectionName,
             int sectionId,
@@ -109,7 +137,7 @@ public class SectionService {
         List<Map<Integer, Seat>> rows = initializeRowsWithSeats(section, rowCount, seatsPerRow, seatRepository);
         section.setRows(rows);
 
-        // Save section to both repositories
+        // Save section to repositories
         sectionRepository.create(section);
         sectionFileRepository.create(section);
 
@@ -119,21 +147,42 @@ public class SectionService {
         return section;
     }
 
-
+    /**
+     * Updates an existing section in the repositories.
+     *
+     * @param section the section to update
+     */
     public void updateSection(Section section) {
         sectionRepository.update(section);
         sectionFileRepository.update(section);
     }
 
+    /**
+     * Deletes a section by its ID from the repositories.
+     *
+     * @param sectionId the ID of the section to delete
+     */
     public void deleteSection(Integer sectionId) {
         sectionRepository.delete(sectionId);
         sectionFileRepository.delete(sectionId);
     }
 
+    /**
+     * Retrieves all sections from the repository.
+     *
+     * @return a list of all sections
+     */
     public List<Section> getAllSections() {
         return sectionRepository.getAll();
     }
 
+    /**
+     * Retrieves all available seats in a section for a specific event.
+     *
+     * @param section the section to check for available seats
+     * @param event   the event for which to check availability
+     * @return a list of available Seat objects
+     */
     public List<Seat> getAvailableSeats(Section section, Event event) {
         List<Seat> availableSeats = new ArrayList<>();
         for (Map<Integer, Seat> row : section.getRows()) {
@@ -146,6 +195,14 @@ public class SectionService {
         return availableSeats;
     }
 
+    /**
+     * Recommends a seat in a section for a customer based on preferences and availability for an event.
+     *
+     * @param customer the customer for whom the seat is recommended
+     * @param section  the section to search for a seat
+     * @param event    the event for which the seat is recommended
+     * @return the recommended Seat object, or null if no suitable seat is found
+     */
     public Seat recommendSeat(Customer customer, Section section, Event event) {
         List<Seat> availableSeats = getAvailableSeats(section, event);
 
@@ -159,6 +216,14 @@ public class SectionService {
         return seatService.recommendFrontRowSeat(availableSeats);
     }
 
+    /**
+     * Finds a seat in a section by its row and seat number.
+     *
+     * @param section    the section containing the seat
+     * @param rowNumber  the row number of the seat
+     * @param seatNumber the seat number within the row
+     * @return the Seat object if found; otherwise, null
+     */
     public Seat findSeatByRowAndNumber(Section section, int rowNumber, int seatNumber) {
         if (rowNumber > 0 && rowNumber <= section.getRows().size()) {
             Map<Integer, Seat> row = section.getRows().get(rowNumber - 1);
@@ -167,7 +232,16 @@ public class SectionService {
         return null;
     }
 
+    /**
+     * Finds a section by its ID.
+     *
+     * @param sectionID the ID of the section to find
+     * @return the Section object if found; otherwise, null
+     */
     public Section findSectionByID(int sectionID) {
-        return sectionRepository.getAll().stream().filter(section -> section.getID() == sectionID).findFirst().orElse(null);
+        return sectionRepository.getAll().stream()
+                .filter(section -> section.getID() == sectionID)
+                .findFirst()
+                .orElse(null);
     }
 }
