@@ -140,8 +140,8 @@ public class Controller {
         venueController.getVenuesByLocationOrName(locationOrVenueName);}
     public void getAvailableSeats(Venue venue, Event event) {
         venueController.getAvailableSeats(venue, event);}
-    public void recommendSeat(Customer customer, Venue venue, Event event) {
-        venueController.recommendSeat(customer, venue, event);}
+    public Seat recommendSeat(Customer customer, Venue venue, Event event) {
+        return venueController.recommendSeat(customer, venue, event);}
     public Venue findVenueById(int id){
         return venueController.findVenueById(id);}
 
