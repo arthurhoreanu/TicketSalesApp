@@ -141,13 +141,8 @@ public class VenueController {
      * @param venue    the venue where the seat is located
      * @param event    the event for which the seat is recommended
      */
-    public void recommendSeat(Customer customer, Venue venue, Event event) {
-        Seat recommendedSeat = venueService.recommendSeat(customer, venue, event);
-        if (recommendedSeat != null) {
-            System.out.println("Recommended seat for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "': Row " + recommendedSeat.getRowNumber() + ", Seat " + recommendedSeat.getSeatNumber());
-        } else {
-            System.out.println("No preferred seat available for customer '" + customer.getUsername() + "' in venue '" + venue.getVenueName() + "' for event '" + event.getEventName() + "'.");
-        }
+    public Seat recommendSeat(Customer customer, Venue venue, Event event) {
+        return venueService.recommendSeat(customer, venue, event);
     }
 
     /**

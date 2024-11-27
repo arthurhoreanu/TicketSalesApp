@@ -30,6 +30,7 @@ public class CustomerMenu {
         System.out.println("6. Checkout Shopping Cart");
         System.out.println("7. View Previous Orders");
         System.out.println("8. Manage Favourites");
+        System.out.println("9. View recommended Seats");
         System.out.println("0. Exit");
         System.out.println("=======================");
 
@@ -61,6 +62,9 @@ public class CustomerMenu {
                 break;
             case "8":
                 handleManageFavourites(scanner, controller);
+                break;
+            case "9":
+                recommendSeat(scanner, controller);
                 break;
             case "0":
                 System.out.println("Exiting the application. Goodbye!");
@@ -475,6 +479,42 @@ public class CustomerMenu {
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
+        }
+    }
+
+    private static void recommendSeat(Scanner scanner, Controller controller) {
+        // Fetch the current customer
+        Customer customer = (Customer) controller.getCurrentUser();
+
+        // Get the venue from the user
+        System.out.print("Enter Venue ID: ");
+        int venueId = Integer.parseInt(scanner.nextLine());
+        Venue venue = controller.findVenueById(venueId);
+
+        if (venue == null) {
+            System.out.println("Venue not found. Please try again.");
+            return;
+        }
+
+        // Get the event from the user
+        System.out.print("Enter Event ID: ");
+        int eventId = Integer.parseInt(scanner.nextLine());
+        Event event = controller.findEventByID(eventId);
+
+        if (event == null) {
+            System.out.println("Event not found. Please try again.");
+            return;
+        }
+
+        // Recommend a seat
+        Seat recommendedSeat = controller.recommendSeat(customer, venue, event);
+
+        // Display the result
+        if (recommendedSeat != null) {
+            System.out.println("Recommended Seat:");
+            System.out.println("Row: " + recommendedSeat.getRowNumber() + ", Seat: " + recommendedSeat.getID());
+        } else {
+            System.out.println("No preferred seat available for this event.");
         }
     }
 
