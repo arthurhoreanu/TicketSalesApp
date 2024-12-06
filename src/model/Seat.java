@@ -7,10 +7,12 @@ import controller.Controller;
  */
 public class Seat implements Identifiable {
     private int seatID;
-    private Section section;
-    private int rowNumber;
-    private int seatNumber;
+    private Row row;
+    private int seatNumber; //TODO should we use the satID as the seatNumber???? I'd say YES
     private Event reservedForEvent;
+    //todo rethink about this attribute and method related to this bool
+    private boolean isReserved;
+
     static Controller controller = ControllerProvider.getController();
 
     /**
@@ -33,12 +35,13 @@ public class Seat implements Identifiable {
      * Converts the Seat object into a CSV-formatted string.
      * @return the CSV-formatted string representing the Seat.
      */
+
+    //TODO change CSV s to accommodate the Row class
     @Override
     public String toCsvFormat() {
         return String.join(",",
                 String.valueOf(seatID),
-                String.valueOf(rowNumber),
-                String.valueOf(section.getID()),
+                String.valueOf(row.getID()),
                 String.valueOf(seatNumber),
                 reservedForEvent == null ? "null" : reservedForEvent.toCsvFormat()
         );
@@ -54,8 +57,7 @@ public class Seat implements Identifiable {
      */
     public Seat(int seatID, int rowNumber, Section section, int seatNumber, Event reservedForEvent) {
         this.seatID = seatID;
-        this.rowNumber = rowNumber;
-        this.section = section;
+        this.row = row;
         this.seatNumber = seatNumber;
         this.reservedForEvent = null; // initially, the seat is not reserved
     }
@@ -73,25 +75,18 @@ public class Seat implements Identifiable {
      * Gets the section where the seat is located.
      * @return the section of the seat
      */
-    public Section getSection() {
-        return this.section;
+    public Row getRow() {
+        return this.row;
     }
 
     /**
      * Sets the section where the seat is located.
-     * @param section the section to set for the seat
+     * @param row the section to set for the seat
      */
-    public void setSection(Section section) {
-        this.section = section;
+    public void setRow(Row row) {
+        this.row = row;
     }
 
-    /**
-     * Gets the row number of the seat.
-     * @return the row number of the seat
-     */
-    public int getRowNumber() {
-        return this.rowNumber;
-    }
 
     /**
      * Gets the seat number within the row.
@@ -125,8 +120,7 @@ public class Seat implements Identifiable {
     public String toString() {
         return "Seat{" +
                 "seatID=" + seatID +
-                ", section=" + section +
-                ", rowNumber=" + rowNumber +
+                ", row=" + row +
                 ", seatNumber=" + seatNumber +
                 ", reservedForEvent=" + reservedForEvent +
                 '}';
