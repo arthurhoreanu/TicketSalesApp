@@ -15,7 +15,7 @@ public class Section implements Identifiable {
     private String sectionName;
     private int sectionCapacity;
     private Venue venue;
-    private List<Map<Integer, Seat>> rows;
+    private List<Row>  rows = new ArrayList<>();
     static Controller controller = ControllerProvider.getController();
 
     /**
@@ -52,6 +52,8 @@ public class Section implements Identifiable {
      *
      * @return the CSV-formatted string representing the Section.
      */
+
+    //TODO repair method taking into consideration Row class dependence
     @Override
     public String toCsvFormat() {
         StringBuilder rowDetails = new StringBuilder();
@@ -82,7 +84,7 @@ public class Section implements Identifiable {
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
         this.venue = venue;
-        this.rows = rows;    }
+        this.rows = new ArrayList<>();    }
 
     /**
      * Gets the unique ID of the section.
@@ -93,11 +95,11 @@ public class Section implements Identifiable {
         return this.sectionID;
     }
 
-    public List<Map<Integer, Seat>> getRows() {
+    public List<Row> getRows() {
         return rows;
     }
 
-    public void setRows(List<Map<Integer, Seat>> rows) {
+    public void setRows(List<Row> rows) {
         this.rows = rows;
     }
 
@@ -147,4 +149,10 @@ public class Section implements Identifiable {
                 ", venue=" + venue +
                 '}';
     }
+
+    //todo in service?
+    public void addRow(Row row) {
+        rows.add(row);
+    }
+
 }

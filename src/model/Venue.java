@@ -30,7 +30,7 @@ public class Venue implements Identifiable {
         this.venueName = venueName;
         this.location = location;
         this.venueCapacity = venueCapacity;
-        this.sections = sections;
+        this.sections = new ArrayList<>();
     }
 
     @Override
@@ -163,6 +163,11 @@ public class Venue implements Identifiable {
      */
     public void setVenueCapacity(int venueCapacity) {
         this.venueCapacity = venueCapacity;
+    }
+
+    //todo talk about those methods in service directly
+    public void addSections(Section section){
+        this.sections.add(section);
     }
 
 }
