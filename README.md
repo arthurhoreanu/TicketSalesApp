@@ -19,7 +19,7 @@ Event Status: Events can have one of three statuses: SCHEDULED, CANCELLED, or CO
 ## Artist and Athlete
 Each Artist and Athlete has a profile that customers can mark as a favorite. Within the profile, customers can view upcoming and past events associated with the artist or athlete (showEventList), with the option to filter by event status.
 
-## Venue, Section and Seat
+## Venue, Section, Seat and Row
 Events take place in designated Venues, which are divided into Sections, each containing multiple Seats.
 Venue: Holds information about the location and capacity.
 Section: Represents different areas in the venue and provides methods for checking available seats (getAvailableSeats).
