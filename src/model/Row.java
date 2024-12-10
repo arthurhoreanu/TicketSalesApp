@@ -24,11 +24,11 @@ public class Row implements Identifiable{
     public Integer getID(){return this.rowID;}
 
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         return "";
     }
 
-    public static Row fromCsvFormat(String row) {
+    public static Row fromCsv(String row) {
         return null;
     }
 

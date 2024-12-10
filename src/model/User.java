@@ -75,7 +75,7 @@ public abstract class User implements Identifiable {
      * @return A User object parsed from the input string.
      * @throws IllegalArgumentException If the user type in the CSV line is unsupported.
      */
-    public static User fromCsvFormat(String csvLine) {
+    public static User fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int id = Integer.parseInt(fields[0].trim());
         String type = fields[1].trim();

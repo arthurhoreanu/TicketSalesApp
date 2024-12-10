@@ -19,7 +19,7 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     public void create(T obj) {
         String sql = "INSERT INTO " + tableName + " VALUES (?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            obj.toPreparedStatement(stmt);
+            obj.toDatabase(stmt);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error inserting object into table " + tableName, e);
@@ -33,7 +33,7 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return T.fromResultSet(rs);
+                return T.fromDatabase(rs);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error reading object from table " + tableName, e);
@@ -45,7 +45,7 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     public void update(T obj) {
         String sql = "UPDATE " + tableName + " SET name = ?, genre = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            obj.toPreparedStatement(stmt);
+            obj.toDatabase(stmt);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error updating object in table " + tableName, e);
@@ -70,7 +70,7 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                items.add(T.fromResultSet(rs));
+                items.add(T.fromDatabase(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving all objects from table " + tableName, e);

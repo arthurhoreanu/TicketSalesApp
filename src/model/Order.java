@@ -22,7 +22,7 @@ public class Order implements Identifiable {
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Order object.
      */
-    public static Order fromCsvFormat(String csvLine) {
+    public static Order fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int orderID = Integer.parseInt(fields[0].trim());
         String userDetails = fields[1].trim();
@@ -30,7 +30,7 @@ public class Order implements Identifiable {
         LocalDateTime orderDate = LocalDateTime.parse(fields[3].trim());
         OrderStatus status = OrderStatus.valueOf(fields[4].trim());
 
-        User user = User.fromCsvFormat(userDetails);
+        User user = User.fromCsv(userDetails);
         List<Ticket> tickets = new ArrayList<>();
         if (!ticketDetails.equals("null")) {
             String[] ticketIds = ticketDetails.split(";");
@@ -56,7 +56,7 @@ public class Order implements Identifiable {
      * @return the CSV-formatted string representing the Order.
      */
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         String ticketIds = tickets.isEmpty() ? "null" : tickets.stream()
                 .map(ticket -> String.valueOf(ticket.getID()))
                 .reduce((a, b) -> a + ";" + b)
@@ -64,7 +64,7 @@ public class Order implements Identifiable {
 
         return String.join(",",
                 String.valueOf(orderID),
-                user.toCsvFormat(),
+                user.toCsv(),
                 ticketIds,
                 orderDate.toString(),
                 status.name()

@@ -30,12 +30,12 @@ public class SectionService {
         this.seatService = seatService;
         this.sectionRepository = sectionRepository;
         this.seatRepository = seatRepository;
-        this.sectionFileRepository = new FileRepository<>("src/repository/data/sections.csv", Section::fromCsvFormat);
+        this.sectionFileRepository = new FileRepository<>("src/repository/data/sections.csv", Section::fromCsv);
         List<Section> sectionsFromFile = sectionFileRepository.getAll();
         for (Section section : sectionsFromFile) {
             sectionRepository.create(section);
         }
-        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsvFormat);
+        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsv);
         List<Seat> seatsFromFile = seatFileRepository.getAll();
         for (Seat seat : seatsFromFile) {
             seatRepository.create(seat);

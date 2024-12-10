@@ -92,7 +92,7 @@ public class Customer extends User {
      *         Format: {ID,Customer,username,email,password}
      */
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         return getID() + "," + "Customer," + getUsername() + "," + getEmail() + "," + getPassword();
     }
 }

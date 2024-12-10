@@ -16,7 +16,7 @@ public class ArtistService {
     public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
         this.artistRepository = artistRepository;
         this.eventRepository = eventRepository;
-        this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsvFormat);
+        this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
         List<Artist> artistsFromFile = artistFileRepository.getAll();
         for (Artist artist : artistsFromFile) {
             artistRepository.create(artist);

@@ -17,7 +17,7 @@ public class EventService {
     public EventService(IRepository<Event> eventRepository, VenueService venueService) {
         this.eventRepository = eventRepository;
         this.venueService = venueService;
-        this.eventFileRepository = new FileRepository<>("src/repository/data/events.csv", Event::fromCsvFormat);
+        this.eventFileRepository = new FileRepository<>("src/repository/data/events.csv", Event::fromCsv);
         List<Event> eventsFromFile = eventFileRepository.getAll();
         for (Event event : eventsFromFile) {
             eventRepository.create(event);

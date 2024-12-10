@@ -26,7 +26,7 @@ public class VenueService {
     public VenueService(IRepository<Venue> venueRepository, SectionService sectionService) {
         this.venueRepository = venueRepository;
         this.sectionService = sectionService;
-        this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsvFormat);
+        this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsv);
         List<Venue> venuesFromFile = venueFileRepository.getAll();
         for (Venue venue : venuesFromFile) {
             venueRepository.create(venue);

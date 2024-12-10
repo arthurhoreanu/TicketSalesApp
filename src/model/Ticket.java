@@ -22,12 +22,12 @@ public class Ticket implements Identifiable {
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Ticket object.
      */
-    public static Ticket fromCsvFormat(String csvLine) {
+    public static Ticket fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int ticketID = Integer.parseInt(fields[0].trim());
-        Event event = Event.fromCsvFormat(fields[1].trim());
-        Section section = Section.fromCsvFormat(fields[2].trim());
-        Seat seat = Seat.fromCsvFormat(fields[3].trim());
+        Event event = Event.fromCsv(fields[1].trim());
+        Section section = Section.fromCsv(fields[2].trim());
+        Seat seat = Seat.fromCsv(fields[3].trim());
         double price = Double.parseDouble(fields[4].trim());
         TicketType ticketType = TicketType.valueOf(fields[5].trim());
         boolean isSold = Boolean.parseBoolean(fields[6].trim());
@@ -48,12 +48,12 @@ public class Ticket implements Identifiable {
      * @return the CSV-formatted string representing the Ticket.
      */
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         return String.join(",",
                 String.valueOf(ticketID),
-                event.toCsvFormat(),
-                section.toCsvFormat(),
-                seat.toCsvFormat(),
+                event.toCsv(),
+                section.toCsv(),
+                seat.toCsv(),
                 String.valueOf(price),
                 ticketType.name(),
                 String.valueOf(isSold),

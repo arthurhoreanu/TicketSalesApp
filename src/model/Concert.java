@@ -52,7 +52,7 @@ public class Concert extends Event {
     }
 
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         String artistNames = getArtists().stream()
                 .map(Artist::getArtistName)
                 .reduce((name1, name2) -> name1 + ";" + name2)
