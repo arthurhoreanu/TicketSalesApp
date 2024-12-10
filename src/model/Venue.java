@@ -10,6 +10,7 @@ import java.util.List;
  * Represents a venue for events, containing information about its ID, name, location, capacity, and sections.
  */
 public class Venue implements Identifiable {
+    private static int venueCounter = 1;
     private int venueID;
     private String venueName;
     private String location;
@@ -26,7 +27,7 @@ public class Venue implements Identifiable {
      * @param sections      the list of sections within the venue
      */
     public Venue(int venueID, String venueName, String location, int venueCapacity, List<Section> sections) {
-        this.venueID = venueID;
+        this.venueID = venueCounter++;
         this.venueName = venueName;
         this.location = location;
         this.venueCapacity = venueCapacity;
@@ -44,12 +45,6 @@ public class Venue implements Identifiable {
     }
 
     static Controller controller = ControllerProvider.getController();
-
-    /**
-     * Returns a string representation of the venue, including the venue ID, name, location, and capacity.
-     *
-     * @return a string containing the venue details
-     */
 
     /**
      * Creates a Venue object from a CSV-formatted string.

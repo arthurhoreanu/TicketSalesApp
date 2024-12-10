@@ -6,16 +6,16 @@ import controller.Controller;
 
 public class Row implements Identifiable{
     private int rowID;
-    private static int rowCounter = 1; // Counter for generating unique row IDs
+    private static int rowCounter = 1;
+    private int rowCapacity;
     private Section section;
     private List<Seat> seats;
     static Controller controller = ControllerProvider.getController();
 
-    public Row(int rowID, Section section) {
-        this.rowID = rowID;
+    public Row(int rowID, Section section, List<Seat> seats, int rowCapacity ) {
+        this.rowID = rowCounter++;
         this.section = section;
         this.seats = new ArrayList<Seat>();
-        this.rowID= rowCounter++;
     }
 
     //TODO CSV to and from CSV methods

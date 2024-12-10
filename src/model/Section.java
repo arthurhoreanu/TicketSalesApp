@@ -11,6 +11,7 @@ import java.util.Map;
  * Represents a section within a venue, containing details such as name, capacity, associated venue, and seats.
  */
 public class Section implements Identifiable {
+    private static int sectionCounter = 1;
     private int sectionID;
     private String sectionName;
     private int sectionCapacity;
@@ -79,8 +80,8 @@ public class Section implements Identifiable {
      * @param venue          the venue where the section is located
      * @param rows          the list of seats in this section
      */
-    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue, List<Map<Integer, Seat>> rows) {
-        this.sectionID = sectionID;
+    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue, List<Row>  rows) {
+        this.sectionID = sectionCounter++;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
         this.venue = venue;

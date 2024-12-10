@@ -6,14 +6,26 @@ import controller.Controller;
  * Represents a seat in a venue section, with details such as row, seat number, and reservation status.
  */
 public class Seat implements Identifiable {
+    private static int seatCounter = 1;
     private int seatID;
     private Row row;
-    private int seatNumber; //TODO should we use the satID as the seatNumber???? I'd say YES
     private Event reservedForEvent;
     //todo rethink about this attribute and method related to this bool
     private boolean isReserved;
 
     static Controller controller = ControllerProvider.getController();
+
+    /**
+     * Constructs a Seat with the specified attributes.
+     * @param seatID          the unique ID of the seat
+     * @param rowNumber       the row number where the seat is located
+     * @param reservedForEvent the event for which the seat is reserved, initially null
+     */
+    public Seat(int seatID, int rowNumber, Row row, Event reservedForEvent) {
+        this.seatID = seatCounter++;
+        this.row = row;
+        this.reservedForEvent = null; // initially, the seat is not reserved
+    }
 
     /**
      * Creates a Seat object from a CSV-formatted string.
@@ -48,21 +60,6 @@ public class Seat implements Identifiable {
     }
 
     /**
-     * Constructs a Seat with the specified attributes.
-     * @param seatID          the unique ID of the seat
-     * @param rowNumber       the row number where the seat is located
-     * @param section         the section where the seat is located
-     * @param seatNumber      the seat number within the row
-     * @param reservedForEvent the event for which the seat is reserved, initially null
-     */
-    public Seat(int seatID, int rowNumber, Section section, int seatNumber, Event reservedForEvent) {
-        this.seatID = seatID;
-        this.row = row;
-        this.seatNumber = seatNumber;
-        this.reservedForEvent = null; // initially, the seat is not reserved
-    }
-
-    /**
      * Gets the unique ID of the seat.
      * @return the ID of the seat
      */
@@ -70,7 +67,6 @@ public class Seat implements Identifiable {
     public Integer getID() {
         return this.seatID;
     }
-
     /**
      * Gets the section where the seat is located.
      * @return the section of the seat
@@ -87,14 +83,6 @@ public class Seat implements Identifiable {
         this.row = row;
     }
 
-
-    /**
-     * Gets the seat number within the row.
-     * @return the seat number of the seat
-     */
-    public int getSeatNumber() {
-        return this.seatNumber;
-    }
 
     /**
      * Gets the event for which the seat is reserved.
@@ -121,7 +109,6 @@ public class Seat implements Identifiable {
         return "Seat{" +
                 "seatID=" + seatID +
                 ", row=" + row +
-                ", seatNumber=" + seatNumber +
                 ", reservedForEvent=" + reservedForEvent +
                 '}';
     }

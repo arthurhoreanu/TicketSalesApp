@@ -9,8 +9,6 @@ import repository.IRepository;
 
 import java.util.List;
 
-//todo nothing related to seats doesn t work, especialy recommSeat, doesn t shit anything in the Seat.csv check the to/from csv s methods
-//todo from the seat, ticket doesn t work either so ofc DOMINO FUCKING EFFECT
 
 /**
  * Service class for managing seat-related operations.
@@ -37,7 +35,6 @@ public class SeatService {
      * @param reservedForEvent the event for which the seat is reserved, or null if it's not reserved.
      * @return true if the seat was successfully created; false if a seat with the specified ID already exists.
      */
-    // TODO not needed
     public boolean createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {
         if (findSeatByID(seatID) == null) {
             Seat seat = new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);

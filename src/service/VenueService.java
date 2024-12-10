@@ -215,5 +215,3 @@ public class VenueService {
     }
 }
 
-//TODO recommendSeat in menu
-//TODO MIORLAIM :')
