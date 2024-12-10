@@ -2,6 +2,9 @@ package model;
 
 import controller.Controller;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +20,8 @@ public class Venue implements Identifiable {
     private int venueCapacity;
     public List<Section> sections;
 
+    // Controller for accessing sections dynamically
+    static Controller controller = ControllerProvider.getController();
 
     /**
      * Constructs a Venue with the specified ID, name, location, capacity, and sections.
@@ -24,14 +29,12 @@ public class Venue implements Identifiable {
      * @param venueName     the name of the venue
      * @param location      the location of the venue
      * @param venueCapacity the capacity of the venue
-     * @param sections      the list of sections within the venue
      */
-    public Venue(int venueID, String venueName, String location, int venueCapacity, List<Section> sections) {
+    public Venue(int venueID, String venueName, String location, int venueCapacity) {
         this.venueID = venueCounter++;
         this.venueName = venueName;
         this.location = location;
         this.venueCapacity = venueCapacity;
-        this.sections = new ArrayList<>();
     }
 
     @Override
@@ -44,35 +47,19 @@ public class Venue implements Identifiable {
                 '}';
     }
 
-    static Controller controller = ControllerProvider.getController();
-
     /**
      * Creates a Venue object from a CSV-formatted string.
      *
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Venue object.
      */
-    public static Venue fromCsv(String csvLine) {
+    public static Venue fromCsv(String csvLine){
         String[] fields = csvLine.split(",");
         int venueID = Integer.parseInt(fields[0].trim());
         String venueName = fields[1].trim();
         String location = fields[2].trim();
-        int capacity = Integer.parseInt(fields[3].trim());
-        String sectionsDetails = fields[4].trim();
-
-        List<Section> sections = new ArrayList<>();
-        if (!sectionsDetails.equals("null")) {
-            String[] sectionIDs = sectionsDetails.split(";");
-            for (String sectionID : sectionIDs) {
-                // Delegate to the SectionController through the ControllerProvider
-                Section section = controller.findSectionByID(Integer.parseInt(sectionID.trim()));
-                if (section != null) {
-                    sections.add(section);
-                }
-            }
-        }
-
-        return new Venue(venueID, venueName, location, capacity, sections);
+        int venueCapacity = Integer.parseInt(fields[3].trim());
+        return new Venue(venueID, venueName, location, venueCapacity);
     }
 
     /**
@@ -81,18 +68,41 @@ public class Venue implements Identifiable {
      * @return the CSV-formatted string representing the Venue.
      */
     @Override
-    public String toCsv() {
-        String sectionIds = sections.isEmpty() ? "null" : sections.stream()
-                .map(section -> String.valueOf(section.getID()))
-                .reduce((a, b) -> a + ";" + b)
-                .orElse("null");
+    public String toCsv(){
         return String.join(",",
                 String.valueOf(venueID),
                 venueName,
                 location,
-                String.valueOf(venueCapacity),
-                sectionIds
+                String.valueOf(venueCapacity)
         );
+    }
+
+    /**
+     * Saves the Venue object to a database.
+     *
+     * @param stmt the PreparedStatement for inserting the venue
+     * @throws SQLException if a database error occurs
+     */
+    @Override
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, this.venueID);
+        stmt.setString(2, this.venueName);
+        stmt.setString(3, this.location);
+        stmt.setInt(4, this.venueCapacity);
+    }
+    /**
+     * Creates a Venue object from a database result set.
+     *
+     * @param rs the ResultSet containing venue data
+     * @return the deserialized Venue object
+     * @throws SQLException if a database error occurs
+     */
+    public static Venue fromDatabase(ResultSet rs) throws SQLException {
+        int venueID = rs.getInt("venueID");
+        String venueName = rs.getString("venueName");
+        String location = rs.getString("location");
+        int venueCapacity = rs.getInt("venueCapacity");
+        return new Venue(venueID, venueName, location, venueCapacity);
     }
 
     /**
@@ -158,11 +168,6 @@ public class Venue implements Identifiable {
      */
     public void setVenueCapacity(int venueCapacity) {
         this.venueCapacity = venueCapacity;
-    }
-
-    //todo talk about those methods in service directly
-    public void addSections(Section section){
-        this.sections.add(section);
     }
 
 }
