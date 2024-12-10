@@ -1,5 +1,9 @@
 package model;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Represents an athlete with an ID, name, and sport. Implements Identifiable and FavouriteEntity interfaces.
  */
@@ -68,6 +72,30 @@ public class Athlete implements Identifiable, FavouriteEntity {
      */
     public void setAthleteSport(String athleteSport) {
         this.athleteSport = athleteSport;
+    }
+
+    /**
+     * Converts the current Athlete object into a PreparedStatement for database operations.
+     * @param stmt the PreparedStatement to populate with Artist data.
+     * @throws SQLException if an SQL error occurs.
+     */
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, this.athleteID);
+        stmt.setString(2, this.athleteName);
+        stmt.setString(3, this.athleteSport);
+    }
+
+    /**
+     * Creates an Athlete object from a ResultSet.
+     * @param rs the ResultSet containing Athlete data.
+     * @return an Athlete object populated with data from the ResultSet.
+     * @throws SQLException if an SQL error occurs.
+     */
+    public static Athlete fromDatabase(ResultSet rs) throws SQLException {
+        int athleteID = rs.getInt("athleteID");
+        String artistName = rs.getString("athleteName");
+        String genre = rs.getString("athleteSport");
+        return new Athlete(athleteID, artistName, genre);
     }
 
     /**

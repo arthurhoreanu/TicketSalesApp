@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,7 +10,6 @@ import java.util.List;
  * Represents a sports event, extending the general Event class with a list of participating athletes.
  */
 public class SportsEvent extends Event {
-    private List<Athlete> athletes;
 
     /**
      * Constructs a SportsEvent with the specified attributes.
@@ -18,19 +20,20 @@ public class SportsEvent extends Event {
      * @param endDateTime     the end date and time of the event
      * @param venue           the venue where the event is held
      * @param eventStatus     the current status of the event (SCHEDULED, CANCELLED, COMPLETED)
-     * @param athletes        the list of athletes participating in the event
      */
-    public SportsEvent(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Athlete> athletes) {
+    public SportsEvent(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus) {
         super(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus);
-        this.athletes = athletes;
     }
 
-    /**
-     * Gets the list of athletes participating in the sports event.
-     * @return the list of participating athletes
-     */
-    public List<Athlete> getAthletes() {
-        return athletes;
+    @Override
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, getID());
+        stmt.setString(2, getEventName());
+        stmt.setString(3, getEventDescription());
+        stmt.setTimestamp(4, Timestamp.valueOf(getStartDateTime()));
+        stmt.setTimestamp(5, Timestamp.valueOf(getEndDateTime()));
+        stmt.setInt(6, getVenue().getID());
+        stmt.setString(7, getEventStatus().name());
     }
 
     /**
@@ -39,18 +42,11 @@ public class SportsEvent extends Event {
      */
     @Override
     public String toString() {
-        return "SportsEvent{" +
-                "athletes=" + athletes +
-                ", " + super.toString() +
-                '}';
+        return "SportsEvent{" +  ", " + super.toString() + '}';
     }
 
     @Override
     public String toCsv() {
-        String athletesNames = getAthletes().stream()
-                .map(Athlete::getAthleteName)
-                .reduce((name1, name2) -> name1 + ";" + name2)
-                .orElse("");
         return getID() + "," +
                 "Sports Event," +
                 getEventName() + "," +
@@ -58,7 +54,6 @@ public class SportsEvent extends Event {
                 getStartDateTime() + "," +
                 getEndDateTime() + "," +
                 getVenue().getVenueName() + "," +
-                getEventStatus() + "," +
-                athletesNames;
+                getEventStatus() + ",";
     }
 }
