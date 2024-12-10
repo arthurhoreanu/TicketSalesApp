@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /**
  * Represents an admin user with specific access privileges.
  */
@@ -14,6 +17,14 @@ public class Admin extends User {
      */
     public Admin(int userID, String username, String email, String password) {
         super(userID, username, email, password);
+    }
+
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, getID());
+        stmt.setString(2, "Admin");
+        stmt.setString(3, getUsername());
+        stmt.setString(4, getEmail());
+        stmt.setString(5, getPassword());
     }
 
     /**
