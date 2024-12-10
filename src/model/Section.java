@@ -2,10 +2,10 @@ package model;
 
 import controller.Controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 
 /**
  * Represents a section within a venue, containing details such as name, capacity, associated venue, and seats.
@@ -15,9 +15,42 @@ public class Section implements Identifiable {
     private int sectionID;
     private String sectionName;
     private int sectionCapacity;
-    private Venue venue;
-    private List<Row>  rows = new ArrayList<>();
+    private int venueID;
+
     static Controller controller = ControllerProvider.getController();
+
+    /**
+     * Constructs a Section with the specified attributes.
+     * @param sectionID      the unique ID of the section
+     * @param sectionName    the name of the section
+     * @param sectionCapacity the seating capacity of the section
+     * @param venueID         the ID of the venue where the section is located
+     */
+    public Section(int sectionID, String sectionName, int sectionCapacity, int venueID) {
+        this.sectionID = sectionCounter++;
+        this.sectionName = sectionName;
+        this.sectionCapacity = sectionCapacity;
+        this.venueID = venueID;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "sectionID=" + sectionID +
+                ", sectionName='" + sectionName + '\'' +
+                ", sectionCapacity=" + sectionCapacity +
+                ", venueID=" + venueID +
+                '}';
+    }
+    //todo VERY IMPORTANT!!!!
+   /* *//**
+     * Fetches all rows for this section dynamically.
+     *
+     * @return a list of rows belonging to this section
+     *//*
+    public List<Row> getRows() {
+        return controller.findRowsBySectionID(sectionID);
+    }*/
 
     /**
      * Creates a Section object from a CSV-formatted string.
@@ -25,67 +58,57 @@ public class Section implements Identifiable {
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Section object.
      */
-    public static Section fromCsv(String csvLine) {
+    public static Section fromCsv(String csvLine){
         String[] fields = csvLine.split(",");
         int sectionID = Integer.parseInt(fields[0].trim());
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
-        Venue venue = controller.findVenueByName(fields[3].trim());
-        List<Map<Integer, Seat>> rows = new ArrayList<>();
-        if (!fields[4].trim().equals("null")) {
-            String[] rowDetails = fields[4].trim().split(";");
-            for (String detail : rowDetails) {
-                String[] parts = detail.split("-");
-                int rowNumber = Integer.parseInt(parts[0]);
-                int seatNumber = Integer.parseInt(parts[1]);
-                Seat seat = new Seat(rowNumber * 100 + seatNumber, rowNumber, null, seatNumber, null);
-                Map<Integer, Seat> row = new HashMap<>();
-                row.put(seatNumber, seat);
-                rows.add(row);
-            }
-        }
-        return new Section(sectionID, sectionName, sectionCapacity, venue, rows);
+        int venueID = Integer.parseInt(fields[3].trim());
+        return new Section(sectionID, sectionName, sectionCapacity, venueID);
     }
-
 
     /**
      * Converts the Section object into a CSV-formatted string.
      *
      * @return the CSV-formatted string representing the Section.
      */
-
-    //TODO repair method taking into consideration Row class dependence
-    @Override
-    public String toCsv() {
-        StringBuilder rowDetails = new StringBuilder();
-        for (Map<Integer, Seat> row : rows) {
-            for (Seat seat : row.values()) {
-                rowDetails.append(seat.getRowNumber()).append("-").append(seat.getSeatNumber()).append(";");
-            }
-        }
-        return String.join(",",
-                String.valueOf(sectionID),
-                sectionName,
-                String.valueOf(sectionCapacity),
-                venue.getVenueName(),
-                rowDetails.toString()
-        );
-    }
+   @Override
+   public String toCsv(){
+       return String.join(",",
+               String.valueOf(sectionID),
+               sectionName,
+               String.valueOf(sectionCapacity),
+               String.valueOf(venueID)
+       );
+   }
 
     /**
-     * Constructs a Section with the specified attributes.
-     * @param sectionID      the unique ID of the section
-     * @param sectionName    the name of the section
-     * @param sectionCapacity the seating capacity of the section
-     * @param venue          the venue where the section is located
-     * @param rows          the list of seats in this section
+     * Saves the Section object to a database.
+     *
+     * @param stmt the PreparedStatement for inserting the section
+     * @throws SQLException if a database error occurs
      */
-    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue, List<Row>  rows) {
-        this.sectionID = sectionCounter++;
-        this.sectionName = sectionName;
-        this.sectionCapacity = sectionCapacity;
-        this.venue = venue;
-        this.rows = new ArrayList<>();    }
+    @Override
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, this.sectionID);
+        stmt.setString(2, this.sectionName);
+        stmt.setInt(3, this.sectionCapacity);
+        stmt.setInt(4, this.venueID);
+    }
+    /**
+     * Creates a Section object from a database result set.
+     *
+     * @param rs the ResultSet containing section data
+     * @return the deserialized Section object
+     * @throws SQLException if a database error occurs
+     */
+    public static Section fromDatabase(ResultSet rs) throws SQLException {
+        int sectionID = rs.getInt("sectionID");
+        String sectionName = rs.getString("sectionName");
+        int sectionCapacity = rs.getInt("sectionCapacity");
+        int venueID = rs.getInt("venueID");
+        return new Section(sectionID, sectionName, sectionCapacity, venueID);
+    }
 
     /**
      * Gets the unique ID of the section.
@@ -95,34 +118,25 @@ public class Section implements Identifiable {
     public Integer getID() {
         return this.sectionID;
     }
-
-    public List<Row> getRows() {
-        return rows;
-    }
-
-    public void setRows(List<Row> rows) {
-        this.rows = rows;
-    }
-
-
     /**
      * Gets the venue associated with the section.
      * @return the venue of the section
      */
-    public Venue getVenue() {
-        return venue;
+    public int getVenue() {
+        return venueID;
     }
 
     /**
      * Sets the venue for this section.
-     * @param venue the venue to set for this section
+     * @param venueID the venue ID to set
      */
-    public void setVenue(Venue venue) {
-        this.venue = venue;
+    public void setVenueID(int venueID) {
+        this.venueID = venueID;
     }
 
     /**
      * Gets the name of the section.
+     *
      * @return the name of the section
      */
     public String getSectionName() {
@@ -130,7 +144,17 @@ public class Section implements Identifiable {
     }
 
     /**
+     * Sets the name of the section.
+     *
+     * @param sectionName the new name of the section
+     */
+    public void setSectionName(String sectionName) {
+        this.sectionName = sectionName;
+    }
+
+    /**
      * Gets the seating capacity of the section.
+     *
      * @return the seating capacity of the section
      */
     public int getSectionCapacity() {
@@ -138,22 +162,12 @@ public class Section implements Identifiable {
     }
 
     /**
-     * Returns a string representation of the section, including its ID, name, capacity, and venue.
-     * @return a string representing the section's details
+     * Sets the seating capacity of the section.
+     *
+     * @param sectionCapacity the new seating capacity of the section
      */
-    @Override
-    public String toString() {
-        return "Section{" +
-                "sectionID=" + sectionID +
-                ", sectionName='" + sectionName + '\'' +
-                ", sectionCapacity=" + sectionCapacity +
-                ", venue=" + venue +
-                '}';
-    }
-
-    //todo in service?
-    public void addRow(Row row) {
-        rows.add(row);
+    public void setSectionCapacity(int sectionCapacity) {
+        this.sectionCapacity = sectionCapacity;
     }
 
 }

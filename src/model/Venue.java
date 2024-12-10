@@ -105,6 +105,18 @@ public class Venue implements Identifiable {
         return new Venue(venueID, venueName, location, venueCapacity);
     }
 
+
+    //TODo VERY IMPORTANT!!!!!
+    /**
+     * Fetches all sections for this venue dynamically.
+     *
+     * @return a list of sections belonging to this venue
+     *//*
+    public List<Section> getSections() {
+        return controller.findSectionsByVenueID(venueID);
+    }*/
+
+
     /**
      * Gets the unique ID of the venue.
      * @return the ID of the venue
@@ -112,14 +124,6 @@ public class Venue implements Identifiable {
     @Override
     public Integer getID() {
         return this.venueID;
-    }
-
-    /**
-     * Gets the list of sections within the venue.
-     * @return the list of sections
-     */
-    public List<Section> getSections() {
-        return this.sections;
     }
 
     /**
@@ -169,5 +173,17 @@ public class Venue implements Identifiable {
     public void setVenueCapacity(int venueCapacity) {
         this.venueCapacity = venueCapacity;
     }
+
+
+    //TODO don't forget about this
+   /* *//**
+     * Adds a section to this venue in the database.
+     *
+     * @param section the section to add
+     *//*
+    public void addSection(Section section) {
+        section.setVenueID(this.venueID);
+        controller.saveSection(section);
+    }*/
 
 }
