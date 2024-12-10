@@ -2,6 +2,9 @@ package model;
 
 import controller.Controller;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,6 +148,31 @@ public abstract class Event implements Identifiable {
         this.eventStatus = eventStatus;
     }
 
+    public static Event fromDatabase(ResultSet rs, Controller controller) throws SQLException {
+        int id = rs.getInt("eventID");
+        String type = rs.getString("eventType");
+        String eventName = rs.getString("eventName");
+        String eventDescription = rs.getString("eventDescription");
+        LocalDateTime startDateTime = rs.getTimestamp("startDateTime").toLocalDateTime();
+        LocalDateTime endDateTime = rs.getTimestamp("endDateTime").toLocalDateTime();
+        String venueName = rs.getString("venueName");
+        EventStatus status = EventStatus.valueOf(rs.getString("eventStatus"));
+
+        Venue venue = controller.findVenueByName(venueName);
+        if (venue == null) {
+            throw new IllegalArgumentException("Venue with name " + venueName + " not found.");
+        }
+
+        switch (type) {
+            case "Concert":
+                return new Concert(id, eventName, eventDescription, startDateTime, endDateTime, venue, status);
+            case "Sports Event":
+                return new SportsEvent(id, eventName, eventDescription, startDateTime, endDateTime, venue, status);
+            default:
+                throw new IllegalArgumentException("Unknown event type: " + type);
+        }
+    }
+
     /**
      * Returns a string representation of the event, including its ID, name, description, schedule, venue, and status.
      * @return a string representing the event's details
@@ -195,30 +223,10 @@ public abstract class Event implements Identifiable {
 
         switch (type) {
             case "Concert": {
-                String[] artistNames = fields[8].trim().split(";");
-                List<Artist> artists = new ArrayList<>();
-                for (String artistName : artistNames) {
-                    Artist artist = controller.findArtistByName(artistName.trim());
-                    if (artist != null) {
-                        artists.add(artist);
-                    } else {
-                        System.out.println("Warning: Artist with name " + artistName + " not found. Skipping.");
-                    }
-                }
-                return new Concert(id, eventName, eventDescription, startDateTime, endDateTime, venue, status, artists);
+                return new Concert(id, eventName, eventDescription, startDateTime, endDateTime, venue, status);
             }
             case "Sports Event": {
-                String[] athleteNames = fields[8].trim().split(";");
-                List<Athlete> athletes = new ArrayList<>();
-                for (String athleteName : athleteNames) {
-                    Athlete athlete = controller.findAthleteByName(athleteName.trim());
-                    if (athlete != null) {
-                        athletes.add(athlete);
-                    } else {
-                        System.out.println("Warning: Athlete with name " + athleteName + " not found. Skipping.");
-                    }
-                }
-                return new SportsEvent(id, eventName, eventDescription, startDateTime, endDateTime, venue, status, athletes);
+                return new SportsEvent(id, eventName, eventDescription, startDateTime, endDateTime, venue, status);
             }
             default:
                 throw new IllegalArgumentException("Unknown event type: " + type);

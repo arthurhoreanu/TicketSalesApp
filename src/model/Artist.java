@@ -92,8 +92,8 @@ public class Artist implements Identifiable, FavouriteEntity {
      * @throws SQLException if an SQL error occurs.
      */
     public static Artist fromDatabase(ResultSet rs) throws SQLException {
-        int artistID = rs.getInt("artist_id");
-        String artistName = rs.getString("artist_name");
+        int artistID = rs.getInt("artistID");
+        String artistName = rs.getString("artistName");
         String genre = rs.getString("genre");
         return new Artist(artistID, artistName, genre);
     }

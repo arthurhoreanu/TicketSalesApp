@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,7 +10,6 @@ import java.util.List;
  * Represents a concert event, which is a type of event featuring a list of artists.
  */
 public class Concert extends Event {
-    private List<Artist> artists;
 
     /**
      * Constructs a Concert with the specified details and list of performing artists.
@@ -18,27 +20,20 @@ public class Concert extends Event {
      * @param endDateTime      the end date and time of the concert
      * @param venue            the venue where the concert takes place
      * @param eventStatus      the current status of the concert (SCHEDULED, CANCELLED, COMPLETED)
-     * @param artists          the list of artists performing at the concert
      */
-    public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Artist> artists) {
+    public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus) {
         super(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus);
-        this.artists = artists;
     }
 
-    /**
-     * Gets the list of artists performing at the concert.
-     * @return a list of artists performing at the concert
-     */
-    public List<Artist> getArtists() {
-        return artists;
-    }
-
-    /**
-     * Sets the list of artists performing at the concert.
-     * @param artists the new list of artists performing at the concert
-     */
-    public void setArtist(List<Artist> artists) {
-        this.artists = artists;
+    @Override
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, getID());
+        stmt.setString(2, getEventName());
+        stmt.setString(3, getEventDescription());
+        stmt.setTimestamp(4, Timestamp.valueOf(getStartDateTime()));
+        stmt.setTimestamp(5, Timestamp.valueOf(getEndDateTime()));
+        stmt.setInt(6, getVenue().getID());
+        stmt.setString(7, getEventStatus().name());
     }
 
     /**
@@ -47,16 +42,11 @@ public class Concert extends Event {
      */
     @Override
     public String toString() {
-        return "Concert" + super.toString() +
-                ", {" + "artists=" + artists + '}';
+        return "Concert" + super.toString() + '}';
     }
 
     @Override
     public String toCsv() {
-        String artistNames = getArtists().stream()
-                .map(Artist::getArtistName)
-                .reduce((name1, name2) -> name1 + ";" + name2)
-                .orElse("");
         return getID() + "," +
                 "Concert," +
                 getEventName() + "," +
@@ -64,8 +54,7 @@ public class Concert extends Event {
                 getStartDateTime() + "," +
                 getEndDateTime() + "," +
                 getVenue().getVenueName() + "," +
-                getEventStatus() + "," +
-                artistNames;
+                getEventStatus();
     }
 
 }
