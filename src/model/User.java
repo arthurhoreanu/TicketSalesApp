@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Represents a general user in the system, containing basic information such as ID, username, email, and password.
  * This class serves as a base for more specific user types (e.g., Admin, Customer).
@@ -55,6 +58,31 @@ public abstract class User implements Identifiable {
      */
     public String getEmail() {
         return email;
+    }
+
+    /**
+     * Parses a ResultSet and creates a corresponding User object.
+     * The ResultSet is expected to contain fields for the user's ID, type, username, email, and password.
+     * Supported user types: Admin and Customer.
+     * @param rs The ResultSet containing user data.
+     * @return A User object parsed from the ResultSet.
+     * @throws SQLException If an error occurs while accessing the ResultSet.
+     * @throws IllegalArgumentException If the user type in the ResultSet is unsupported.
+     */
+    public static User fromDatabase(ResultSet rs) throws SQLException {
+        int id = rs.getInt("userID");
+        String type = rs.getString("type").trim();
+        String username = rs.getString("username").trim();
+        String email = rs.getString("email").trim();
+        String password = rs.getString("password").trim();
+        switch (type) {
+            case "Admin":
+                return new Admin(id, username, email, password);
+            case "Customer":
+                return new Customer(id, username, email, password);
+            default:
+                throw new IllegalArgumentException("Unknown user type: " + type);
+        }
     }
 
     /**

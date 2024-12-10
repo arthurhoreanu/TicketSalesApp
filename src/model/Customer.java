@@ -1,5 +1,7 @@
 package model;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -68,6 +70,14 @@ public class Customer extends User {
      */
     public Map<Integer, Integer> getPreferredSections() {
         return preferredSections;
+    }
+
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, getID());
+        stmt.setString(2, "Customer");
+        stmt.setString(3, getUsername());
+        stmt.setString(4, getEmail());
+        stmt.setString(5, getPassword());
     }
 
     /**
