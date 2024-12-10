@@ -2,29 +2,68 @@ package model;
 
 import controller.Controller;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Represents a seat in a venue section, with details such as row, seat number, and reservation status.
  */
 public class Seat implements Identifiable {
     private static int seatCounter = 1;
     private int seatID;
-    private Row row;
-    private Event reservedForEvent;
+    private int rowID;
     //todo rethink about this attribute and method related to this bool
     private boolean isReserved;
+    private Integer reservedForEventID; // Links to Event if reserved, null otherwise todo
 
     static Controller controller = ControllerProvider.getController();
 
     /**
      * Constructs a Seat with the specified attributes.
      * @param seatID          the unique ID of the seat
-     * @param rowNumber       the row number where the seat is located
-     * @param reservedForEvent the event for which the seat is reserved, initially null
+     * @param rowID           the ID of the row where the seat is located
+     * @param isReserved      whether the seat is reserved
+     * @param reservedForEventID the ID of the reserved event, null if not reserved
      */
-    public Seat(int seatID, int rowNumber, Row row, Event reservedForEvent) {
+    public Seat(int seatID, int rowID, boolean isReserved, Integer reservedForEventID) {
         this.seatID = seatCounter++;
-        this.row = row;
-        this.reservedForEvent = null; // initially, the seat is not reserved
+        this.rowID = rowID;
+        this.isReserved = isReserved;
+        this.reservedForEventID = reservedForEventID;
+    }
+    //TODO VERY IMPORTANT!!!
+    /**
+     * Fetches the row associated with this seat dynamically.
+     *
+     * @return the Row object corresponding to this seat's rowID
+     *//*
+    public Row getRow() {
+        return controller.findRowByID(rowID);
+    }
+
+    *//**
+     * Fetches the event for which this seat is reserved, if applicable.
+     *
+     * @return the Event object if the seat is reserved, null otherwise
+     *//*
+    public Event getReservedForEvent() {
+        return reservedForEventID == null ? null : controller.findEventByID(reservedForEventID);
+    }*/
+
+
+    /**
+     * Returns a string representation of the seat, including its ID, section, row number, seat number, and reserved event.
+     * @return a string representing the seat's details
+     */
+    @Override
+    public String toString() {
+        return "Seat{" +
+                "seatID=" + seatID +
+                ", rowID=" + rowID +
+                ", isReserved=" + isReserved +
+                ", reservedForEventID=" + reservedForEventID +
+                '}';
     }
 
     /**
@@ -36,11 +75,10 @@ public class Seat implements Identifiable {
     public static Seat fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int seatID = Integer.parseInt(fields[0].trim());
-        int rowNumber = Integer.parseInt(fields[1].trim());
-        Section section = controller.findSectionByID(Integer.parseInt(fields[2].trim()));
-        int seatNumber = Integer.parseInt(fields[3].trim());
-        Event reservedForEvent = controller.findEventByID(Integer.parseInt(fields[4].trim()));
-        return new Seat(seatID, rowNumber, section, seatNumber, reservedForEvent);
+        int rowID = Integer.parseInt(fields[1].trim());
+        boolean isReserved = Boolean.parseBoolean(fields[2].trim());
+        Integer reservedForEventID = fields[3].trim().equals("null") ? null : Integer.parseInt(fields[3].trim());
+        return new Seat(seatID, rowID, isReserved, reservedForEventID);
     }
 
     /**
@@ -53,11 +91,40 @@ public class Seat implements Identifiable {
     public String toCsv() {
         return String.join(",",
                 String.valueOf(seatID),
-                String.valueOf(row.getID()),
-                String.valueOf(seatNumber),
-                reservedForEvent == null ? "null" : reservedForEvent.toCsv()
+                String.valueOf(rowID),
+                String.valueOf(isReserved),
+                reservedForEventID == null ? "null" : String.valueOf(reservedForEventID)
         );
     }
+
+    /**
+     * Saves the Seat object to a database.
+     *
+     * @param stmt the PreparedStatement for inserting the seat
+     * @throws SQLException if a database error occurs
+     */
+    @Override
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, this.seatID);
+        stmt.setInt(2, this.rowID);
+        stmt.setBoolean(3, this.isReserved);
+        stmt.setObject(4, this.reservedForEventID); // Use setObject to handle nulls
+    }
+    /**
+     * Creates a Seat object from a database result set.
+     *
+     * @param rs the ResultSet containing seat data
+     * @return the deserialized Seat object
+     * @throws SQLException if a database error occurs
+     */
+    public static Seat fromDatabase(ResultSet rs) throws SQLException {
+        int seatID = rs.getInt("seatID");
+        int rowID = rs.getInt("rowID");
+        boolean isReserved = rs.getBoolean("isReserved");
+        Integer reservedForEventID = rs.getObject("reservedForEventID") != null ? rs.getInt("reservedForEventID") : null;
+        return new Seat(seatID, rowID, isReserved, reservedForEventID);
+    }
+
 
     /**
      * Gets the unique ID of the seat.
@@ -68,48 +135,57 @@ public class Seat implements Identifiable {
         return this.seatID;
     }
     /**
-     * Gets the section where the seat is located.
-     * @return the section of the seat
+     * Gets the ID of the row associated with this seat.
+     *
+     * @return the row ID
      */
-    public Row getRow() {
-        return this.row;
+    public int getRowID() {
+        return rowID;
     }
 
     /**
-     * Sets the section where the seat is located.
-     * @param row the section to set for the seat
+     * Sets the ID of the row for this seat.
+     *
+     * @param rowID the row ID to set
      */
-    public void setRow(Row row) {
-        this.row = row;
-    }
-
-
-    /**
-     * Gets the event for which the seat is reserved.
-     * @return the event for which the seat is reserved, or null if not reserved
-     */
-    public Event getReservedForEvent() {
-        return this.reservedForEvent;
+    public void setRowID(int rowID) {
+        this.rowID = rowID;
     }
 
     /**
-     * Sets the event for which the seat is reserved.
-     * @param reservedForEvent the event for which the seat is being reserved
+     * Gets the reservation status of the seat.
+     *
+     * @return true if the seat is reserved, false otherwise
      */
-    public void setReservedForEvent(Event reservedForEvent) {
-        this.reservedForEvent = reservedForEvent;
+    public boolean isReserved() {
+        return isReserved;
     }
 
     /**
-     * Returns a string representation of the seat, including its ID, section, row number, seat number, and reserved event.
-     * @return a string representing the seat's details
+     * Sets the reservation status of the seat.
+     *
+     * @param reserved the reservation status to set
      */
-    @Override
-    public String toString() {
-        return "Seat{" +
-                "seatID=" + seatID +
-                ", row=" + row +
-                ", reservedForEvent=" + reservedForEvent +
-                '}';
+    public void setReserved(boolean reserved) {
+        isReserved = reserved;
     }
+
+    /**
+     * Gets the ID of the reserved event, if applicable.
+     *
+     * @return the reserved event ID, or null if not reserved
+     */
+    public Integer getReservedForEventID() {
+        return reservedForEventID;
+    }
+
+    /**
+     * Sets the ID of the reserved event.
+     *
+     * @param reservedForEventID the reserved event ID to set
+     */
+    public void setReservedForEventID(Integer reservedForEventID) {
+        this.reservedForEventID = reservedForEventID;
+    }
+
 }
