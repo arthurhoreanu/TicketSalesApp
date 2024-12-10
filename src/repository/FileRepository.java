@@ -17,18 +17,18 @@ import java.util.function.Function;
  */
 public class FileRepository<T extends Identifiable> implements IRepository<T> {
     private final String filePath;
-    private final Function<String, T> fromCsvFormat;
+    private final Function<String, T> fromCsv;
     private final Lock lock = new ReentrantLock();
 
     /**
      * Constructs a new repository with a specified file path and CSV parser.
      *
      * @param filePath      The path to the CSV file where data will be stored.
-     * @param fromCsvFormat Function to convert a CSV line to an object of type T.
+     * @param fromCsv Function to convert a CSV line to an object of type T.
      */
-    public FileRepository(String filePath, Function<String, T> fromCsvFormat) {
+    public FileRepository(String filePath, Function<String, T> fromCsv) {
         this.filePath = filePath;
-        this.fromCsvFormat = fromCsvFormat;
+        this.fromCsv = fromCsv;
         initializeFile();
     }
 
@@ -55,7 +55,7 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
     public void create(T obj) {
         lock.lock();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(obj.toCsvFormat());
+            writer.write(obj.toCsv());
             writer.newLine();
         } catch (IOException e) {
             throw new RuntimeException("Error writing to file: " + filePath, e);
@@ -154,7 +154,7 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
             String line;
             while ((line = reader.readLine()) != null) {
                 try {
-                    T item = fromCsvFormat.apply(line);
+                    T item = fromCsv.apply(line);
                     if (item != null) {
                         items.add(item);
                     }

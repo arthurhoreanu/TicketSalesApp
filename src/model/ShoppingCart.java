@@ -15,7 +15,7 @@ public class ShoppingCart implements Identifiable {
 
     static Controller controller = ControllerProvider.getController();
 
-    public static ShoppingCart fromCsvFormat(String csvLine) {
+    public static ShoppingCart fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int shoppingCartID = Integer.parseInt(fields[0]);
         List<Ticket> items = new ArrayList<>();
@@ -36,7 +36,7 @@ public class ShoppingCart implements Identifiable {
     }
 
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         String ticketIds = items.isEmpty() ? "null" : items.stream()
                 .map(ticket -> String.valueOf(ticket.getID()))
                 .reduce((t1, t2) -> t1 + ";" + t2)

@@ -18,7 +18,7 @@ public class AthleteService {
     public AthleteService(IRepository<Athlete> athleteRepository, IRepository<Event> eventRepository) {
         this.athleteRepository = athleteRepository;
         this.eventRepository = eventRepository;
-        this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsvFormat);
+        this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
         List<Athlete> athletesFromFile = athleteFileRepository.getAll();
         for (Athlete athlete : athletesFromFile) {
             athleteRepository.create(athlete);

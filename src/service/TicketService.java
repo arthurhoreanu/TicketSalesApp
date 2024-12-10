@@ -31,7 +31,7 @@ public class TicketService {
         this.seatService = seatService;
         this.eventService = eventService;
         this.venueService = venueService;
-        this.ticketFileRepository = new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsvFormat);
+        this.ticketFileRepository = new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsv);
         List<Ticket> ticketsFromFile = ticketFileRepository.getAll();
         for (Ticket ticket : ticketsFromFile) {
             ticketRepository.create(ticket);

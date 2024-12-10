@@ -29,7 +29,7 @@ public class OrderService {
         this.paymentProcessor = paymentProcessor;
         this.seatService = seatService;
         this.ticketRepository = ticketRepository;
-        this.orderFileRepository = new FileRepository<>("src/repository/data/orders.csv", Order::fromCsvFormat);
+        this.orderFileRepository = new FileRepository<>("src/repository/data/orders.csv", Order::fromCsv);
         List<Order> ordersfromFile = orderFileRepository.getAll();
         for (Order order : ordersfromFile) {
             orderRepository.create(order);

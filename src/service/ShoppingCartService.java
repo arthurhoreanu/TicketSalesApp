@@ -28,7 +28,7 @@ public class ShoppingCartService {
         this.shoppingCartRepository = shoppingCartRepository;
         this.orderRepository = orderRepository;
         this.customerService = customerService;
-        this.shoppingCartFileRepository = new FileRepository<>("src/repository/data/shoppingCarts.csv", ShoppingCart::fromCsvFormat);
+        this.shoppingCartFileRepository = new FileRepository<>("src/repository/data/shoppingCarts.csv", ShoppingCart::fromCsv);
         List<ShoppingCart> shoppingCartsFromFile = shoppingCartFileRepository.getAll();
         for (ShoppingCart shoppingCart : shoppingCartsFromFile) {
             shoppingCartRepository.create(shoppingCart);

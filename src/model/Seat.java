@@ -33,7 +33,7 @@ public class Seat implements Identifiable {
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Seat object.
      */
-    public static Seat fromCsvFormat(String csvLine) {
+    public static Seat fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int seatID = Integer.parseInt(fields[0].trim());
         int rowNumber = Integer.parseInt(fields[1].trim());
@@ -50,12 +50,12 @@ public class Seat implements Identifiable {
 
     //TODO change CSV s to accommodate the Row class
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         return String.join(",",
                 String.valueOf(seatID),
                 String.valueOf(row.getID()),
                 String.valueOf(seatNumber),
-                reservedForEvent == null ? "null" : reservedForEvent.toCsvFormat()
+                reservedForEvent == null ? "null" : reservedForEvent.toCsv()
         );
     }
 

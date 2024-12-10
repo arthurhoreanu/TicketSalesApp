@@ -17,7 +17,7 @@ public class AccountService {
     public AccountService(IRepository<User> userRepository, CustomerService customerService) {
         this.userIRepository = userRepository;
         this.customerService = customerService;
-        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User::fromCsvFormat);
+        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User::fromCsv);
         List<User> usersFromFile = userFileRepository.getAll();
         for (User user : usersFromFile) {
             userRepository.create(user);

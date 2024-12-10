@@ -79,7 +79,7 @@ public class Athlete implements Identifiable, FavouriteEntity {
         return "Athlete{" + "athleteID=" + athleteID + ", athleteName='" + athleteName + '\'' + ", athleteSport='" + athleteSport + '\'' + '}';
     }
 
-    public static Athlete fromCsvFormat(String csvLine) {
+    public static Athlete fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int athleteID = Integer.parseInt(fields[0]);
         String athleteName = fields[1];
@@ -88,7 +88,7 @@ public class Athlete implements Identifiable, FavouriteEntity {
     }
 
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         return getID() + "," + getName() + "," + getAthleteSport();
     }
 }

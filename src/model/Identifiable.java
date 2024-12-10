@@ -15,15 +15,13 @@ public interface Identifiable {
      */
     Integer getID();
 
-    String toCsvFormat();
-
-    static <T> T fromCsvFormat(String csvLine) {
+    String toCsv();
+    static <T> T fromCsv(String csvLine) {
         return null;
     }
 
-    void toPreparedStatement(PreparedStatement stmt) throws SQLException;
-
-    static <T> T fromResultSet(ResultSet rs) throws SQLException {
+    void toDatabase(PreparedStatement stmt) throws SQLException;
+    static <T> T fromDatabase(ResultSet rs) throws SQLException {
         return null;
     }
 }

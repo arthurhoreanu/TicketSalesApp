@@ -25,7 +25,7 @@ public class Section implements Identifiable {
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Section object.
      */
-    public static Section fromCsvFormat(String csvLine) {
+    public static Section fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int sectionID = Integer.parseInt(fields[0].trim());
         String sectionName = fields[1].trim();
@@ -56,7 +56,7 @@ public class Section implements Identifiable {
 
     //TODO repair method taking into consideration Row class dependence
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         StringBuilder rowDetails = new StringBuilder();
         for (Map<Integer, Seat> row : rows) {
             for (Seat seat : row.values()) {

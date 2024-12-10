@@ -33,7 +33,7 @@ public class Admin extends User {
      *         Format: {ID,Admin,username,email,password}
      */
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         return getID() + "," + "Admin," + getUsername() + "," + getEmail() + "," + getPassword();
     }
 }

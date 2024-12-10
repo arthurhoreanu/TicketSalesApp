@@ -52,7 +52,7 @@ public class Venue implements Identifiable {
      * @param csvLine the CSV-formatted string.
      * @return the deserialized Venue object.
      */
-    public static Venue fromCsvFormat(String csvLine) {
+    public static Venue fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int venueID = Integer.parseInt(fields[0].trim());
         String venueName = fields[1].trim();
@@ -81,7 +81,7 @@ public class Venue implements Identifiable {
      * @return the CSV-formatted string representing the Venue.
      */
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         String sectionIds = sections.isEmpty() ? "null" : sections.stream()
                 .map(section -> String.valueOf(section.getID()))
                 .reduce((a, b) -> a + ";" + b)

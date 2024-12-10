@@ -46,7 +46,7 @@ public class SportsEvent extends Event {
     }
 
     @Override
-    public String toCsvFormat() {
+    public String toCsv() {
         String athletesNames = getAthletes().stream()
                 .map(Athlete::getAthleteName)
                 .reduce((name1, name2) -> name1 + ";" + name2)

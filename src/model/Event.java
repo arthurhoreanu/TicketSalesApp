@@ -177,7 +177,7 @@ public abstract class Event implements Identifiable {
      * @throws IllegalArgumentException If the event type is not recognized.
      */
 
-    public static Event fromCsvFormat(String csvLine) {
+    public static Event fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int id = Integer.parseInt(fields[0].trim());
         String type = fields[1].trim();
