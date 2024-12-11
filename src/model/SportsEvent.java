@@ -28,12 +28,13 @@ public class SportsEvent extends Event {
     @Override
     public void toDatabase(PreparedStatement stmt) throws SQLException {
         stmt.setInt(1, getID());
-        stmt.setString(2, getEventName());
-        stmt.setString(3, getEventDescription());
-        stmt.setTimestamp(4, Timestamp.valueOf(getStartDateTime()));
-        stmt.setTimestamp(5, Timestamp.valueOf(getEndDateTime()));
-        stmt.setInt(6, getVenue().getID());
-        stmt.setString(7, getEventStatus().name());
+        stmt.setString(2, "Sports Event");
+        stmt.setString(3, getEventName());
+        stmt.setString(4, getEventDescription());
+        stmt.setTimestamp(5, Timestamp.valueOf(getStartDateTime()));
+        stmt.setTimestamp(6, Timestamp.valueOf(getEndDateTime()));
+        stmt.setInt(7, getVenue().getID());
+        stmt.setString(8, getEventStatus().name());
     }
 
     /**
