@@ -14,24 +14,10 @@ import java.util.List;
  */
 public class Section implements Identifiable {
 
-    /**
-     * The unique ID of the section.
-     */
+
     private int sectionID;
-
-    /**
-     * The name of the section.
-     */
     private String sectionName;
-
-    /**
-     * The seating capacity of the section.
-     */
     private int sectionCapacity;
-
-    /**
-     * The ID of the venue to which this section belongs.
-     */
     private int venueID;
 
     /**
@@ -50,20 +36,6 @@ public class Section implements Identifiable {
      */
     public Section(int sectionID, String sectionName, int sectionCapacity, int venueID) {
         this.sectionID = sectionID;
-        this.sectionName = sectionName;
-        this.sectionCapacity = sectionCapacity;
-        this.venueID = venueID;
-    }
-
-    /**
-     * Constructs a Section for in-memory operations, where an ID will be assigned externally.
-     *
-     * @param sectionName     the name of the section
-     * @param sectionCapacity the seating capacity of the section
-     * @param venueID         the ID of the venue where the section is located
-     */
-    public Section(String sectionName, int sectionCapacity, int venueID) {
-        this.sectionID = 0; // Default ID, to be set externally
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
         this.venueID = venueID;

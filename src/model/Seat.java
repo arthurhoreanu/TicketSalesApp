@@ -43,20 +43,6 @@ public class Seat implements Identifiable {
     }
 
     /**
-     * Constructs a Seat for in-memory operations, where an ID will be assigned externally.
-     *
-     * @param rowID the ID of the row where the seat is located
-     * @param isReserved whether the seat is reserved
-     * @param reservedForEventID the ID of the reserved event, null if not reserved
-     */
-    public Seat(int rowID, boolean isReserved, Integer reservedForEventID) {
-        this.seatID = 0; // Default ID, to be assigned externally
-        this.rowID = rowID;
-        this.isReserved = isReserved;
-        this.reservedForEventID = reservedForEventID;
-    }
-
-    /**
      * Gets the unique ID of the seat.
      *
      * @return the ID of the seat
