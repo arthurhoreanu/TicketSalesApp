@@ -1,5 +1,10 @@
 package model;
 
+import controller.Controller;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 /**
@@ -7,53 +12,83 @@ import java.time.LocalDateTime;
  */
 public class Ticket implements Identifiable {
     private int ticketID;
-    private Event event;
-    private Section section;
-    private Seat seat;
+    private int eventID;
+    private int sectionID;
+    private int seatID;
     private double price;
     private LocalDateTime purchaseDate;
     private String purchaserName;
     private TicketType ticketType;
     private boolean isSold;
 
+    static Controller controller = ControllerProvider.getController();
+
     /**
-     * Creates a Ticket object from a CSV-formatted string.
+     * Constructs a Ticket with the specified attributes.
      *
-     * @param csvLine the CSV-formatted string.
-     * @return the deserialized Ticket object.
+     * @param ticketID   the unique ID of the ticket
+     * @param eventID    the ID of the associated event
+     * @param sectionID  the ID of the associated section
+     * @param seatID     the ID of the associated seat
+     * @param price      the price of the ticket
+     * @param ticketType the type of the ticket (STANDARD, VIP, EARLY_ACCESS)
      */
-    public static Ticket fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int ticketID = Integer.parseInt(fields[0].trim());
-        Event event = Event.fromCsv(fields[1].trim());
-        Section section = Section.fromCsv(fields[2].trim());
-        Seat seat = Seat.fromCsv(fields[3].trim());
-        double price = Double.parseDouble(fields[4].trim());
-        TicketType ticketType = TicketType.valueOf(fields[5].trim());
-        boolean isSold = Boolean.parseBoolean(fields[6].trim());
-        String purchaserName = fields[7].trim().equals("null") ? null : fields[7].trim();
-        LocalDateTime purchaseDate = fields[8].trim().equals("null") ? null : LocalDateTime.parse(fields[8].trim());
-
-        Ticket ticket = new Ticket(ticketID, event, section, seat, price, ticketType);
-        ticket.setSold(isSold);
-        ticket.setPurchaserName(purchaserName);
-        ticket.setPurchaseDate(purchaseDate);
-
-        return ticket;
+    public Ticket(int ticketID, int eventID, int sectionID, int seatID, double price, TicketType ticketType) {
+        this.ticketID = ticketID;
+        this.eventID = eventID;
+        this.sectionID = sectionID;
+        this.seatID = seatID;
+        this.price = price;
+        this.ticketType = ticketType;
+        this.isSold = false; // the ticket is initially not sold
     }
 
     /**
-     * Converts the Ticket object into a CSV-formatted string.
+     * Constructs a Ticket for in-memory operations, where an ID will be assigned externally.
      *
-     * @return the CSV-formatted string representing the Ticket.
+     * @param eventID    the ID of the associated event
+     * @param sectionID  the ID of the associated section
+     * @param seatID     the ID of the associated seat
+     * @param price      the price of the ticket
+     * @param ticketType the type of the ticket (STANDARD, VIP, EARLY_ACCESS)
      */
+    public Ticket(int eventID, int sectionID, int seatID, double price, TicketType ticketType) {
+        this.ticketID = 0; // Default ID, to be set externally
+        this.eventID = eventID;
+        this.sectionID = sectionID;
+        this.seatID = seatID;
+        this.price = price;
+        this.ticketType = ticketType;
+        this.isSold = false;
+    }
+
+    /**
+     * Returns a string representation of the ticket, including ID, event, section, seat, price, and sale details.
+     *
+     * @return a string representing the ticket's details
+     */
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "ticketID=" + ticketID +
+                ", eventID=" + eventID +
+                ", sectionID=" + sectionID +
+                ", seatID=" + seatID +
+                ", price=" + price +
+                ", purchaseDate=" + purchaseDate +
+                ", purchaserName='" + purchaserName + '\'' +
+                ", ticketType=" + ticketType +
+                ", isSold=" + isSold +
+                '}';
+    }
+
     @Override
     public String toCsv() {
         return String.join(",",
                 String.valueOf(ticketID),
-                event.toCsv(),
-                section.toCsv(),
-                seat.toCsv(),
+                String.valueOf(eventID),
+                String.valueOf(sectionID),
+                String.valueOf(seatID),
                 String.valueOf(price),
                 ticketType.name(),
                 String.valueOf(isSold),
@@ -62,163 +97,143 @@ public class Ticket implements Identifiable {
         );
     }
 
+    public static Ticket fromCSV(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int ticketID = Integer.parseInt(fields[0].trim());
+        int eventID = Integer.parseInt(fields[1].trim());
+        int sectionID = Integer.parseInt(fields[2].trim());
+        int seatID = Integer.parseInt(fields[3].trim());
+        double price = Double.parseDouble(fields[4].trim());
+        TicketType ticketType = TicketType.valueOf(fields[5].trim());
+        boolean isSold = Boolean.parseBoolean(fields[6].trim());
+        String purchaserName = fields[7].trim().equals("null") ? null : fields[7].trim();
+        LocalDateTime purchaseDate = fields[8].trim().equals("null") ? null : LocalDateTime.parse(fields[8].trim());
 
-
-    /**
-     * Constructs a Ticket with the specified attributes.
-     * @param ticketID   the unique ID of the ticket
-     * @param event      the event associated with the ticket
-     * @param section    the section where the seat is located
-     * @param seat       the seat assigned to the ticket
-     * @param price      the price of the ticket
-     * @param ticketType the type of the ticket (STANDARD, VIP, EARLY_ACCESS)
-     */
-    public Ticket(int ticketID, Event event, Section section, Seat seat, double price, TicketType ticketType) {
-        this.ticketID = ticketID;
-        this.event = event;
-        this.section = section;
-        this.seat = seat;
-        this.price = price;
-        this.ticketType = ticketType;
-        this.isSold = false; // the ticket is initially not sold
+        Ticket ticket = new Ticket(ticketID, eventID, sectionID, seatID, price, ticketType);
+        ticket.setSold(isSold);
+        ticket.setPurchaserName(purchaserName);
+        ticket.setPurchaseDate(purchaseDate);
+        return ticket;
     }
 
-    /**
-     * Gets the unique ID of the ticket.
-     * @return the ID of the ticket
-     */
+    @Override
+    public void toDatabase(PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, this.ticketID);
+        stmt.setInt(2, this.eventID);
+        stmt.setInt(3, this.sectionID);
+        stmt.setInt(4, this.seatID);
+        stmt.setDouble(5, this.price);
+        stmt.setString(6, this.ticketType.name());
+        stmt.setBoolean(7, this.isSold);
+        stmt.setString(8, this.purchaserName == null ? "null" : this.purchaserName);
+        stmt.setObject(9, this.purchaseDate == null ? "null" : this.purchaseDate.toString());
+    }
+
+    public static Ticket fromDatabase(ResultSet rs) throws SQLException {
+        int ticketID = rs.getInt("ticketID");
+        int eventID = rs.getInt("eventID");
+        int sectionID = rs.getInt("sectionID");
+        int seatID = rs.getInt("seatID");
+        double price = rs.getDouble("price");
+        TicketType ticketType = TicketType.valueOf(rs.getString("ticketType"));
+        boolean isSold = rs.getBoolean("isSold");
+        String purchaserName = rs.getString("purchaserName");
+        LocalDateTime purchaseDate = rs.getTimestamp("purchaseDate") != null ? rs.getTimestamp("purchaseDate").toLocalDateTime() : null;
+
+        Ticket ticket = new Ticket(ticketID, eventID, sectionID, seatID, price, ticketType);
+        ticket.setSold(isSold);
+        ticket.setPurchaserName(purchaserName);
+        ticket.setPurchaseDate(purchaseDate);
+        return ticket;
+    }
+
     @Override
     public Integer getID() {
-        return this.ticketID;
+        return ticketID;
     }
 
-    /**
-     * Gets the event associated with this ticket.
-     * @return the event of the ticket
-     */
-    public Event getEvent() {
-        return event;
+    public void setTicketID(int ticketID) {
+        this.ticketID = ticketID;
     }
 
-    /**
-     * Sets the event associated with this ticket.
-     * @param event the event to set
-     */
-    public void setEvent(Event event) {
-        this.event = event;
+    public int getEventID() {
+        return eventID;
     }
 
-    /**
-     * Gets the section where the ticket's seat is located.
-     * @return the section of the ticket's seat
-     */
-    public Section getSection() {
-        return section;
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 
-    /**
-     * Sets the section for the ticket's seat.
-     * @param section the section to set
-     */
-    public void setSection(Section section) {
-        this.section = section;
+    public int getSectionID() {
+        return sectionID;
     }
 
-    /**
-     * Gets the seat assigned to this ticket.
-     * @return the seat of the ticket
-     */
-    public Seat getSeat() {
-        return seat;
+    public void setSectionID(int sectionID) {
+        this.sectionID = sectionID;
     }
 
-    /**
-     * Sets the seat for the ticket.
-     * @param seat the seat to set
-     */
-    public void setSeat(Seat seat) {
-        this.seat = seat;
+    public int getSeatID() {
+        return seatID;
     }
 
-    /**
-     * Gets the price of the ticket.
-     * @return the price of the ticket
-     */
+    public void setSeatID(int seatID) {
+        this.seatID = seatID;
+    }
+
     public double getPrice() {
         return price;
     }
 
-    /**
-     * Checks if the ticket is sold.
-     * @return true if the ticket is sold, false otherwise
-     */
+    public TicketType getTicketType() {
+        return ticketType;
+    }
+
     public boolean isSold() {
         return isSold;
     }
 
-    /**
-     * Sets the sold status of the ticket.
-     * @param sold the sold status to set
-     */
     public void setSold(boolean sold) {
-        isSold = sold;
+        this.isSold = sold;
+    }
+
+    public LocalDateTime getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    public String getPurchaserName() {
+        return purchaserName;
+    }
+
+    public void setPurchaserName(String purchaserName) {
+        this.purchaserName = purchaserName;
+    }
+
+    // Dynamically fetch related entities
+    public Event getEvent() {
+        return controller.findEventByID(eventID);
+    }
+
+    public Section getSection() {
+        return controller.findSectionByID(sectionID);
+    }
+
+    public Seat getSeat() {
+        return controller.findSeatByID(seatID);
     }
 
     /**
-     * Gets the ID of the associated event.
-     * @return the ID of the event
-     */
-    public int getEventId() {
-        return event.getID(); // Retrieves the ID of the associated event
-    }
-
-    /**
+     * /**
      * Marks the ticket as sold and records the purchaser's name and purchase date.
+     *
      * @param purchaserName the name of the purchaser
      */
     public void markAsSold(String purchaserName) {
         this.isSold = true;
         this.purchaserName = purchaserName;
         this.purchaseDate = LocalDateTime.now();
-    }
-
-
-    /**
-     * Sets the name of the purchaser who bought the ticket.
-     *
-     * @param purchaserName the name of the purchaser.
-     */
-    public void setPurchaserName(String purchaserName) {
-        this.purchaserName = purchaserName;
-    }
-
-
-    /**
-     * Sets the date and time when the ticket was purchased.
-     *
-     * @param purchaseDate the purchase date and time.
-     */
-    public void setPurchaseDate(LocalDateTime purchaseDate) {
-        this.purchaseDate = purchaseDate;
-    }
-
-
-    /**
-     * Returns a string representation of the ticket, including ID, event, section, seat, price, and sale details.
-     * @return a string representing the ticket's details
-     */
-    @Override
-    public String toString() {
-        return "Ticket{" +
-                "ticketID=" + ticketID +
-                ", event=" + event +
-                ", section=" + section +
-                ", seat=" + seat +
-                ", price=" + price +
-                ", purchaseDate=" + purchaseDate +
-                ", purchaserName='" + purchaserName + '\'' +
-                ", ticketType=" + ticketType +
-                ", isSold=" + isSold +
-                '}';
     }
 }
