@@ -1,9 +1,14 @@
 package service;
 
 import model.*;
+import repository.DBRepository;
 import repository.FileRepository;
 import repository.IRepository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,13 +17,27 @@ public class ArtistService {
     private final IRepository<Artist> artistRepository;
     private final IRepository<Event> eventRepository;
     private final FileRepository<Artist> artistFileRepository;
+    private final DBRepository<Artist> artistDatabaseRepository;
 
-    public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
+    public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository, Connection databaseConnection) {
         this.artistRepository = artistRepository;
         this.eventRepository = eventRepository;
         this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
-        List<Artist> artistsFromFile = artistFileRepository.getAll();
-        for (Artist artist : artistsFromFile) {
+        syncFromCsv();
+        this.artistDatabaseRepository = new DBRepository<>(databaseConnection, "artist", Artist::fromDatabase);
+        syncFromDatabase();
+    }
+
+    private void syncFromCsv() {
+        List<Artist> artists = artistFileRepository.getAll();
+        for (Artist artist : artists) {
+            artistRepository.create(artist);
+        }
+    }
+
+    private void syncFromDatabase() {
+        List<Artist> artists = artistDatabaseRepository.getAll();
+        for (Artist artist : artists) {
             artistRepository.create(artist);
         }
     }
@@ -34,6 +53,7 @@ public class ArtistService {
         Artist artist = new Artist(newID, artistName, genre);
         artistRepository.create(artist);
         artistFileRepository.create(artist);
+        artistDatabaseRepository.create(artist);
         return true;
     }
 
@@ -51,6 +71,7 @@ public class ArtistService {
             artist.setGenre(newGenre);
             artistRepository.update(artist);
             artistFileRepository.update(artist);
+            artistDatabaseRepository.update(artist);
             return true;
         } else {
             return false;
@@ -67,6 +88,7 @@ public class ArtistService {
         if (artist != null) {
             artistRepository.delete(artistId);
             artistFileRepository.delete(artistId);
+            artistDatabaseRepository.delete(artistId);
             return true;
         } else {
             return false;
@@ -104,11 +126,12 @@ public class ArtistService {
      * @param artist The artist whose events are to be retrieved.
      * @return A list of events that involve the specified artist, filtered by Concert events.
      */
-    public List<Event> getEventsByArtist(Artist artist) {
-        return eventRepository.getAll().stream().filter(event -> event instanceof Concert)  // Filter only Concert events
-                .filter(event -> ((Concert) event).getArtists().equals(artist))  // Match the artist
-                .collect(Collectors.toList());
-    }
+    // TODO needs to be rewritten
+//    public List<Event> getEventsByArtist(Artist artist) {
+//        return eventRepository.getAll().stream().filter(event -> event instanceof Concert)  // Filter only Concert events
+//                .filter(event -> ((Concert) event).getArtists().equals(artist))  // Match the artist
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * Finds all artists within a specific genre.

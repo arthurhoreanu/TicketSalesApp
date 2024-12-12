@@ -91,11 +91,15 @@ public class Artist implements Identifiable, FavouriteEntity {
      * @return an Artist object populated with data from the ResultSet.
      * @throws SQLException if an SQL error occurs.
      */
-    public static Artist fromDatabase(ResultSet rs) throws SQLException {
-        int artistID = rs.getInt("artistID");
-        String artistName = rs.getString("artistName");
-        String genre = rs.getString("genre");
-        return new Artist(artistID, artistName, genre);
+    public static Artist fromDatabase(ResultSet rs) {
+        try {
+            int artistID = rs.getInt("artistID");
+            String artistName = rs.getString("artistName");
+            String genre = rs.getString("genre");
+            return new Artist(artistID, artistName, genre);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error creating Artist from ResultSet", e);
+        }
     }
 
     /**
