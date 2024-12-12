@@ -1,5 +1,4 @@
 package model;
-// TODO IDK
 import controller.Controller;
 
 import java.sql.PreparedStatement;

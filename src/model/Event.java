@@ -1,7 +1,6 @@
 package model;
 
 import controller.Controller;
-//todo test ana are mere
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
