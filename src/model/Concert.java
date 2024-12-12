@@ -1,5 +1,4 @@
 package model;
-//todo test ana are mere
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
