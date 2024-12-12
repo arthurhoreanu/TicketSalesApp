@@ -18,11 +18,11 @@ public class SportsEvent extends Event {
      * @param eventDescription a description of the event
      * @param startDateTime   the start date and time of the event
      * @param endDateTime     the end date and time of the event
-     * @param venue           the venue where the event is held
+     * @param venueID           the venue where the event is held
      * @param eventStatus     the current status of the event (SCHEDULED, CANCELLED, COMPLETED)
      */
-    public SportsEvent(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus) {
-        super(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus);
+    public SportsEvent(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        super(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
     @Override
@@ -33,9 +33,10 @@ public class SportsEvent extends Event {
         stmt.setString(4, getEventDescription());
         stmt.setTimestamp(5, Timestamp.valueOf(getStartDateTime()));
         stmt.setTimestamp(6, Timestamp.valueOf(getEndDateTime()));
-        stmt.setInt(7, getVenue().getID());
+        stmt.setInt(7, getVenueID());
         stmt.setString(8, getEventStatus().name());
     }
+//todo test ana are mere
 
     /**
      * Returns a string representation of the sports event, including its athletes.
@@ -48,13 +49,14 @@ public class SportsEvent extends Event {
 
     @Override
     public String toCsv() {
+
         return getID() + "," +
                 "Sports Event," +
                 getEventName() + "," +
                 getEventDescription() + "," +
                 getStartDateTime() + "," +
                 getEndDateTime() + "," +
-                getVenue().getVenueName() + "," +
+                getVenueID() + "," +
                 getEventStatus() + ",";
     }
 }

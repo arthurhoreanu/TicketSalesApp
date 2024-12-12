@@ -1,4 +1,5 @@
 package model;
+//todo test ana are mere
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -18,11 +19,11 @@ public class Concert extends Event {
      * @param eventDescription a description of the concert
      * @param startDateTime    the start date and time of the concert
      * @param endDateTime      the end date and time of the concert
-     * @param venue            the venue where the concert takes place
+     * @param venueID            the venue where the concert takes place
      * @param eventStatus      the current status of the concert (SCHEDULED, CANCELLED, COMPLETED)
      */
-    public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus) {
-        super(eventID, eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus);
+    public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        super(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class Concert extends Event {
         stmt.setString(4, getEventDescription());
         stmt.setTimestamp(5, Timestamp.valueOf(getStartDateTime()));
         stmt.setTimestamp(6, Timestamp.valueOf(getEndDateTime()));
-        stmt.setInt(7, getVenue().getID());
+        stmt.setInt(7, getVenueID());
         stmt.setString(8, getEventStatus().name());
     }
 
@@ -54,7 +55,7 @@ public class Concert extends Event {
                 getEventDescription() + "," +
                 getStartDateTime() + "," +
                 getEndDateTime() + "," +
-                getVenue().getVenueName() + "," +
+                getVenueID() + "," +
                 getEventStatus();
     }
 
