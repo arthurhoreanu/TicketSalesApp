@@ -12,16 +12,9 @@ import java.util.List;
  */
 public class Venue implements Identifiable {
 
-    /** The unique ID of the venue. */
     private int venueID;
-
-    /** The name of the venue. */
     private String venueName;
-
-    /** The location of the venue. */
     private String location;
-
-    /** The total capacity of the venue. */
     private int venueCapacity;
 
     /** Controller for dynamic data retrieval. */
