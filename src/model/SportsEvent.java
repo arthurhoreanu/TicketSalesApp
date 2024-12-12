@@ -36,6 +36,7 @@ public class SportsEvent extends Event {
         stmt.setInt(7, getVenueID());
         stmt.setString(8, getEventStatus().name());
     }
+//todo test ana are mere
 
     /**
      * Returns a string representation of the sports event, including its athletes.
