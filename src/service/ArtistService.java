@@ -1,17 +1,15 @@
 package service;
 
-import model.*;
-import repository.DBRepository;
+import model.Artist;
+import model.Event;
+
 import repository.FileRepository;
 import repository.IRepository;
+import repository.DBRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ArtistService {
     private final IRepository<Artist> artistRepository;
@@ -19,24 +17,17 @@ public class ArtistService {
     private final FileRepository<Artist> artistFileRepository;
     private final DBRepository<Artist> artistDatabaseRepository;
 
-    public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository, Connection databaseConnection) {
+    public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
         this.artistRepository = artistRepository;
         this.eventRepository = eventRepository;
         this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
         syncFromCsv();
-        this.artistDatabaseRepository = new DBRepository<>(databaseConnection, "artist", Artist::fromDatabase);
-        syncFromDatabase();
+        EntityManagerFactory entityManagerFactory = null;
+        this.artistDatabaseRepository = new DBRepository<>(entityManagerFactory, Artist.class);
     }
 
     private void syncFromCsv() {
         List<Artist> artists = artistFileRepository.getAll();
-        for (Artist artist : artists) {
-            artistRepository.create(artist);
-        }
-    }
-
-    private void syncFromDatabase() {
-        List<Artist> artists = artistDatabaseRepository.getAll();
         for (Artist artist : artists) {
             artistRepository.create(artist);
         }
@@ -49,7 +40,7 @@ public class ArtistService {
      * @return true if the artist was successfully created and added to the repository, false otherwise.
      */
     public boolean createArtist(String artistName, String genre) {
-        int newID = artistRepository.getAll().size() + 1;  // Generate unique ID based on the current size
+        int newID = artistRepository.getAll().size() + 1;
         Artist artist = new Artist(newID, artistName, genre);
         artistRepository.create(artist);
         artistFileRepository.create(artist);

@@ -164,35 +164,6 @@ public class Seat implements Identifiable {
     }
 
     /**
-     * Writes the Seat object to a database using a PreparedStatement.
-     *
-     * @param stmt the PreparedStatement for inserting the seat
-     * @throws SQLException if a database error occurs
-     */
-    @Override
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, this.seatID);
-        stmt.setInt(2, this.rowID);
-        stmt.setBoolean(3, this.isReserved);
-        stmt.setObject(4, this.reservedForEventID);
-    }
-
-    /**
-     * Creates a Seat object from a database ResultSet.
-     *
-     * @param rs the ResultSet containing seat data
-     * @return a new Seat object based on the ResultSet data
-     * @throws SQLException if a database error occurs
-     */
-    public static Seat fromDatabase(ResultSet rs) throws SQLException {
-        int seatID = rs.getInt("seatID");
-        int rowID = rs.getInt("rowID");
-        boolean isReserved = rs.getBoolean("isReserved");
-        Integer reservedForEventID = rs.getObject("reservedForEventID") != null ? rs.getInt("reservedForEventID") : null;
-        return new Seat(seatID, rowID, isReserved, reservedForEventID);
-    }
-
-    /**
      * Returns a string representation of the Seat, including its ID, row ID, reservation status,
      * and the associated event ID if reserved.
      *

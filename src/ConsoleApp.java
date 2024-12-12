@@ -7,14 +7,10 @@ import presentation.StartMenu;
 import repository.IRepository;
 import repository.InMemoryRepository;
 import service.*;
-
-import java.sql.Connection;
 import java.util.Scanner;
 
 public class ConsoleApp {
     public static void main(String[] args) {
-
-        Connection databaseConnection = null;
 
         // Instantiate repositories
         IRepository<User> userRepository = new InMemoryRepository<>();
@@ -35,7 +31,7 @@ public class ConsoleApp {
         SectionService sectionService = new SectionService(seatService, sectionRepository, seatRepository);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
-        ArtistService artistService = new ArtistService(artistRepository, eventRepository, databaseConnection);
+        ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
         TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
         ShoppingCartService shoppingCartService = new ShoppingCartService(shoppingCartRepository, orderRepository, customerService);

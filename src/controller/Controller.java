@@ -96,8 +96,9 @@ public class Controller {
         return artistController.findArtistByName(artistName);}
     public Artist findArtistByID(int artistId) {
         return artistController.findArtistByID(artistId); }
-    public List<Event> getEventsByArtist(Artist artist) {
-        return artistController.getEventsByArtist(artist);}
+    // Arthur's TODO
+//    public List<Event> getEventsByArtist(Artist artist) {
+//        return artistController.getEventsByArtist(artist);}
 
     // Seat related
     public void createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {

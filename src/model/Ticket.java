@@ -117,37 +117,6 @@ public class Ticket implements Identifiable {
     }
 
     @Override
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, this.ticketID);
-        stmt.setInt(2, this.eventID);
-        stmt.setInt(3, this.sectionID);
-        stmt.setInt(4, this.seatID);
-        stmt.setDouble(5, this.price);
-        stmt.setString(6, this.ticketType.name());
-        stmt.setBoolean(7, this.isSold);
-        stmt.setString(8, this.purchaserName == null ? "null" : this.purchaserName);
-        stmt.setObject(9, this.purchaseDate == null ? "null" : this.purchaseDate.toString());
-    }
-
-    public static Ticket fromDatabase(ResultSet rs) throws SQLException {
-        int ticketID = rs.getInt("ticketID");
-        int eventID = rs.getInt("eventID");
-        int sectionID = rs.getInt("sectionID");
-        int seatID = rs.getInt("seatID");
-        double price = rs.getDouble("price");
-        TicketType ticketType = TicketType.valueOf(rs.getString("ticketType"));
-        boolean isSold = rs.getBoolean("isSold");
-        String purchaserName = rs.getString("purchaserName");
-        LocalDateTime purchaseDate = rs.getTimestamp("purchaseDate") != null ? rs.getTimestamp("purchaseDate").toLocalDateTime() : null;
-
-        Ticket ticket = new Ticket(ticketID, eventID, sectionID, seatID, price, ticketType);
-        ticket.setSold(isSold);
-        ticket.setPurchaserName(purchaserName);
-        ticket.setPurchaseDate(purchaseDate);
-        return ticket;
-    }
-
-    @Override
     public Integer getID() {
         return ticketID;
     }
