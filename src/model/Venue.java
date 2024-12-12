@@ -36,20 +36,6 @@ public class Venue implements Identifiable {
     }
 
     /**
-     * Constructs a Venue for in-memory operations, where the ID will be assigned externally.
-     *
-     * @param venueName     the name of the venue
-     * @param location      the location of the venue
-     * @param venueCapacity the total capacity of the venue
-     */
-    public Venue(String venueName, String location, int venueCapacity) {
-        this.venueID = 0; // Default ID, to be set externally
-        this.venueName = venueName;
-        this.location = location;
-        this.venueCapacity = venueCapacity;
-    }
-
-    /**
      * Retrieves the unique ID of the venue.
      *
      * @return the ID of the venue

@@ -12,19 +12,9 @@ import java.util.List;
  * A row can dynamically fetch its associated seats and parent section using provided methods.
  */
 public class Row implements Identifiable {
-    /**
-     * Unique identifier for the row.
-     */
+
     private int rowID;
-
-    /**
-     * The capacity of the row, representing the number of seats it can hold.
-     */
     private int rowCapacity;
-
-    /**
-     * The ID of the section that this row belongs to.
-     */
     private int sectionID;
 
     /**
@@ -45,20 +35,6 @@ public class Row implements Identifiable {
         this.rowCapacity = rowCapacity;
         this.sectionID = sectionID;
     }
-
-    /**
-     * Constructs a Row object without a predefined ID.
-     * This constructor is typically used for in-memory operations where the ID will be assigned later.
-     *
-     * @param rowCapacity The capacity of the row.
-     * @param sectionID   The ID of the section that this row belongs to.
-     */
-    public Row(int rowCapacity, int sectionID) {
-        this.rowID = 0; // Default ID, to be set externally
-        this.rowCapacity = rowCapacity;
-        this.sectionID = sectionID;
-    }
-
     /**
      * Retrieves the unique ID of the row.
      *
