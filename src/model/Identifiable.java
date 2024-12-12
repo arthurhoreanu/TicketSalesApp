@@ -20,8 +20,4 @@ public interface Identifiable {
         return null;
     }
 
-    void toDatabase(PreparedStatement stmt) throws SQLException;
-    static <T> T fromDatabase(ResultSet rs) throws SQLException {
-        return null;
-    }
 }

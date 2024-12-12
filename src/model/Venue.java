@@ -148,35 +148,6 @@ public class Venue implements Identifiable {
     }
 
     /**
-     * Saves the venue's attributes to the database using a prepared statement.
-     *
-     * @param stmt the {@link PreparedStatement} to use for saving the venue
-     * @throws SQLException if an SQL error occurs
-     */
-    @Override
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, venueID);
-        stmt.setString(2, venueName);
-        stmt.setString(3, location);
-        stmt.setInt(4, venueCapacity);
-    }
-
-    /**
-     * Creates a Venue object from a database result set.
-     *
-     * @param rs the {@link ResultSet} containing the venue's data
-     * @return a {@link Venue} object with the data from the database
-     * @throws SQLException if an SQL error occurs
-     */
-    public static Venue fromDatabase(ResultSet rs) throws SQLException {
-        int venueID = rs.getInt("venueID");
-        String venueName = rs.getString("venueName");
-        String location = rs.getString("location");
-        int venueCapacity = rs.getInt("venueCapacity");
-        return new Venue(venueID, venueName, location, venueCapacity);
-    }
-
-    /**
      * Returns a string representation of the venue's attributes.
      *
      * @return a string representation of the venue

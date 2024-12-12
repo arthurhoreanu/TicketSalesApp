@@ -139,33 +139,6 @@ public class Row implements Identifiable {
     }
 
     /**
-     * Saves the Row object to a database using a PreparedStatement.
-     *
-     * @param stmt The PreparedStatement for saving the row data.
-     * @throws SQLException If a database error occurs.
-     */
-    @Override
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, rowID);
-        stmt.setInt(2, rowCapacity);
-        stmt.setInt(3, sectionID);
-    }
-
-    /**
-     * Creates a Row object from a database ResultSet.
-     *
-     * @param rs The ResultSet containing row data.
-     * @return The deserialized Row object.
-     * @throws SQLException If a database error occurs.
-     */
-    public static Row fromDatabase(ResultSet rs) throws SQLException {
-        int rowID = rs.getInt("rowID");
-        int rowCapacity = rs.getInt("rowCapacity");
-        int sectionID = rs.getInt("sectionID");
-        return new Row(rowID, rowCapacity, sectionID);
-    }
-
-    /**
      * Provides a string representation of the Row object, including its ID, capacity, and associated section ID.
      *
      * @return A string representation of the row.

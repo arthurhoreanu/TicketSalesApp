@@ -164,35 +164,6 @@ public class Section implements Identifiable {
     }
 
     /**
-     * Saves this section to a database using a prepared statement.
-     *
-     * @param stmt the PreparedStatement for inserting the section
-     * @throws SQLException if a database error occurs
-     */
-    @Override
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, sectionID);
-        stmt.setString(2, sectionName);
-        stmt.setInt(3, sectionCapacity);
-        stmt.setInt(4, venueID);
-    }
-
-    /**
-     * Creates a Section object from a database result set.
-     *
-     * @param rs the ResultSet containing section data
-     * @return the deserialized Section object
-     * @throws SQLException if a database error occurs
-     */
-    public static Section fromDatabase(ResultSet rs) throws SQLException {
-        int sectionID = rs.getInt("sectionID");
-        String sectionName = rs.getString("sectionName");
-        int sectionCapacity = rs.getInt("sectionCapacity");
-        int venueID = rs.getInt("venueID");
-        return new Section(sectionID, sectionName, sectionCapacity, venueID);
-    }
-
-    /**
      * Returns a string representation of the section, including its ID, name, capacity, and associated venue ID.
      *
      * @return a string representing the section
