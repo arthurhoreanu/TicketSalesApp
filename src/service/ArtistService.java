@@ -8,6 +8,7 @@ import repository.IRepository;
 import repository.DBRepository;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ArtistService {
         this.eventRepository = eventRepository;
         this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
         syncFromCsv();
-        EntityManagerFactory entityManagerFactory = null;
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
         this.artistDatabaseRepository = new DBRepository<>(entityManagerFactory, Artist.class);
     }
 

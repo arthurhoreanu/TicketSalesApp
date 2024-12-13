@@ -1,5 +1,6 @@
 package model;
 
+import javax.persistence.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,9 +8,20 @@ import java.sql.SQLException;
 /**
  * Represents an athlete with an ID, name, and sport. Implements Identifiable and FavouriteEntity interfaces.
  */
+@Entity
+@Table(name = "athlete")
 public class Athlete implements Identifiable, FavouriteEntity {
+
+    protected Athlete() {}
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int athleteID;
+
+    @Column(name = "athleteName", nullable = false)
     private String athleteName;
+
+    @Column(name = "athleteSport", nullable = false)
     private String athleteSport;
 
     /**
