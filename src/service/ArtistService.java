@@ -25,10 +25,18 @@ public class ArtistService {
         syncFromCsv();
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
         this.artistDatabaseRepository = new DBRepository<>(entityManagerFactory, Artist.class);
+        syncFromDatabase();
     }
 
     private void syncFromCsv() {
         List<Artist> artists = artistFileRepository.getAll();
+        for (Artist artist : artists) {
+            artistRepository.create(artist);
+        }
+    }
+
+    private void syncFromDatabase() {
+        List<Artist> artists = artistDatabaseRepository.getAll();
         for (Artist artist : artists) {
             artistRepository.create(artist);
         }

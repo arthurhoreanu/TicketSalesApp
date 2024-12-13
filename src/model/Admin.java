@@ -1,12 +1,15 @@
 package model;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import javax.persistence.*;
 
 /**
  * Represents an admin user with specific access privileges.
  */
+@Entity
+@Table(name = "admin")
 public class Admin extends User {
+
+    protected Admin() {}
 
     /**
      * Constructs an Admin with the specified user details.
@@ -19,12 +22,28 @@ public class Admin extends User {
         super(userID, username, email, password);
     }
 
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, getID());
-        stmt.setString(2, "Admin");
-        stmt.setString(3, getUsername());
-        stmt.setString(4, getEmail());
-        stmt.setString(5, getPassword());
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int getAdminID() {
+        return super.getID();
+    }
+
+    @Override
+    @Column(name = "username", nullable = false)
+    public String getUsername() {
+        return super.getUsername();
+    }
+
+    @Override
+    @Column(name = "email", nullable = false)
+    public String getEmail() {
+        return super.getEmail();
+    }
+
+    @Override
+    @Column(name = "password", nullable = false)
+    public String getPassword() {
+        return super.getPassword();
     }
 
     /**
@@ -33,7 +52,7 @@ public class Admin extends User {
      */
     @Override
     public String toString() {
-        return "Admin{" + "role='" + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
+        return "Admin{" + ", username='" + username + '\'' + ", password='" + password + '\'' + '}';
     }
 
     /**
@@ -45,6 +64,23 @@ public class Admin extends User {
      */
     @Override
     public String toCsv() {
-        return getID() + "," + "Admin," + getUsername() + "," + getEmail() + "," + getPassword();
+        return getID() + getUsername() + "," + getEmail() + "," + getPassword();
     }
+
+    /**
+     * Parses a CSV-formatted string and creates an Admin object.
+     * The string is expected to contain fields for the admin's ID, username, email, and password.
+     * Format: {ID,username,email,password}.
+     * @param csvLine The CSV-formatted string representing an admin.
+     * @return An Admin object parsed from the input string.
+     */
+    public static Admin fromCsv(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int id = Integer.parseInt(fields[0].trim());
+        String username = fields[1].trim();
+        String email = fields[2].trim();
+        String password = fields[3].trim();
+        return new Admin(id, username, email, password);
+    }
+
 }
