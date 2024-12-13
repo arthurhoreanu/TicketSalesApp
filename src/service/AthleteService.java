@@ -3,9 +3,12 @@ package service;
 import model.Athlete;
 import model.Event;
 import model.SportsEvent;
+import repository.DBRepository;
 import repository.FileRepository;
 import repository.IRepository;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,13 +17,20 @@ public class AthleteService {
     private final IRepository<Athlete> athleteRepository;
     private final IRepository<Event> eventRepository;
     private final FileRepository<Athlete> athleteFileRepository;
+    private final DBRepository<Athlete> athleteDatabaseRepository;
 
     public AthleteService(IRepository<Athlete> athleteRepository, IRepository<Event> eventRepository) {
         this.athleteRepository = athleteRepository;
         this.eventRepository = eventRepository;
         this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
-        List<Athlete> athletesFromFile = athleteFileRepository.getAll();
-        for (Athlete athlete : athletesFromFile) {
+        syncFromCsv();
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
+        this.athleteDatabaseRepository = new DBRepository<>(entityManagerFactory, Athlete.class);
+    }
+
+    private void syncFromCsv() {
+        List<Athlete> athletes = athleteRepository.getAll();
+        for (Athlete athlete : athletes) {
             athleteRepository.create(athlete);
         }
     }
@@ -36,6 +46,7 @@ public class AthleteService {
         Athlete athlete = new Athlete(newID, athleteName, genre);
         athleteRepository.create(athlete);
         athleteFileRepository.create(athlete);
+        athleteDatabaseRepository.create(athlete);
         return true;
     }
 
@@ -53,6 +64,7 @@ public class AthleteService {
             athlete.setAthleteSport(newGenre);
             athleteRepository.update(athlete);
             athleteFileRepository.update(athlete);
+            athleteDatabaseRepository.update(athlete);
             return true;
         } else {
             return false;
@@ -69,6 +81,7 @@ public class AthleteService {
         if (athlete != null) {
             athleteRepository.delete(athelteID);
             athleteFileRepository.delete(athelteID);
+            athleteDatabaseRepository.delete(athelteID);
             return true;
         } else {
             return false;
@@ -106,11 +119,12 @@ public class AthleteService {
      * @param athlete The athlete whose events are to be retrieved.
      * @return A list of events that involve the specified athlete, filtered by SportsEvent.
      */
-    public List<Event> getEventsByAthlete(Athlete athlete) {
-        return eventRepository.getAll().stream().filter(event -> event instanceof SportsEvent)  // Filter only Sports events
-                .filter(event -> ((SportsEvent) event).getAthletes().equals(athlete))  // Match the athlete
-                .collect(Collectors.toList());
-    }
+    // Arthur's TODO
+//    public List<Event> getEventsByAthlete(Athlete athlete) {
+//        return eventRepository.getAll().stream().filter(event -> event instanceof SportsEvent)  // Filter only Sports events
+//                .filter(event -> ((SportsEvent) event).getAthletes().equals(athlete))  // Match the athlete
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * Finds all athletes participating in a specific sport.
