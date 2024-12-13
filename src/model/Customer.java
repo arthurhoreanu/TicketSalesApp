@@ -1,7 +1,6 @@
 package model;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,10 +10,20 @@ import java.util.ArrayList;
 /**
  * Represents a customer user with specific preferences, favourites, and a shopping cart.
  */
+@Entity
+@Table(name = "customer")
 public class Customer extends User {
+
+    @Transient
     private Set<FavouriteEntity> favourites;
+
+    @Transient
     private ShoppingCart shoppingCart;
+
+    @Transient
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
+
+    protected Customer() {}
 
     /**
      * Constructs a Customer with the specified user details and initializes default values.
@@ -28,6 +37,30 @@ public class Customer extends User {
         this.favourites = new HashSet<>();
         this.shoppingCart = new ShoppingCart(userId, new ArrayList<>(), 0.0); // Initialize with customer's ID
         this.preferredSections = new HashMap<>();
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int getCustomerID() {
+        return super.getID();
+    }
+
+    @Override
+    @Column(name = "username", nullable = false)
+    public String getUsername() {
+        return super.getUsername();
+    }
+
+    @Override
+    @Column(name = "email", nullable = false)
+    public String getEmail() {
+        return super.getEmail();
+    }
+
+    @Override
+    @Column(name = "password", nullable = false)
+    public String getPassword() {
+        return super.getPassword();
     }
 
     /**
@@ -72,14 +105,6 @@ public class Customer extends User {
         return preferredSections;
     }
 
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, getID());
-        stmt.setString(2, "Customer");
-        stmt.setString(3, getUsername());
-        stmt.setString(4, getEmail());
-        stmt.setString(5, getPassword());
-    }
-
     /**
      * Returns a string representation of the customer, including role, username, password, favourites, and preferred sections.
      * @return a string representing the customer's details
@@ -103,6 +128,23 @@ public class Customer extends User {
      */
     @Override
     public String toCsv() {
-        return getID() + "," + "Customer," + getUsername() + "," + getEmail() + "," + getPassword();
+        return getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
     }
+
+    /**
+     * Parses a CSV-formatted string and creates a Customer object.
+     * The string is expected to contain fields for the customer's ID, username, email, and password.
+     * Format: {ID,username,email,password}.
+     * @param csvLine The CSV-formatted string representing a customer.
+     * @return A Customer object parsed from the input string.
+     */
+    public static Customer fromCsv(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int id = Integer.parseInt(fields[0].trim());
+        String username = fields[1].trim();
+        String email = fields[2].trim();
+        String password = fields[3].trim();
+        return new Customer(id, username, email, password);
+    }
+
 }

@@ -3,24 +3,54 @@ package service;
 import model.Admin;
 import model.Customer;
 import model.User;
+import repository.DBRepository;
 import repository.FileRepository;
 import repository.IRepository;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.List;
 
 public class AccountService {
     private final IRepository<User> userIRepository;
     private final CustomerService customerService;
     private User currentUser;
-    private final FileRepository<User> userFileRepository;
+    private final FileRepository<Admin> adminFileRepository;
+    private final FileRepository<Customer> customerFileRepository;
+    private final DBRepository<Admin> adminDatabaseRepository;
+    private final DBRepository<Customer> customerDatabaseRepository;
 
     public AccountService(IRepository<User> userRepository, CustomerService customerService) {
         this.userIRepository = userRepository;
         this.customerService = customerService;
-        this.userFileRepository = new FileRepository<>("src/repository/data/users.csv", User::fromCsv);
-        List<User> usersFromFile = userFileRepository.getAll();
-        for (User user : usersFromFile) {
-            userRepository.create(user);
+        this.adminFileRepository = new FileRepository<>("src/repository/data/admins.csv", Admin::fromCsv);
+        this.customerFileRepository = new FileRepository<>("src/repository/data/customers.csv", Customer::fromCsv);
+        syncFromCsv();
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
+        this.adminDatabaseRepository = new DBRepository<>(entityManagerFactory, Admin.class);
+        this.customerDatabaseRepository = new DBRepository<>(entityManagerFactory, Customer.class);
+        syncFromDatabase();
+    }
+
+    private void syncFromCsv() {
+        List<Admin> admins = adminFileRepository.getAll();
+        List<Customer> customers = customerFileRepository.getAll();
+        for (Admin admin : admins) {
+            userIRepository.create(admin);
+        }
+        for (Customer customer : customers) {
+            userIRepository.create(customer);
+        }
+    }
+
+    private void syncFromDatabase() {
+        List<Admin> admins = adminDatabaseRepository.getAll();
+        for (Admin admin : admins) {
+            userIRepository.create(admin);
+        }
+        List<Customer> customers = customerDatabaseRepository.getAll();
+        for (Customer customer : customers) {
+            userIRepository.create(customer);
         }
     }
 
@@ -75,21 +105,21 @@ public class AccountService {
         if (takenUsername(username)) {
             return false;
         }
-        // Generate a new unique ID for the user
         int newID = userIRepository.getAll().size() + 1;
-        // Create the new user based on the specified role
-        User newUser = null;
         if ("Customer".equalsIgnoreCase(role)) {
-            newUser = new Customer(newID, username, email, password);
+            Customer customer = new Customer(newID, username, email, password);
+            userIRepository.create(customer);
+            customerFileRepository.create(customer);
+            customerDatabaseRepository.create(customer);
+            return true;
         } else if ("Admin".equalsIgnoreCase(role) && domainEmail(email)) {
-            newUser = new Admin(newID, username, email, password);
-        }
-        if (newUser != null) {
-            userIRepository.create(newUser);
-            userFileRepository.create(newUser);
+            Admin admin = new Admin(newID, username, email, password);
+            userIRepository.create(admin);
+            adminFileRepository.create(admin);
+            adminDatabaseRepository.create(admin);
             return true;
         }
-        return false; // If role is invalid or user creation failed
+        return false;
     }
 
 
@@ -136,25 +166,21 @@ public class AccountService {
      * @return true if the account was deleted successfully, false if the user was not found or the current user is not an admin.
      */
     public boolean deleteAccount(int id) {
-        // Check if the current user is an admin
         if (currentUser == null || !(currentUser instanceof Admin)) {
-            return false; // Not an admin
+            return false;
         }
-
-        // Check if the user with the specified ID exists
-        boolean found = false;
-        for (User user : userIRepository.getAll()) {
-            if (user.getID() == id) {
-                found = true;
-                break;
-            }
-        }
-        // Delete if found
-        if (found) {
+        User userToDelete = userIRepository.read(id);
+        if (userToDelete != null) {
             userIRepository.delete(id);
-            userFileRepository.delete(id);
-            return true; // Deletion successful
+            if (userToDelete instanceof Admin) {
+                adminFileRepository.delete(id);
+                adminDatabaseRepository.delete(id);
+            } else if (userToDelete instanceof Customer) {
+                customerFileRepository.delete(id);
+                customerDatabaseRepository.delete(id);
+            }
+            return true;
         }
-        return false; // User not found
+        return false;
     }
 }

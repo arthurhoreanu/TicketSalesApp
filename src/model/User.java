@@ -1,5 +1,6 @@
 package model;
 
+import javax.persistence.MappedSuperclass;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -7,11 +8,14 @@ import java.sql.SQLException;
  * Represents a general user in the system, containing basic information such as ID, username, email, and password.
  * This class serves as a base for more specific user types (e.g., Admin, Customer).
  */
+@MappedSuperclass
 public abstract class User implements Identifiable {
     private int userID;
     protected String username;
     private String email;
     protected String password;
+
+    protected User() {}
 
     /**
      * Constructs a User with the specified ID, username, email, and password.
@@ -61,31 +65,6 @@ public abstract class User implements Identifiable {
     }
 
     /**
-     * Parses a ResultSet and creates a corresponding User object.
-     * The ResultSet is expected to contain fields for the user's ID, type, username, email, and password.
-     * Supported user types: Admin and Customer.
-     * @param rs The ResultSet containing user data.
-     * @return A User object parsed from the ResultSet.
-     * @throws SQLException If an error occurs while accessing the ResultSet.
-     * @throws IllegalArgumentException If the user type in the ResultSet is unsupported.
-     */
-    public static User fromDatabase(ResultSet rs) throws SQLException {
-        int id = rs.getInt("userID");
-        String type = rs.getString("type").trim();
-        String username = rs.getString("username").trim();
-        String email = rs.getString("email").trim();
-        String password = rs.getString("password").trim();
-        switch (type) {
-            case "Admin":
-                return new Admin(id, username, email, password);
-            case "Customer":
-                return new Customer(id, username, email, password);
-            default:
-                throw new IllegalArgumentException("Unknown user type: " + type);
-        }
-    }
-
-    /**
      * Returns a string representation of the user, displaying the user's ID, username, email, and password.
      * @return a string containing the user details
      */
@@ -94,29 +73,4 @@ public abstract class User implements Identifiable {
         return "User [userId=" + userID + ", username=" + username + ", password=" + password + ", email=" + email + "}";
     }
 
-    /**
-     * Parses a CSV-formatted string and creates a corresponding User object.
-     * The string is expected to contain fields for the user's ID, type, username, email, and password.
-     * Supported user types: Admin and Customer.
-     * @param csvLine The CSV-formatted string representing a user.
-     *                Format: {ID,type,username,email,password}.
-     * @return A User object parsed from the input string.
-     * @throws IllegalArgumentException If the user type in the CSV line is unsupported.
-     */
-    public static User fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int id = Integer.parseInt(fields[0].trim());
-        String type = fields[1].trim();
-        String username = fields[2].trim();
-        String email = fields[3].trim();
-        String password = fields[4].trim();
-        switch (type) {
-            case "Admin":
-                return new Admin(id, username, email, password);
-            case "Customer":
-                return new Customer(id, username, email, password);
-            default:
-                throw new IllegalArgumentException("Unknown user type: " + type);
-        }
-    }
 }

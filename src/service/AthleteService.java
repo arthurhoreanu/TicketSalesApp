@@ -26,9 +26,17 @@ public class AthleteService {
         syncFromCsv();
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
         this.athleteDatabaseRepository = new DBRepository<>(entityManagerFactory, Athlete.class);
+        syncFromDatabase();
     }
 
     private void syncFromCsv() {
+        List<Athlete> athletes = athleteRepository.getAll();
+        for (Athlete athlete : athletes) {
+            athleteRepository.create(athlete);
+        }
+    }
+
+    private void syncFromDatabase() {
         List<Athlete> athletes = athleteRepository.getAll();
         for (Athlete athlete : athletes) {
             athleteRepository.create(athlete);
