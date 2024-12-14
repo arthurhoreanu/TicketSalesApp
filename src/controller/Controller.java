@@ -76,11 +76,6 @@ public class Controller {
         return athleteController.findAthleteByName(athleteName);}
     public Athlete findAthleteByID(int athleteID) {
         return athleteController.findAthleteByID(athleteID); }
-    public List<Event> getEventsByAthlete(Athlete athlete) {
-        return athleteController.getEventsByAthlete(athlete);}
-    // TODO
-//    public List<Event> getsEventByVenue(Venue venue) {
-//        return eventController.getEventsByVenue(venue);}
 
     //Artist related
     public List<Artist> findArtistsByGenre(String genre) {
@@ -97,9 +92,6 @@ public class Controller {
         return artistController.findArtistByName(artistName);}
     public Artist findArtistByID(int artistId) {
         return artistController.findArtistByID(artistId); }
-    // Arthur's TODO
-//    public List<Event> getEventsByArtist(Artist artist) {
-//        return artistController.getEventsByArtist(artist);}
 
     // Seat related
     public void createSeat(int seatID, Section section, int rowNumber, int seatNumber, Event reservedForEvent) {
@@ -207,9 +199,8 @@ public class Controller {
     }
     public Event findEventByID(int eventId) {
         return eventController.findEventByID(eventId);}
-    // TODO
-//    public List<Event> getEventsByLocation(String locationOrVenueName) {
-//        return eventController.getEventsByLocation(locationOrVenueName);}
+    public List<Event> getEventsByLocation(String locationOrVenueName) {
+        return eventController.getEventsByLocation(locationOrVenueName);}
     public List<Event> getUpcomingEventsForArtist(int artistID) {
         return eventController.getUpcomingEventsForArtist(artistID);}
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {

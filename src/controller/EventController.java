@@ -110,15 +110,6 @@ public class EventController {
 //    }
 
     /**
-     * Retrieves events taking place at a specified venue.
-     * @param venue The venue to retrieve events for.
-     * @return A list of events taking place at the specified venue.
-     */
-//    public List<Event> getEventsByVenue(Venue venue) {
-//        return eventService.getEventsByVenue(venue);
-//    }
-
-    /**
      * Retrieves upcoming events for a specific artist.
      * @param artistID The ID of the artist.
      * @return A list of upcoming events featuring the specified artist.
@@ -142,9 +133,9 @@ public class EventController {
      * @param locationOrVenueName The name of the location or venue.
      * @return A list of upcoming events at the specified location or venue.
      */
-//    public List<Event> getEventsByLocation(String locationOrVenueName) {
-//        return eventService.getEventsByLocation(locationOrVenueName);
-//    }
+    public List<Event> getEventsByLocation(String locationOrVenueName) {
+        return eventService.getEventsByLocation(locationOrVenueName);
+    }
 
     /**
      * Finds an event by its ID.

@@ -122,17 +122,6 @@ public class AthleteService {
         return athleteRepository.getAll().stream().filter(athlete -> athlete.getAthleteName().equalsIgnoreCase(athleteName)).findFirst().orElse(null);
     }
 
-    /**
-     * Retrieves a list of events associated with a specific athlete.
-     * @param athlete The athlete whose events are to be retrieved.
-     * @return A list of events that involve the specified athlete, filtered by SportsEvent.
-     */
-    // Arthur's TODO
-//    public List<Event> getEventsByAthlete(Athlete athlete) {
-//        return eventRepository.getAll().stream().filter(event -> event instanceof SportsEvent)  // Filter only Sports events
-//                .filter(event -> ((SportsEvent) event).getAthletes().equals(athlete))  // Match the athlete
-//                .collect(Collectors.toList());
-//    }
 
     /**
      * Finds all athletes participating in a specific sport.
