@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Represents an athlete with an ID, name, and sport. Implements Identifiable and FavouriteEntity interfaces.
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 @Table(name = "athlete")
 public class Athlete implements Identifiable, FavouriteEntity {
 
-    protected Athlete() {}
+    public Athlete() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +24,17 @@ public class Athlete implements Identifiable, FavouriteEntity {
 
     @Column(name = "athleteSport", nullable = false)
     private String athleteSport;
+
+    @ManyToMany(mappedBy = "athletes")
+    private List<SportsEvent> sportsEvents;
+
+    public List<SportsEvent> getSportsEvents() {
+        return sportsEvents;
+    }
+
+    public void setSportsEvents(List<SportsEvent> sportsEvents) {
+        this.sportsEvents = sportsEvents;
+    }
 
     /**
      * Constructs an Athlete with the specified ID, name, and sport.
@@ -43,6 +55,10 @@ public class Athlete implements Identifiable, FavouriteEntity {
     @Override
     public Integer getID() {
         return this.athleteID;
+    }
+
+    public void setID(int id) {
+        this.athleteID = id; // Pentru Athlete
     }
 
     /**

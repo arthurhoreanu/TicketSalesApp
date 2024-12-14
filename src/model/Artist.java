@@ -1,6 +1,7 @@
 package model;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Represents an artist with an ID, name, and genre. Implements Identifiable and FavouriteEntity interfaces.
@@ -9,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "artist")
 public class Artist implements Identifiable, FavouriteEntity {
 
-    protected Artist() {}
+    public Artist() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +21,17 @@ public class Artist implements Identifiable, FavouriteEntity {
 
     @Column(name = "genre", nullable = false)
     private String genre;
+
+    @ManyToMany(mappedBy = "artists")
+    private List<Concert> concerts;
+
+    public List<Concert> getConcerts() {
+        return concerts;
+    }
+
+    public void setConcerts(List<Concert> concerts) {
+        this.concerts = concerts;
+    }
 
     /**
      * Constructs an Artist with the specified ID, name, and genre.
@@ -40,6 +52,10 @@ public class Artist implements Identifiable, FavouriteEntity {
     @Override
     public Integer getID() {
         return this.artistID;
+    }
+
+    public void setID(int id) {
+        this.artistID = id;
     }
 
     /**

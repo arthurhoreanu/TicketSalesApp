@@ -78,8 +78,9 @@ public class Controller {
         return athleteController.findAthleteByID(athleteID); }
     public List<Event> getEventsByAthlete(Athlete athlete) {
         return athleteController.getEventsByAthlete(athlete);}
-    public List<Event> getsEventByVenue(Venue venue) {
-        return eventController.getEventsByVenue(venue);}
+    // TODO
+//    public List<Event> getsEventByVenue(Venue venue) {
+//        return eventController.getEventsByVenue(venue);}
 
     //Artist related
     public List<Artist> findArtistsByGenre(String genre) {
@@ -195,26 +196,37 @@ public class Controller {
         return orderTicketsForEvent(customer, event);}
 
     // Event related
+    public boolean addArtistToConcert(int eventId, int artistId) {
+        return eventController.addArtistToConcert(eventId, artistId);
+    }
+    public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
+        return eventController.addAthleteToSportsEvent(eventId, athleteId);
+    }
+    public int getLastCreatedEventID() {
+        return  eventController.getLastCreatedEventID();
+    }
     public Event findEventByID(int eventId) {
         return eventController.findEventByID(eventId);}
-    public List<Event> getEventsByLocation(String locationOrVenueName) {
-        return eventController.getEventsByLocation(locationOrVenueName);}
+    // TODO
+//    public List<Event> getEventsByLocation(String locationOrVenueName) {
+//        return eventController.getEventsByLocation(locationOrVenueName);}
     public List<Event> getUpcomingEventsForArtist(int artistID) {
         return eventController.getUpcomingEventsForArtist(artistID);}
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
         return eventController.getUpcomingEventsForAthlete(athleteID);}
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Artist> artists) {
-        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);}
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Athlete> athletes) {
-        eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);}
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
     public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime,EventStatus newStatus) {
         eventController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);}
     public void deleteEvent(int eventId) {
         eventController.deleteEvent(eventId);}
     public List<Event> getAllEvents() {
         return eventController.getAllEvents();}
-    public boolean isEventSoldOut(Event event) {
-        return eventController.isEventSoldOut(event);}
+    // TODO
+//    public boolean isEventSoldOut(Event event) {
+//        return eventController.isEventSoldOut(event);}
 
     // Account related
     public User getCurrentUser() {

@@ -64,7 +64,7 @@ public class Admin extends User {
      */
     @Override
     public String toCsv() {
-        return getID() + getUsername() + "," + getEmail() + "," + getPassword();
+        return getID() + "," + getUsername() + "," + getEmail() + "," + getPassword();
     }
 
     /**
