@@ -44,25 +44,6 @@ public class Ticket implements Identifiable {
     }
 
     /**
-     * Constructs a Ticket for in-memory operations, where an ID will be assigned externally.
-     *
-     * @param eventID    the ID of the associated event
-     * @param sectionID  the ID of the associated section
-     * @param seatID     the ID of the associated seat
-     * @param price      the price of the ticket
-     * @param ticketType the type of the ticket (STANDARD, VIP, EARLY_ACCESS)
-     */
-    public Ticket(int eventID, int sectionID, int seatID, double price, TicketType ticketType) {
-        this.ticketID = 0; // Default ID, to be set externally
-        this.eventID = eventID;
-        this.sectionID = sectionID;
-        this.seatID = seatID;
-        this.price = price;
-        this.ticketType = ticketType;
-        this.isSold = false;
-    }
-
-    /**
      * Returns a string representation of the ticket, including ID, event, section, seat, price, and sale details.
      *
      * @return a string representing the ticket's details
@@ -193,7 +174,7 @@ public class Ticket implements Identifiable {
     public Seat getSeat() {
         return controller.findSeatByID(seatID);
     }
-
+    //todo in service
     /**
      * /**
      * Marks the ticket as sold and records the purchaser's name and purchase date.
