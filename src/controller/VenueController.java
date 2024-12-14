@@ -167,13 +167,14 @@ public class VenueController {
      * @param venue the venue to check for available seats
      * @param event the event for which seats are checked
      */
-    public void getAvailableSeatsList(Venue venue, Event event) {
-        List<Seat> availableSeats = venueService.getAvailableSeatsList(venue, event);
-        if (availableSeats.isEmpty()) {
-            System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
-        } else {
-            System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "':");
-            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSeatNumber()));
-        }
-    }
+    // TODO
+//    public void getAvailableSeatsList(Venue venue, Event event) {
+//        List<Seat> availableSeats = venueService.getAvailableSeatsList(venue, event);
+//        if (availableSeats.isEmpty()) {
+//            System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
+//        } else {
+//            System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "':");
+//            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSeatNumber()));
+//        }
+//    }
 }

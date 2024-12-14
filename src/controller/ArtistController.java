@@ -90,16 +90,6 @@ public class ArtistController {
     }
 
     /**
-     * Retrieves a list of events associated with a specific artist.
-     * @param artist The artist for whom to retrieve events.
-     * @return A list of events that feature the specified artist.
-     */
-    // Arthur's TODO
-//    public List<Event> getEventsByArtist(Artist artist) {
-//        return artistService.getEventsByArtist(artist);
-//    }
-
-    /**
      * Finds artists that match a specified genre.
      * @param genre The genre to filter artists by.
      * @return A list of artists who perform in the specified genre.

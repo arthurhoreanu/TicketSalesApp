@@ -1,6 +1,7 @@
 package service;
 
 import model.Artist;
+import model.Concert;
 import model.Event;
 
 import repository.FileRepository;
@@ -11,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArtistService {
     private final IRepository<Artist> artistRepository;
@@ -120,18 +122,6 @@ public class ArtistService {
     public Artist findArtistByName(String artistName) {
         return artistRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
     }
-
-    /**
-     * Retrieves a list of events associated with a specific artist.
-     * @param artist The artist whose events are to be retrieved.
-     * @return A list of events that involve the specified artist, filtered by Concert events.
-     */
-    // TODO needs to be rewritten
-//    public List<Event> getEventsByArtist(Artist artist) {
-//        return eventRepository.getAll().stream().filter(event -> event instanceof Concert)  // Filter only Concert events
-//                .filter(event -> ((Concert) event).getArtists().equals(artist))  // Match the artist
-//                .collect(Collectors.toList());
-//    }
 
     /**
      * Finds all artists within a specific genre.

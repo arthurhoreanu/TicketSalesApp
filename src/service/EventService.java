@@ -224,25 +224,6 @@ public class EventService {
 //    }
 
     /**
-     * Retrieves all events that take place at a specific venue.
-     * @param venue The venue where the events are happening.
-     * @return A list of events that take place at the specified venue.
-     */
-    // TODO
-//    public List<Event> getEventsByVenue(Venue venue) {
-//        List<Event> eventsAtVenue = new ArrayList<>();
-//        List<Event> allEvents = eventRepository.getAll();
-//
-//        for (Event event : allEvents) {
-//            if (event.getVenue().equals(venue)) {
-//                eventsAtVenue.add(event);
-//            }
-//        }
-//
-//        return eventsAtVenue;
-//    }
-
-    /**
      * Retrieves all upcoming events for a specific artist.
      * @param artistID The ID of the artist for whom to retrieve upcoming events.
      * @return A list of upcoming events featuring the specified artist.
@@ -275,22 +256,38 @@ public class EventService {
     }
 
     /**
+     * Retrieves all events that take place at a specific venue.
+     * @param venueID The venue where the events are happening.
+     * @return A list of events that take place at the specified venue.
+     */
+    public List<Event> getEventsByVenue(int venueID) {
+        List<Event> eventsAtVenue = new ArrayList<>();
+        List<Event> allEvents = eventRepository.getAll();
+        for (Event event : allEvents) {
+            if (event.getVenueID() == venueID) { // Comparăm venueID
+                eventsAtVenue.add(event);
+            }
+        }
+
+        return eventsAtVenue;
+    }
+
+    /**
      * Retrieves all upcoming events for venues located at a specific location or matching a specific venue name.
      * @param locationOrVenueName The location or venue name to search for.
      * @return A list of upcoming events scheduled at venues that match the location or venue name.
      */
-    // TODO
-//    public List<Event> getEventsByLocation(String locationOrVenueName) {
-//        List<Venue> matchingVenues = venueService.getVenuesByLocationOrName(locationOrVenueName);
-//
-//        List<Event> events = new ArrayList<>();
-//        for (Venue venue : matchingVenues) {
-//            for (Event event : getEventsByVenue(venue)) {
-//                if (event.getStartDateTime().isAfter(LocalDateTime.now())) {
-//                    events.add(event); // Only add upcoming events
-//                }
-//            }
-//        }
-//        return events;
-//    }
+    public List<Event> getEventsByLocation(String locationOrVenueName) {
+        List<Venue> matchingVenues = venueService.getVenuesByLocationOrName(locationOrVenueName);
+        List<Event> events = new ArrayList<>();
+        for (Venue venue : matchingVenues) {
+            int venueID = venue.getID();
+            for (Event event : getEventsByVenue(venueID)) {
+                if (event.getStartDateTime().isAfter(LocalDateTime.now())) {
+                    events.add(event);
+                }
+            }
+        }
+        return events;
+    }
 }

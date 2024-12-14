@@ -90,15 +90,6 @@ public class AthleteController {
     }
 
     /**
-     * Retrieves a list of events associated with a specific athlete.
-     * @param athlete The athlete for whom to retrieve events.
-     * @return A list of events that feature the specified athlete.
-     */
-    public List<Event> getEventsByAthlete(Athlete athlete) {
-        return athleteService.getEventsByAthlete(athlete);
-    }
-
-    /**
      * Finds athletes that match a specified sport.
      * @param sport The sport to filter athletes by.
      * @return A list of athletes who participate in the specified sport.
