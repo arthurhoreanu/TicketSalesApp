@@ -17,6 +17,10 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    public int getLastCreatedEventID() {
+        return eventService.getLastCreatedEventID();
+    }
+
     /**
      * Creates a new Concert event.
      * Displays a message indicating whether the creation was successful or not.
@@ -24,12 +28,11 @@ public class EventController {
      * @param eventDescription The description of the event.
      * @param startDateTime The start date and time of the event.
      * @param endDateTime The end date and time of the event.
-     * @param venue The venue where the event will take place.
+     * @param venueID The venue where the event will take place.
      * @param eventStatus The status of the event (e.g., Scheduled, Postponed).
-     * @param artists The list of artists participating in the concert.
      */
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Artist> artists) {
-        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
+    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         if (success) {
             System.out.println("Event created successfully");
         } else {
@@ -44,12 +47,11 @@ public class EventController {
      * @param eventDescription The description of the event.
      * @param startDateTime The start date and time of the event.
      * @param endDateTime The end date and time of the event.
-     * @param venue The venue where the event will take place.
+     * @param venueID The venue where the event will take place.
      * @param eventStatus The status of the event.
-     * @param athletes The list of athletes participating in the sports event.
      */
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, Venue venue, EventStatus eventStatus, List<Athlete> athletes) {
-        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
+    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         if (success) {
             System.out.println("Event created successfully");
         } else {
@@ -103,18 +105,18 @@ public class EventController {
      * @param event The event to be checked.
      * @return true if the event is sold out, otherwise false.
      */
-    public boolean isEventSoldOut(Event event) {
-        return eventService.isEventSoldOut(event);
-    }
+//    public boolean isEventSoldOut(Event event) {
+//        return eventService.isEventSoldOut(event);
+//    }
 
     /**
      * Retrieves events taking place at a specified venue.
      * @param venue The venue to retrieve events for.
      * @return A list of events taking place at the specified venue.
      */
-    public List<Event> getEventsByVenue(Venue venue) {
-        return eventService.getEventsByVenue(venue);
-    }
+//    public List<Event> getEventsByVenue(Venue venue) {
+//        return eventService.getEventsByVenue(venue);
+//    }
 
     /**
      * Retrieves upcoming events for a specific artist.
@@ -140,9 +142,9 @@ public class EventController {
      * @param locationOrVenueName The name of the location or venue.
      * @return A list of upcoming events at the specified location or venue.
      */
-    public List<Event> getEventsByLocation(String locationOrVenueName) {
-        return eventService.getEventsByLocation(locationOrVenueName);
-    }
+//    public List<Event> getEventsByLocation(String locationOrVenueName) {
+//        return eventService.getEventsByLocation(locationOrVenueName);
+//    }
 
     /**
      * Finds an event by its ID.
@@ -151,5 +153,13 @@ public class EventController {
      */
     public Event findEventByID(int eventId) {
         return eventService.findEventByID(eventId);
+    }
+
+    public boolean addArtistToConcert(int eventId, int artistId) {
+        return eventService.addArtistToConcert(eventId, artistId);
+    }
+
+    public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
+        return eventService.addAthleteToSportsEvent(eventId, athleteId);
     }
 }

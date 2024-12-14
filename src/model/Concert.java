@@ -1,5 +1,6 @@
 package model;
 
+import javax.persistence.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -9,7 +10,27 @@ import java.util.List;
 /**
  * Represents a concert event, which is a type of event featuring a list of artists.
  */
+@Entity
+@Table(name = "concert")
 public class Concert extends Event {
+
+    @ManyToMany
+    @JoinTable(
+            name = "lineup",
+            joinColumns = @JoinColumn(name = "eventid"),
+            inverseJoinColumns = @JoinColumn(name = "performerid")
+    )
+    private List<Artist> artists;
+
+    public List<Artist> getArtists() {
+        return artists;
+    }
+
+    public void setArtists(List<Artist> artists) {
+        this.artists = artists;
+    }
+
+    public Concert() {}
 
     /**
      * Constructs a Concert with the specified details and list of performing artists.
@@ -25,16 +46,46 @@ public class Concert extends Event {
         super(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int getConcertID() {
+        return super.getID();
+    }
+
     @Override
-    public void toDatabase(PreparedStatement stmt) throws SQLException {
-        stmt.setInt(1, getID());
-        stmt.setString(2, "Concert");
-        stmt.setString(3, getEventName());
-        stmt.setString(4, getEventDescription());
-        stmt.setTimestamp(5, Timestamp.valueOf(getStartDateTime()));
-        stmt.setTimestamp(6, Timestamp.valueOf(getEndDateTime()));
-        stmt.setInt(7, getVenueID());
-        stmt.setString(8, getEventStatus().name());
+    @Column(name = "eventname", nullable = false)
+    public String getEventName() {
+        return super.getEventName();
+    }
+
+    @Override
+    @Column(name = "eventdescription", nullable = false)
+    public String getEventDescription() {
+        return super.getEventDescription();
+    }
+
+    @Override
+    @Column(name = "startdatetime", nullable = false)
+    public LocalDateTime getStartDateTime() {
+        return super.getStartDateTime();
+    }
+
+    @Override
+    @Column(name = "enddatetime", nullable = false)
+    public LocalDateTime getEndDateTime() {
+        return super.getEndDateTime();
+    }
+
+    @Override
+    @Column(name = "venueid", nullable = false)
+    public int getVenueID() {
+        return super.getVenueID();
+    }
+
+    @Override
+    @Column(name = "eventstatus", nullable = false)
+    public EventStatus getEventStatus() {
+        return super.getEventStatus();
     }
 
     /**
@@ -49,13 +100,24 @@ public class Concert extends Event {
     @Override
     public String toCsv() {
         return getID() + "," +
-                "Concert," +
                 getEventName() + "," +
                 getEventDescription() + "," +
                 getStartDateTime() + "," +
                 getEndDateTime() + "," +
                 getVenueID() + "," +
                 getEventStatus();
+    }
+
+    public static Concert fromCsv(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int id = Integer.parseInt(fields[0]);
+        String eventName = fields[1];
+        String eventDescription = fields[2];
+        LocalDateTime startDateTime = LocalDateTime.parse(fields[3]);
+        LocalDateTime endDateTime = LocalDateTime.parse(fields[4]);
+        int venueID = Integer.parseInt(fields[5]);
+        EventStatus eventStatus = EventStatus.valueOf(fields[6]);
+        return new Concert(id, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
 }

@@ -75,53 +75,53 @@ public class AdminEventMenu {
         System.out.print("Enter venue name: ");
         String venueName = scanner.nextLine();
         Venue venue = controller.findVenueByName(venueName);
-
-        if (venue == null) {
-            venue = controller.findVenueByName(venueName);
-        }
+        int venueID = venue.getID();
         EventStatus eventStatus = EventStatus.SCHEDULED;
-        List<Ticket> tickets = new ArrayList<>();
-        List<Artist> artists = new ArrayList<>();
-        List<Athlete> athletes = new ArrayList<>();
 
         if ("Concert".equalsIgnoreCase(eventType)) {
-            while (true) {
-                System.out.print("Enter artist name (or type 'done' to finish): ");
-                String artistName = scanner.nextLine();
-
-                if ("done".equalsIgnoreCase(artistName)) {
-                    break;
-                }
-
-                Artist artist = controller.findArtistByName(artistName);
-                if (artist == null) {
-                    controller.createArtist(artistName, "No genre set.");
-                    System.out.println("New artist added to the repository: " + artistName);
-                    artist = controller.findArtistByName(artistName);
-                }
-                artists.add(artist);
-            }
-            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, artists);
+            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
+            int eventId = controller.getLastCreatedEventID();
+            handleAddArtistsToEvent(scanner, controller, eventId);
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
-            while (true) {
-                System.out.print("Enter athlete name (or type 'done' to finish): ");
-                String athleteName = scanner.nextLine();
-
-                if ("done".equalsIgnoreCase(athleteName)) {
-                    break;
-                }
-
-                Athlete athlete = controller.findAthleteByName(athleteName);
-                if (athlete == null) {
-                    controller.createAthlete(athleteName, "No sport set.");
-                    System.out.println("New athlete added to the repository: " + athleteName);
-                    athlete = controller.findAthleteByName(athleteName);
-                }
-                athletes.add(athlete);
-            }
-            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue, eventStatus, athletes);
+            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
+            int eventId = controller.getLastCreatedEventID();
+            handleAddAthletesToEvent(scanner, controller, eventId);
         } else {
             System.out.println("Invalid event type. Please enter 'Concert' or 'Sports Event'.");
+        }
+    }
+
+    private static void handleAddArtistsToEvent(Scanner scanner, Controller controller, int eventId) {
+        while (true) {
+            System.out.print("Enter artist name (or type 'done' to finish): ");
+            String artistName = scanner.nextLine();
+            if ("done".equalsIgnoreCase(artistName)) {
+                break;
+            }
+            Artist artist = controller.findArtistByName(artistName);
+            if (artist == null) {
+                controller.createArtist(artistName, "No genre set.");
+                artist = controller.findArtistByName(artistName);
+            }
+            controller.addArtistToConcert(eventId, artist.getID());
+            System.out.println("Artist " + artistName + " linked to event.");
+        }
+    }
+
+    private static void handleAddAthletesToEvent(Scanner scanner, Controller controller, int eventId) {
+        while (true) {
+            System.out.print("Enter athlete name (or type 'done' to finish): ");
+            String athleteName = scanner.nextLine();
+            if ("done".equalsIgnoreCase(athleteName)) {
+                break;
+            }
+            Athlete athlete = controller.findAthleteByName(athleteName);
+            if (athlete == null) {
+                controller.createAthlete(athleteName, "No sport set.");
+                athlete = controller.findAthleteByName(athleteName);
+            }
+            controller.addAthleteToSportsEvent(eventId, athlete.getID());
+            System.out.println("Athlete " + athleteName + " linked to event.");
         }
     }
 
