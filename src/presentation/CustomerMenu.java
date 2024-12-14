@@ -20,6 +20,9 @@ public class CustomerMenu {
      * @param controller the controller to handle customer-related actions
      * @return {@code true} to keep displaying the menu; {@code false} to exit the application
      */
+
+    //TODO MAKE A "SEE EVENT LIST", FROM THIS -> CHOOSE EVENT SPECIFICALLY AFTER ID -> SEE AVAILABLE TICKETS FOR THE EVENT -> CHOOSE TICKETS AND PUT THEM IN THE SHOPPING_CART
+    //TODO CHANGE "9. View recommended Seats"
     public static boolean display(Scanner scanner, Controller controller) {
         System.out.println("==== Customer Menu ====");
         System.out.println("1. Logout");
@@ -316,6 +319,7 @@ public class CustomerMenu {
      *                   the shopping cart. This includes retrieving the current user's shopping cart items,
      *                   as well as removing tickets by ID.
      */
+
     private static void handleManageShoppingCart(Scanner scanner, Controller controller) {
         boolean inCartMenu = true;
         while (inCartMenu) {
