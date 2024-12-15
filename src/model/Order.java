@@ -1,12 +1,33 @@
 package model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Represents an Order placed by a user, containing metadata like user ID, order date, and status.
+ */
+@Entity
+@Table(name = "order") // "order" is a reserved keyword in SQL
 public class Order implements Identifiable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderID;
-    private int userID; // ID of the user who placed the order
+
+    @Column(name = "user_id", nullable = false)
+    private int userID;
+
+    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
+
+    /**
+     * Default constructor for JPA and serialization.
+     */
+    public Order() {}
 
     /**
      * Constructs an Order with specified attributes.
@@ -26,16 +47,19 @@ public class Order implements Identifiable {
     /**
      * Constructs an Order with default status as PENDING and orderDate as current time.
      *
-     * @param orderID the unique ID of the order
-     * @param userID  the ID of the user who placed the order
+     * @param userID the ID of the user who placed the order
      */
-    public Order(int orderID, int userID) {
-        this(orderID, userID, LocalDateTime.now(), OrderStatus.PENDING);
+    public Order(int userID) {
+        this(0, userID, LocalDateTime.now(), OrderStatus.PENDING);
     }
 
     @Override
     public Integer getID() {
         return orderID;
+    }
+
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
 
     public int getUserID() {
@@ -72,11 +96,7 @@ public class Order implements Identifiable {
                 '}';
     }
 
-    /**
-     * Converts the Order to a CSV-formatted string.
-     *
-     * @return the CSV string
-     */
+    // CSV Methods
     public String toCsv() {
         return String.join(",",
                 String.valueOf(orderID),
@@ -86,12 +106,6 @@ public class Order implements Identifiable {
         );
     }
 
-    /**
-     * Creates an Order object from a CSV-formatted string.
-     *
-     * @param csvLine the CSV-formatted string
-     * @return the deserialized Order object
-     */
     public static Order fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int orderID = Integer.parseInt(fields[0].trim());

@@ -2,7 +2,7 @@ package model;
 
 import controller.Controller;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -11,51 +11,31 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 public abstract class Event implements Identifiable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
+
+    @Column(name = "event_name", nullable = false)
     private String eventName;
+
+    @Column(name = "event_description", nullable = false)
     private String eventDescription;
+
+    @Column(name = "start_date_time", nullable = false)
     private LocalDateTime startDateTime;
+
+    @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
-    private int venueID; // Foreign key to Venue
+
+    @Column(name = "venue_id", nullable = false)
+    private int venueID;
+
+    @Column(name = "event_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
-    static Controller controller = ControllerProvider.getController();
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
-
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startDateTime = startDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public void setVenueID(int venueID) {
-        this.venueID = venueID;
-    }
-
-    public void setEventStatus(EventStatus eventStatus) {
-        this.eventStatus = eventStatus;
-    }
 
     protected Event() {}
 
-    /**
-     * Constructs an Event with the specified details.
-     * @param eventID          the unique ID of the event
-     * @param eventName        the name of the event
-     * @param eventDescription a description of the event
-     * @param startDateTime    the start date and time of the event
-     * @param endDateTime      the end date and time of the event
-     * @param venueID          the ID of the venue where the event takes place
-     * @param eventStatus      the current status of the event (SCHEDULED, CANCELLED, COMPLETED)
-     */
     public Event(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
                  LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         this.eventID = eventID;
@@ -67,37 +47,57 @@ public abstract class Event implements Identifiable {
         this.eventStatus = eventStatus;
     }
 
-    /**
-     * Gets the unique ID of the event.
-     * @return the event ID
-     */
     @Override
     public Integer getID() {
-        return this.eventID;
+        return eventID;
     }
 
     public String getEventName() {
         return eventName;
     }
 
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
     public String getEventDescription() {
         return eventDescription;
+    }
+
+    public void setEventDescription(String eventDescription) {
+        this.eventDescription = eventDescription;
     }
 
     public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
     public LocalDateTime getEndDateTime() {
         return endDateTime;
+    }
+
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     public int getVenueID() {
         return venueID;
     }
 
+    public void setVenueID(int venueID) {
+        this.venueID = venueID;
+    }
+
     public EventStatus getEventStatus() {
         return eventStatus;
+    }
+
+    public void setEventStatus(EventStatus eventStatus) {
+        this.eventStatus = eventStatus;
     }
 
     /**

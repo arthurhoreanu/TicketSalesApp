@@ -11,14 +11,14 @@ import java.util.List;
  * Represents a sports event, extending the general Event class with a list of participating athletes.
  */
 @Entity
-@Table(name = "sportsevent")
+@Table(name = "sport_event")
 public class SportsEvent extends Event {
 
     @ManyToMany
     @JoinTable(
-            name = "lineup",
-            joinColumns = @JoinColumn(name = "eventid"),
-            inverseJoinColumns = @JoinColumn(name = "performerid")
+            name = "sport_event_lineup", // Tabelul de legătură specific pentru SportsEvent și Athlete
+            joinColumns = @JoinColumn(name = "event_id"), // Coloana care leagă SportsEvent
+            inverseJoinColumns = @JoinColumn(name = "athlete_id") // Coloana care leagă Athlete
     )
     private List<Athlete> athletes;
 
@@ -30,71 +30,19 @@ public class SportsEvent extends Event {
         this.athletes = athletes;
     }
 
-    protected SportsEvent() {}
+    public SportsEvent() {}
 
-    /**
-     * Constructs a SportsEvent with the specified attributes.
-     * @param eventID         the unique ID of the event
-     * @param eventName       the name of the event
-     * @param eventDescription a description of the event
-     * @param startDateTime   the start date and time of the event
-     * @param endDateTime     the end date and time of the event
-     * @param venueID           the venue where the event is held
-     * @param eventStatus     the current status of the event (SCHEDULED, CANCELLED, COMPLETED)
-     */
-    public SportsEvent(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public SportsEvent(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
+                       LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         super(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int getSportsEventID() {
-        return super.getID();
-    }
-
-    @Override
-    @Column(name = "eventname", nullable = false)
-    public String getEventName() {
-        return super.getEventName();
-    }
-
-    @Override
-    @Column(name = "eventdescription", nullable = false)
-    public String getEventDescription() {
-        return super.getEventDescription();
-    }
-
-    @Override
-    @Column(name = "startdatetime", nullable = false)
-    public LocalDateTime getStartDateTime() {
-        return super.getStartDateTime();
-    }
-
-    @Override
-    @Column(name = "enddatetime", nullable = false)
-    public LocalDateTime getEndDateTime() {
-        return super.getEndDateTime();
-    }
-
-    @Override
-    @Column(name = "venueid", nullable = false)
-    public int getVenueID() {
-        return super.getVenueID();
-    }
-
-    @Override
-    @Column(name = "eventstatus", nullable = false)
-    public EventStatus getEventStatus() {
-        return super.getEventStatus();
-    }
-
-    /**
-     * Returns a string representation of the sports event, including its athletes.
-     * @return a string representing the sports event details
-     */
     @Override
     public String toString() {
-        return "SportsEvent{" +  ", " + super.toString() + '}';
+        return "SportsEvent{" +
+                "athletes=" + athletes +
+                ", " + super.toString() +
+                '}';
     }
 
     @Override

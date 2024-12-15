@@ -2,9 +2,7 @@ package model;
 
 import controller.Controller;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -12,169 +10,119 @@ import java.util.List;
  * and its associated venue. Each section can dynamically retrieve its rows
  * and venue using IDs and a controller.
  */
+@Entity
+@Table(name = "section")
 public class Section implements Identifiable {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int sectionID;
+
+    @Column(name = "section_name", nullable = false)
     private String sectionName;
+
+    @Column(name = "section_capacity", nullable = false)
     private int sectionCapacity;
-    private int venueID;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Row> rows;
 
     /**
-     * The controller used for fetching related data dynamically.
+     * Default constructor for JPA and serialization.
      */
+    public Section() {}
+
     static Controller controller = ControllerProvider.getController();
+
 
     /**
      * Constructs a Section with the specified attributes.
-     * Used for loading from external sources such as CSV files or databases.
      *
      * @param sectionID       the unique ID of the section
      * @param sectionName     the name of the section
      * @param sectionCapacity the seating capacity of the section
-     * @param venueID         the ID of the venue where the section is located
+     * @param venue           the Venue object associated with this section
      */
-    public Section(int sectionID, String sectionName, int sectionCapacity, int venueID) {
+    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
-        this.venueID = venueID;
+        this.venue = venue;
     }
 
-    /**
-     * Gets the unique ID of this section.
-     *
-     * @return the section ID
-     */
     @Override
     public Integer getID() {
         return sectionID;
     }
 
-    /**
-     * Sets the unique ID of this section.
-     *
-     * @param sectionID the new section ID
-     */
     public void setSectionID(int sectionID) {
         this.sectionID = sectionID;
     }
 
-    /**
-     * Gets the name of this section.
-     *
-     * @return the section name
-     */
     public String getSectionName() {
         return sectionName;
     }
 
-    /**
-     * Sets the name of this section.
-     *
-     * @param sectionName the new section name
-     */
     public void setSectionName(String sectionName) {
         this.sectionName = sectionName;
     }
 
-    /**
-     * Gets the seating capacity of this section.
-     *
-     * @return the section's seating capacity
-     */
     public int getSectionCapacity() {
         return sectionCapacity;
     }
 
-    /**
-     * Sets the seating capacity of this section.
-     *
-     * @param sectionCapacity the new seating capacity
-     */
     public void setSectionCapacity(int sectionCapacity) {
         this.sectionCapacity = sectionCapacity;
     }
 
-    /**
-     * Gets the ID of the venue to which this section belongs.
-     *
-     * @return the venue ID
-     */
-    public int getVenueID() {
-        return venueID;
-    }
-
-    /**
-     * Sets the ID of the venue to which this section belongs.
-     *
-     * @param venueID the new venue ID
-     */
-    public void setVenueID(int venueID) {
-        this.venueID = venueID;
-    }
-//todo findVenueByID in controller
-    /**
-     * Fetches the Venue object associated with this section using the venue ID.
-     *
-     * @return the Venue object
-     */
     public Venue getVenue() {
-        return controller.findVenueByID(venueID);
+        return venue;
     }
-//todo findRowsBySectionID in controller
 
-    /**
-     * Fetches the list of rows within this section dynamically using the section ID.
-     *
-     * @return a list of Row objects in this section
-     */
+    public void setVenue(Venue venue) {
+        this.venue = venue;
+    }
+
     public List<Row> getRows() {
-        return controller.findRowsBySectionID(sectionID);
+        return rows;
     }
 
-    /**
-     * Converts this section into a CSV-formatted string.
-     *
-     * @return the CSV-formatted string representing the section
-     */
-    @Override
-    public String toCsv() {
-        return String.join(",",
-                String.valueOf(sectionID),
-                sectionName,
-                String.valueOf(sectionCapacity),
-                String.valueOf(venueID)
-        );
+    public void setRows(List<Row> rows) {
+        this.rows = rows;
     }
 
-    /**
-     * Creates a Section object from a CSV-formatted string.
-     *
-     * @param csvLine the CSV-formatted string
-     * @return the deserialized Section object
-     */
-    public static Section fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int sectionID = Integer.parseInt(fields[0].trim());
-        String sectionName = fields[1].trim();
-        int sectionCapacity = Integer.parseInt(fields[2].trim());
-        int venueID = Integer.parseInt(fields[3].trim());
-        return new Section(sectionID, sectionName, sectionCapacity, venueID);
-    }
-
-    /**
-     * Returns a string representation of the section, including its ID, name, capacity, and associated venue ID.
-     *
-     * @return a string representing the section
-     */
     @Override
     public String toString() {
         return "Section{" +
                 "sectionID=" + sectionID +
                 ", sectionName='" + sectionName + '\'' +
                 ", sectionCapacity=" + sectionCapacity +
-                ", venueID=" + venueID +
+                ", venueID=" + (venue != null ? venue.getID() : "null") +
                 '}';
+    }
+
+    // CSV Methods
+    @Override
+    public String toCsv() {
+        return String.join(",",
+                String.valueOf(sectionID),
+                sectionName,
+                String.valueOf(sectionCapacity),
+                venue != null ? String.valueOf(venue.getID()) : "null"
+        );
+    }
+
+    public static Section fromCsv(String csvLine) {
+        String[] fields = csvLine.split(",");
+        int sectionID = Integer.parseInt(fields[0].trim());
+        String sectionName = fields[1].trim();
+        int sectionCapacity = Integer.parseInt(fields[2].trim());
+        int venueID = Integer.parseInt(fields[3].trim());
+        Venue venue = ControllerProvider.getController().findVenueByID(venueID);
+        return new Section(sectionID, sectionName, sectionCapacity, venue);
     }
 }

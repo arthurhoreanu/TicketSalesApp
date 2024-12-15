@@ -21,7 +21,7 @@ public class CustomerMenu {
      * @return {@code true} to keep displaying the menu; {@code false} to exit the application
      */
 
-    //TODO MAKE A "SEE EVENT LIST", FROM THIS -> CHOOSE EVENT SPECIFICALLY AFTER ID -> SEE AVAILABLE TICKETS FOR THE EVENT -> CHOOSE TICKETS AND PUT THEM IN THE SHOPPING_CART
+    //TODO MAKE A "SEE artist/venue", FROM THIS -> CHOOSE EVENT SPECIFICALLY AFTER ID -> SEE AVAILABLE TICKETS FOR THE EVENT -> CHOOSE TICKETS AND PUT THEM IN THE SHOPPING_CART
     //TODO CHANGE "9. View recommended Seats"
     public static boolean display(Scanner scanner, Controller controller) {
         System.out.println("==== Customer Menu ====");
