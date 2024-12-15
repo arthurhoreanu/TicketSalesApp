@@ -39,30 +39,6 @@ public class Customer extends User {
         this.preferredSections = new HashMap<>();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int getCustomerID() {
-        return super.getID();
-    }
-
-    @Override
-    @Column(name = "username", nullable = false)
-    public String getUsername() {
-        return super.getUsername();
-    }
-
-    @Override
-    @Column(name = "email", nullable = false)
-    public String getEmail() {
-        return super.getEmail();
-    }
-
-    @Override
-    @Column(name = "password", nullable = false)
-    public String getPassword() {
-        return super.getPassword();
-    }
-
     /**
      * Adds an item to the customer's list of favourite entities.
      * @param item the favourite entity to add
