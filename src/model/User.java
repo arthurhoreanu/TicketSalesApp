@@ -1,8 +1,6 @@
 package model;
 
-import javax.persistence.MappedSuperclass;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.*;
 
 /**
  * Represents a general user in the system, containing basic information such as ID, username, email, and password.
@@ -10,9 +8,18 @@ import java.sql.SQLException;
  */
 @MappedSuperclass
 public abstract class User implements Identifiable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
+
+    @Column(name = "username", nullable = false)
     protected String username;
+
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "password", nullable = false)
     protected String password;
 
     protected User() {}

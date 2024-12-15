@@ -22,30 +22,6 @@ public class Admin extends User {
         super(userID, username, email, password);
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int getAdminID() {
-        return super.getID();
-    }
-
-    @Override
-    @Column(name = "username", nullable = false)
-    public String getUsername() {
-        return super.getUsername();
-    }
-
-    @Override
-    @Column(name = "email", nullable = false)
-    public String getEmail() {
-        return super.getEmail();
-    }
-
-    @Override
-    @Column(name = "password", nullable = false)
-    public String getPassword() {
-        return super.getPassword();
-    }
-
     /**
      * Returns a string representation of the admin, including role, username, and password.
      * @return a string representing the admin's details
