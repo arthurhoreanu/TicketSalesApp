@@ -1,64 +1,107 @@
 package model;
 
+import controller.Controller;
+
+import javax.persistence.*;
+
+/**
+ * Represents a connection between a ShoppingCart and its associated tickets.
+ */
+@Entity
+@Table(name = "shopping_cart_ticket")
 public class ShoppingCartTicket {
-    private int shoppingCartID; // ID of the shopping cart
-    private int eventID; // ID of the event
-    private int ticketID; // ID of the ticket
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shopping_cart_id", nullable = false)
+    private ShoppingCart shoppingCart;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private Ticket ticket;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    /**
+     * Default constructor for JPA and serialization.
+     */
+    public ShoppingCartTicket() {}
+
+    static Controller controller = ControllerProvider.getController();
 
     /**
      * Constructs a ShoppingCartTicket with the specified attributes.
      *
-     * @param shoppingCartID the ID of the associated shopping cart
-     * @param eventID        the ID of the associated event
-     * @param ticketID       the ID of the associated ticket
+     * @param shoppingCart the ShoppingCart associated with this ticket
+     * @param event        the Event associated with this ticket
+     * @param ticket       the Ticket being added to the shopping cart
      */
-    public ShoppingCartTicket(int shoppingCartID, int eventID, int ticketID) {
-        this.shoppingCartID = shoppingCartID;
-        this.eventID = eventID;
-        this.ticketID = ticketID;
+    public ShoppingCartTicket(ShoppingCart shoppingCart, Event event, Ticket ticket) {
+        this.shoppingCart = shoppingCart;
+        this.event = event;
+        this.ticket = ticket;
     }
 
-    public int getShoppingCartID() {
-        return shoppingCartID;
+    public int getId() {
+        return id;
     }
 
-    public int getEventID() {
-        return eventID;
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
     }
 
-    public int getTicketID() {
-        return ticketID;
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
+
+    public Ticket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     @Override
     public String toString() {
         return "ShoppingCartTicket{" +
-                "shoppingCartID=" + shoppingCartID +
-                ", eventID=" + eventID +
-                ", ticketID=" + ticketID +
+                "id=" + id +
+                ", shoppingCartID=" + (shoppingCart != null ? shoppingCart.getID() : "null") +
+                ", ticketID=" + (ticket != null ? ticket.getID() : "null") +
+                ", eventID=" + (event != null ? event.getID() : "null") +
                 '}';
     }
 
-    /**
-     * Converts the ShoppingCartTicket to a CSV-formatted string.
-     *
-     * @return the CSV-formatted string representing the ShoppingCartTicket
-     */
+    // CSV Methods
     public String toCSV() {
-        return shoppingCartID + "," + eventID + "," + ticketID;
+        return (shoppingCart != null ? shoppingCart.getID() : "null") + "," +
+                (event != null ? event.getID() : "null") + "," +
+                (ticket != null ? ticket.getID() : "null");
     }
 
-    /**
-     * Creates a ShoppingCartTicket object from a CSV-formatted string.
-     *
-     * @param csvLine the CSV-formatted string
-     * @return the created ShoppingCartTicket object
-     */
     public static ShoppingCartTicket fromCSV(String csvLine) {
         String[] fields = csvLine.split(",");
         int shoppingCartID = Integer.parseInt(fields[0].trim());
         int eventID = Integer.parseInt(fields[1].trim());
         int ticketID = Integer.parseInt(fields[2].trim());
-        return new ShoppingCartTicket(shoppingCartID, eventID, ticketID);
+
+        ShoppingCart shoppingCart = controller.findShoppingCartByID(shoppingCartID);
+        Event event = controller.findEventByID(eventID);
+        Ticket ticket = controller.getTicketByID(ticketID);
+
+        return new ShoppingCartTicket(shoppingCart, event, ticket);
     }
 }

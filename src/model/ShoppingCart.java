@@ -1,8 +1,29 @@
 package model;
 
+import javax.persistence.*;
+import java.util.List;
+
+/**
+ * Represents a shopping cart that contains multiple tickets, associated with a specific user.
+ */
+@Entity
+@Table(name = "shopping_cart")
 public class ShoppingCart implements Identifiable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int shoppingCartID;
+
+    @Column(name = "total_price", nullable = false)
     private double totalPrice;
+
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShoppingCartTicket> tickets;
+
+    /**
+     * Default constructor for JPA and serialization.
+     */
+    public ShoppingCart() {}
 
     /**
      * Constructs a ShoppingCart with the specified attributes.
@@ -20,6 +41,10 @@ public class ShoppingCart implements Identifiable {
         return shoppingCartID;
     }
 
+    public void setShoppingCartID(int shoppingCartID) {
+        this.shoppingCartID = shoppingCartID;
+    }
+
     public double getTotalPrice() {
         return totalPrice;
     }
@@ -28,29 +53,27 @@ public class ShoppingCart implements Identifiable {
         this.totalPrice = totalPrice;
     }
 
+    public List<ShoppingCartTicket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<ShoppingCartTicket> tickets) {
+        this.tickets = tickets;
+    }
+
     @Override
     public String toString() {
         return "ShoppingCart{" +
                 "shoppingCartID=" + shoppingCartID +
                 ", totalPrice=" + totalPrice +
+                ", tickets=" + tickets +
                 '}';
     }
-
-    /**
-     * Converts the ShoppingCart to a CSV-formatted string.
-     *
-     * @return the CSV-formatted string representing the shopping cart
-     */
-    public String toCSV() {
+    @Override
+    public String toCsv() {
         return shoppingCartID + "," + totalPrice;
     }
 
-    /**
-     * Creates a ShoppingCart object from a CSV-formatted string.
-     *
-     * @param csvLine the CSV-formatted string
-     * @return the created ShoppingCart object
-     */
     public static ShoppingCart fromCSV(String csvLine) {
         String[] fields = csvLine.split(",");
         int shoppingCartID = Integer.parseInt(fields[0].trim());

@@ -1,8 +1,28 @@
 package model;
 
+import javax.persistence.*;
+
+/**
+ * Represents a mapping between an Order and a Ticket.
+ */
+@Entity
+@Table(name = "order_ticket")
 public class OrderTicket {
-    private int orderID; // ID of the associated order
-    private int ticketID; // ID of the associated ticket
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "order_id", nullable = false)
+    private int orderID;
+
+    @Column(name = "ticket_id", nullable = false)
+    private int ticketID;
+
+    /**
+     * Default constructor for JPA and serialization.
+     */
+    public OrderTicket() {}
 
     /**
      * Constructs an OrderTicket with specified attributes.
@@ -19,33 +39,35 @@ public class OrderTicket {
         return orderID;
     }
 
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
+    }
+
     public int getTicketID() {
         return ticketID;
+    }
+
+    public void setTicketID(int ticketID) {
+        this.ticketID = ticketID;
     }
 
     @Override
     public String toString() {
         return "OrderTicket{" +
-                "orderID=" + orderID +
+                "id=" + id +
+                ", orderID=" + orderID +
                 ", ticketID=" + ticketID +
                 '}';
     }
 
-    /**
-     * Converts the OrderTicket to a CSV-formatted string.
-     *
-     * @return the CSV string
-     */
+    // CSV Methods
     public String toCsv() {
-        return orderID + "," + ticketID;
+        return String.join(",",
+                String.valueOf(orderID),
+                String.valueOf(ticketID)
+        );
     }
 
-    /**
-     * Creates an OrderTicket object from a CSV-formatted string.
-     *
-     * @param csvLine the CSV-formatted string
-     * @return the deserialized OrderTicket object
-     */
     public static OrderTicket fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int orderID = Integer.parseInt(fields[0].trim());
