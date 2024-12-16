@@ -59,6 +59,10 @@ public class Seat implements Identifiable {
         this.seatID = seatID;
     }
 
+    public Section getSection() {
+        return row.getSection(); // Retrieve the section via the row
+    }
+
     public Row getRow() {
         return row;
     }

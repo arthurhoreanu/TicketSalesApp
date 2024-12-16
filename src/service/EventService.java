@@ -290,4 +290,11 @@ public class EventService {
         }
         return events;
     }
+
+    public List<Event> getEventsSortedByPopularity(List<Event> events) {
+        return events.stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getTicketsSold(), e1.getTicketsSold()))
+                .toList();
+    }
+
 }

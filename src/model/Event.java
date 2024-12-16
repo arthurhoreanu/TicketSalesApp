@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+
 /**
  * Represents an abstract event with a unique ID, name, description, schedule, venue ID, and status.
  */
@@ -99,6 +100,8 @@ public abstract class Event implements Identifiable {
     public void setEventStatus(EventStatus eventStatus) {
         this.eventStatus = eventStatus;
     }
+
+
 
     /**
      * Returns a string representation of the event.

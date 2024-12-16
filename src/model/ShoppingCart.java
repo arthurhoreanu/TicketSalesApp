@@ -80,4 +80,9 @@ public class ShoppingCart implements Identifiable {
         double totalPrice = Double.parseDouble(fields[1].trim());
         return new ShoppingCart(shoppingCartID, totalPrice);
     }
+
+    public List<ShoppingCartTicket> getTicketsByShoppingCart(ShoppingCart shoppingCart) {
+        return shoppingCartTicketService.getTicketsByShoppingCart(shoppingCart);
+    }
+
 }

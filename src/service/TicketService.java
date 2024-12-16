@@ -3,203 +3,223 @@ package service;
 import model.*;
 import repository.FileRepository;
 import repository.IRepository;
+import repository.DBRepository;
 
-import java.util.ArrayList;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Service class for managing ticket-related operations, including generating, reserving, releasing,
- * and calculating the total price of tickets.
+ * Service class for managing ticket-related operations, including generating, reserving,
+ * releasing, and retrieving tickets.
  */
 public class TicketService {
+
     private final IRepository<Ticket> ticketRepository;
+    private final FileRepository<Ticket> ticketFileRepository;
+    private final DBRepository<Ticket> ticketDatabaseRepository;
     private final SeatService seatService;
     private final EventService eventService;
-    private final VenueService venueService; // Dependency on VenueService for seat management
-    private final FileRepository<Ticket> ticketFileRepository;
+    private final VenueService venueService;
 
     /**
-     * Constructs a TicketService with the specified dependencies.
+     * Constructs a TicketService with dependencies for ticket, seat, event, and venue management.
      *
-     * @param ticketRepository the repository for managing Ticket persistence.
-     * @param seatService      the service for managing seat reservations.
+     * @param ticketRepository the unified repository for managing tickets.
+     * @param seatService      the service for managing seats and reservations.
      * @param eventService     the service for managing events.
-     * @param venueService     the service for managing venue-related operations.
+     * @param venueService     the service for managing venues and seat availability.
      */
-    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService, EventService eventService, VenueService venueService) {
+    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService,
+                         EventService eventService, VenueService venueService) {
         this.ticketRepository = ticketRepository;
         this.seatService = seatService;
         this.eventService = eventService;
         this.venueService = venueService;
+
+        // Initialize file and database repositories
         this.ticketFileRepository = new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsv);
-        List<Ticket> ticketsFromFile = ticketFileRepository.getAll();
-        for (Ticket ticket : ticketsFromFile) {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
+        this.ticketDatabaseRepository = new DBRepository<>(entityManagerFactory, Ticket.class);
+
+        // Sync tickets from file and database
+        syncFromCsv();
+        syncFromDatabase();
+    }
+
+    /**
+     * Synchronizes tickets from the CSV file into the main repository.
+     */
+    private void syncFromCsv() {
+        List<Ticket> tickets = ticketFileRepository.getAll();
+        for (Ticket ticket : tickets) {
             ticketRepository.create(ticket);
         }
     }
 
     /**
-     * Retrieves a list of available seats for a specific event using VenueService.
-     *
-     * @param event the event for which to retrieve available seats.
-     * @return a list of available seats for the specified event.
+     * Synchronizes tickets from the database into the main repository.
      */
-    public List<Seat> getAvailableSeatsForEvent(Event event) {
-        return venueService.getAvailableSeatsList(event.getVenue(), event);
+    private void syncFromDatabase() {
+        List<Ticket> tickets = ticketDatabaseRepository.getAll();
+        for (Ticket ticket : tickets) {
+            ticketRepository.create(ticket);
+        }
     }
 
     /**
-     * Generates tickets for a specified event based on available seats and assigns them
-     * a standard or VIP price.
+     * Generates tickets for a specific event based on available seats.
      *
      * @param event         the event for which tickets are generated.
      * @param standardPrice the price for standard tickets.
      * @param vipPrice      the price for VIP tickets.
-     * @return a list of generated tickets for the event.
+     * @return a list of generated tickets.
      */
     public List<Ticket> generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
-        List<Ticket> generatedTickets = new ArrayList<>();
-        List<Seat> availableSeats = venueService.getAvailableSeatsList(event.getVenue(), event);
-        for (Seat seat : availableSeats) {
-            TicketType type = seat.getRowNumber() == 1 ? TicketType.VIP : TicketType.STANDARD;
-            double price = (type == TicketType.VIP) ? vipPrice : standardPrice;
-            Ticket ticket = new Ticket(ticketRepository.getAll().size() + 1, event, seat.getSection(), seat, price, type);
+        // Resolve the Venue using the venueID from Event
+        Venue venue = venueService.findVenueByID(event.getVenueID());
+        //todo if venue null case
+
+        // Retrieve available seats
+        List<Seat> availableSeats = venueService.getAvailableSeats(venue, event);
+        List<Ticket> generatedTickets = availableSeats.stream()
+                .map(seat -> {
+                    TicketType type = determineTicketType(seat);
+                    double price = (type == TicketType.VIP) ? vipPrice : standardPrice;
+                    return new Ticket(event, seat.getSection(), seat, price, type);
+                })
+                .collect(Collectors.toList());
+
+        // Save tickets to repositories
+        for (Ticket ticket : generatedTickets) {
             ticketRepository.create(ticket);
             ticketFileRepository.create(ticket);
-            generatedTickets.add(ticket);
+            ticketDatabaseRepository.create(ticket);
         }
         return generatedTickets;
     }
 
-
     /**
-     * Determines the type of a ticket based on the seat's characteristics.
-     * In this example, seats in the first row are considered VIP.
+     * Determines the ticket type based on seat characteristics.
      *
      * @param seat the seat for which to determine the ticket type.
-     * @return the type of ticket, either VIP or STANDARD.
+     * @return the ticket type (VIP or STANDARD).
      */
     private TicketType determineTicketType(Seat seat) {
-        return seat.getRowNumber() == 1 ? TicketType.VIP : TicketType.STANDARD;
-    }
-
-    /**
-     * Retrieves all available (unsold) tickets for a specific event.
-     *
-     * @param event the event for which to retrieve available tickets.
-     * @return a list of available tickets for the event.
-     */
-    public List<Ticket> getAvailableTicketsForEvent(Event event) {
-        List<Ticket> availableTickets = new ArrayList<>();
-        List<Ticket> allTickets = ticketRepository.getAll();
-
-        for (int i = 0; i < allTickets.size(); i++) {
-            Ticket ticket = allTickets.get(i);
-            if (ticket.getEvent().equals(event) && !ticket.isSold()) {
-                availableTickets.add(ticket);
-            }
-        }
-        return availableTickets;
+        return seat.getRow().getRowCapacity() == 1 ? TicketType.VIP : TicketType.STANDARD;
     }
 
     /**
      * Reserves a ticket for a purchaser if it is not already sold.
      *
-     * @param ticket       the ticket to reserve.
+     * @param ticket        the ticket to reserve.
      * @param purchaserName the name of the purchaser.
-     * @return true if the ticket was successfully reserved, false if it was already sold.
+     * @return true if the reservation is successful, false otherwise.
      */
     public boolean reserveTicket(Ticket ticket, String purchaserName) {
         if (!ticket.isSold()) {
             ticket.markAsSold(purchaserName);
             seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
-            ticketRepository.update(ticket);
-            ticketFileRepository.update(ticket);
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    /**
-     * Releases a previously reserved ticket, making it available again.
-     *
-     * @param ticket the ticket to release.
-     * @return true if the ticket was successfully released, false if it was not reserved.
-     */
-    public boolean releaseTicket(Ticket ticket) {
-        if (ticket.isSold()) {
-            ticket.setSold(false);
-            seatService.clearSeatReservationForEvent(ticket.getSeat(), ticket.getEvent());
-            ticketRepository.update(ticket);
-            ticketFileRepository.update(ticket);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Retrieves a ticket by its unique ID.
-     *
-     * @param ticketId the ID of the ticket to retrieve.
-     * @return the ticket with the specified ID, or null if no such ticket exists.
-     */
-    public Ticket getTicketByID(int ticketId) {
-        List<Ticket> tickets = ticketRepository.getAll();
-        for (int i = 0; i < tickets.size(); i++) {
-            Ticket ticket = tickets.get(i);
-            if (ticket.getID() == ticketId) {
-                return ticket;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Deletes a ticket by its unique ID.
-     *
-     * @param ticketId the ID of the ticket to delete.
-     * @return true if the ticket was successfully deleted, false if it was not found.
-     */
-    public boolean deleteTicket(int ticketId) {
-        Ticket ticket = getTicketByID(ticketId);
-        if (ticket != null) {
-            ticketRepository.delete(ticketId);
-            ticketFileRepository.delete(ticketId);
+            // Update repositories
+            updateTicketInRepositories(ticket);
             return true;
         }
         return false;
     }
 
     /**
-     * Calculates the total price of a list of tickets.
+     * Releases a previously reserved ticket, making it available again.
      *
-     * @param tickets the list of tickets to calculate the total price for.
-     * @return the total price of the tickets.
+     * @param ticket the ticket to release.
+     * @return true if the ticket was successfully released, false otherwise.
      */
-    public double calculateTotalPrice(List<Ticket> tickets) {
-        double totalPrice = 0;
-        for (int i = 0; i < tickets.size(); i++) {
-            Ticket ticket = tickets.get(i);
-            totalPrice += ticket.getPrice();
+    public boolean releaseTicket(Ticket ticket) {
+        if (ticket.isSold()) {
+            ticket.setSold(false);
+            ticket.setPurchaserName(null);
+            ticket.setPurchaseDate(null);
+            seatService.clearSeatReservationForEvent(ticket.getSeat(), ticket.getEvent());
+
+            // Update repositories
+            updateTicketInRepositories(ticket);
+            return true;
         }
-        return totalPrice;
+        return false;
     }
 
     /**
-     * Retrieves a list of tickets for a specific event by the event's ID.
+     * Retrieves all tickets for a specific event.
      *
-     * @param eventId the ID of the event for which to retrieve tickets.
-     * @return a list of tickets associated with the specified event.
+     * @param event the event to retrieve tickets for.
+     * @return a list of tickets for the event.
      */
-    public List<Ticket> getTicketsByEvent(int eventId) {
-        List<Ticket> ticketsForEvent = new ArrayList<>();
-        for (Ticket ticket : ticketRepository.getAll()) {
-            if (ticket.getEventId() == eventId) {
-                ticketsForEvent.add(ticket);
-            }
+    public List<Ticket> getTicketsByEvent(Event event) {
+        return ticketRepository.getAll().stream()
+                .filter(ticket -> ticket.getEvent().equals(event))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves all available tickets (unsold) for a specific event.
+     *
+     * @param event the event to retrieve available tickets for.
+     * @return a list of available tickets.
+     */
+    public List<Ticket> getAvailableTicketsForEvent(Event event) {
+        return getTicketsByEvent(event).stream()
+                .filter(ticket -> !ticket.isSold())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Deletes a ticket by its ID.
+     *
+     * @param ticketID the ID of the ticket to delete.
+     * @return true if the ticket was deleted, false otherwise.
+     */
+    public boolean deleteTicket(int ticketID) {
+        Ticket ticket = findTicketByID(ticketID);
+        if (ticket != null) {
+            ticketRepository.delete(ticketID);
+            ticketFileRepository.delete(ticketID);
+            ticketDatabaseRepository.delete(ticketID);
+            return true;
         }
-        return ticketsForEvent;
+        return false;
+    }
+
+    /**
+     * Finds a ticket by its unique ID.
+     *
+     * @param ticketID the ID of the ticket to find.
+     * @return the Ticket object, or null if not found.
+     */
+    public Ticket findTicketByID(int ticketID) {
+        return ticketRepository.read(ticketID);
+    }
+
+    /**
+     * Updates a ticket in all repositories.
+     *
+     * @param ticket the ticket to update.
+     */
+    private void updateTicketInRepositories(Ticket ticket) {
+        ticketRepository.update(ticket);
+        ticketFileRepository.update(ticket);
+        ticketDatabaseRepository.update(ticket);
+    }
+
+    /**
+     * Calculates the total price of a list of tickets.
+     *
+     * @param tickets the list of tickets.
+     * @return the total price of the tickets.
+     */
+    public double calculateTotalPrice(List<Ticket> tickets) {
+        return tickets.stream()
+                .mapToDouble(Ticket::getPrice)
+                .sum();
     }
 }

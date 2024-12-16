@@ -1,135 +1,131 @@
 package service;
 
 import model.*;
-import repository.FileRepository;
 import repository.IRepository;
+import repository.FileRepository;
+import repository.DBRepository;
 
-import java.util.ArrayList;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.List;
 
 /**
- * Service class for managing shopping cart-related operations, including adding, removing,
- * clearing items, and checking out.
+ * Service class for managing ShoppingCart-related operations.
  */
 public class ShoppingCartService {
+
     private final IRepository<ShoppingCart> shoppingCartRepository;
-    private final IRepository<Order> orderRepository;
-    private final CustomerService customerService; // Inject CustomerService to get the current customer
     private final FileRepository<ShoppingCart> shoppingCartFileRepository;
+    private final DBRepository<ShoppingCart> shoppingCartDatabaseRepository;
+    private final ShoppingCartTicketService shoppingCartTicketService;
 
     /**
-     * Constructs a ShoppingCartService with the specified dependencies.
+     * Constructs a ShoppingCartService with dependencies for managing shopping carts.
      *
      * @param shoppingCartRepository the repository for managing ShoppingCart persistence.
-     * @param orderRepository        the repository for managing Order persistence.
-     * @param customerService        the service used to retrieve the current customer.
+     * @param shoppingCartTicketService the service for managing ShoppingCartTicket entities.
      */
-    public ShoppingCartService(IRepository<ShoppingCart> shoppingCartRepository, IRepository<Order> orderRepository, CustomerService customerService) {
+    public ShoppingCartService(IRepository<ShoppingCart> shoppingCartRepository,
+                               ShoppingCartTicketService shoppingCartTicketService) {
         this.shoppingCartRepository = shoppingCartRepository;
-        this.orderRepository = orderRepository;
-        this.customerService = customerService;
-        this.shoppingCartFileRepository = new FileRepository<>("src/repository/data/shoppingCarts.csv", ShoppingCart::fromCsv);
-        List<ShoppingCart> shoppingCartsFromFile = shoppingCartFileRepository.getAll();
-        for (ShoppingCart shoppingCart : shoppingCartsFromFile) {
-            shoppingCartRepository.create(shoppingCart);
+        this.shoppingCartTicketService = shoppingCartTicketService;
+
+        // Initialize file and database repositories
+        this.shoppingCartFileRepository = new FileRepository<>("src/repository/data/shoppingCarts.csv", ShoppingCart::fromCSV);
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
+        this.shoppingCartDatabaseRepository = new DBRepository<>(entityManagerFactory, ShoppingCart.class);
+
+        // Sync data
+        syncFromCsv();
+        syncFromDatabase();
+    }
+
+    /**
+     * Synchronizes shopping carts from the CSV file into the main repository.
+     */
+    private void syncFromCsv() {
+        List<ShoppingCart> carts = shoppingCartFileRepository.getAll();
+        for (ShoppingCart cart : carts) {
+            shoppingCartRepository.create(cart);
         }
     }
 
     /**
-     * Adds a ticket to the specified shopping cart.
-     * Updates the total price of the cart and saves the cart to the repository.
-     *
-     * @param cart   the shopping cart to which the ticket will be added.
-     * @param ticket the ticket to be added to the cart.
-     * @return true if the ticket was added successfully, false if it was already in the cart.
+     * Synchronizes shopping carts from the database into the main repository.
      */
-    public boolean addTicketToCart(ShoppingCart cart, Ticket ticket) {
-        List<Ticket> items = cart.getItems();
-        if (items.contains(ticket)) {
-            return false; // Ticket is already in the cart
+    private void syncFromDatabase() {
+        List<ShoppingCart> carts = shoppingCartDatabaseRepository.getAll();
+        for (ShoppingCart cart : carts) {
+            shoppingCartRepository.create(cart);
         }
-        items.add(ticket);
-        updateTotalPrice(cart);
-        shoppingCartRepository.update(cart);
-        return true;
     }
 
     /**
-     * Removes a ticket from the specified shopping cart.
-     * Updates the total price of the cart and saves the cart to the repository.
+     * Creates a new shopping cart.
      *
-     * @param cart   the shopping cart from which the ticket will be removed.
-     * @param ticket the ticket to be removed from the cart.
-     * @return true if the ticket was removed successfully, false if it was not found in the cart.
+     * @return the newly created ShoppingCart object.
      */
-    public boolean removeTicketFromCart(ShoppingCart cart, Ticket ticket) {
-        List<Ticket> items = cart.getItems();
-        if (!items.remove(ticket)) {
-            return false; // Ticket not found in the cart
-        }
-        updateTotalPrice(cart);
-        shoppingCartRepository.update(cart);
-        return true;
+    public ShoppingCart createShoppingCart() {
+        ShoppingCart cart = new ShoppingCart();
+        shoppingCartRepository.create(cart);
+        shoppingCartFileRepository.create(cart);
+        shoppingCartDatabaseRepository.create(cart);
+        return cart;
     }
 
     /**
-     * Clears all tickets from the specified shopping cart.
-     * Resets the total price of the cart and saves the cart to the repository.
+     * Adds a ticket to a shopping cart.
      *
-     * @param cart the shopping cart to be cleared.
+     * @param shoppingCart the shopping cart to add the ticket to.
+     * @param event        the event associated with the ticket.
+     * @param ticket       the ticket to add to the shopping cart.
+     * @return true if the ticket was successfully added, false otherwise.
      */
-    public void clearCart(ShoppingCart cart) {
-        cart.getItems().clear();
-        cart.setTotalPrice(0.0);
-        shoppingCartRepository.update(cart);
+    public boolean addTicketToCart(ShoppingCart shoppingCart, Event event, Ticket ticket) {
+        boolean added = shoppingCartTicketService.addTicketToShoppingCart(shoppingCart, event, ticket);
+        if (added) {
+            updateTotalPrice(shoppingCart);
+        }
+        return added;
     }
 
     /**
-     * Checks out the specified shopping cart, marking all tickets as sold, clearing the cart,
-     * and creating an order for the current customer.
+     * Removes a ticket from the shopping cart.
      *
-     * @param cart the shopping cart to be checked out.
-     * @return the created Order if checkout was successful, or null if the cart is empty.
+     * @param shoppingCart the shopping cart to remove the ticket from.
+     * @param ticket       the ticket to remove.
+     * @return true if the ticket was successfully removed, false otherwise.
      */
-    public Order checkout(ShoppingCart cart) {
-        List<Ticket> items = new ArrayList<>(cart.getItems());
-        if (items.isEmpty()) {
-            return null; // Return null if cart is empty to indicate checkout failure
+    public boolean removeTicketFromCart(ShoppingCart shoppingCart, Ticket ticket) {
+        List<ShoppingCartTicket> tickets = shoppingCartTicketService.getTicketsByShoppingCart(shoppingCart);
+        ShoppingCartTicket ticketToRemove = tickets.stream()
+                .filter(cartTicket -> cartTicket.getTicket().equals(ticket))
+                .findFirst()
+                .orElse(null);
+
+        if (ticketToRemove != null) {
+            shoppingCartTicketService.removeTicketFromShoppingCart(ticketToRemove);
+            updateTotalPrice(shoppingCart);
+            return true;
         }
-
-        Customer currentCustomer = customerService.getCurrentCustomer();
-
-        for (Ticket ticket : items) {
-            ticket.markAsSold(currentCustomer.getUsername());
-        }
-
-        clearCart(cart); // Clear the cart after checkout
-
-        // Create and save a new Order for the customer
-        Order order = new Order(currentCustomer, items);
-        orderRepository.create(order);
-        return order;  // Return the created Order
+        return false;
     }
 
     /**
-     * Calculates and updates the total price of items in the specified shopping cart.
+     * Updates the total price of the shopping cart based on its tickets.
      *
-     * @param cart the shopping cart for which the total price will be calculated and updated.
+     * @param shoppingCart the shopping cart to update.
      */
-    public void updateTotalPrice(ShoppingCart cart) {
-        double totalPrice = cart.getItems().stream()
-                .mapToDouble(Ticket::getPrice)
+    private void updateTotalPrice(ShoppingCart shoppingCart) {
+        List<ShoppingCartTicket> tickets = shoppingCartTicketService.getTicketsByShoppingCart(shoppingCart);
+        double totalPrice = tickets.stream()
+                .mapToDouble(cartTicket -> cartTicket.getTicket().getPrice())
                 .sum();
-        cart.setTotalPrice(totalPrice);
-    }
+        shoppingCart.setTotalPrice(totalPrice);
 
-    /**
-     * Retrieves the total price of items in the specified shopping cart.
-     *
-     * @param cart the shopping cart from which the total price will be retrieved.
-     * @return the total price of the shopping cart.
-     */
-    public double getTotalPrice(ShoppingCart cart) {
-        return cart.getTotalPrice();
+        // Update in repositories
+        shoppingCartRepository.update(shoppingCart);
+        shoppingCartFileRepository.update(shoppingCart);
+        shoppingCartDatabaseRepository.update(shoppingCart);
     }
 }

@@ -7,11 +7,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "order_ticket")
-public class OrderTicket {
+public class OrderTicket implements Identifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int orderTicketID;
 
     @Column(name = "order_id", nullable = false)
     private int orderID;
@@ -25,7 +25,20 @@ public class OrderTicket {
     public OrderTicket() {}
 
     /**
-     * Constructs an OrderTicket with specified attributes.
+     * Constructs an OrderTicket with the specified attributes.
+     *
+     * @param orderTicketID the unique ID of the OrderTicket (optional if auto-generated)
+     * @param orderID       the ID of the associated order
+     * @param ticketID      the ID of the associated ticket
+     */
+    public OrderTicket(int orderTicketID, int orderID, int ticketID) {
+        this.orderTicketID = orderTicketID;
+        this.orderID = orderID;
+        this.ticketID = ticketID;
+    }
+
+    /**
+     * Constructs an OrderTicket without specifying an ID (used when the ID is auto-generated).
      *
      * @param orderID  the ID of the associated order
      * @param ticketID the ID of the associated ticket
@@ -33,6 +46,11 @@ public class OrderTicket {
     public OrderTicket(int orderID, int ticketID) {
         this.orderID = orderID;
         this.ticketID = ticketID;
+    }
+
+    @Override
+    public Integer getID() {
+        return orderTicketID;
     }
 
     public int getOrderID() {
@@ -54,7 +72,7 @@ public class OrderTicket {
     @Override
     public String toString() {
         return "OrderTicket{" +
-                "id=" + id +
+                "orderTicketID=" + orderTicketID +
                 ", orderID=" + orderID +
                 ", ticketID=" + ticketID +
                 '}';
@@ -63,6 +81,7 @@ public class OrderTicket {
     // CSV Methods
     public String toCsv() {
         return String.join(",",
+                String.valueOf(orderTicketID),
                 String.valueOf(orderID),
                 String.valueOf(ticketID)
         );
@@ -70,8 +89,9 @@ public class OrderTicket {
 
     public static OrderTicket fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
-        int orderID = Integer.parseInt(fields[0].trim());
-        int ticketID = Integer.parseInt(fields[1].trim());
-        return new OrderTicket(orderID, ticketID);
+        int orderTicketID = Integer.parseInt(fields[0].trim());
+        int orderID = Integer.parseInt(fields[1].trim());
+        int ticketID = Integer.parseInt(fields[2].trim());
+        return new OrderTicket(orderTicketID, orderID, ticketID);
     }
 }
