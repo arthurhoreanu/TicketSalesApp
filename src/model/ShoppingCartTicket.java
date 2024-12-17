@@ -120,7 +120,7 @@ public class ShoppingCartTicket implements Identifiable {
 
         ShoppingCart shoppingCart = controller.findShoppingCartByID(shoppingCartID);
         Event event = controller.findEventByID(eventID);
-        Ticket ticket = controller.getTicketByID(ticketID);
+        Ticket ticket = controller.findTicketByID(ticketID);
 
         return new ShoppingCartTicket(shoppingCartTicketID, shoppingCart, event, ticket);
     }
