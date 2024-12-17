@@ -51,6 +51,10 @@ public class OrderTicketService {
         }
     }
 
+    public List<OrderTicket> getAllOrderTickets() {
+        return orderTicketRepository.getAll();
+    }
+
     /**
      * Adds an OrderTicket linking an order and a ticket.
      *
