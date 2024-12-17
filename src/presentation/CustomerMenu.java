@@ -493,7 +493,7 @@ public class CustomerMenu {
         // Get the venue from the user
         System.out.print("Enter Venue ID: ");
         int venueId = Integer.parseInt(scanner.nextLine());
-        Venue venue = controller.findVenueById(venueId);
+        Venue venue = controller.findVenueByID(venueId);
 
         if (venue == null) {
             System.out.println("Venue not found. Please try again.");

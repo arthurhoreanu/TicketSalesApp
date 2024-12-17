@@ -103,8 +103,6 @@ public abstract class Event implements Identifiable {
 
     public abstract int getTicketsSold();
 
-
-
     /**
      * Returns a string representation of the event.
      * @return a string representing the event's details.
