@@ -278,7 +278,7 @@ public class EventService {
      * @return A list of upcoming events scheduled at venues that match the location or venue name.
      */
     public List<Event> getEventsByLocation(String locationOrVenueName) {
-        List<Venue> matchingVenues = venueService.getVenuesByLocationOrName(locationOrVenueName);
+        List<Venue> matchingVenues = venueService.findVenuesByLocationOrName(locationOrVenueName);
         List<Event> events = new ArrayList<>();
         for (Venue venue : matchingVenues) {
             int venueID = venue.getID();

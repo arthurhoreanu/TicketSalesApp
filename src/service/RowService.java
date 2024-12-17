@@ -214,4 +214,19 @@ public class RowService {
                 .collect(Collectors.toList());
     }
 
+   /* *//**
+     * Recommends a seat in a row for a customer based on availability.
+     *
+     * @param customer the customer for whom the seat is recommended
+     * @param row      the row to check
+     * @param event    the event for which the seat is recommended
+     * @return the recommended Seat object, or null if no seat is found
+     *//*
+    public Seat recommendSeatInRow(Customer customer, Row row, Event event) {
+        List<Seat> availableSeats = getAvailableSeatsInRow(row, event);
+
+        // Use SeatService to recommend a seat
+        return seatService.recommendSeatFromList(customer, availableSeats);
+    }
+*/
 }
