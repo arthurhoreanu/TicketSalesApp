@@ -18,6 +18,7 @@ public class Controller {
     private final OrderController orderController;
     private final ShoppingCartController shoppingCartController;
     private final TicketController ticketController;
+    private final RowController rowController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -38,7 +39,8 @@ public class Controller {
      */
     public Controller(AccountController accountController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
-                      AthleteController athleteController, CustomerController customerController, OrderController orderController, ShoppingCartController shoppingCartController, TicketController ticketController) {
+                      AthleteController athleteController, CustomerController customerController, OrderController orderController,
+                      ShoppingCartController shoppingCartController, TicketController ticketController, RowController rowController) {
         this.accountController = accountController;
         this.eventController = eventController;
         this.venueController = venueController;
@@ -50,9 +52,16 @@ public class Controller {
         this.orderController = orderController;
         this.shoppingCartController = shoppingCartController;
         this.ticketController = ticketController;
+        this.rowController = rowController;
     }
 
     // Rule: newest first
+
+    // Row related
+    public Row findRowByID(int rowID) {
+        return rowController.findRowByID(rowID);
+    }
+
     // Customer related
     public void addFavourite(FavouriteEntity item) {
         customerController.addFavourite(item);}
@@ -136,7 +145,7 @@ public class Controller {
         venueController.getAvailableSeats(venue, event);}
     public Seat recommendSeat(Customer customer, Venue venue, Event event) {
         return venueController.recommendSeat(customer, venue, event);}
-    public Venue findVenueById(int id){
+    public Venue findVenueByID(int id){
         return venueController.findVenueById(id);}
 
     // Ticket related

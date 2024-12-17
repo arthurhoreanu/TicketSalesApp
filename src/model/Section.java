@@ -122,7 +122,7 @@ public class Section implements Identifiable {
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
         int venueID = Integer.parseInt(fields[3].trim());
-        Venue venue = ControllerProvider.getController().findVenueByID(venueID);
+        Venue venue = controller.findVenueByID(venueID);
         return new Section(sectionID, sectionName, sectionCapacity, venue);
     }
 }

@@ -35,7 +35,7 @@ public class Customer extends User {
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
         this.favourites = new HashSet<>();
-        this.shoppingCart = new ShoppingCart(userId, new ArrayList<>(), 0.0); // Initialize with customer's ID
+        this.shoppingCart = new ShoppingCart();
         this.preferredSections = new HashMap<>();
     }
 

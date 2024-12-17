@@ -1,7 +1,6 @@
 package presentation.admin;
 
 import controller.Controller;
-import model.Artist;
 import model.Section;
 import model.Venue;
 import model.Event;
@@ -123,7 +122,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to update: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueById(venueId);
+        Venue venue = controller.findVenueByID(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
@@ -175,7 +174,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to add a section: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueById(venueId);
+        Venue venue = controller.findVenueByID(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
@@ -208,7 +207,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to view sections: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueById(venueId);
+        Venue venue = controller.findVenueByID(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
@@ -232,7 +231,7 @@ public class AdminVenueMenu {
         System.out.print("Enter Venue ID to check available seats: ");
         int venueId = Integer.parseInt(scanner.nextLine());
 
-        Venue venue = controller.findVenueById(venueId);
+        Venue venue = controller.findVenueByID(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
