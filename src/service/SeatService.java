@@ -170,6 +170,25 @@ public class SeatService {
         return false; // Seat was not reserved for this event
     }
 
+
+    /**
+     * Recommends a seat from a list of available seats based on customer preferences.
+     *
+     * @param customer       the customer for whom the seat is recommended.
+     * @param availableSeats the list of available seats to consider.
+     * @return the recommended Seat object, or null if no suitable seat is found.
+     *//*
+    public Seat recommendSeatFromList(Customer customer, List<Seat> availableSeats) {
+        // Sort seats by row preference (if customer preferences exist)
+        availableSeats.sort((s1, s2) -> {
+            int preference1 = customer.getPreferredRows().getOrDefault(s1.getRow().getID(), 0);
+            int preference2 = customer.getPreferredRows().getOrDefault(s2.getRow().getID(), 0);
+            return Integer.compare(preference2, preference1); // Higher preference first
+        });
+
+        return availableSeats.isEmpty() ? null : availableSeats.get(0);
+    }*/
+
     /**
      * Recommends a front-row seat from a list of available seats.
      * If multiple seats are in the front row, the first one in the list is returned.

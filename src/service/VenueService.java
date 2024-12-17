@@ -191,20 +191,20 @@ public class VenueService {
     }
 
 
-    /**
+   /* *//**
      * Recommends a seat for a customer in a specific venue for an event.
      *
      * @param customer the customer for whom to recommend a seat.
      * @param venue    the venue in which to recommend a seat.
      * @param event    the event to recommend a seat for.
      * @return the recommended seat, or null if none are available.
-     */
+     *//*
     public Seat recommendSeat(Customer customer, Venue venue, Event event) {
         return venue.getSections().stream()
                 .map(section -> sectionService.recommendSeat(customer, section, event))
                 .filter(seat -> seat != null)
                 .findFirst()
                 .orElse(null);
-    }
+    }*/
 
 }
