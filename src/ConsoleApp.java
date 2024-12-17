@@ -23,6 +23,8 @@ public class ConsoleApp {
         IRepository<Ticket> ticketRepository = new InMemoryRepository<>();
         IRepository<ShoppingCart> shoppingCartRepository = new InMemoryRepository<>();
         IRepository<Section> sectionRepository = new InMemoryRepository<>();
+        IRepository<ShoppingCartTicket> shoppingCartTicketRepository = new InMemoryRepository<>();
+        IRepository<OrderTicket> orderTicketRepository = new InMemoryRepository<>();
 
         // Instantiate services
         CustomerService customerService = new CustomerService();
@@ -34,8 +36,11 @@ public class ConsoleApp {
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
         TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
-        ShoppingCartService shoppingCartService = new ShoppingCartService(shoppingCartRepository, orderRepository, customerService);
-        OrderService orderService = new OrderService(orderRepository, shoppingCartService, new BasicPaymentProcessor(), seatService, ticketRepository);
+        ShoppingCartTicketService shoppingCartTicketService = new ShoppingCartTicketService(shoppingCartTicketRepository, ticketService);
+        ShoppingCartService shoppingCartService = new ShoppingCartService(shoppingCartRepository, shoppingCartTicketService);
+        OrderTicketService orderTicketService = new OrderTicketService(orderTicketRepository, ticketService);
+        OrderService orderService = new OrderService(orderRepository, shoppingCartService, shoppingCartTicketService,
+                new BasicPaymentProcessor(), orderTicketService, ticketService, seatService);
 
         // Instantiate controllers
         AccountController accountController = new AccountController(accountService);
