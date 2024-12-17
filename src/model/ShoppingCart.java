@@ -81,8 +81,4 @@ public class ShoppingCart implements Identifiable {
         return new ShoppingCart(shoppingCartID, totalPrice);
     }
 
-    public List<ShoppingCartTicket> getTicketsByShoppingCart(ShoppingCart shoppingCart) {
-        return shoppingCartTicketService.getTicketsByShoppingCart(shoppingCart);
-    }
-
 }
