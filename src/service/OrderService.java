@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//todo soleve all the errors
 /**
  * Service class for managing orders and their related operations.
  */
@@ -22,20 +21,24 @@ public class OrderService {
     private final FileRepository<Order> orderFileRepository;
     private final DBRepository<Order> orderDatabaseRepository;
     private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartTicketService shoppingCartTicketService;
     private final PaymentProcessor paymentProcessor;
     private final OrderTicketService orderTicketService;
     private final TicketService ticketService;
+    private final SeatService seatService;
 
     /**
      * Constructs an OrderService with dependencies for managing orders.
      */
-    public OrderService(IRepository<Order> orderRepository, ShoppingCartService shoppingCartService,
-                        PaymentProcessor paymentProcessor, OrderTicketService orderTicketService, TicketService ticketService) {
+    public OrderService(IRepository<Order> orderRepository, ShoppingCartService shoppingCartService, ShoppingCartTicketService shoppingCartTicketService,
+                        PaymentProcessor paymentProcessor, OrderTicketService orderTicketService, TicketService ticketService, SeatService seatService) {
         this.orderRepository = orderRepository;
         this.shoppingCartService = shoppingCartService;
+        this.shoppingCartTicketService = shoppingCartTicketService;
         this.paymentProcessor = paymentProcessor;
         this.orderTicketService = orderTicketService;
         this.ticketService = ticketService;
+        this.seatService = seatService;
 
         this.orderFileRepository = new FileRepository<>("src/repository/data/orders.csv", Order::fromCsv);
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
@@ -60,19 +63,18 @@ public class OrderService {
     }
 
     public Order createOrder(Customer customer) {
-        List<ShoppingCartTicket> tickets = shoppingCartService.getTicketsByShoppingCart(customer.getShoppingCart());
+        List<ShoppingCartTicket> tickets = shoppingCartTicketService.getTicketsByShoppingCart(customer.getShoppingCart());
         if (tickets.isEmpty()) {
             return null; // No tickets to order
         }
-
-        Order order = new Order(customer.getID(), LocalDateTime.now(), OrderStatus.PENDING);
+        int newID = orderRepository.getAll().size() + 1;
+        Order order = new Order(newID, customer.getID(), LocalDateTime.now(), OrderStatus.PENDING);
         orderRepository.create(order);
 
         for (ShoppingCartTicket cartTicket : tickets) {
             orderTicketService.addOrderTicket(order, cartTicket.getTicket());
-            ticketService.reserveTicket(cartTicket.getTicket());
+            ticketService.reserveTicket(cartTicket.getTicket(), customer.getUsername());
         }
-
         shoppingCartService.clearCart(customer.getShoppingCart());
         return order;
     }
@@ -126,20 +128,19 @@ public class OrderService {
     }
 
     public Order orderTicketsForEvent(Customer customer, Event event) {
-        List<ShoppingCartTicket> eventTickets = shoppingCartService.getTicketsByShoppingCart(customer.getShoppingCart()).stream()
+        List<ShoppingCartTicket> eventTickets = shoppingCartTicketService.getTicketsByShoppingCart(customer.getShoppingCart()).stream()
                 .filter(cartTicket -> cartTicket.getEvent().equals(event))
                 .collect(Collectors.toList());
-
         if (eventTickets.isEmpty()) {
             return null;
         }
-
-        Order order = new Order(customer.getID(), LocalDateTime.now(), OrderStatus.PENDING);
+        int newID = orderRepository.getAll().size() + 1;
+        Order order = new Order(newID, customer.getID(), LocalDateTime.now(), OrderStatus.PENDING);
         orderRepository.create(order);
 
         for (ShoppingCartTicket cartTicket : eventTickets) {
             orderTicketService.addOrderTicket(order, cartTicket.getTicket());
-            ticketService.reserveTicket(cartTicket.getTicket());
+            ticketService.reserveTicket(cartTicket.getTicket(), customer.getUsername());
             shoppingCartService.removeTicketFromCart(customer.getShoppingCart(), cartTicket.getTicket());
         }
 
@@ -150,7 +151,7 @@ public class OrderService {
         // Step 1: Fetch the tickets
         List<Ticket> ticketsToOrder = new ArrayList<>();
         for (Integer ticketID : ticketIDs) {
-            Ticket ticket = ticketRepository.read(ticketID);
+            Ticket ticket = ticketService.findTicketByID(ticketID);
             if (ticket != null && ticket.getEvent().equals(event) && !ticket.isSold()) {
                 ticketsToOrder.add(ticket);
             } else {
@@ -159,7 +160,8 @@ public class OrderService {
         }
 
         // Step 2: Create an order
-        Order order = new Order(customer.getID(), LocalDateTime.now(), OrderStatus.PENDING);
+        int newID = orderRepository.getAll().size() + 1;
+        Order order = new Order(newID, customer.getID(), LocalDateTime.now(), OrderStatus.PENDING);
         orderRepository.create(order);
 
         // Step 3: Mark tickets as sold and reserve seats
@@ -168,11 +170,10 @@ public class OrderService {
             seatService.reserveSeatForEvent(ticket.getSeat(), event);
 
             // Associate the ticket with the order via OrderTicket
-            OrderTicket orderTicket = new OrderTicket(order.getID(), ticket.getID());
-            orderTicketRepository.create(orderTicket);
+            orderTicketService.addOrderTicket(order, ticket);
 
             // Update ticket status in repositories
-            ticketRepository.update(ticket);
+            ticketService.updateTicketInRepositories(ticket);
         }
 
         return order;

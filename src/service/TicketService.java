@@ -121,7 +121,6 @@ public class TicketService {
         if (!ticket.isSold()) {
             ticket.markAsSold(purchaserName);
             seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
-
             // Update repositories
             updateTicketInRepositories(ticket);
             return true;
@@ -205,7 +204,7 @@ public class TicketService {
      *
      * @param ticket the ticket to update.
      */
-    private void updateTicketInRepositories(Ticket ticket) {
+    protected void updateTicketInRepositories(Ticket ticket) {
         ticketRepository.update(ticket);
         ticketFileRepository.update(ticket);
         ticketDatabaseRepository.update(ticket);

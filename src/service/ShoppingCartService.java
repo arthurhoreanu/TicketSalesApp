@@ -128,4 +128,15 @@ public class ShoppingCartService {
         shoppingCartFileRepository.update(shoppingCart);
         shoppingCartDatabaseRepository.update(shoppingCart);
     }
+
+    public void clearCart(ShoppingCart shoppingCart) {
+        List<ShoppingCartTicket> tickets = shoppingCartTicketService.getTicketsByShoppingCart(shoppingCart);
+        for (ShoppingCartTicket ticket : tickets) {
+            shoppingCartTicketService.removeTicketFromShoppingCart(ticket);
+        }
+        shoppingCart.setTotalPrice(0.0);
+        shoppingCartRepository.update(shoppingCart);
+        shoppingCartFileRepository.update(shoppingCart);
+        shoppingCartDatabaseRepository.update(shoppingCart);
+    }
 }

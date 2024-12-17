@@ -29,7 +29,6 @@ public class OrderTicketService {
     public OrderTicketService(IRepository<OrderTicket> orderTicketRepository, TicketService ticketService) {
         this.orderTicketRepository = orderTicketRepository;
         this.ticketService = ticketService;
-
         this.orderTicketFileRepository = new FileRepository<>("src/repository/data/orderTickets.csv", OrderTicket::fromCsv);
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
         this.orderTicketDatabaseRepository = new DBRepository<>(entityManagerFactory, OrderTicket.class);
