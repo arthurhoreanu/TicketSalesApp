@@ -1,137 +1,146 @@
 package controller;
 
-import model.Event;
-import model.Ticket;
+import model.*;
 import service.TicketService;
 
 import java.util.List;
 
 /**
- * The TicketController class provides methods for managing tickets related to events.
- * It allows generating, retrieving, reserving, releasing, and deleting tickets, as well as calculating ticket prices.
+ * The TicketController class handles operations related to tickets,
+ * including generation, reservation, release, and retrieval.
  */
 public class TicketController {
+
     private final TicketService ticketService;
 
     /**
      * Constructs a TicketController with the specified TicketService.
      *
-     * @param ticketService the service for ticket-related operations
+     * @param ticketService the service managing ticket-related operations
      */
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
 
     /**
-     * Generates tickets for a specified event with given prices for standard and VIP tickets.
+     * Generates tickets for an event based on seat availability and pricing.
      *
      * @param event         the event for which tickets are generated
      * @param standardPrice the price for standard tickets
      * @param vipPrice      the price for VIP tickets
      */
     public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
-        List<Ticket> generatedTickets = ticketService.generateTicketsForEvent(event, standardPrice, vipPrice);
-        if (!generatedTickets.isEmpty()) {
-            System.out.println("Tickets generated successfully for event: " + event.getEventName() + " (" + generatedTickets.size() + " tickets)");
+        List<Ticket> tickets = ticketService.generateTicketsForEvent(event, standardPrice, vipPrice);
+        if (tickets.isEmpty()) {
+            System.out.println("No tickets were generated for the event: " + event.getEventName());
         } else {
-            System.out.println("No tickets generated for event: " + event.getEventName());
+            System.out.println("Tickets successfully generated for event: " + event.getEventName());
+            tickets.forEach(ticket -> System.out.println(ticket));
         }
     }
 
     /**
-     * Retrieves and displays all available tickets for a specified event.
+     * Reserves a ticket for a purchaser.
      *
-     * @param event the event for which available tickets are retrieved
-     */
-    public void getAvailableTicketsForEvent(Event event) {
-        List<Ticket> availableTickets = ticketService.getAvailableTicketsForEvent(event);
-        if (!availableTickets.isEmpty()) {
-            System.out.println("Available tickets for event: " + event.getEventName());
-            for (Ticket ticket : availableTickets) {
-                System.out.println("- Ticket ID: " + ticket.getID() + ", Price: $" + ticket.getPrice() + ", Seat: " +
-                        "Row " + ticket.getSeat().getRowNumber() + ", Seat " + ticket.getSeat().getSeatNumber());
-            }
-        } else {
-            System.out.println("No available tickets for event: " + event.getEventName());
-        }
-    }
-
-    /**
-     * Reserves a ticket for a specified event and purchaser.
-     *
-     * @param ticket       the ticket to be reserved
-     * @param purchaserName the name of the person reserving the ticket
+     * @param ticket        the ticket to reserve
+     * @param purchaserName the name of the purchaser
      */
     public void reserveTicket(Ticket ticket, String purchaserName) {
-        boolean reserved = ticketService.reserveTicket(ticket, purchaserName);
-        if (reserved) {
-            System.out.println("Ticket ID: " + ticket.getID() + " has been reserved for " + purchaserName);
+        boolean success = ticketService.reserveTicket(ticket, purchaserName);
+        if (success) {
+            System.out.println("Ticket reserved successfully for: " + purchaserName);
         } else {
-            System.out.println("Ticket ID: " + ticket.getID() + " could not be reserved. It may already be sold.");
+            System.out.println("Failed to reserve ticket. It may already be sold.");
         }
     }
 
     /**
-     * Releases a reserved ticket, making it available again.
+     * Releases a previously reserved ticket.
      *
-     * @param ticket the ticket to be released
+     * @param ticket the ticket to release
      */
     public void releaseTicket(Ticket ticket) {
-        boolean released = ticketService.releaseTicket(ticket);
-        if (released) {
-            System.out.println("Ticket ID: " + ticket.getID() + " has been released and is now available.");
+        boolean success = ticketService.releaseTicket(ticket);
+        if (success) {
+            System.out.println("Ticket released successfully.");
         } else {
-            System.out.println("Ticket ID: " + ticket.getID() + " is not currently reserved.");
+            System.out.println("Failed to release ticket. It may not be reserved.");
         }
     }
 
     /**
-     * Retrieves ticket information by ticket ID.
+     * Retrieves all tickets associated with a specific event.
      *
-     * @param ticketId the ID of the ticket to be retrieved
-     * @return the ticket with the specified ID, or null if not found
+     * @param event the event to retrieve tickets for
+     * @return the list of tickets for the event
      */
-    public Ticket getTicketByID(int ticketId) {
-        Ticket ticket = ticketService.getTicketByID(ticketId);
-        if (ticket != null) {
-            System.out.println("Ticket found: " + ticket);
+    public List<Ticket> getTicketsByEvent(Event event) {
+        List<Ticket> tickets = ticketService.getTicketsByEvent(event);
+        if (tickets.isEmpty()) {
+            System.out.println("No tickets found for the event: " + event.getEventName());
         } else {
-            System.out.println("No ticket found with ID: " + ticketId);
+            System.out.println("Tickets for event: " + event.getEventName());
+            tickets.forEach(ticket -> System.out.println(ticket));
         }
-        return ticket;
+        return tickets;
+    }
+
+    /**
+     * Retrieves available (unsold) tickets for a specific event.
+     *
+     * @param event the event to retrieve available tickets for
+     * @return the list of available tickets
+     */
+    public List<Ticket> getAvailableTicketsForEvent(Event event) {
+        List<Ticket> availableTickets = ticketService.getAvailableTicketsForEvent(event);
+        if (availableTickets.isEmpty()) {
+            System.out.println("No available tickets for the event: " + event.getEventName());
+        } else {
+            System.out.println("Available tickets for event: " + event.getEventName());
+            availableTickets.forEach(ticket -> System.out.println(ticket));
+        }
+        return availableTickets;
     }
 
     /**
      * Deletes a ticket by its ID.
      *
-     * @param ticketId the ID of the ticket to be deleted
+     * @param ticketID the ID of the ticket to delete
      */
-    public void deleteTicket(int ticketId) {
-        boolean deleted = ticketService.deleteTicket(ticketId);
-        if (deleted) {
-            System.out.println("Ticket with ID " + ticketId + " has been deleted.");
+    public void deleteTicket(int ticketID) {
+        boolean success = ticketService.deleteTicket(ticketID);
+        if (success) {
+            System.out.println("Ticket with ID " + ticketID + " deleted successfully.");
         } else {
-            System.out.println("Ticket with ID " + ticketId + " could not be deleted. It may not exist.");
+            System.out.println("Failed to delete ticket. Ticket ID not found: " + ticketID);
         }
     }
 
     /**
-     * Calculates and displays the total price of a list of tickets.
+     * Finds a ticket by its unique ID.
      *
-     * @param tickets the list of tickets for which to calculate the total price
+     * @param ticketID the ID of the ticket to find
+     * @return the Ticket object, or null if not found
      */
-    public void calculateTotalPrice(List<Ticket> tickets) {
-        double totalPrice = ticketService.calculateTotalPrice(tickets);
-        System.out.println("Total price for selected tickets: $" + totalPrice);
+    public Ticket findTicketByID(int ticketID) {
+        Ticket ticket = ticketService.findTicketByID(ticketID);
+        if (ticket != null) {
+            System.out.println("Ticket found: " + ticket);
+        } else {
+            System.out.println("Ticket with ID " + ticketID + " not found.");
+        }
+        return ticket;
     }
 
     /**
-     * Retrieves a list of tickets associated with a specific event ID.
+     * Calculates the total price for a list of tickets.
      *
-     * @param eventId the ID of the event for which to retrieve tickets
-     * @return the list of tickets for the specified event
+     * @param tickets the list of tickets
+     * @return the total price of the tickets
      */
-    public List<Ticket> getTicketsByEvent(int eventId) {
-        return ticketService.getTicketsByEvent(eventId);
+    public double calculateTotalPrice(List<Ticket> tickets) {
+        double totalPrice = ticketService.calculateTotalPrice(tickets);
+        System.out.println("Total price for selected tickets: " + totalPrice);
+        return totalPrice;
     }
 }

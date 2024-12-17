@@ -174,22 +174,24 @@ public class Controller {
 //        return venueController.recommendSeat(customer, venue, event);}
 
     // Ticket related
-    public List<Ticket> getTicketsByEvent(int eventId) {
-        return ticketController.getTicketsByEvent(eventId);}
+    public List<Ticket> getTicketsByEvent(Event event) {
+        return ticketController.getTicketsByEvent(event);}
     public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
         ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);}
-    public void getAvailableTicketsForEvent(Event event) {
-        ticketController.getAvailableTicketsForEvent(event);}
+    public List<Ticket> getAvailableTicketsForEvent(Event event) {
+        return ticketController.getAvailableTicketsForEvent(event);
+    }
     public void reserveTicket(Ticket ticket, String purchaserName) {
         ticketController.reserveTicket(ticket, purchaserName);}
     public void releaseTicket(Ticket ticket) {
         ticketController.releaseTicket(ticket);}
-    public Ticket getTicketByID(int ticketId) {
-        return ticketController.getTicketByID(ticketId);}
+    public Ticket findTicketByID(int ticketId) {
+        return ticketController.findTicketByID(ticketId);
+    }
     public void deleteTicket(int ticketId) {
         ticketController.deleteTicket(ticketId);}
-    public void calculateTotalPrice(List<Ticket> tickets) {
-        ticketController.calculateTotalPrice(tickets);}
+    public double calculateTotalPrice(List<Ticket> tickets) {
+      return ticketController.calculateTotalPrice(tickets);}
 
     // Shopping Cart related
     public void addTicketToCart(Ticket ticket) {
