@@ -34,7 +34,6 @@ public class Seat implements Identifiable {
 
     static Controller controller = ControllerProvider.getController();
 
-
     /**
      * Constructs a Seat with the specified attributes.
      *
@@ -114,7 +113,7 @@ public class Seat implements Identifiable {
         int rowID = Integer.parseInt(fields[1].trim());
         boolean isReserved = Boolean.parseBoolean(fields[2].trim());
         Integer reservedForEventID = fields[3].trim().equals("null") ? null : Integer.parseInt(fields[3].trim());
-        Row row = ControllerProvider.getController().findRowByID(rowID);
+        Row row = controller.findRowByID(rowID);
         Event event = reservedForEventID != null ? ControllerProvider.getController().findEventByID(reservedForEventID) : null;
         return new Seat(seatID, row, isReserved, event);
     }

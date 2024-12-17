@@ -101,7 +101,6 @@ public abstract class Event implements Identifiable {
         this.eventStatus = eventStatus;
     }
 
-
     /**
      * Returns a string representation of the event.
      * @return a string representing the event's details.
