@@ -236,8 +236,6 @@ public class Controller {
         return orderTicketsForEvent(customer, event);}
 
     // Event related
-    public int getTicketsSoldForEvent(int eventID) {
-        return eventController.getTicketsSoldForEvent(eventID);}
     public boolean addArtistToConcert(int eventId, int artistId) {
         return eventController.addArtistToConcert(eventId, artistId);
     }
