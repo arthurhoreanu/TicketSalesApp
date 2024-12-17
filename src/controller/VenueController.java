@@ -1,10 +1,6 @@
 package controller;
 
-import model.Customer;
-import model.Event;
-import model.Seat;
-import model.Section;
-import model.Venue;
+import model.*;
 import service.VenueService;
 
 import java.util.List;
@@ -31,10 +27,9 @@ public class VenueController {
      * @param name      the name of the venue
      * @param location  the location of the venue
      * @param capacity  the capacity of the venue
-     * @param sections  the list of sections within the venue
      */
-    public void addVenue(String name, String location, int capacity, List<Section> sections) {
-        boolean isAdded = venueService.addVenue(name, location, capacity, sections);
+    public void createVenue(String name, String location, int capacity) {
+        boolean isAdded = venueService.createVenue(name, location, capacity);
         if (isAdded) {
             System.out.println("Venue successfully added: " + name + " at " + location);
         } else {
@@ -43,31 +38,19 @@ public class VenueController {
     }
 
     /**
-     * Creates a new venue with specified sections and seats.
-     *
-     * @param name           the name of the venue
-     * @param location       the location of the venue
-     * @param capacity       the capacity of the venue
-     * @param sectionCapacity the capacity of each section
-     * @param rowCount       the number of rows in each section
-     * @param seatsPerRow    the number of seats per row
-     */
-
-    /**
      * Updates an existing venue by its ID.
      *
-     * @param id           the ID of the venue to update
+     * @param venueId      the ID of the venue to update
      * @param newName      the new name of the venue
      * @param newLocation  the new location of the venue
      * @param newCapacity  the new capacity of the venue
-     * @param newSections  the updated list of sections
      */
-    public void updateVenue(int id, String newName, String newLocation, int newCapacity, List<Section> newSections) {
-        boolean isUpdated = venueService.updateVenue(id, newName, newLocation, newCapacity, newSections);
+    public void updateVenue(int venueId, String newName, String newLocation, int newCapacity) {
+        boolean isUpdated = venueService.updateVenue(venueId, newName, newLocation, newCapacity);
         if (isUpdated) {
             System.out.println("Venue updated successfully: " + newName + " at " + newLocation);
         } else {
-            System.out.println("Venue with ID " + id + " not found. Update failed.");
+            System.out.println("Venue with ID " + venueId + " not found. Update failed.");
         }
     }
 
@@ -95,63 +78,12 @@ public class VenueController {
     }
 
     /**
-     * Finds a venue by its name.
-     *
-     * @param name the name of the venue
-     * @return the venue with the specified name, or null if not found
-     */
-    public Venue findVenueByName(String name) {
-        return venueService.findVenueByName(name);
-    }
-
-    /**
-     * Finds venues by location or name.
-     *
-     * @param locationOrVenueName the location or name of the venue(s) to find
-     */
-    public void getVenuesByLocationOrName(String locationOrVenueName) {
-        List<Venue> venues = venueService.getVenuesByLocationOrName(locationOrVenueName);
-        if (venues.isEmpty()) {
-            System.out.println("No venues found for location or name: " + locationOrVenueName);
-        } else {
-            System.out.println("Matching venues:");
-            venues.forEach(venue -> System.out.println("- " + venue.getVenueName() + " at " + venue.getLocation()));
-        }
-    }
-
-    /**
-     * Checks and displays the number of available seats for a specific event in a venue.
-     *
-     * @param venue the venue to check for available seats
-     * @param event the event for which seats are checked
-     */
-    public void getAvailableSeats(Venue venue, Event event) {
-        int availableSeats = venueService.getAvailableSeats(venue, event);
-        if (availableSeats > 0) {
-            System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "': " + availableSeats);
-        } else {
-            System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
-        }
-    }
-
-    /**
-     * Recommends a seat in a venue for a customer based on preferences and event information.
-     *
-     * @param customer the customer for whom the seat is recommended
-     * @param venue    the venue where the seat is located
-     * @param event    the event for which the seat is recommended
-     */
-    public Seat recommendSeat(Customer customer, Venue venue, Event event) {
-        return venueService.recommendSeat(customer, venue, event);
-    }
-
-    /**
      * Finds a venue by its ID.
      *
      * @param id the ID of the venue to find
      * @return the venue with the specified ID, or null if not found
      */
-    public Venue findVenueById(int id) {
+    public Venue findVenueByID(int id) {
         Venue venue = venueService.findVenueByID(id);
         if (venue != null) {
             System.out.println("Venue found: " + venue.getVenueName() + " at " + venue.getLocation());
@@ -162,19 +94,69 @@ public class VenueController {
     }
 
     /**
-     * Retrieves and displays a list of available seats in the venue for a specific event.
+     * Finds a venue by its name.
      *
-     * @param venue the venue to check for available seats
-     * @param event the event for which seats are checked
+     * @param name the name of the venue
+     * @return the venue with the specified name, or null if not found
      */
-    // TODO
-//    public void getAvailableSeatsList(Venue venue, Event event) {
-//        List<Seat> availableSeats = venueService.getAvailableSeatsList(venue, event);
-//        if (availableSeats.isEmpty()) {
-//            System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
+    public Venue findVenueByName(String name) {
+        Venue venue = venueService.findVenueByName(name);
+        if (venue == null) {
+            System.out.println("Venue with name '" + name + "' not found.");
+        }
+        return venue;
+    }
+
+    /**
+     * Finds venues by location or name.
+     *
+     * @param locationOrVenueName the location or name of the venue(s) to find
+     * @return a list of matching venues
+     */
+    public List<Venue> findVenuesByLocationOrName(String locationOrVenueName) {
+        List<Venue> venues = venueService.findVenuesByLocationOrName(locationOrVenueName);
+        if (venues.isEmpty()) {
+            System.out.println("No venues found for location or name: " + locationOrVenueName);
+        } else {
+            System.out.println("Matching venues:");
+            venues.forEach(venue -> System.out.println("- " + venue.getVenueName() + " at " + venue.getLocation()));
+        }
+        return venues;
+    }
+
+    /**
+     * Retrieves a list of available seats for a specific event in a venue.
+     *
+     * @param venue the venue to check
+     * @param event the event for which seats are checked
+     * @return a list of available seats
+     */
+    public List<Seat> getAvailableSeats(Venue venue, Event event) {
+        List<Seat> availableSeats = venueService.getAvailableSeats(venue, event);
+        if (availableSeats.isEmpty()) {
+            System.out.println("No available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
+        } else {
+            System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "':");
+            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRow() + ", Seat " + seat.getID()));
+        }
+        return availableSeats;
+    }
+
+    /**
+     * Recommends a seat in a venue for a customer based on preferences and event information.
+     *
+     * @param customer the customer for whom the seat is recommended
+     * @param venue    the venue where the seat is located
+     * @param event    the event for which the seat is recommended
+     * @return the recommended seat
+     */
+//    public Seat recommendSeat(Customer customer, Venue venue, Event event) {
+//        Seat seat = venueService.recommendSeat(customer, venue, event);
+//        if (seat == null) {
+//            System.out.println("No seat recommendations available for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "'.");
 //        } else {
-//            System.out.println("Available seats for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "':");
-//            availableSeats.forEach(seat -> System.out.println("- Row " + seat.getRowNumber() + ", Seat " + seat.getSeatNumber()));
+//            System.out.println("Recommended seat for event '" + event.getEventName() + "' in venue '" + venue.getVenueName() + "': Row " + seat.getRowNumber() + ", Seat " + seat.getSeatNumber());
 //        }
+//        return seat;
 //    }
 }
