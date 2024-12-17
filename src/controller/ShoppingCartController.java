@@ -68,7 +68,7 @@ public class ShoppingCartController {
         return shoppingCartService.getTicketsByShoppingCart(shoppingCart);
     }
 
-    public void findShoppingCartByID(int shoppingCartID) {
+    public ShoppingCart findShoppingCartByID(int shoppingCartID) {
         ShoppingCart shoppingCart = shoppingCartService.findShoppingCartByID(shoppingCartID);
         if (shoppingCart != null) {
             System.out.println("Shopping cart found: ID " + shoppingCartID + ", Total Price: $" + shoppingCart.getTotalPrice());

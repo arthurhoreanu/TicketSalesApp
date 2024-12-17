@@ -17,13 +17,12 @@ public class EventService {
     private final VenueService venueService;
     private final OrderTicketService orderTicketService;
     private final TicketService ticketService;
-
-
     private final FileRepository<Concert> concertFileRepository;
     private final FileRepository<SportsEvent> sportsEventFileRepository;
     private final DBRepository<Concert> concertDatabaseRepository;
     private final DBRepository<SportsEvent> sportsEventDatabaseRepository;
     private int lastCreatedEventID;
+    static Controller controller = ControllerProvider.getController();
 
     public EventService(IRepository<Event> eventRepository, VenueService venueService, OrderTicketService orderTicketService, TicketService ticketService) {
         this.eventRepository = eventRepository;
@@ -302,8 +301,8 @@ public class EventService {
     public List<Event> getEventsSortedByPopularity(List<Event> events) {
         return events.stream()
                 .sorted((e1, e2) -> Integer.compare(
-                        ControllerProvider.getController().getTicketsSoldForEvent(e2.getID()),
-                        ControllerProvider.getController().getTicketsSoldForEvent(e1.getID())))
+                        controller.getTicketsSoldForEvent(e2.getID()),
+                        controller.getTicketsSoldForEvent(e1.getID())))
                 .toList();
     }
 

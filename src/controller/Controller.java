@@ -216,8 +216,8 @@ public class Controller {
         shoppingCartController.clearCart();}
     public List<ShoppingCartTicket> getTicketsByShoppingCart(ShoppingCart shoppingCart) {
         return shoppingCartController.getTicketsByShoppingCart(shoppingCart);}
-    public void findShoppingCartByID(int shoppingCartID) {
-        shoppingCartController.findShoppingCartByID(shoppingCartID);}
+    public ShoppingCart findShoppingCartByID(int shoppingCartID) {
+        return shoppingCartController.findShoppingCartByID(shoppingCartID);}
 
     // Order related
     public void createOrder(Customer customer) {
@@ -236,6 +236,8 @@ public class Controller {
         return orderTicketsForEvent(customer, event);}
 
     // Event related
+    public int getTicketsSoldForEvent(int eventID) {
+        return eventController.getTicketsSoldForEvent(eventID);}
     public boolean addArtistToConcert(int eventId, int artistId) {
         return eventController.addArtistToConcert(eventId, artistId);
     }
