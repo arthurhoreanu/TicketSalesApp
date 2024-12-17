@@ -33,13 +33,13 @@ public class ConsoleApp {
         SeatService seatService = new SeatService(seatRepository);
         SectionService sectionService = new SectionService(seatService, sectionRepository, seatRepository);
         VenueService venueService = new VenueService(venueRepository, sectionService);
-        OrderTicketService orderTicketService = new OrderTicketService(orderTicketRepository, ticketService);
-        EventService eventService = new EventService(eventRepository, venueService, orderTicketService, ticketService);
-        TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
+        EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
+        TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
         ShoppingCartTicketService shoppingCartTicketService = new ShoppingCartTicketService(shoppingCartTicketRepository, ticketService);
         ShoppingCartService shoppingCartService = new ShoppingCartService(shoppingCartRepository, shoppingCartTicketService);
+        OrderTicketService orderTicketService = new OrderTicketService(orderTicketRepository, ticketService);
         OrderService orderService = new OrderService(orderRepository, shoppingCartService, shoppingCartTicketService,
                 new BasicPaymentProcessor(), orderTicketService, ticketService, seatService);
         RowService rowService = new RowService(seatService, rowRepository, seatRepository);

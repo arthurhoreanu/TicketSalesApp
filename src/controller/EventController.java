@@ -153,8 +153,4 @@ public class EventController {
     public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
         return eventService.addAthleteToSportsEvent(eventId, athleteId);
     }
-
-    public int getTicketsSoldForEvent(int eventID) {
-        return eventService.getTicketsSoldForEvent(eventID);
-    }
 }

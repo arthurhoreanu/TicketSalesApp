@@ -75,6 +75,7 @@ public class ShoppingCartController {
         } else {
             System.out.println("Shopping cart with ID " + shoppingCartID + " not found.");
         }
+        return null;
     }
 
 }

@@ -15,8 +15,6 @@ import java.util.ArrayList;
 public class EventService {
     private final IRepository<Event> eventRepository;
     private final VenueService venueService;
-    private final OrderTicketService orderTicketService;
-    private final TicketService ticketService;
     private final FileRepository<Concert> concertFileRepository;
     private final FileRepository<SportsEvent> sportsEventFileRepository;
     private final DBRepository<Concert> concertDatabaseRepository;
@@ -24,13 +22,9 @@ public class EventService {
     private int lastCreatedEventID;
     static Controller controller = ControllerProvider.getController();
 
-    public EventService(IRepository<Event> eventRepository, VenueService venueService, OrderTicketService orderTicketService, TicketService ticketService) {
+    public EventService(IRepository<Event> eventRepository, VenueService venueService) {
         this.eventRepository = eventRepository;
         this.venueService = venueService;
-        this.orderTicketService = orderTicketService;
-        this.ticketService = ticketService;
-
-
         this.concertFileRepository = new FileRepository<>("src/repository/data/concerts.csv", Concert::fromCsv);
         this.sportsEventFileRepository = new FileRepository<>("src/repository/data/sportsevents.csv", SportsEvent::fromCsv);
         syncFromCsv();
@@ -297,24 +291,5 @@ public class EventService {
         }
         return events;
     }
-
-    public List<Event> getEventsSortedByPopularity(List<Event> events) {
-        return events.stream()
-                .sorted((e1, e2) -> Integer.compare(
-                        controller.getTicketsSoldForEvent(e2.getID()),
-                        controller.getTicketsSoldForEvent(e1.getID())))
-                .toList();
-    }
-
-    public int getTicketsSoldForEvent(int eventID) {
-        return (int) orderTicketService.getAllOrderTickets().stream()
-                .filter(orderTicket -> {
-                    Ticket ticket = ticketService.findTicketByID(orderTicket.getTicketID());
-                    return ticket != null && ticket.getEvent().getID() == eventID;
-                })
-                .count();
-    }
-
-
 
 }
