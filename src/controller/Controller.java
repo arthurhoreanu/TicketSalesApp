@@ -19,6 +19,7 @@ public class Controller {
     private final ShoppingCartController shoppingCartController;
     private final TicketController ticketController;
     private final RowController rowController;
+    private final ShoppingCartTicketController shoppingCartTicketController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -40,7 +41,8 @@ public class Controller {
     public Controller(AccountController accountController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
                       AthleteController athleteController, CustomerController customerController, OrderController orderController,
-                      ShoppingCartController shoppingCartController, TicketController ticketController, RowController rowController) {
+                      ShoppingCartController shoppingCartController, TicketController ticketController, RowController rowController,
+                      ShoppingCartTicketController shoppingCartTicketController) {
         this.accountController = accountController;
         this.eventController = eventController;
         this.venueController = venueController;
@@ -53,9 +55,21 @@ public class Controller {
         this.shoppingCartController = shoppingCartController;
         this.ticketController = ticketController;
         this.rowController = rowController;
+        this.shoppingCartTicketController = shoppingCartTicketController;
     }
 
     // Rule: newest first
+
+    // ShoppingCartTicket related
+    public void addTicketToShoppingCart(ShoppingCart shoppingCart, Event event, Ticket ticket) {
+        shoppingCartTicketController.addTicketToShoppingCart(shoppingCart, event, ticket);}
+    // TODO has the same name as the one from ShoppingCart
+//    public void getTicketsByShoppingCart_ShoppingCartTicket(ShoppingCart shoppingCart) {
+//        shoppingCartTicketController.getTicketsByShoppingCart(shoppingCart);}
+    public void removeTicketFromShoppingCart(ShoppingCartTicket shoppingCartTicket) {
+        shoppingCartTicketController.removeTicketFromShoppingCart(shoppingCartTicket);}
+    public void findShoppingCartTicketByID(int shoppingCartTicketID) {
+        shoppingCartTicketController.findShoppingCartTicketByID(shoppingCartTicketID);}
 
     // Row related
     public Row findRowByID(int rowID) {
@@ -192,18 +206,16 @@ public class Controller {
         ticketController.calculateTotalPrice(tickets);}
 
     // Shopping Cart related
-    public void addTicketToCart(Ticket ticket) {
-        shoppingCartController.addTicketToCart(ticket);}
+    public void addTicketToCart(Event event, Ticket ticket) {
+        shoppingCartController.addTicketToCart(event, ticket);}
     public void removeTicketFromCart(Ticket ticket) {
         shoppingCartController.removeTicketFromCart(ticket);}
     public void clearCart() {
         shoppingCartController.clearCart();}
-    public Order checkout() {
-       return shoppingCartController.checkout();}
-    public void updateTotalPrice() {
-        shoppingCartController.updateTotalPrice();}
-    public double getTotalPrice() {
-        return shoppingCartController.getTotalPrice();}
+    public List<ShoppingCartTicket> getTicketsByShoppingCart(ShoppingCart shoppingCart) {
+        return shoppingCartController.getTicketsByShoppingCart(shoppingCart);}
+    public void findShoppingCartByID(int shoppingCartID) {
+        shoppingCartController.findShoppingCartByID(shoppingCartID);}
 
     // Order related
     public void createOrder(Customer customer) {
