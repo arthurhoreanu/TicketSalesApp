@@ -1,5 +1,7 @@
 package model;
 
+import service.TicketService;
+
 import javax.persistence.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,12 +31,19 @@ public class Concert extends Event {
     public void setArtists(List<Artist> artists) {
         this.artists = artists;
     }
+    @Transient
+    private TicketService ticketService;
+    @Override
+    public int getTicketsSold() {
+        return TicketService.getTicketsByEvent(this).size();
+    }
 
     public Concert() {}
 
     public Concert(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
                    LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         super(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
+        this.ticketService = ControllerProvider.getController().getTicketService();
     }
 
     @Override

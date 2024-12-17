@@ -185,18 +185,18 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-    /**
+   /* *//**
      * Recommends a seat in a section for a customer based on preferences.
      *
      * @param customer the customer for whom the recommendation is made
      * @param section  the section to check
      * @param event    the event for which to recommend a seat
      * @return the recommended Seat, or null if no suitable seat is found
-     */
+     *//*
     public Seat recommendSeat(Customer customer, Section section, Event event) {
         List<Seat> availableSeats = getAvailableSeats(section, event);
 
         // Recommend based on preferences
         return seatService.recommendSeatFromList(customer, availableSeats);
-    }
+    }*/
 }
