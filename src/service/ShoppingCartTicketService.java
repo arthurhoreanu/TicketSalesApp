@@ -106,4 +106,8 @@ public class ShoppingCartTicketService {
         shoppingCartTicketDatabaseRepository.delete(shoppingCartTicket.getID());
         return true;
     }
+
+    public ShoppingCartTicket findShoppingCartTicketByID(int shoppingCartTicketID) {
+        return shoppingCartTicketRepository.read(shoppingCartTicketID);
+    }
 }

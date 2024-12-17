@@ -139,4 +139,13 @@ public class ShoppingCartService {
         shoppingCartFileRepository.update(shoppingCart);
         shoppingCartDatabaseRepository.update(shoppingCart);
     }
+
+    public List<ShoppingCartTicket> getTicketsByShoppingCart(ShoppingCart shoppingCart) {
+        return shoppingCartTicketService.getTicketsByShoppingCart(shoppingCart);
+    }
+
+    public ShoppingCart findShoppingCartByID(int shoppingCartID) {
+        return shoppingCartRepository.read(shoppingCartID);
+    }
+
 }
