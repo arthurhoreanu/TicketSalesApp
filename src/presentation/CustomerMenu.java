@@ -135,7 +135,7 @@ public class CustomerMenu {
                             if (!ticketIdInput.isEmpty()) {
                                 try {
                                     int ticketId = Integer.parseInt(ticketIdInput);
-                                    Ticket ticketToAdd = controller.getTicketByID(ticketId);
+                                    Ticket ticketToAdd = controller.findTicketByID(ticketId);
 
                                     if (ticketToAdd != null) {
                                         controller.addTicketToCart(ticketToAdd);
