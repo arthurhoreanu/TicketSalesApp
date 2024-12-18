@@ -61,6 +61,10 @@ public class ShoppingCart implements Identifiable {
         this.tickets = tickets;
     }
 
+    public List<ShoppingCartTicket> getItems() {
+        return tickets;
+    }
+
     @Override
     public String toString() {
         return "ShoppingCart{" +

@@ -11,6 +11,8 @@ import java.util.*;
  */
 public class CustomerMenu {
 
+    private static Controller controller;
+
     /**
      * Displays the customer menu and processes the selected options.
      *
@@ -298,6 +300,6 @@ public class CustomerMenu {
             return;
         }
         events.forEach(System.out::println);
-        viewTicketsAndAddToCart(scanner, new Controller()); // Replace with valid controller
+        viewTicketsAndAddToCart(scanner, controller); // Replace with valid controller
     }
 }   // todo toate errorile tin de metoda aia cu getItems() si de rahatu asta de mai sus, da nu m am uitat atent
