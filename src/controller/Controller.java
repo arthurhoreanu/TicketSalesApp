@@ -162,8 +162,8 @@ public class Controller {
         sectionController.updateSection(sectionID, newSectionName, newSectionCapacity);}
     public void deleteSection(int sectionID) {
         sectionController.deleteSection(sectionID);}
-    public void getAllSections() {
-        sectionController.getAllSections();}
+    public List<Section> getAllSections() {
+        return sectionController.getAllSections();}
     public Section findSectionByID(int sectionID) {
         return sectionController.findSectionByID(sectionID);}
     public void getSectionInfo(String sectionName) {

@@ -1,8 +1,5 @@
 package controller;
 
-import model.Customer;
-import model.Event;
-import model.Seat;
 import model.Section;
 import model.Venue;
 import repository.IRepository;
@@ -51,7 +48,7 @@ public class SectionController {
         }
     }
 
-    public void getAllSections() {
+    public List<Section> getAllSections() {
         List<Section> sections = sectionService.getAllSections();
         if (sections.isEmpty()) {
             System.out.println("No sections available.");
@@ -59,7 +56,8 @@ public class SectionController {
             System.out.println("All sections:");
             sections.forEach(section -> System.out.println("- ID: " + section.getID() + ", Name: " + section.getSectionName() + ", Capacity: " + section.getSectionCapacity()));
         }
-    }
+        return sections;
+    }//todo am modificat aici,ca imi pi=usca undeva, nu stiu daca acum n o sa puste pe alta parte tho
 
     public Section findSectionByID(int sectionID) {
         Section section = sectionService.findSectionByID(sectionID);
