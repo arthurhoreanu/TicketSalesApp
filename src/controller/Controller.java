@@ -16,6 +16,7 @@ public class Controller {
     private final AthleteController athleteController;
     private final CustomerController customerController;
     private final OrderController orderController;
+    private final OrderTicketController orderTicketController;
     private final ShoppingCartController shoppingCartController;
     private final TicketController ticketController;
     private final RowController rowController;
@@ -40,7 +41,7 @@ public class Controller {
      */
     public Controller(AccountController accountController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
-                      AthleteController athleteController, CustomerController customerController, OrderController orderController,
+                      AthleteController athleteController, CustomerController customerController, OrderController orderController,OrderTicketController orderTicketController,
                       ShoppingCartController shoppingCartController, TicketController ticketController, RowController rowController,
                       ShoppingCartTicketController shoppingCartTicketController) {
         this.accountController = accountController;
@@ -52,6 +53,7 @@ public class Controller {
         this.athleteController = athleteController;
         this.customerController = customerController;
         this.orderController = orderController;
+        this.orderTicketController = orderTicketController;
         this.shoppingCartController = shoppingCartController;
         this.ticketController = ticketController;
         this.rowController = rowController;
@@ -226,14 +228,30 @@ public class Controller {
         orderController.processOrderPayment(order, cardNumber, cvv, cardOwner, expirationDate);}
     public void cancelOrder(int orderId) {
         orderController.cancelOrder(orderId);}
-    public void getOrderHistory(Customer customer) {
-        orderController.getOrderHistory(customer);}
-    public void getOrderByID(int orderID) {
-        orderController.getOrderByID(orderID);}
+    public List<Order> getOrderHistory(Customer customer) {
+        return orderController.getOrderHistory(customer);
+    }
+    public Order getOrderByID(int orderID) {
+        return orderController.getOrderByID(orderID);
+    }
     public void orderAllTicketsFromCart(Customer customer) {
         orderController.orderAllTicketsFromCart(customer);}
-    public Order orderTicketsForEvent(Customer customer, Event event) {
-        return orderTicketsForEvent(customer, event);}
+    public void orderTicketsForEvent(Customer customer, Event event) {
+        orderController.orderTicketsForEvent(customer, event);
+    }
+
+    // OrderTicket related
+    public void addOrderTicket(Order order, Ticket ticket) {
+        orderTicketController.addOrderTicket(order, ticket);
+    }
+    public List<Ticket> getTicketsByOrder(Order order) {
+        return orderTicketController.getTicketsByOrder(order);
+    }
+    public List<OrderTicket> getAllOrderTickets() {
+        return orderTicketController.getAllOrderTickets();
+    }
+
+
 
     // Event related
     public boolean addArtistToConcert(int eventId, int artistId) {
