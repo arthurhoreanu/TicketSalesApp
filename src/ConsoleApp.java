@@ -54,6 +54,7 @@ public class ConsoleApp {
         AthleteController athleteController = new AthleteController(athleteService);
         CustomerController customerController = new CustomerController(customerService);
         OrderController orderController = new OrderController(orderService);
+        OrderTicketController orderTicketController = new OrderTicketController(orderTicketService);
         ShoppingCartController shoppingCartController = new ShoppingCartController(shoppingCartService, customerService);
         TicketController ticketController = new TicketController(ticketService);
         RowController rowController = new RowController(rowService);
@@ -62,7 +63,7 @@ public class ConsoleApp {
         // Instantiate main Controller
         Controller controller = new Controller(
                 accountController, eventController, venueController, sectionController, seatController,
-                artistController, athleteController, customerController, orderController,
+                artistController, athleteController, customerController, orderController, orderTicketController,
                 shoppingCartController, ticketController, rowController, shoppingCartTicketController);
 
         ControllerProvider.setController(controller);
