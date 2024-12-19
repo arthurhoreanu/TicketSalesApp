@@ -7,8 +7,6 @@ import presentation.StartMenu;
 import repository.IRepository;
 import repository.InMemoryRepository;
 import service.*;
-
-import java.io.InputStream;
 import java.util.Scanner;
 
 public class ConsoleApp {
