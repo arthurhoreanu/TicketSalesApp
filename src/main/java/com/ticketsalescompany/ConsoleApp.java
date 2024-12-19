@@ -12,7 +12,6 @@ import com.ticketsalescompany.controller.*;
 
 import java.util.Scanner;
 
-// idk what i'm doing...
 public class ConsoleApp {
     public static void main(String[] args) {
 
