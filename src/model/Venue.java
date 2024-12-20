@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 import javax.persistence.*;
 import java.util.List;
 //TODO LOGICA DE LA METODA BOOLEAN!!!!
@@ -33,6 +35,9 @@ public class Venue implements Identifiable {
      * Default constructor for JPA and serialization.
      */
     public Venue() {}
+
+    static Controller controller = ControllerProvider.getController();
+
 
     /**
      * Constructs a Venue with the specified attributes.

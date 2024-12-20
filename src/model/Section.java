@@ -24,17 +24,17 @@ public class Section implements Identifiable {
     @Column(name = "section_capacity", nullable = false)
     private int sectionCapacity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venue_id", nullable = false)
-    private Venue venue;
+    @Column(name = "venue_id", nullable = false)
+    private int venueID; // Foreign key for Venue
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Row> rows;
+    private List<Row> rows; // Relationship 0:N with Row
 
     /**
      * Default constructor for JPA and serialization.
      */
-    public Section() {}
+    public Section() {
+    }
 
     static Controller controller = ControllerProvider.getController();
 
@@ -45,13 +45,13 @@ public class Section implements Identifiable {
      * @param sectionID       the unique ID of the section
      * @param sectionName     the name of the section
      * @param sectionCapacity the seating capacity of the section
-     * @param venue           the Venue object associated with this section
+     * @param venueID         the Venue object associated with this section
      */
-    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
+    public Section(int sectionID, String sectionName, int sectionCapacity, int venueID) {
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
-        this.venue = venue;
+        this.venueID = venueID;
     }
 
     @Override
@@ -79,12 +79,12 @@ public class Section implements Identifiable {
         this.sectionCapacity = sectionCapacity;
     }
 
-    public Venue getVenue() {
-        return venue;
+    public int getVenueID() {
+        return venueID;
     }
 
-    public void setVenue(Venue venue) {
-        this.venue = venue;
+    public void setVenueID(int venueID) {
+        this.venueID = venueID;
     }
 
     public List<Row> getRows() {
@@ -95,13 +95,14 @@ public class Section implements Identifiable {
         this.rows = rows;
     }
 
+
     @Override
     public String toString() {
         return "Section{" +
                 "sectionID=" + sectionID +
                 ", sectionName='" + sectionName + '\'' +
                 ", sectionCapacity=" + sectionCapacity +
-                ", venueID=" + (venue != null ? venue.getID() : "null") +
+                ", venueID=" + venueID +
                 '}';
     }
 
@@ -112,7 +113,7 @@ public class Section implements Identifiable {
                 String.valueOf(sectionID),
                 sectionName,
                 String.valueOf(sectionCapacity),
-                venue != null ? String.valueOf(venue.getID()) : "null"
+                String.valueOf(venueID)
         );
     }
 
@@ -122,7 +123,6 @@ public class Section implements Identifiable {
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
         int venueID = Integer.parseInt(fields[3].trim());
-        Venue venue = controller.findVenueByID(venueID);
-        return new Section(sectionID, sectionName, sectionCapacity, venue);
+        return new Section(sectionID, sectionName, sectionCapacity, venueID);
     }
 }
