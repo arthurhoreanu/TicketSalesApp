@@ -1,13 +1,10 @@
 package model;
 
-import controller.Controller;
-
 import javax.persistence.*;
 import java.util.List;
 
 /**
- * Represents a row within a section, containing details such as its ID, capacity, and associated section.
- * A row can dynamically fetch its associated seats and parent section using provided methods.
+ * Represents a row within a section, containing details such as its ID, capacity, and associated section ID.
  */
 @Entity
 @Table(name = "row")
@@ -20,9 +17,8 @@ public class Row implements Identifiable {
     @Column(name = "row_capacity", nullable = false)
     private int rowCapacity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id", nullable = false)
-    private Section section;
+    @Column(name = "section_id", nullable = false)
+    private int sectionId;
 
     @OneToMany(mappedBy = "row", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats;
@@ -32,20 +28,28 @@ public class Row implements Identifiable {
      */
     public Row() {}
 
-    static Controller controller = ControllerProvider.getController();
-
-
     /**
-     * Constructs a Row object with a specified ID, capacity, and parent Section.
+     * Constructs a Row object with a specified ID, capacity, and associated Section ID.
      *
      * @param rowID       The unique ID of the row.
      * @param rowCapacity The capacity of the row.
-     * @param section     The Section object associated with this row.
+     * @param sectionId   The ID of the section associated with this row.
      */
-    public Row(int rowID, int rowCapacity, Section section) {
+    public Row(int rowID, int rowCapacity, int sectionId) {
         this.rowID = rowID;
         this.rowCapacity = rowCapacity;
-        this.section = section;
+        this.sectionId = sectionId;
+    }
+
+    /**
+     * Constructs a Row object with no specified ID (used for persistence where ID is auto-generated).
+     *
+     * @param rowCapacity The capacity of the row.
+     * @param sectionId   The ID of the section associated with this row.
+     */
+    public Row(int rowCapacity, int sectionId) {
+        this.rowCapacity = rowCapacity;
+        this.sectionId = sectionId;
     }
 
     @Override
@@ -65,12 +69,12 @@ public class Row implements Identifiable {
         this.rowCapacity = rowCapacity;
     }
 
-    public Section getSection() {
-        return section;
+    public int getSectionId() {
+        return sectionId;
     }
 
-    public void setSection(Section section) {
-        this.section = section;
+    public void setSectionId(int sectionId) {
+        this.sectionId = sectionId;
     }
 
     public List<Seat> getSeats() {
@@ -86,26 +90,36 @@ public class Row implements Identifiable {
         return "Row{" +
                 "rowID=" + rowID +
                 ", rowCapacity=" + rowCapacity +
-                ", sectionID=" + (section != null ? section.getID() : "null") +
+                ", sectionId=" + sectionId +
                 '}';
     }
 
     // CSV Methods
+    /**
+     * Converts the Row object into a CSV representation.
+     *
+     * @return A comma-separated string representing the row.
+     */
     @Override
     public String toCsv() {
         return String.join(",",
                 String.valueOf(rowID),
                 String.valueOf(rowCapacity),
-                section != null ? String.valueOf(section.getID()) : "null"
+                String.valueOf(sectionId)
         );
     }
 
+    /**
+     * Creates a Row object from a CSV string.
+     *
+     * @param csvLine The CSV string.
+     * @return A Row object.
+     */
     public static Row fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int rowID = Integer.parseInt(fields[0].trim());
         int rowCapacity = Integer.parseInt(fields[1].trim());
-        int sectionID = Integer.parseInt(fields[2].trim());
-        Section section = ControllerProvider.getController().findSectionByID(sectionID);
-        return new Row(rowID, rowCapacity, section);
+        int sectionId = Integer.parseInt(fields[2].trim());
+        return new Row(rowID, rowCapacity, sectionId);
     }
 }

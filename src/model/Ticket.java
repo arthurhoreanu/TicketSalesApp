@@ -1,7 +1,5 @@
 package model;
 
-import controller.Controller;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -16,26 +14,17 @@ public class Ticket implements Identifiable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ticketID;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    @Column(name = "event_id", nullable = false)
+    private int eventId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id", nullable = false)
-    private Section section;
+    @Column(name = "section_id", nullable = false)
+    private int sectionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
-    private Seat seat;
+    @Column(name = "seat_id")
+    private Integer seatId;
 
     @Column(name = "price", nullable = false)
     private double price;
-
-    @Column(name = "purchase_date")
-    private LocalDateTime purchaseDate;
-
-    @Column(name = "purchaser_name")
-    private String purchaserName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ticket_type", nullable = false)
@@ -44,47 +33,30 @@ public class Ticket implements Identifiable {
     @Column(name = "is_sold", nullable = false)
     private boolean isSold;
 
+    @Column(name = "purchase_date")
+    private LocalDateTime purchaseDate;
+
+    @Column(name = "purchaser_name")
+    private String purchaserName;
+
     /**
      * Default constructor for JPA and serialization.
      */
     public Ticket() {}
 
-    static Controller controller = ControllerProvider.getController();
-
-
     /**
      * Constructs a Ticket with the specified attributes.
      *
-     * @param ticketID    the unique ID of the ticket
-     * @param event       the Event object associated with the ticket
-     * @param section     the Section object where the ticket is located
-     * @param seat        the Seat object assigned to the ticket
+     * @param eventId     the ID of the associated event
+     * @param sectionId   the ID of the section
+     * @param seatId      the ID of the seat (nullable for general admission)
      * @param price       the price of the ticket
-     * @param ticketType  the type of the ticket (STANDARD, VIP, EARLY_ACCESS)
+     * @param ticketType  the type of the ticket (STANDARD, VIP, EARLY_ACCESS, etc.)
      */
-    public Ticket(int ticketID, Event event, Section section, Seat seat, double price, TicketType ticketType) {
-        this.ticketID = ticketID;
-        this.event = event;
-        this.section = section;
-        this.seat = seat;
-        this.price = price;
-        this.ticketType = ticketType;
-        this.isSold = false; // Initially not sold
-    }
-
-    /**
-     * Constructs a Ticket without an ID, for cases where the ID is generated automatically.
-     *
-     * @param event       the Event object associated with the ticket
-     * @param section     the Section object where the ticket is located
-     * @param seat        the Seat object assigned to the ticket
-     * @param price       the price of the ticket
-     * @param ticketType  the type of the ticket (STANDARD, VIP, EARLY_ACCESS)
-     */
-    public Ticket(Event event, Section section, Seat seat, double price, TicketType ticketType) {
-        this.event = event;
-        this.section = section;
-        this.seat = seat;
+    public Ticket(int eventId, int sectionId, Integer seatId, double price, TicketType ticketType) {
+        this.eventId = eventId;
+        this.sectionId = sectionId;
+        this.seatId = seatId;
         this.price = price;
         this.ticketType = ticketType;
         this.isSold = false; // Initially not sold
@@ -99,32 +71,36 @@ public class Ticket implements Identifiable {
         this.ticketID = ticketID;
     }
 
-    public Event getEvent() {
-        return event;
+    public int getEventId() {
+        return eventId;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 
-    public Section getSection() {
-        return section;
+    public int getSectionId() {
+        return sectionId;
     }
 
-    public void setSection(Section section) {
-        this.section = section;
+    public void setSectionId(int sectionId) {
+        this.sectionId = sectionId;
     }
 
-    public Seat getSeat() {
-        return seat;
+    public Integer getSeatId() {
+        return seatId;
     }
 
-    public void setSeat(Seat seat) {
-        this.seat = seat;
+    public void setSeatId(Integer seatId) {
+        this.seatId = seatId;
     }
 
     public double getPrice() {
         return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public TicketType getTicketType() {
@@ -174,53 +150,60 @@ public class Ticket implements Identifiable {
     public String toString() {
         return "Ticket{" +
                 "ticketID=" + ticketID +
-                ", event=" + (event != null ? event.getID() : "null") +
-                ", section=" + (section != null ? section.getID() : "null") +
-                ", seat=" + (seat != null ? seat.getID() : "null") +
+                ", eventId=" + eventId +
+                ", sectionId=" + sectionId +
+                ", seatId=" + (seatId != null ? seatId : "null") +
                 ", price=" + price +
-                ", purchaseDate=" + purchaseDate +
-                ", purchaserName='" + purchaserName + '\'' +
                 ", ticketType=" + ticketType +
                 ", isSold=" + isSold +
+                ", purchaseDate=" + purchaseDate +
+                ", purchaserName='" + purchaserName + '\'' +
                 '}';
     }
 
     // CSV Methods
+    /**
+     * Converts the Ticket object into a CSV representation.
+     *
+     * @return A comma-separated string representing the ticket.
+     */
     @Override
     public String toCsv() {
         return String.join(",",
                 String.valueOf(ticketID),
-                event != null ? String.valueOf(event.getID()) : "null",
-                section != null ? String.valueOf(section.getID()) : "null",
-                seat != null ? String.valueOf(seat.getID()) : "null",
+                String.valueOf(eventId),
+                String.valueOf(sectionId),
+                seatId != null ? String.valueOf(seatId) : "null",
                 String.valueOf(price),
                 ticketType.name(),
                 String.valueOf(isSold),
-                purchaserName == null ? "null" : purchaserName,
-                purchaseDate == null ? "null" : purchaseDate.toString()
+                purchaseDate != null ? purchaseDate.toString() : "null",
+                purchaserName != null ? purchaserName : "null"
         );
     }
-
+    /**
+     * Creates a Ticket object from a CSV string.
+     *
+     * @param csvLine The CSV string.
+     * @return A Ticket object.
+     */
     public static Ticket fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int ticketID = Integer.parseInt(fields[0].trim());
-        int eventID = Integer.parseInt(fields[1].trim());
-        int sectionID = Integer.parseInt(fields[2].trim());
-        int seatID = Integer.parseInt(fields[3].trim());
+        int eventId = Integer.parseInt(fields[1].trim());
+        int sectionId = Integer.parseInt(fields[2].trim());
+        Integer seatId = fields[3].trim().equals("null") ? null : Integer.parseInt(fields[3].trim());
         double price = Double.parseDouble(fields[4].trim());
         TicketType ticketType = TicketType.valueOf(fields[5].trim());
         boolean isSold = Boolean.parseBoolean(fields[6].trim());
-        String purchaserName = fields[7].trim().equals("null") ? null : fields[7].trim();
-        LocalDateTime purchaseDate = fields[8].trim().equals("null") ? null : LocalDateTime.parse(fields[8].trim());
+        LocalDateTime purchaseDate = fields[7].trim().equals("null") ? null : LocalDateTime.parse(fields[7].trim());
+        String purchaserName = fields[8].trim().equals("null") ? null : fields[8].trim();
 
-        Event event = controller.findEventByID(eventID);
-        Section section = controller.findSectionByID(sectionID);
-        Seat seat = controller.findSeatByID(seatID);
-
-        Ticket ticket = new Ticket(ticketID, event, section, seat, price, ticketType);
+        Ticket ticket = new Ticket(eventId, sectionId, seatId, price, ticketType);
+        ticket.setTicketID(ticketID);
         ticket.setSold(isSold);
-        ticket.setPurchaserName(purchaserName);
         ticket.setPurchaseDate(purchaseDate);
+        ticket.setPurchaserName(purchaserName);
         return ticket;
     }
 }
