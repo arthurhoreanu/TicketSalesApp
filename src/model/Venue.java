@@ -2,7 +2,7 @@ package model;
 
 import javax.persistence.*;
 import java.util.List;
-
+//TODO LOGICA DE LA METODA BOOLEAN!!!!
 /**
  * Represents a venue for events, containing details such as its unique ID, name, location, and capacity.
  */
@@ -23,6 +23,9 @@ public class Venue implements Identifiable {
     @Column(name = "venue_capacity", nullable = false)
     private int venueCapacity;
 
+    @Column(name = "has_seats", nullable = false)
+    private boolean hasSeats;
+
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
@@ -40,11 +43,12 @@ public class Venue implements Identifiable {
      * @param location      the location of the venue
      * @param venueCapacity the total capacity of the venue
      */
-    public Venue(int venueID, String venueName, String location, int venueCapacity) {
+    public Venue(int venueID, String venueName, String location, int venueCapacity, boolean hasSeats) {
         this.venueID = venueID;
         this.venueName = venueName;
         this.location = location;
         this.venueCapacity = venueCapacity;
+        this.hasSeats = hasSeats;
     }
 
     @Override
@@ -80,6 +84,14 @@ public class Venue implements Identifiable {
         this.venueCapacity = venueCapacity;
     }
 
+    public boolean isHasSeats(){
+        return hasSeats;
+    }
+
+    public void setHasSeats(boolean hasSeats){
+        this.hasSeats = hasSeats;
+    }
+
     public List<Section> getSections() {
         return sections;
     }
@@ -95,6 +107,7 @@ public class Venue implements Identifiable {
                 ", venueName='" + venueName + '\'' +
                 ", location='" + location + '\'' +
                 ", venueCapacity=" + venueCapacity +
+                ", hasNumberedSeats=" + hasSeats +
                 '}';
     }
 
@@ -104,7 +117,8 @@ public class Venue implements Identifiable {
                 String.valueOf(getID()),
                 getVenueName(),
                 getLocation(),
-                String.valueOf(getVenueCapacity())
+                String.valueOf(getVenueCapacity()),
+                String.valueOf(hasSeats)
         );
     }
 
@@ -114,6 +128,7 @@ public class Venue implements Identifiable {
         String venueName = fields[1].trim();
         String location = fields[2].trim();
         int venueCapacity = Integer.parseInt(fields[3].trim());
-        return new Venue(venueID, venueName, location, venueCapacity);
+        boolean hasSeats = Boolean.parseBoolean(fields[4].trim());
+        return new Venue(venueID, venueName, location, venueCapacity, hasSeats);
     }
 }
