@@ -1,6 +1,9 @@
 package model;
 
+import controller.Controller;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,39 +20,33 @@ public class Row implements Identifiable {
     @Column(name = "row_capacity", nullable = false)
     private int rowCapacity;
 
-    @Column(name = "section_id", nullable = false)
-    private int sectionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id", nullable = false)
+    private Section section;
 
     @OneToMany(mappedBy = "row", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats;
 
+    static Controller controller = ControllerProvider.getController();
+
     /**
      * Default constructor for JPA and serialization.
      */
-    public Row() {}
+    public Row() {
+        this.seats = new ArrayList<>();
+    }
 
     /**
      * Constructs a Row object with a specified ID, capacity, and associated Section ID.
      *
      * @param rowID       The unique ID of the row.
      * @param rowCapacity The capacity of the row.
-     * @param sectionId   The ID of the section associated with this row.
+     * @param section   The ID of the section associated with this row.
      */
-    public Row(int rowID, int rowCapacity, int sectionId) {
+    public Row(int rowID, int rowCapacity, Section section) {
         this.rowID = rowID;
         this.rowCapacity = rowCapacity;
-        this.sectionId = sectionId;
-    }
-
-    /**
-     * Constructs a Row object with no specified ID (used for persistence where ID is auto-generated).
-     *
-     * @param rowCapacity The capacity of the row.
-     * @param sectionId   The ID of the section associated with this row.
-     */
-    public Row(int rowCapacity, int sectionId) {
-        this.rowCapacity = rowCapacity;
-        this.sectionId = sectionId;
+        this.section = section;
     }
 
     @Override
@@ -69,12 +66,12 @@ public class Row implements Identifiable {
         this.rowCapacity = rowCapacity;
     }
 
-    public int getSectionId() {
-        return sectionId;
+    public Section getSection() {
+        return section;
     }
 
-    public void setSectionId(int sectionId) {
-        this.sectionId = sectionId;
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     public List<Seat> getSeats() {
@@ -85,12 +82,32 @@ public class Row implements Identifiable {
         this.seats = seats;
     }
 
+    /**
+     * Adds a Seat to the Row and maintains bidirectional relationship.
+     *
+     * @param seat The Seat to add.
+     */
+    public void addSeat(Seat seat) {
+        seats.add(seat);
+        seat.setRow(this); // Maintain bidirectional relationship
+    }
+
+    /**
+     * Removes a Seat from the Row and maintains bidirectional relationship.
+     *
+     * @param seat The Seat to remove.
+     */
+    public void removeSeat(Seat seat) {
+        seats.remove(seat);
+        seat.setRow(null); // Break bidirectional relationship
+    }
+
     @Override
     public String toString() {
         return "Row{" +
                 "rowID=" + rowID +
                 ", rowCapacity=" + rowCapacity +
-                ", sectionId=" + sectionId +
+                ", section=" + (section != null ? section.getID() : "null") +
                 '}';
     }
 
@@ -105,7 +122,7 @@ public class Row implements Identifiable {
         return String.join(",",
                 String.valueOf(rowID),
                 String.valueOf(rowCapacity),
-                String.valueOf(sectionId)
+                String.valueOf(section != null ? section.getID() : "null")
         );
     }
 
@@ -119,7 +136,16 @@ public class Row implements Identifiable {
         String[] fields = csvLine.split(",");
         int rowID = Integer.parseInt(fields[0].trim());
         int rowCapacity = Integer.parseInt(fields[1].trim());
-        int sectionId = Integer.parseInt(fields[2].trim());
-        return new Row(rowID, rowCapacity, sectionId);
+        int sectionID = Integer.parseInt(fields[2].trim());
+
+        Row row = new Row();
+        row.setRowID(rowID);
+        row.setRowCapacity(rowCapacity);
+        row.setSection(controller.findSectionByID(sectionID));
+
+        // Initialize seats for compatibility with InMemory/CSV
+        row.setSeats(new ArrayList<>());
+
+        return row;
     }
 }

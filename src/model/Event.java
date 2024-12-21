@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 /**
  * Represents an abstract event with a unique ID, name, description, schedule, venue ID, and status.
  */
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Event implements Identifiable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;

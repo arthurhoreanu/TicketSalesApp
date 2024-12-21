@@ -53,4 +53,5 @@ public class CustomerService {
     public Set<FavouriteEntity> getFavourites() {
         return currentCustomer.getFavourites();
     }
+
 }
