@@ -1,12 +1,12 @@
 package model;
 
-import controller.Controller;
-
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
-//TODO LOGICA DE LA METODA BOOLEAN!!!!
+
 /**
  * Represents a venue for events, containing details such as its unique ID, name, location, and capacity.
+ * Includes relationships with Sections (1:N).
  */
 @Entity
 @Table(name = "venue")
@@ -32,23 +32,24 @@ public class Venue implements Identifiable {
     private List<Section> sections;
 
     /**
-     * Default constructor for JPA and serialization.
+     * Default constructor for JPA, CSV, and InMemory compatibility.
+     * Initializes the sections list to avoid NullPointerException.
      */
-    public Venue() {}
-
-    static Controller controller = ControllerProvider.getController();
-
+    public Venue() {
+        this.sections = new ArrayList<>();
+    }
 
     /**
      * Constructs a Venue with the specified attributes.
-     * Typically used for initializing in-memory objects or loading from external sources.
      *
      * @param venueID       the unique ID of the venue
      * @param venueName     the name of the venue
      * @param location      the location of the venue
      * @param venueCapacity the total capacity of the venue
+     * @param hasSeats      true if the venue has seats, false otherwise
      */
     public Venue(int venueID, String venueName, String location, int venueCapacity, boolean hasSeats) {
+        this();
         this.venueID = venueID;
         this.venueName = venueName;
         this.location = location;
@@ -89,11 +90,11 @@ public class Venue implements Identifiable {
         this.venueCapacity = venueCapacity;
     }
 
-    public boolean isHasSeats(){
+    public boolean isHasSeats() {
         return hasSeats;
     }
 
-    public void setHasSeats(boolean hasSeats){
+    public void setHasSeats(boolean hasSeats) {
         this.hasSeats = hasSeats;
     }
 
@@ -105,6 +106,26 @@ public class Venue implements Identifiable {
         this.sections = sections;
     }
 
+    /**
+     * Adds a Section to the Venue and maintains bidirectional relationship.
+     *
+     * @param section The section to add.
+     */
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setVenue(this); // Maintain bidirectional relationship
+    }
+
+    /**
+     * Removes a Section from the Venue and maintains bidirectional relationship.
+     *
+     * @param section The section to remove.
+     */
+    public void removeSection(Section section) {
+        sections.remove(section);
+        section.setVenue(null); // Break bidirectional relationship
+    }
+
     @Override
     public String toString() {
         return "Venue{" +
@@ -112,11 +133,18 @@ public class Venue implements Identifiable {
                 ", venueName='" + venueName + '\'' +
                 ", location='" + location + '\'' +
                 ", venueCapacity=" + venueCapacity +
-                ", hasNumberedSeats=" + hasSeats +
+                ", hasSeats=" + hasSeats +
+                ", sections=" + sections.size() +
                 '}';
     }
 
     // CSV Methods
+
+    /**
+     * Converts the Venue object into a CSV representation.
+     *
+     * @return A comma-separated string representing the venue.
+     */
     public String toCsv() {
         return String.join(",",
                 String.valueOf(getID()),
@@ -127,6 +155,12 @@ public class Venue implements Identifiable {
         );
     }
 
+    /**
+     * Creates a Venue object from a CSV string.
+     *
+     * @param csvLine The CSV string.
+     * @return A Venue object.
+     */
     public static Venue fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int venueID = Integer.parseInt(fields[0].trim());
@@ -134,6 +168,10 @@ public class Venue implements Identifiable {
         String location = fields[2].trim();
         int venueCapacity = Integer.parseInt(fields[3].trim());
         boolean hasSeats = Boolean.parseBoolean(fields[4].trim());
-        return new Venue(venueID, venueName, location, venueCapacity, hasSeats);
+        Venue venue = new Venue(venueID, venueName, location, venueCapacity, hasSeats);
+
+        // Initialize sections list for InMemory/CSV compatibility
+        venue.setSections(new ArrayList<>());
+        return venue;
     }
 }

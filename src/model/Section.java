@@ -1,8 +1,7 @@
 package model;
 
-import controller.Controller;
-
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,20 +23,20 @@ public class Section implements Identifiable {
     @Column(name = "section_capacity", nullable = false)
     private int sectionCapacity;
 
-    @Column(name = "venue_id", nullable = false)
-    private int venueID; // Foreign key for Venue
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue; // Many-to-One relationship with Venue
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Row> rows; // Relationship 0:N with Row
+    private List<Row> rows; // One-to-Many relationship with Row
 
     /**
-     * Default constructor for JPA and serialization.
+     * Default constructor for JPA, CSV, and InMemory compatibility.
+     * Initializes the rows list to avoid NullPointerException.
      */
     public Section() {
+        this.rows = new ArrayList<>();
     }
-
-    static Controller controller = ControllerProvider.getController();
-
 
     /**
      * Constructs a Section with the specified attributes.
@@ -45,13 +44,14 @@ public class Section implements Identifiable {
      * @param sectionID       the unique ID of the section
      * @param sectionName     the name of the section
      * @param sectionCapacity the seating capacity of the section
-     * @param venueID         the Venue object associated with this section
+     * @param venue           the Venue object associated with this section
      */
-    public Section(int sectionID, String sectionName, int sectionCapacity, int venueID) {
+    public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
+        this();
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
-        this.venueID = venueID;
+        this.venue = venue;
     }
 
     @Override
@@ -79,12 +79,12 @@ public class Section implements Identifiable {
         this.sectionCapacity = sectionCapacity;
     }
 
-    public int getVenueID() {
-        return venueID;
+    public Venue getVenue() {
+        return venue;
     }
 
-    public void setVenueID(int venueID) {
-        this.venueID = venueID;
+    public void setVenue(Venue venue) {
+        this.venue = venue;
     }
 
     public List<Row> getRows() {
@@ -95,6 +95,25 @@ public class Section implements Identifiable {
         this.rows = rows;
     }
 
+    /**
+     * Adds a Row to the Section and maintains bidirectional relationship.
+     *
+     * @param row The Row to add.
+     */
+    public void addRow(Row row) {
+        rows.add(row);
+        row.setSection(this); // Maintain bidirectional relationship
+    }
+
+    /**
+     * Removes a Row from the Section and maintains bidirectional relationship.
+     *
+     * @param row The Row to remove.
+     */
+    public void removeRow(Row row) {
+        rows.remove(row);
+        row.setSection(null); // Break bidirectional relationship
+    }
 
     @Override
     public String toString() {
@@ -102,27 +121,55 @@ public class Section implements Identifiable {
                 "sectionID=" + sectionID +
                 ", sectionName='" + sectionName + '\'' +
                 ", sectionCapacity=" + sectionCapacity +
-                ", venueID=" + venueID +
+                ", venue=" + (venue != null ? venue.getID() : "null") +
+                ", rows=" + rows.size() +
                 '}';
     }
 
     // CSV Methods
+
+    /**
+     * Converts the Section object into a CSV representation.
+     *
+     * @return A comma-separated string representing the Section.
+     */
     @Override
     public String toCsv() {
         return String.join(",",
                 String.valueOf(sectionID),
                 sectionName,
                 String.valueOf(sectionCapacity),
-                String.valueOf(venueID)
+                String.valueOf(venue != null ? venue.getID() : "null")
         );
     }
 
+    /**
+     * Creates a Section object from a CSV string.
+     *
+     * @param csvLine The CSV string.
+     * @return A Section object.
+     */
     public static Section fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int sectionID = Integer.parseInt(fields[0].trim());
         String sectionName = fields[1].trim();
         int sectionCapacity = Integer.parseInt(fields[2].trim());
         int venueID = Integer.parseInt(fields[3].trim());
-        return new Section(sectionID, sectionName, sectionCapacity, venueID);
+
+        // Create Section without initializing Rows (Rows can be added later)
+        Section section = new Section();
+        section.setSectionID(sectionID);
+        section.setSectionName(sectionName);
+        section.setSectionCapacity(sectionCapacity);
+
+        // Dummy Venue creation for InMemory/CSV scenarios
+        Venue venue = new Venue();
+        venue.setVenueID(venueID);
+        section.setVenue(venue);
+
+        // Initialize rows for compatibility with InMemory and CSV
+        section.setRows(new ArrayList<>());
+
+        return section;
     }
 }
