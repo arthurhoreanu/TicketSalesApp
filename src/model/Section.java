@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,8 @@ public class Section implements Identifiable {
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Row> rows; // One-to-Many relationship with Row
+
+    static Controller controller = ControllerProvider.getController();
 
     /**
      * Default constructor for JPA, CSV, and InMemory compatibility.
@@ -156,16 +160,7 @@ public class Section implements Identifiable {
         int sectionCapacity = Integer.parseInt(fields[2].trim());
         int venueID = Integer.parseInt(fields[3].trim());
 
-        // Create Section without initializing Rows (Rows can be added later)
-        Section section = new Section();
-        section.setSectionID(sectionID);
-        section.setSectionName(sectionName);
-        section.setSectionCapacity(sectionCapacity);
-
-        // Dummy Venue creation for InMemory/CSV scenarios
-        Venue venue = new Venue();
-        venue.setVenueID(venueID);
-        section.setVenue(venue);
+        Section section = new Section(sectionID, sectionName, sectionCapacity, controller.findVenueByID(venueID));
 
         // Initialize rows for compatibility with InMemory and CSV
         section.setRows(new ArrayList<>());
