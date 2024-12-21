@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 import javax.persistence.*;
 
 /**
@@ -26,6 +28,8 @@ public class Seat implements Identifiable {
 
     @OneToOne(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Ticket ticket; // 1:1 relationship with Ticket
+
+    static Controller controller = ControllerProvider.getController();
 
     /**
      * Default constructor for JPA, CSV, and InMemory compatibility.
@@ -149,17 +153,7 @@ public class Seat implements Identifiable {
         int number = Integer.parseInt(fields[1].trim());
         boolean isReserved = Boolean.parseBoolean(fields[2].trim());
         int rowID = Integer.parseInt(fields[3].trim());
-        Row row = ControllerProvider.getController().findRowByID(rowID);
 
-        Seat seat = new Seat(seatID, number, isReserved, row);
-
-        // Handle ticket if it exists
-        if (!fields[4].trim().equals("null")) {
-            int ticketID = Integer.parseInt(fields[4].trim());
-            Ticket ticket = ControllerProvider.getController().findTicketByID(ticketID);
-            seat.setTicket(ticket);
-        }
-
-        return seat;
+        return new Seat(seatID, number, isReserved, controller.findRowByID(rowID));
     }
 }

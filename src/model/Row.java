@@ -138,10 +138,7 @@ public class Row implements Identifiable {
         int rowCapacity = Integer.parseInt(fields[1].trim());
         int sectionID = Integer.parseInt(fields[2].trim());
 
-        Row row = new Row();
-        row.setRowID(rowID);
-        row.setRowCapacity(rowCapacity);
-        row.setSection(controller.findSectionByID(sectionID));
+        Row row = new Row(rowID, rowCapacity, controller.findSectionByID(sectionID));
 
         // Initialize seats for compatibility with InMemory/CSV
         row.setSeats(new ArrayList<>());

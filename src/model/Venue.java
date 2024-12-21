@@ -168,10 +168,12 @@ public class Venue implements Identifiable {
         String location = fields[2].trim();
         int venueCapacity = Integer.parseInt(fields[3].trim());
         boolean hasSeats = Boolean.parseBoolean(fields[4].trim());
+
         Venue venue = new Venue(venueID, venueName, location, venueCapacity, hasSeats);
 
         // Initialize sections list for InMemory/CSV compatibility
         venue.setSections(new ArrayList<>());
+
         return venue;
     }
 }
