@@ -1,5 +1,6 @@
 package controller;
 
+import model.Customer;
 import model.User;
 import service.AccountService;
 
@@ -115,5 +116,9 @@ public class AccountController {
         } else {
             System.out.println("Failed to delete account. Either the account was not found or you lack the permissions.");
         }
+    }
+
+    public Customer findCustomerByID(int customerID) {
+        return accountService.findCustomerByID(customerID);
     }
 }

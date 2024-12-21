@@ -15,7 +15,7 @@ public enum TicketType {
     VIP,
 
     /**
-     * Early access ticket, allows entry before the general audience.
+     * A certain quantity of tickets bought at a certain time before the event.
      */
-    EARLY_ACCESS
+    EARLY_BIRD
 }

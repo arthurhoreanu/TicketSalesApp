@@ -286,6 +286,8 @@ public class Controller {
 //        return eventController.isEventSoldOut(event);}
 
     // Account related
+    public Customer findCustomerByID(int customerID) {
+        return accountController.findCustomerByID(customerID);}
     public User getCurrentUser() {
         return accountController.getCurrentUser();}
     public List<User> getAllUsers() {

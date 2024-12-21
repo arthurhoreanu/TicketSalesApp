@@ -183,4 +183,14 @@ public class AccountService {
         }
         return false;
     }
+
+    public Customer findCustomerByID(int customerID) {
+        return userIRepository.getAll().stream()
+                .filter(user -> user instanceof Customer)
+                .map(user -> (Customer) user)
+                .filter(customer -> customer.getID() == customerID)
+                .findFirst()
+                .orElse(null);
+    }
+
 }
