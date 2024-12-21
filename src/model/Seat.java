@@ -1,12 +1,10 @@
 package model;
 
-import controller.Controller;
-
 import javax.persistence.*;
 
 /**
  * Represents a seat in a venue section, with details such as its ID, parent row, reservation status,
- * and an optional association with an event if reserved.
+ * and an optional association with a ticket if reserved.
  */
 @Entity
 @Table(name = "seat")
@@ -16,37 +14,48 @@ public class Seat implements Identifiable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seatID;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "row_id", nullable = false)
-    private Row row;
+    @Column(name = "seat_number", nullable = false)
+    private int number; // The seat number within the row
 
     @Column(name = "is_reserved", nullable = false)
-    private boolean isReserved;
+    private boolean isReserved = false; // Indicates if the seat is reserved (default is false)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reserved_event_id")
-    private Event reservedForEvent;
+    @JoinColumn(name = "row_id", nullable = false)
+    private Row row; // Many-to-One relationship with Row
+
+    @OneToOne(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Ticket ticket; // 1:1 relationship with Ticket
 
     /**
-     * Default constructor for JPA and serialization.
+     * Default constructor for JPA, CSV, and InMemory compatibility.
      */
     public Seat() {}
-
-    static Controller controller = ControllerProvider.getController();
 
     /**
      * Constructs a Seat with the specified attributes.
      *
-     * @param seatID           the unique ID of the seat
-     * @param row              the Row object where the seat is located
-     * @param isReserved       whether the seat is reserved
-     * @param reservedForEvent the Event object if the seat is reserved, null otherwise
+     * @param seatID   the unique ID of the seat
+     * @param number   the seat number
+     * @param isReserved whether the seat is reserved
+     * @param row      the Row object associated with the seat
      */
-    public Seat(int seatID, Row row, boolean isReserved, Event reservedForEvent) {
+    public Seat(int seatID, int number, boolean isReserved, Row row) {
         this.seatID = seatID;
-        this.row = row;
+        this.number = number;
         this.isReserved = isReserved;
-        this.reservedForEvent = reservedForEvent;
+        this.row = row;
+    }
+
+    /**
+     * Constructs a Seat without a predefined ID, for scenarios where the ID is generated automatically.
+     *
+     * @param number   the seat number
+     * @param isReserved whether the seat is reserved
+     * @param row      the Row object associated with the seat
+     */
+    public Seat(int number, boolean isReserved, Row row) {
+        this(0, number, isReserved, row);
     }
 
     @Override
@@ -58,16 +67,12 @@ public class Seat implements Identifiable {
         this.seatID = seatID;
     }
 
-    public Section getSection() {
-        return row.getSection(); // Retrieve the section via the row
+    public int getNumber() {
+        return number;
     }
 
-    public Row getRow() {
-        return row;
-    }
-
-    public void setRow(Row row) {
-        this.row = row;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public boolean isReserved() {
@@ -78,43 +83,83 @@ public class Seat implements Identifiable {
         isReserved = reserved;
     }
 
-    public Event getReservedForEvent() {
-        return reservedForEvent;
+    public Row getRow() {
+        return row;
     }
 
-    public void setReservedForEvent(Event reservedForEvent) {
-        this.reservedForEvent = reservedForEvent;
+    public void setRow(Row row) {
+        this.row = row;
+    }
+
+    public Ticket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    /**
+     * Gets the Section to which this seat belongs via its Row.
+     *
+     * @return The Section object.
+     */
+    public Section getSection() {
+        return row != null ? row.getSection() : null;
     }
 
     @Override
     public String toString() {
         return "Seat{" +
                 "seatID=" + seatID +
-                ", rowID=" + (row != null ? row.getID() : "null") +
+                ", number=" + number +
                 ", isReserved=" + isReserved +
-                ", reservedForEventID=" + (reservedForEvent != null ? reservedForEvent.getID() : "null") +
+                ", rowID=" + (row != null ? row.getID() : "null") +
+                ", ticketID=" + (ticket != null ? ticket.getID() : "null") +
                 '}';
     }
 
     // CSV Methods
+
+    /**
+     * Converts the Seat object into a CSV representation.
+     *
+     * @return A comma-separated string representing the seat.
+     */
     @Override
     public String toCsv() {
         return String.join(",",
                 String.valueOf(seatID),
-                row != null ? String.valueOf(row.getID()) : "null",
+                String.valueOf(number),
                 String.valueOf(isReserved),
-                reservedForEvent != null ? String.valueOf(reservedForEvent.getID()) : "null"
+                row != null ? String.valueOf(row.getID()) : "null",
+                ticket != null ? String.valueOf(ticket.getID()) : "null"
         );
     }
 
+    /**
+     * Creates a Seat object from a CSV string.
+     *
+     * @param csvLine The CSV string.
+     * @return A Seat object.
+     */
     public static Seat fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int seatID = Integer.parseInt(fields[0].trim());
-        int rowID = Integer.parseInt(fields[1].trim());
+        int number = Integer.parseInt(fields[1].trim());
         boolean isReserved = Boolean.parseBoolean(fields[2].trim());
-        Integer reservedForEventID = fields[3].trim().equals("null") ? null : Integer.parseInt(fields[3].trim());
-        Row row = controller.findRowByID(rowID);
-        Event event = reservedForEventID != null ? ControllerProvider.getController().findEventByID(reservedForEventID) : null;
-        return new Seat(seatID, row, isReserved, event);
+        int rowID = Integer.parseInt(fields[3].trim());
+        Row row = ControllerProvider.getController().findRowByID(rowID);
+
+        Seat seat = new Seat(seatID, number, isReserved, row);
+
+        // Handle ticket if it exists
+        if (!fields[4].trim().equals("null")) {
+            int ticketID = Integer.parseInt(fields[4].trim());
+            Ticket ticket = ControllerProvider.getController().findTicketByID(ticketID);
+            seat.setTicket(ticket);
+        }
+
+        return seat;
     }
 }
