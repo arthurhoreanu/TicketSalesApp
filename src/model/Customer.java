@@ -17,8 +17,10 @@ public class Customer extends User {
     @Transient
     private Set<FavouriteEntity> favourites;
 
-    @Transient
-    private ShoppingCart shoppingCart;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cart_id", nullable = true)
+    private Cart cart;
+
 
     @Transient
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
@@ -35,7 +37,7 @@ public class Customer extends User {
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
         this.favourites = new HashSet<>();
-        this.shoppingCart = new ShoppingCart();
+        this.cart = new Cart();
         this.preferredSections = new HashMap<>();
     }
 
@@ -69,8 +71,12 @@ public class Customer extends User {
      * Gets the customer's shopping cart.
      * @return the customer's shopping cart
      */
-    public ShoppingCart getShoppingCart() {
-        return shoppingCart;
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     /**
