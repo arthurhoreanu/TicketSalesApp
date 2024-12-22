@@ -28,6 +28,10 @@ public class Ticket implements Identifiable {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     @Column(name = "price", nullable = false)
     private double price;
 
@@ -131,6 +135,14 @@ public class Ticket implements Identifiable {
         this.purchaseDate = purchaseDate;
     }
 
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
     /**
      * Marks the ticket as sold, assigning the purchase date.
      */
@@ -139,28 +151,14 @@ public class Ticket implements Identifiable {
         this.purchaseDate = LocalDateTime.now();
     }
 
-    /**
-     * Reduces the ticket price by a percentage.
-     *
-     * @param discountPercentage the percentage to reduce the price by (e.g., 20 for 20%).
-     */
-    public void applyDiscount(double discountPercentage) {
-        if (discountPercentage <= 0 || discountPercentage > 100) {
-            throw new IllegalArgumentException("Discount percentage must be between 0 and 100.");
+    public void adjustPrice(double percentage) {
+        if (percentage == 0) {
+            return;
         }
-        this.price = this.price * (1 - discountPercentage / 100);
-    }
-
-    /**
-     * Increases the ticket price by a percentage.
-     *
-     * @param increasePercentage the percentage to increase the price by (e.g., 50 for 50%).
-     */
-    public void applyPriceIncrease(double increasePercentage) {
-        if (increasePercentage <= 0) {
-            throw new IllegalArgumentException("Increase percentage must be greater than 0.");
+        if (percentage < -100) {
+            throw new IllegalArgumentException("Reduction percentage cannot exceed 100%.");
         }
-        this.price = this.price * (1 + increasePercentage / 100);
+        this.price *= (1 + percentage / 100);
     }
 
     @Override
