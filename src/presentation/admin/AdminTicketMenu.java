@@ -27,12 +27,12 @@ public class AdminTicketMenu {
         while (inTicketMenu) {
             System.out.println("==== Ticket Management ====");
             System.out.println("1. Generate Tickets for Event");
-            System.out.println("2. View Available Tickets for Event");
-            System.out.println("3. Reserve Ticket");
-            System.out.println("4. Release Ticket");
+            System.out.println("2. View Available Tickets for Event"); // TODO de șters
+            System.out.println("3. Reserve Ticket"); // TODO de șters
+            System.out.println("4. Release Ticket"); // TODO de șters
             System.out.println("5. View Ticket by ID");
             System.out.println("6. Delete Ticket by ID");
-            System.out.println("7. Calculate Total Price of Selected Tickets");
+            System.out.println("7. Calculate Total Price of Selected Tickets"); // TODO de șters
             System.out.println("0. Back to Admin Menu");
             System.out.println("==========================");
 
