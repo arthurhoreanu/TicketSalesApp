@@ -29,15 +29,10 @@ public class Venue implements Identifiable {
     private boolean hasSeats;
 
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
-    /**
-     * Default constructor for JPA, CSV, and InMemory compatibility.
-     * Initializes the sections list to avoid NullPointerException.
-     */
-    public Venue() {
-        this.sections = new ArrayList<>();
-    }
+    // Default constructor for JPA
+    public Venue() {}
 
     /**
      * Constructs a Venue with the specified attributes.
@@ -49,7 +44,6 @@ public class Venue implements Identifiable {
      * @param hasSeats      true if the venue has seats, false otherwise
      */
     public Venue(int venueID, String venueName, String location, int venueCapacity, boolean hasSeats) {
-        this();
         this.venueID = venueID;
         this.venueName = venueName;
         this.location = location;
@@ -103,7 +97,10 @@ public class Venue implements Identifiable {
     }
 
     public void setSections(List<Section> sections) {
-        this.sections = sections;
+        this.sections.clear(); // Clear existing list to avoid duplicates
+        for (Section section : sections) {
+            addSection(section); // Use addSection to maintain bidirectional relationship
+        }
     }
 
     /**
@@ -134,7 +131,7 @@ public class Venue implements Identifiable {
                 ", location='" + location + '\'' +
                 ", venueCapacity=" + venueCapacity +
                 ", hasSeats=" + hasSeats +
-                ", sections=" + sections.size() +
+                ", sectionsCount=" + sections.size() +
                 '}';
     }
 
@@ -169,11 +166,7 @@ public class Venue implements Identifiable {
         int venueCapacity = Integer.parseInt(fields[3].trim());
         boolean hasSeats = Boolean.parseBoolean(fields[4].trim());
 
-        Venue venue = new Venue(venueID, venueName, location, venueCapacity, hasSeats);
-
-        // Initialize sections list for InMemory/CSV compatibility
-        venue.setSections(new ArrayList<>());
-
-        return venue;
+        // No need to initialize sections list; it's already initialized
+        return new Venue(venueID, venueName, location, venueCapacity, hasSeats);
     }
 }

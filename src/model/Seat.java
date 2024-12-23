@@ -51,17 +51,6 @@ public class Seat implements Identifiable {
         this.row = row;
     }
 
-    /**
-     * Constructs a Seat without a predefined ID, for scenarios where the ID is generated automatically.
-     *
-     * @param number   the seat number
-     * @param isReserved whether the seat is reserved
-     * @param row      the Row object associated with the seat
-     */
-    public Seat(int number, boolean isReserved, Row row) {
-        this(0, number, isReserved, row);
-    }
-
     @Override
     public Integer getID() {
         return seatID;
@@ -100,9 +89,14 @@ public class Seat implements Identifiable {
     }
 
     public void setTicket(Ticket ticket) {
+        if (this.ticket != null) {
+            this.ticket.setSeat(null); // Break the old association
+        }
         this.ticket = ticket;
+        if (ticket != null) {
+            ticket.setSeat(this); // Establish the new association
+        }
     }
-
     /**
      * Gets the Section to which this seat belongs via its Row.
      *
@@ -118,7 +112,7 @@ public class Seat implements Identifiable {
                 "seatID=" + seatID +
                 ", number=" + number +
                 ", isReserved=" + isReserved +
-                ", rowID=" + (row != null ? row.getID() : "null") +
+                ", rowID=" + (row != null && row.getID() != null ? row.getID() : "not loaded") +
                 ", ticketID=" + (ticket != null ? ticket.getID() : "null") +
                 '}';
     }
@@ -154,6 +148,6 @@ public class Seat implements Identifiable {
         boolean isReserved = Boolean.parseBoolean(fields[2].trim());
         int rowID = Integer.parseInt(fields[3].trim());
 
-        return new Seat(seatID, number, isReserved, controller.findRowByID(rowID));
-    }
+        Row row = controller.findRowByID(rowID);
+        return new Seat(seatID, number, isReserved, row);    }
 }
