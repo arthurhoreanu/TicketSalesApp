@@ -28,6 +28,8 @@ public class Cart implements Identifiable {
     @Transient
     private List<Ticket> tickets = new ArrayList<>();
 
+    static Controller controller = new Controller();
+
     public Cart() {}
 
     public Cart(Customer customer, Event event) {
