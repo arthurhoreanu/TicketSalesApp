@@ -1,7 +1,5 @@
 package controller;
 
-import model.Order;
-import model.OrderTicket;
 import model.Ticket;
 import service.OrderTicketService;
 

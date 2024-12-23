@@ -45,6 +45,10 @@ public class Ticket implements Identifiable {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_history_id", nullable = true)
+    private PurchaseHistory purchaseHistory;
+
     static Controller controller = ControllerProvider.getController();
 
     /**
@@ -143,12 +147,27 @@ public class Ticket implements Identifiable {
         this.cart = cart;
     }
 
+    public PurchaseHistory getPurchaseHistory() {
+        return purchaseHistory;
+    }
+
+    public void setPurchaseHistory(PurchaseHistory purchaseHistory) {
+        this.purchaseHistory = purchaseHistory;
+    }
+
     /**
      * Marks the ticket as sold, assigning the purchase date.
      */
     public void markAsSold() {
         this.isSold = true;
         this.purchaseDate = LocalDateTime.now();
+    }
+
+    public void moveToPurchaseHistory(PurchaseHistory purchaseHistory) {
+        if (cart != null) {
+            this.cart = null; // Scoatem biletul din Cart
+        }
+        this.purchaseHistory = purchaseHistory; // Asociem biletul cu PurchaseHistory
     }
 
     public void adjustPrice(double percentage) {
@@ -191,7 +210,8 @@ public class Ticket implements Identifiable {
                 String.valueOf(price),
                 ticketType.name(),
                 String.valueOf(isSold),
-                purchaseDate != null ? purchaseDate.toString() : "null"
+                purchaseDate != null ? purchaseDate.toString() : "null",
+                purchaseHistory != null ? String.valueOf(purchaseHistory.getID()) : "null" // Adăugăm referința către PurchaseHistory
         );
     }
 
@@ -211,16 +231,21 @@ public class Ticket implements Identifiable {
         TicketType ticketType = TicketType.valueOf(fields[5].trim());
         boolean isSold = Boolean.parseBoolean(fields[6].trim());
         LocalDateTime purchaseDate = fields[7].trim().equals("null") ? null : LocalDateTime.parse(fields[7].trim());
+        Integer purchaseHistoryID = fields[8].trim().equals("null") ? null : Integer.parseInt(fields[8].trim());
 
-        // Use controller or services to fetch entities
+        // Folosim controller sau servicii pentru a încărca entitățile asociate
         Event event = controller.findEventByID(eventID);
         Seat seat = seatID != null ? controller.findSeatByID(seatID) : null;
         Customer customer = controller.findCustomerByID(customerID);
+        // TODO metoda din Controller
+        PurchaseHistory purchaseHistory = purchaseHistoryID != null ? controller.findPurchaseHistoryByID(purchaseHistoryID) : null;
 
         Ticket ticket = new Ticket(event, seat, customer, price, ticketType);
         ticket.setTicketID(ticketID);
         ticket.setSold(isSold);
         ticket.setPurchaseDate(purchaseDate);
+        ticket.setPurchaseHistory(purchaseHistory);
+
         return ticket;
     }
 }
