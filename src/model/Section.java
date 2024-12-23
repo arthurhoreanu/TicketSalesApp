@@ -27,20 +27,15 @@ public class Section implements Identifiable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false)
-    private Venue venue; // Many-to-One relationship with Venue
+    private Venue venue;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Row> rows; // One-to-Many relationship with Row
+    private List<Row> rows = new ArrayList<>();
 
     static Controller controller = ControllerProvider.getController();
 
-    /**
-     * Default constructor for JPA, CSV, and InMemory compatibility.
-     * Initializes the rows list to avoid NullPointerException.
-     */
-    public Section() {
-        this.rows = new ArrayList<>();
-    }
+    // Default constructor for JPA
+    public Section() {}
 
     /**
      * Constructs a Section with the specified attributes.
@@ -51,7 +46,6 @@ public class Section implements Identifiable {
      * @param venue           the Venue object associated with this section
      */
     public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
-        this();
         this.sectionID = sectionID;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
@@ -96,7 +90,10 @@ public class Section implements Identifiable {
     }
 
     public void setRows(List<Row> rows) {
-        this.rows = rows;
+        this.rows.clear(); // Clear existing rows to avoid duplicates
+        for (Row row : rows) {
+            addRow(row); // Use addRow to maintain bidirectional relationship
+        }
     }
 
     /**
@@ -126,7 +123,7 @@ public class Section implements Identifiable {
                 ", sectionName='" + sectionName + '\'' +
                 ", sectionCapacity=" + sectionCapacity +
                 ", venue=" + (venue != null ? venue.getID() : "null") +
-                ", rows=" + rows.size() +
+                ", rowsCount=" + rows.size() +
                 '}';
     }
 
@@ -160,11 +157,10 @@ public class Section implements Identifiable {
         int sectionCapacity = Integer.parseInt(fields[2].trim());
         int venueID = Integer.parseInt(fields[3].trim());
 
+        // Create the Section object with the Venue retrieved from the controller
         Section section = new Section(sectionID, sectionName, sectionCapacity, controller.findVenueByID(venueID));
 
-        // Initialize rows for compatibility with InMemory and CSV
-        section.setRows(new ArrayList<>());
-
+        // No need to initialize rows; it's already initialized
         return section;
     }
 }
