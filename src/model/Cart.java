@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
