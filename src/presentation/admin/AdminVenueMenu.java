@@ -31,9 +31,9 @@ public class AdminVenueMenu {
             System.out.println("6. View Sections in Venue");
             System.out.println("7. Add Row to Section");
             System.out.println("8. View Rows in Section");
-            System.out.println("9. Add Seats to Row");
-            System.out.println("10. View Seats in Row");
-            System.out.println("11. View Available Seats in Venue for Event");
+            System.out.println("9. Add Seats to Row"); // TODO de șters: o facem în Add Row to Section
+            System.out.println("10. View Seats in Row"); // TODO de șters
+            System.out.println("11. View Available Seats in Venue for Event"); // TODO de șters
             System.out.println("0. Back to Admin Menu");
             System.out.println("==========================");
 

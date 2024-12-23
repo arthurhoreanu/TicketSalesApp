@@ -27,9 +27,9 @@ public class CustomerMenu {
             System.out.println("2. Search for Artists/Athletes");
             System.out.println("3. Search for Locations/Venues");
             System.out.println("4. View Suggested Events");
-            System.out.println("5. Manage Shopping Cart");
-            System.out.println("6. Checkout Shopping Cart");
-            System.out.println("7. View Previous Orders");
+            System.out.println("5. Manage Shopping Cart"); // TODO de șters
+            System.out.println("6. Checkout Shopping Cart"); // TODO de șters
+            System.out.println("7. View Previous Orders"); // TODO va deveni History
             System.out.println("8. Manage Favourites");
             System.out.println("0. Exit");
             System.out.println("=======================");
