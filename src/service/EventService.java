@@ -17,8 +17,6 @@ public class EventService {
     private final VenueService venueService;
     private final FileRepository<Concert> concertFileRepository;
     private final FileRepository<SportsEvent> sportsEventFileRepository;
-    private final DBRepository<Concert> concertDatabaseRepository;
-    private final DBRepository<SportsEvent> sportsEventDatabaseRepository;
     private int lastCreatedEventID;
     static Controller controller = ControllerProvider.getController();
 
@@ -28,26 +26,11 @@ public class EventService {
         this.concertFileRepository = new FileRepository<>("src/repository/data/concerts.csv", Concert::fromCsv);
         this.sportsEventFileRepository = new FileRepository<>("src/repository/data/sportsevents.csv", SportsEvent::fromCsv);
         syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.concertDatabaseRepository = new DBRepository<>(entityManagerFactory, Concert.class);
-        this.sportsEventDatabaseRepository = new DBRepository<>(entityManagerFactory, SportsEvent.class);
-        syncFromDatabase();
     }
 
     private void syncFromCsv() {
         List<Concert> concerts = concertFileRepository.getAll();
         List<SportsEvent> sportsEvents = sportsEventFileRepository.getAll();
-        for (Concert concert : concerts) {
-            eventRepository.create(concert);
-        }
-        for (SportsEvent sportsEvent : sportsEvents) {
-            eventRepository.create(sportsEvent);
-        }
-    }
-
-    private void syncFromDatabase() {
-        List<Concert> concerts = concertDatabaseRepository.getAll();
-        List<SportsEvent> sportsEvents = sportsEventDatabaseRepository.getAll();
         for (Concert concert : concerts) {
             eventRepository.create(concert);
         }
@@ -75,7 +58,6 @@ public class EventService {
         Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         eventRepository.create(concert);
         concertFileRepository.create(concert);
-        concertDatabaseRepository.create(concert);
         this.lastCreatedEventID = eventID;
         return true;
     }
@@ -95,7 +77,6 @@ public class EventService {
         SportsEvent sportsEvent = new SportsEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         eventRepository.create(sportsEvent);
         sportsEventFileRepository.create(sportsEvent);
-        sportsEventDatabaseRepository.create(sportsEvent);
         this.lastCreatedEventID = eventID;
         return true;
     }
@@ -106,7 +87,6 @@ public class EventService {
             Artist artist = new Artist();
             artist.setID(artistID);
             concert.getArtists().add(artist); // Hibernate gestionează automat `lineup`
-            concertDatabaseRepository.update(concert);
             return true;
         }
         return false;
@@ -118,7 +98,6 @@ public class EventService {
             Athlete athlete = new Athlete();
             athlete.setID(athleteID);
             sportsEvent.getAthletes().add(athlete); // Hibernate gestionează automat `lineup`
-            sportsEventDatabaseRepository.update(sportsEvent);
             return true;
         }
         return false;
@@ -145,11 +124,9 @@ public class EventService {
             eventRepository.update(event);
             if(event instanceof Concert) {
                 concertFileRepository.update((Concert) event);
-                concertDatabaseRepository.update((Concert) event);
             }
             else if(event instanceof SportsEvent) {
                 sportsEventFileRepository.update((SportsEvent) event);
-                sportsEventDatabaseRepository.update((SportsEvent) event);
             }
             return true;
         } else {
@@ -168,11 +145,9 @@ public class EventService {
             eventRepository.delete(eventId);
             if(event instanceof Concert) {
                 concertFileRepository.delete(eventId);
-                concertDatabaseRepository.delete(eventId);
             }
             else if(event instanceof SportsEvent) {
                 sportsEventFileRepository.delete(eventId);
-                sportsEventDatabaseRepository.delete(eventId);
             }
             return true;
         } else {
@@ -232,9 +207,13 @@ public class EventService {
     public List<Event> getUpcomingEventsForArtist(int artistID) {
         LocalDateTime now = LocalDateTime.now();
         List<Event> upcomingEvents = new ArrayList<>();
-        for (Concert concert : concertDatabaseRepository.getAll()) {
-            if (concert.getArtists().stream().anyMatch(artist -> artist.getID() == artistID) && concert.getStartDateTime().isAfter(now)) {
-                upcomingEvents.add(concert);
+        for (Event event : eventRepository.getAll()) {
+            if (event instanceof Concert) {
+                Concert concert = (Concert) event;
+                if (concert.getArtists().stream().anyMatch(artist -> artist.getID() == artistID) &&
+                        concert.getStartDateTime().isAfter(now)) {
+                    upcomingEvents.add(concert);
+                }
             }
         }
         return upcomingEvents;
@@ -248,9 +227,13 @@ public class EventService {
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
         LocalDateTime now = LocalDateTime.now();
         List<Event> upcomingEvents = new ArrayList<>();
-        for (SportsEvent sportsEvent : sportsEventDatabaseRepository.getAll()) {
-            if (sportsEvent.getAthletes().stream().anyMatch(athlete -> athlete.getID() == athleteID) && sportsEvent.getStartDateTime().isAfter(now)) {
-                upcomingEvents.add(sportsEvent);
+        for (Event event : eventRepository.getAll()) {
+            if (event instanceof SportsEvent) {
+                SportsEvent sportsEvent = (SportsEvent) event;
+                if (sportsEvent.getAthletes().stream().anyMatch(athlete -> athlete.getID() == athleteID) &&
+                        sportsEvent.getStartDateTime().isAfter(now)) {
+                    upcomingEvents.add(sportsEvent);
+                }
             }
         }
         return upcomingEvents;

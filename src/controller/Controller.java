@@ -255,14 +255,11 @@ public class Controller {
 
     // Event related
     public boolean addArtistToConcert(int eventId, int artistId) {
-        return eventController.addArtistToConcert(eventId, artistId);
-    }
+        return eventController.addArtistToConcert(eventId, artistId);}
     public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
-        return eventController.addAthleteToSportsEvent(eventId, athleteId);
-    }
+        return eventController.addAthleteToSportsEvent(eventId, athleteId);}
     public int getLastCreatedEventID() {
-        return  eventController.getLastCreatedEventID();
-    }
+        return  eventController.getLastCreatedEventID();}
     public Event findEventByID(int eventId) {
         return eventController.findEventByID(eventId);}
     public List<Event> getEventsByLocation(String locationOrVenueName) {

@@ -75,53 +75,114 @@ public class AdminEventMenu {
         System.out.print("Enter venue name: ");
         String venueName = scanner.nextLine();
         Venue venue = controller.findVenueByName(venueName);
+        if (venue == null) {
+            System.out.println("Venue not found. Please create the venue first.");
+            return;
+        }
         int venueID = venue.getID();
         EventStatus eventStatus = EventStatus.SCHEDULED;
-
         if ("Concert".equalsIgnoreCase(eventType)) {
             controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
             int eventId = controller.getLastCreatedEventID();
-            handleAddArtistsToEvent(scanner, controller, eventId);
+            Concert concert = (Concert) controller.findEventByID(eventId);
+            if (concert != null) {
+                manageArtistsForConcert(scanner, controller, concert);
+            }
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
             controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
             int eventId = controller.getLastCreatedEventID();
-            handleAddAthletesToEvent(scanner, controller, eventId);
+            SportsEvent sportsEvent = (SportsEvent) controller.findEventByID(eventId);
+            if (sportsEvent != null) {
+                manageAthletesForSportsEvent(scanner, controller, sportsEvent);
+            }
         } else {
             System.out.println("Invalid event type. Please enter 'Concert' or 'Sports Event'.");
         }
     }
 
-    private static void handleAddArtistsToEvent(Scanner scanner, Controller controller, int eventId) {
+    private static void manageArtistsForConcert(Scanner scanner, Controller controller, Concert concert) {
+        System.out.println("Manage Artists for Concert:");
         while (true) {
-            System.out.print("Enter artist name (or type 'done' to finish): ");
-            String artistName = scanner.nextLine();
-            if ("done".equalsIgnoreCase(artistName)) {
-                break;
+            System.out.println("1. Add Artist");
+            System.out.println("2. Remove Artist");
+            System.out.println("0. Back");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter Artist Name: ");
+                    String artistName = scanner.nextLine();
+                    Artist artist = controller.findArtistByName(artistName);
+                    if (artist == null) {
+                        controller.createArtist(artistName, "No genre set.");
+                        artist = controller.findArtistByName(artistName);
+                    }
+                    controller.addArtistToConcert(concert.getID(), artist.getID());
+                    System.out.println("Artist added to the concert.");
+                    break;
+                case "2":
+                    if (concert.getArtists().isEmpty())
+                        System.out.println("No artists to remove.");
+                    else {
+                        System.out.print("Enter Artist Name: ");
+                        String removeArtistName = scanner.nextLine();
+                        Artist artistToRemove = controller.findArtistByName(removeArtistName);
+                        if (artistToRemove != null && concert.getArtists().remove(artistToRemove)) {
+                            System.out.println("Artist removed from the concert.");
+                        } else {
+                            System.out.println("Artist not found in the concert.");
+                        }
+                    }
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Invalid option.");
             }
-            Artist artist = controller.findArtistByName(artistName);
-            if (artist == null) {
-                controller.createArtist(artistName, "No genre set.");
-                artist = controller.findArtistByName(artistName);
-            }
-            controller.addArtistToConcert(eventId, artist.getID());
-            System.out.println("Artist " + artistName + " linked to event.");
         }
     }
 
-    private static void handleAddAthletesToEvent(Scanner scanner, Controller controller, int eventId) {
+    private static void manageAthletesForSportsEvent(Scanner scanner, Controller controller, SportsEvent sportsEvent) {
+        System.out.println("Manage Athletes for Sports Event:");
         while (true) {
-            System.out.print("Enter athlete name (or type 'done' to finish): ");
-            String athleteName = scanner.nextLine();
-            if ("done".equalsIgnoreCase(athleteName)) {
-                break;
+            System.out.println("1. Add Athlete");
+            System.out.println("2. Remove Athlete");
+            System.out.println("0. Back");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter Athlete Name: ");
+                    String athleteName = scanner.nextLine();
+                    Athlete athlete = controller.findAthleteByName(athleteName);
+                    if (athlete == null) {
+                        controller.createAthlete(athleteName, "No sport set.");
+                        athlete = controller.findAthleteByName(athleteName);
+                    }
+                    controller.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID());
+                    System.out.println("Athlete added to the sports event.");
+                    break;
+                case "2":
+                    if (sportsEvent.getAthletes().isEmpty())
+                        System.out.println("No athletes to remove.");
+                    else {
+                        System.out.print("Enter Athlete Name: ");
+                        String removeAthleteName = scanner.nextLine();
+                        Athlete athleteToRemove = controller.findAthleteByName(removeAthleteName);
+                        if (athleteToRemove != null && sportsEvent.getAthletes().remove(athleteToRemove)) {
+                            System.out.println("Athlete removed from the sports event.");
+                        } else {
+                            System.out.println("Athlete not found in the sports event.");
+                        }
+                    }
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Invalid option.");
             }
-            Athlete athlete = controller.findAthleteByName(athleteName);
-            if (athlete == null) {
-                controller.createAthlete(athleteName, "No sport set.");
-                athlete = controller.findAthleteByName(athleteName);
-            }
-            controller.addAthleteToSportsEvent(eventId, athlete.getID());
-            System.out.println("Athlete " + athleteName + " linked to event.");
         }
     }
 
@@ -149,7 +210,6 @@ public class AdminEventMenu {
      */
     public static void handleUpdateEvent(Scanner scanner, Controller controller) {
         System.out.println("=== Update Event ===");
-
         List<Event> events = controller.getAllEvents();
         if (events.isEmpty()) {
             System.out.println("No events available.");
@@ -159,7 +219,6 @@ public class AdminEventMenu {
                 System.out.println(event);
             }
         }
-
         System.out.print("Enter Event ID to update: ");
         int eventId;
         try {
@@ -168,25 +227,21 @@ public class AdminEventMenu {
             System.out.println("Invalid Event ID.");
             return;
         }
-
         Event event = controller.findEventByID(eventId);
         if (event == null) {
             System.out.println("Event not found.");
             return;
         }
-
         System.out.print("Enter new event name (or press Enter to keep current name): ");
         String newName = scanner.nextLine().trim();
         if (newName.isEmpty()) {
             newName = event.getEventName();
         }
-
         System.out.print("Enter new event description (or press Enter to keep current description): ");
         String newDescription = scanner.nextLine().trim();
         if (newDescription.isEmpty()) {
             newDescription = event.getEventDescription();
         }
-
         LocalDateTime newStartDateTime = event.getStartDateTime();
         System.out.print("Enter new start date and time (YYYY-MM-DDTHH:MM) (or press Enter to keep current start time): ");
         String startDateTimeInput = scanner.nextLine().trim();
@@ -197,7 +252,6 @@ public class AdminEventMenu {
                 System.out.println("Invalid date format. Start time remains unchanged.");
             }
         }
-
         LocalDateTime newEndDateTime = event.getEndDateTime();
         System.out.print("Enter new end date and time (YYYY-MM-DDTHH:MM) (or press Enter to keep current end time): ");
         String endDateTimeInput = scanner.nextLine().trim();
@@ -208,7 +262,6 @@ public class AdminEventMenu {
                 System.out.println("Invalid date format. End time remains unchanged.");
             }
         }
-
         System.out.print("Enter new event status (SCHEDULED, CANCELLED, COMPLETED) (or press Enter to keep current status): ");
         String statusInput = scanner.nextLine().trim().toUpperCase();
         EventStatus newStatus = event.getEventStatus();
@@ -219,7 +272,11 @@ public class AdminEventMenu {
                 System.out.println("Invalid status. Status remains unchanged.");
             }
         }
-
+        if (event instanceof Concert) {
+            manageArtistsForConcert(scanner, controller, (Concert) event);
+        } else if (event instanceof SportsEvent) {
+            manageAthletesForSportsEvent(scanner, controller, (SportsEvent) event);
+        }
         controller.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
         System.out.println("Event updated successfully.");
     }
