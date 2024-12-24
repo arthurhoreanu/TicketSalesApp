@@ -31,12 +31,14 @@ public class PurchaseHistory implements Identifiable {
 
     static Controller controller = ControllerProvider.getController();
 
-
     public PurchaseHistory() {}
 
     public PurchaseHistory(Customer customer, LocalDate purchaseDate) {
         if (customer == null) {
             throw new IllegalArgumentException("Customer cannot be null.");
+        }
+        if (purchaseDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Purchase date cannot be in the future.");
         }
         this.customer = customer;
         this.purchaseDate = purchaseDate;
@@ -64,9 +66,15 @@ public class PurchaseHistory implements Identifiable {
     }
 
     public void setTickets(List<Ticket> tickets) {
-        this.tickets = tickets != null ? tickets : new ArrayList<>();
+        if (tickets == null) {
+            throw new IllegalArgumentException("Tickets list cannot be null.");
+        }
+        this.tickets = new ArrayList<>();
         for (Ticket ticket : tickets) {
-            ticket.setPurchaseHistory(this);
+            if (ticket == null) {
+                throw new IllegalArgumentException("Ticket in list cannot be null.");
+            }
+            addTicket(ticket);
         }
     }
 
@@ -95,8 +103,10 @@ public class PurchaseHistory implements Identifiable {
         return totalAmount;
     }
 
-    public void setTotalAmount(Double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void calculateTotalAmount() {
+        this.totalAmount = tickets.stream()
+                .mapToDouble(Ticket::getPrice)
+                .sum();
     }
 
     public String toCsv() {
@@ -106,7 +116,7 @@ public class PurchaseHistory implements Identifiable {
                 (totalAmount != null ? totalAmount : "null");
     }
 
-    public static PurchaseHistory fromCsv(String csvLine, Controller controller) {
+    public static PurchaseHistory fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int id = Integer.parseInt(fields[0].trim());
         Customer customer = controller.findCustomerByID(Integer.parseInt(fields[1].trim()));
@@ -115,12 +125,11 @@ public class PurchaseHistory implements Identifiable {
 
         PurchaseHistory purchaseHistory = new PurchaseHistory(customer, purchaseDate);
         purchaseHistory.setID(id);
-        purchaseHistory.setTotalAmount(totalAmount);
+        purchaseHistory.calculateTotalAmount();
 
         return purchaseHistory;
     }
 
-    @Override
     public String toString() {
         return "PurchaseHistory{" +
                 "id=" + id +

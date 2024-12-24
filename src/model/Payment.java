@@ -5,16 +5,41 @@ import controller.Controller;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "payment")
 public class Payment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int paymentID;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
+
+    @Column(name = "payment_amount", nullable = false)
     private double paymentAmount;
+
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
+
+    @Column(name = "payment_status", nullable = false)
     private String paymentStatus; // e.g., PENDING, COMPLETED, FAILED
+
+    @Column(name = "currency", nullable = false)
     private String currency;
+
+    @Column(name = "transaction_id", unique = true, nullable = false)
     private String transactionID;
+
+    public Payment() {}
 
     public Payment(Cart cart, Customer customer, LocalDateTime paymentDate, double paymentAmount,
                    String paymentMethod, String paymentStatus, String currency, String transactionID) {

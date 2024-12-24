@@ -19,6 +19,7 @@ public class Controller {
     private final TicketController ticketController;
     private final RowController rowController;
     private final PaymentController paymentController;
+    private final PurchaseHistoryController purchaseHistoryController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -39,7 +40,8 @@ public class Controller {
     public Controller(UserController userController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
                       AthleteController athleteController, CustomerController customerController, CartController cartController,
-                      TicketController ticketController, RowController rowController, PaymentController paymentController) {
+                      TicketController ticketController, RowController rowController, PaymentController paymentController,
+                      PurchaseHistoryController purchaseHistoryController) {
         this.userController = userController;
         this.eventController = eventController;
         this.venueController = venueController;
@@ -52,9 +54,18 @@ public class Controller {
         this.ticketController = ticketController;
         this.rowController = rowController;
         this.paymentController = paymentController;
+        this.purchaseHistoryController = purchaseHistoryController;
     }
 
     // Rule: newest first
+
+    // Purchase History related
+    public void createPurchaseHistory(Cart cart) {
+        purchaseHistoryController.createPurchaseHistory(cart);}
+    public void getPurchaseHistoryForCustomer(Customer customer) {
+        purchaseHistoryController.getPurchaseHistoryForCustomer(customer);}
+    public List<PurchaseHistory> getAllPurchaseHistories() {
+        return purchaseHistoryController.getAllPurchaseHistories();}
 
     // Payment related
     public void processPayment(Cart cart, String cardNumber, String cardholderName,
