@@ -2,19 +2,19 @@ package controller;
 
 import model.Customer;
 import model.User;
-import service.AccountService;
+import service.UserService;
 
 import java.util.List;
 
-public class AccountController {
-    private final AccountService accountService;
+public class UserController {
+    private final UserService userService;
 
     /**
-     * Constructor for AccountController.
-     * @param accountService The instance of AccountService used to perform account operations.
+     * Constructor for UserController.
+     * @param userService The instance of AccountService used to perform account operations.
      */
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -22,7 +22,7 @@ public class AccountController {
      * @return The current user, or null if no user is logged in.
      */
     public User getCurrentUser() {
-        return accountService.getCurrentUser();
+        return userService.getCurrentUser();
     }
 
     /**
@@ -30,7 +30,7 @@ public class AccountController {
      * @return A list containing all users in the system.
      */
     public List<User> getAllUsers() {
-        return accountService.getAllUsers();
+        return userService.getAllUsers();
     }
 
     /**
@@ -39,7 +39,7 @@ public class AccountController {
      * @return true if the username is taken; false if it's available.
      */
     public boolean isUsernameTaken(String username) {
-        return accountService.takenUsername(username);
+        return userService.takenUsername(username);
     }
 
     /**
@@ -48,7 +48,7 @@ public class AccountController {
      * @return true if the email ends with the required domain suffix; false otherwise.
      */
     public boolean domainEmail(String email) {
-        return accountService.domainEmail(email);
+        return userService.domainEmail(email);
     }
 
     /**
@@ -64,7 +64,7 @@ public class AccountController {
             System.out.println("All fields are required for account creation.");
             return;
         }
-        boolean success = accountService.createAccount(role, username, email, password);
+        boolean success = userService.createAccount(role, username, email, password);
         if (success) {
             System.out.println("Account created successfully.");
         } else {
@@ -83,7 +83,7 @@ public class AccountController {
             System.out.println("Username and password are required for login.");
             return;
         }
-        boolean success = accountService.login(username, password);
+        boolean success = userService.login(username, password);
         if (success) {
             System.out.println("Login successful. Welcome, " + username + "!");
         } else {
@@ -96,7 +96,7 @@ public class AccountController {
      * Displays a success message if logout is successful or an error message if no user is logged in.
      */
     public void logout() {
-        boolean success = accountService.logout();
+        boolean success = userService.logout();
         if (success) {
             System.out.println("Logout successful.");
         } else {
@@ -110,7 +110,7 @@ public class AccountController {
      * @param id The ID of the account to delete.
      */
     public void deleteAccount(int id) {
-        boolean success = accountService.deleteAccount(id);
+        boolean success = userService.deleteAccount(id);
         if (success) {
             System.out.println("Account with ID " + id + " has been deleted.");
         } else {
@@ -119,6 +119,6 @@ public class AccountController {
     }
 
     public Customer findCustomerByID(int customerID) {
-        return accountService.findCustomerByID(customerID);
+        return userService.findCustomerByID(customerID);
     }
 }

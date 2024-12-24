@@ -11,7 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public class AccountService {
+public class UserService {
     private final IRepository<User> userIRepository;
     private final CustomerService customerService;
     private User currentUser;
@@ -20,7 +20,7 @@ public class AccountService {
     private final DBRepository<Admin> adminDatabaseRepository;
     private final DBRepository<Customer> customerDatabaseRepository;
 
-    public AccountService(IRepository<User> userRepository, CustomerService customerService) {
+    public UserService(IRepository<User> userRepository, CustomerService customerService) {
         this.userIRepository = userRepository;
         this.customerService = customerService;
         this.adminFileRepository = new FileRepository<>("src/repository/data/admins.csv", Admin::fromCsv);
