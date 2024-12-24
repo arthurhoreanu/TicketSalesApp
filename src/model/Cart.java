@@ -100,9 +100,16 @@ public class Cart implements Identifiable {
         return tickets;
     }
 
-
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets != null ? tickets : new ArrayList<>();
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 
     /**
@@ -189,4 +196,5 @@ public class Cart implements Identifiable {
                 ", isPaymentProcessed=" + isPaymentProcessed +
                 '}';
     }
+
 }

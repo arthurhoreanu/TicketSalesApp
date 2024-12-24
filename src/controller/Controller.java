@@ -18,6 +18,7 @@ public class Controller {
     private final CartController cartController;
     private final TicketController ticketController;
     private final RowController rowController;
+    private final PaymentController paymentController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -38,7 +39,7 @@ public class Controller {
     public Controller(UserController userController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
                       AthleteController athleteController, CustomerController customerController, CartController cartController,
-                      TicketController ticketController, RowController rowController) {
+                      TicketController ticketController, RowController rowController, PaymentController paymentController) {
         this.userController = userController;
         this.eventController = eventController;
         this.venueController = venueController;
@@ -50,9 +51,16 @@ public class Controller {
         this.cartController = cartController;
         this.ticketController = ticketController;
         this.rowController = rowController;
+        this.paymentController = paymentController;
     }
 
     // Rule: newest first
+
+    // Payment related
+    public void processPayment(Cart cart, String cardNumber, String cardholderName,
+                               int expiryMonth, int expiryYear, String cvv, String currency) {
+        paymentController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
+    }
 
     // Row related
     public Row findRowByID(int rowID) {
@@ -205,25 +213,6 @@ public class Controller {
         return cartController.getTicketsInCart(cart);}
     public Cart findCartByID(int cartID) {
         return cartController.findCartByID(cartID);}
-
-    // Order related
-    public void createOrder(Customer customer) {
-        orderController.createOrder(customer);}
-    public void processOrderPayment(Order order, String cardNumber, int cvv, String cardOwner, String expirationDate) {
-        orderController.processOrderPayment(order, cardNumber, cvv, cardOwner, expirationDate);}
-    public void cancelOrder(int orderId) {
-        orderController.cancelOrder(orderId);}
-    public List<Order> getOrderHistory(Customer customer) {
-        return orderController.getOrderHistory(customer);
-    }
-    public Order getOrderByID(int orderID) {
-        return orderController.getOrderByID(orderID);
-    }
-    public void orderAllTicketsFromCart(Customer customer) {
-        orderController.orderAllTicketsFromCart(customer);}
-    public void orderTicketsForEvent(Customer customer, Event event) {
-        orderController.orderTicketsForEvent(customer, event);
-    }
 
     // Event related
     public boolean addArtistToConcert(int eventId, int artistId) {

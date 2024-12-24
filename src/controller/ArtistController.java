@@ -24,7 +24,6 @@ public class ArtistController {
      * @param genre The genre associated with the artist.
      */
     public void createArtist(String artistName, String genre) {
-        int artistID = artistService.getAllArtists().size() + 1; // Generate unique ID based on the current size
         boolean success = artistService.createArtist(artistName, genre);
         if (success) {
             System.out.println("Artist added successfully.");

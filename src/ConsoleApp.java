@@ -37,6 +37,7 @@ public class ConsoleApp {
         TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
         CartService cartService = new CartService(cartRepository);
         RowService rowService = new RowService(seatService, rowRepository, seatRepository);
+        PaymentService paymentService = new PaymentService();
 
         // Instantiate controllers
         UserController userController = new UserController(userService);
@@ -50,12 +51,13 @@ public class ConsoleApp {
         CartController cartController = new CartController(cartService);
         TicketController ticketController = new TicketController(ticketService);
         RowController rowController = new RowController(rowService);
+        PaymentController paymentController = new PaymentController(paymentService);
 
         // Instantiate main Controller
         Controller controller = new Controller(
                 userController, eventController, venueController, sectionController, seatController,
                 artistController, athleteController, customerController, cartController, ticketController,
-                rowController);
+                rowController, paymentController);
 
         ControllerProvider.setController(controller);
 
