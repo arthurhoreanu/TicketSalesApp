@@ -24,6 +24,7 @@ public class ConsoleApp {
         IRepository<Cart> cartRepository = new InMemoryRepository<>();
         IRepository<Section> sectionRepository = new InMemoryRepository<>();
         IRepository<Row> rowRepository = new InMemoryRepository<>();
+        IRepository<PurchaseHistory> purchaseHistoryRepository = new InMemoryRepository<>();
 
         // Instantiate services
         CustomerService customerService = new CustomerService();
@@ -38,6 +39,7 @@ public class ConsoleApp {
         CartService cartService = new CartService(cartRepository);
         RowService rowService = new RowService(seatService, rowRepository, seatRepository);
         PaymentService paymentService = new PaymentService();
+        PurchaseHistoryService purchaseHistoryService = new PurchaseHistoryService(purchaseHistoryRepository);
 
         // Instantiate controllers
         UserController userController = new UserController(userService);
@@ -52,12 +54,13 @@ public class ConsoleApp {
         TicketController ticketController = new TicketController(ticketService);
         RowController rowController = new RowController(rowService);
         PaymentController paymentController = new PaymentController(paymentService);
+        PurchaseHistoryController purchaseHistoryController = new PurchaseHistoryController(purchaseHistoryService);
 
         // Instantiate main Controller
         Controller controller = new Controller(
                 userController, eventController, venueController, sectionController, seatController,
                 artistController, athleteController, customerController, cartController, ticketController,
-                rowController, paymentController);
+                rowController, paymentController, purchaseHistoryController);
 
         ControllerProvider.setController(controller);
 
