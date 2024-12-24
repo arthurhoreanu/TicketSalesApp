@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Controller {
-    private final AccountController accountController;
+    private final UserController userController;
     private final EventController eventController;
     private final VenueController venueController;
     public final SectionController sectionController;
@@ -15,19 +15,16 @@ public class Controller {
     private final ArtistController artistController;
     private final AthleteController athleteController;
     private final CustomerController customerController;
-    private final OrderController orderController;
-    private final OrderTicketController orderTicketController;
-    private final ShoppingCartController shoppingCartController;
+    private final CartController cartController;
     private final TicketController ticketController;
     private final RowController rowController;
-    private final ShoppingCartTicketController shoppingCartTicketController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
      * events, venues, seating, artists, athletes, customers, orders, shopping carts, and tickets. Each of these
      * responsibilities is handled by a specific controller, which is injected into the Controller.
      *
-     * @param accountController The controller responsible for managing user accounts.
+     * @param userController The controller responsible for managing user accounts.
      * @param eventController The controller responsible for managing events.
      * @param venueController The controller responsible for managing venues.
      * @param sectionController The controller responsible for managing sections within venues.
@@ -35,16 +32,14 @@ public class Controller {
      * @param artistController The controller responsible for managing artists.
      * @param athleteController The controller responsible for managing athletes.
      * @param customerController The controller responsible for managing customers.
-     * @param orderController The controller responsible for managing orders.
-     * @param shoppingCartController The controller responsible for managing shopping carts.
+     * @param cartController The controller responsible for managing shopping carts.
      * @param ticketController The controller responsible for managing tickets.
      */
-    public Controller(AccountController accountController, EventController eventController, VenueController venueController,
+    public Controller(UserController userController, EventController eventController, VenueController venueController,
                       SectionController sectionController, SeatController seatController, ArtistController artistController,
-                      AthleteController athleteController, CustomerController customerController, OrderController orderController,OrderTicketController orderTicketController,
-                      ShoppingCartController shoppingCartController, TicketController ticketController, RowController rowController,
-                      ShoppingCartTicketController shoppingCartTicketController) {
-        this.accountController = accountController;
+                      AthleteController athleteController, CustomerController customerController, CartController cartController,
+                      TicketController ticketController, RowController rowController) {
+        this.userController = userController;
         this.eventController = eventController;
         this.venueController = venueController;
         this.sectionController = sectionController;
@@ -52,26 +47,12 @@ public class Controller {
         this.artistController = artistController;
         this.athleteController = athleteController;
         this.customerController = customerController;
-        this.orderController = orderController;
-        this.orderTicketController = orderTicketController;
-        this.shoppingCartController = shoppingCartController;
+        this.cartController = cartController;
         this.ticketController = ticketController;
         this.rowController = rowController;
-        this.shoppingCartTicketController = shoppingCartTicketController;
     }
 
     // Rule: newest first
-
-    // ShoppingCartTicket related
-    public void addTicketToShoppingCart(ShoppingCart shoppingCart, Event event, Ticket ticket) {
-        shoppingCartTicketController.addTicketToShoppingCart(shoppingCart, event, ticket);}
-    // TODO has the same name as the one from ShoppingCart
-//    public void getTicketsByShoppingCart_ShoppingCartTicket(ShoppingCart shoppingCart) {
-//        shoppingCartTicketController.getTicketsByShoppingCart(shoppingCart);}
-    public void removeTicketFromShoppingCart(ShoppingCartTicket shoppingCartTicket) {
-        shoppingCartTicketController.removeTicketFromShoppingCart(shoppingCartTicket);}
-    public void findShoppingCartTicketByID(int shoppingCartTicketID) {
-        shoppingCartTicketController.findShoppingCartTicketByID(shoppingCartTicketID);}
 
     // Row related
     public Row findRowByID(int rowID) {
@@ -209,17 +190,21 @@ public class Controller {
     public double calculateTotalPrice(List<Ticket> tickets) {
       return ticketController.calculateTotalPrice(tickets);}
 
-    // Shopping Cart related
-    public void addTicketToCart(Event event, Ticket ticket) {
-        shoppingCartController.addTicketToCart(event, ticket);}
-    public void removeTicketFromCart(Ticket ticket) {
-        shoppingCartController.removeTicketFromCart(ticket);}
-    public void clearCart() {
-        shoppingCartController.clearCart();}
-    public List<ShoppingCartTicket> getTicketsByShoppingCart(ShoppingCart shoppingCart) {
-        return shoppingCartController.getTicketsByShoppingCart(shoppingCart);}
-    public ShoppingCart findShoppingCartByID(int shoppingCartID) {
-        return shoppingCartController.findShoppingCartByID(shoppingCartID);}
+    // Cart related
+    public Cart createCart(Customer customer, Event event) {
+        return cartController.createCart(customer, event);}
+    public void addTicketToCart(Cart cart, Ticket ticket) {
+        cartController.addTicketToCart(cart, ticket);}
+    public void removeTicketFromCart(Cart cart, Ticket ticket) {
+        cartController.removeTicketFromCart(cart, ticket);}
+    public void clearCart(Cart cart) {
+        cartController.clearCart(cart);}
+    public void finalizeCart(Cart cart) {
+        cartController.finalizeCart(cart);}
+    public List<Ticket> getTicketsInCart(Cart cart) {
+        return cartController.getTicketsInCart(cart);}
+    public Cart findCartByID(int cartID) {
+        return cartController.findCartByID(cartID);}
 
     // Order related
     public void createOrder(Customer customer) {
@@ -239,19 +224,6 @@ public class Controller {
     public void orderTicketsForEvent(Customer customer, Event event) {
         orderController.orderTicketsForEvent(customer, event);
     }
-
-    // OrderTicket related
-    public void addOrderTicket(Order order, Ticket ticket) {
-        orderTicketController.addOrderTicket(order, ticket);
-    }
-    public List<Ticket> getTicketsByOrder(Order order) {
-        return orderTicketController.getTicketsByOrder(order);
-    }
-    public List<OrderTicket> getAllOrderTickets() {
-        return orderTicketController.getAllOrderTickets();
-    }
-
-
 
     // Event related
     public boolean addArtistToConcert(int eventId, int artistId) {
@@ -282,23 +254,23 @@ public class Controller {
 //    public boolean isEventSoldOut(Event event) {
 //        return eventController.isEventSoldOut(event);}
 
-    // Account related
+    // User related
     public Customer findCustomerByID(int customerID) {
-        return accountController.findCustomerByID(customerID);}
+        return userController.findCustomerByID(customerID);}
     public User getCurrentUser() {
-        return accountController.getCurrentUser();}
+        return userController.getCurrentUser();}
     public List<User> getAllUsers() {
-        return accountController.getAllUsers();}
+        return userController.getAllUsers();}
     public boolean isUsernameTaken(String username) {
-        return accountController.isUsernameTaken(username);}
+        return userController.isUsernameTaken(username);}
     public boolean domainEmail(String email) {
-        return accountController.domainEmail(email);}
+        return userController.domainEmail(email);}
     public void createAccount(String role, String username, String email, String password) {
-        accountController.createAccount(role, username, email, password);}
+        userController.createAccount(role, username, email, password);}
     public void login(String username, String password) {
-        accountController.login(username, password);}
+        userController.login(username, password);}
     public void logout() {
-        accountController.logout();}
+        userController.logout();}
     public void deleteAccount(int id) {
-        accountController.deleteAccount(id);}
+        userController.deleteAccount(id);}
 }

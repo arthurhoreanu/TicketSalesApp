@@ -8,7 +8,6 @@ import repository.IRepository;
 import repository.InMemoryRepository;
 import service.*;
 
-import java.io.InputStream;
 import java.util.Scanner;
 
 public class ConsoleApp {
@@ -21,17 +20,14 @@ public class ConsoleApp {
         IRepository<Seat> seatRepository = new InMemoryRepository<>();
         IRepository<Artist> artistRepository = new InMemoryRepository<>();
         IRepository<Athlete> athleteRepository = new InMemoryRepository<>();
-        IRepository<Order> orderRepository = new InMemoryRepository<>();
         IRepository<Ticket> ticketRepository = new InMemoryRepository<>();
-        IRepository<ShoppingCart> shoppingCartRepository = new InMemoryRepository<>();
+        IRepository<Cart> cartRepository = new InMemoryRepository<>();
         IRepository<Section> sectionRepository = new InMemoryRepository<>();
-        IRepository<ShoppingCartTicket> shoppingCartTicketRepository = new InMemoryRepository<>();
-        IRepository<OrderTicket> orderTicketRepository = new InMemoryRepository<>();
         IRepository<Row> rowRepository = new InMemoryRepository<>();
 
         // Instantiate services
         CustomerService customerService = new CustomerService();
-        AccountService accountService = new AccountService(userRepository, customerService);
+        UserService userService = new UserService(userRepository, customerService);
         SeatService seatService = new SeatService(seatRepository);
         SectionService sectionService = new SectionService(seatService, sectionRepository, seatRepository);
         VenueService venueService = new VenueService(venueRepository, sectionService);
@@ -39,15 +35,11 @@ public class ConsoleApp {
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
         TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
-        ShoppingCartTicketService shoppingCartTicketService = new ShoppingCartTicketService(shoppingCartTicketRepository, ticketService);
-        ShoppingCartService shoppingCartService = new ShoppingCartService(shoppingCartRepository, shoppingCartTicketService);
-        OrderTicketService orderTicketService = new OrderTicketService(orderTicketRepository, ticketService);
-        OrderService orderService = new OrderService(orderRepository, shoppingCartService, shoppingCartTicketService,
-                new BasicPaymentProcessor(), orderTicketService, ticketService, seatService);
+        CartService cartService = new CartService(cartRepository);
         RowService rowService = new RowService(seatService, rowRepository, seatRepository);
 
         // Instantiate controllers
-        AccountController accountController = new AccountController(accountService);
+        UserController userController = new UserController(userService);
         EventController eventController = new EventController(eventService);
         VenueController venueController = new VenueController(venueService);
         SeatController seatController = new SeatController(seatService);
@@ -55,18 +47,15 @@ public class ConsoleApp {
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
         CustomerController customerController = new CustomerController(customerService);
-        OrderController orderController = new OrderController(orderService);
-        OrderTicketController orderTicketController = new OrderTicketController(orderTicketService);
-        ShoppingCartController shoppingCartController = new ShoppingCartController(shoppingCartService, customerService);
+        CartController cartController = new CartController(cartService);
         TicketController ticketController = new TicketController(ticketService);
         RowController rowController = new RowController(rowService);
-        ShoppingCartTicketController shoppingCartTicketController = new ShoppingCartTicketController(shoppingCartTicketService);
 
         // Instantiate main Controller
         Controller controller = new Controller(
-                accountController, eventController, venueController, sectionController, seatController,
-                artistController, athleteController, customerController, orderController, orderTicketController,
-                shoppingCartController, ticketController, rowController, shoppingCartTicketController);
+                userController, eventController, venueController, sectionController, seatController,
+                artistController, athleteController, customerController, cartController, ticketController,
+                rowController);
 
         ControllerProvider.setController(controller);
 

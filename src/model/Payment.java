@@ -41,7 +41,6 @@ public class Payment implements Identifiable {
 
     static Controller controller = ControllerProvider.getController();
 
-
     public Payment() {}
 
     public Payment(Cart cart, Customer customer, LocalDateTime paymentDate, double paymentAmount,
