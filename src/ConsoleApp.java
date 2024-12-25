@@ -29,15 +29,15 @@ public class ConsoleApp {
         // Instantiate services
         CustomerService customerService = new CustomerService();
         UserService userService = new UserService(userRepository, customerService);
-        SeatService seatService = new SeatService(seatRepository);
-        SectionService sectionService = new SectionService(seatService, sectionRepository, seatRepository);
+        SectionService sectionService = new SectionService(sectionRepository, seatRepository);
+        RowService rowService = new RowService(rowRepository, seatRepository, sectionService);
+        SeatService seatService = new SeatService(seatRepository, rowService);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
         TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
         CartService cartService = new CartService(cartRepository);
-        RowService rowService = new RowService(seatService, rowRepository, seatRepository);
         PaymentService paymentService = new PaymentService();
         PurchaseHistoryService purchaseHistoryService = new PurchaseHistoryService(purchaseHistoryRepository);
 
@@ -46,7 +46,7 @@ public class ConsoleApp {
         EventController eventController = new EventController(eventService);
         VenueController venueController = new VenueController(venueService);
         SeatController seatController = new SeatController(seatService);
-        SectionController sectionController = new SectionController(sectionService, sectionRepository);
+        SectionController sectionController = new SectionController(sectionService);
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
         CustomerController customerController = new CustomerController(customerService);

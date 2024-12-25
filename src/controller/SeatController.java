@@ -1,17 +1,12 @@
 package controller;
 
-import model.Customer;
-import model.Event;
-import model.Row;
-import model.Seat;
+import model.*;
 import service.SeatService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * The SeatController class provides methods for managing seats, including creation, reservation,
- * checking availability, and seat recommendations.
+ * Controller for managing seat-related operations.
  */
 public class SeatController {
     private final SeatService seatService;
@@ -19,162 +14,150 @@ public class SeatController {
     /**
      * Constructs a SeatController with the specified SeatService.
      *
-     * @param seatService the service handling seat-related operations
+     * @param seatService The service for managing seats.
      */
     public SeatController(SeatService seatService) {
         this.seatService = seatService;
     }
 
     /**
-     * Creates a new seat in the specified row.
-     *
-     * @param seatID         the ID of the seat
-     * @param row            the row in which the seat is created
-     * @param isReserved     whether the seat is initially reserved
-     * @param reservedForEvent the event for which the seat may be reserved
+     * Creates a new Seat in a specific Row.
      */
-    public void createSeat(int seatID, Row row, boolean isReserved, Event reservedForEvent) {
-        boolean isCreated = seatService.createSeat(seatID, row, isReserved, reservedForEvent);
-        if (isCreated) {
-            System.out.println("Seat created successfully with ID: " + seatID + " in row: " + row.getID());
-        } else {
-            System.out.println("Seat with ID: " + seatID + " already exists.");
-        }
-    }
+    public void createSeat(int rowId, int seatNumber) {
+        Seat seat = seatService.createSeat(rowId, seatNumber);
 
-    /**
-     * Retrieves a seat by its ID and displays its details.
-     *
-     * @param seatID the ID of the seat to retrieve
-     * @return the Seat object if found, or null otherwise
-     */
-    public Seat findSeatByID(int seatID) {
-        Seat seat = seatService.findSeatByID(seatID);
         if (seat != null) {
-            System.out.println("Seat found: ID " + seatID + ", Row " + seat.getRow().getID() + ", Reserved: " + seat.isReserved());
+            System.out.println("Seat created successfully: " + seat);
         } else {
-            System.out.println("Seat with ID " + seatID + " not found.");
+            System.out.println("Failed to create seat. Row with ID " + rowId + " not found.");
         }
-        return seat;
     }
 
     /**
-     * Retrieves and displays all seats in a specific row.
-     *
-     * @param row the row to retrieve seats from
+     * Deletes a Seat by its ID.
      */
-    public void getSeatsByRow_SEAT(Row row) {
-        List<Seat> seats = seatService.getSeatsByRow(row);
-        if (seats.isEmpty()) {
-            System.out.println("No seats found in row with ID " + row.getID() + ".");
+    public void deleteSeatById(int seatId) {
+        boolean deleted = seatService.deleteSeatById(seatId);
+
+        if (deleted) {
+            System.out.println("Seat with ID " + seatId + " deleted successfully.");
         } else {
-            System.out.println("Seats in row with ID " + row.getID() + ":");
-            seats.forEach(seat -> System.out.println("- Seat ID: " + seat.getID() + ", Reserved: " + seat.isReserved()));
+            System.out.println("Failed to delete seat. Seat with ID " + seatId + " not found.");
         }
     }
 
     /**
-     * Checks if a specific seat is reserved for a given event and displays the result.
-     *
-     * @param seat  the seat to check
-     * @param event the event for which reservation status is checked
+     * Retrieves a Seat by its ID.
      */
-    public void checkSeatReservation(Seat seat, Event event) {
-        boolean isReserved = seatService.isSeatReservedForEvent(seat, event);
-        if (isReserved) {
-            System.out.println("Seat " + seat.getID() + " in row " + seat.getRow().getID() + " is reserved for event: " + event.getEventName());
+    public Seat findSeatByID(int seatId) {
+        Seat seat = seatService.findSeatByID(seatId);
+        if (seat != null) {
+            System.out.println("Seat found: " + seat);
         } else {
-            System.out.println("Seat " + seat.getID() + " in row " + seat.getRow().getID() + " is not reserved for event: " + event.getEventName());
+            System.out.println("Seat with ID " + seatId + " not found.");
         }
     }
 
     /**
-     * Reserves a specific seat for a given event and prints the reservation status.
-     *
-     * @param seat  the seat to reserve
-     * @param event the event for which the seat is reserved
-     */
-    public void reserveSeatForEvent(Seat seat, Event event) {
-        boolean isReserved = seatService.reserveSeatForEvent(seat, event);
-        if (isReserved) {
-            System.out.println("Seat " + seat.getID() + " in row " + seat.getRow().getID() + " has been successfully reserved for event: " + event.getEventName());
-        } else {
-            System.out.println("Seat " + seat.getID() + " in row " + seat.getRow().getID() + " is already reserved for event: " + event.getEventName());
-        }
-    }
-
-    /**
-     * Clears the reservation for a specific seat and event, and prints the result.
-     *
-     * @param seat  the seat for which the reservation is cleared
-     * @param event the event for which the reservation is being cleared
-     */
-    public void clearSeatReservationForEvent(Seat seat, Event event) {
-        boolean isCleared = seatService.clearSeatReservationForEvent(seat, event);
-        if (isCleared) {
-            System.out.println("Reservation cleared for seat " + seat.getID() + " in row " + seat.getRow().getID() + " for event: " + event.getEventName());
-        } else {
-            System.out.println("Seat " + seat.getID() + " in row " + seat.getRow().getID() + " was not reserved for event: " + event.getEventName());
-        }
-    }
-
-    /**
-     * Retrieves and displays all available seats in a row for a specific event.
-     *
-     * @param row   the row to check
-     * @param event the event for which seat availability is checked
-     */
-    public void getAvailableSeatsInRow_SEAT(Row row, Event event) {
-        List<Seat> availableSeats = seatService.getSeatsByRow(row).stream()
-                .filter(seat -> !seatService.isSeatReservedForEvent(seat, event))
-                .collect(Collectors.toList());
-
-        if (availableSeats.isEmpty()) {
-            System.out.println("No available seats in row with ID " + row.getID() + " for event '" + event.getEventName() + "'.");
-        } else {
-            System.out.println("Available seats in row with ID " + row.getID() + " for event '" + event.getEventName() + "':");
-            availableSeats.forEach(seat -> System.out.println("- Seat ID: " + seat.getID() + ", Seat Number: " + seat.getID()));
-        }
-    }
-
-    /**
-     * Recommends a front-row seat from a list of available seats and prints the recommended seat.
-     *
-     * @param availableSeats the list of available seats from which a front-row seat is recommended
-     */
-    public void recommendFrontRowSeat(List<Seat> availableSeats) {
-        Seat recommendedSeat = seatService.recommendFrontRowSeat(availableSeats);
-        if (recommendedSeat != null) {
-            System.out.println("Recommended front-row seat: Row " + recommendedSeat.getRow().getID() + ", Seat " + recommendedSeat.getID());
-        } else {
-            System.out.println("No available seats to recommend.");
-        }
-    }
-
-    /**
-     * Deletes a seat by its ID and prints the result.
-     *
-     * @param seatID the ID of the seat to delete
-     */
-    public void deleteSeatByID(int seatID) {
-        boolean isDeleted = seatService.deleteSeatByID(seatID);
-        if (isDeleted) {
-            System.out.println("Seat with ID " + seatID + " has been deleted.");
-        } else {
-            System.out.println("Seat with ID " + seatID + " not found. Deletion failed.");
-        }
-    }
-
-    /**
-     * Displays all seats in the system.
+     * Retrieves all Seats.
      */
     public void getAllSeats() {
         List<Seat> seats = seatService.getAllSeats();
-        if (seats.isEmpty()) {
-            System.out.println("No seats available.");
-        } else {
+
+        if (!seats.isEmpty()) {
             System.out.println("All seats:");
-            seats.forEach(seat -> System.out.println("- Seat ID: " + seat.getID() + ", Reserved: " + seat.isReserved()));
+            seats.forEach(System.out::println);
+        } else {
+            System.out.println("No seats available.");
+        }
+    }
+
+    /**
+     * Retrieves all Seats in a specific Row.
+     */
+    public void getSeatsByRow(int rowId) {
+        List<Seat> seats = seatService.getSeatsByRow(rowId);
+
+        if (!seats.isEmpty()) {
+            System.out.println("Seats in Row ID " + rowId + ":");
+            seats.forEach(System.out::println);
+        } else {
+            System.out.println("No seats found for Row ID " + rowId + ".");
+        }
+    }
+
+    /**
+     * Retrieves all available Seats in a specific Section.
+     */
+    public void getAvailableSeatsInSection(int sectionId) {
+        List<Seat> availableSeats = seatService.getAvailableSeatsInSection(sectionId);
+
+        if (!availableSeats.isEmpty()) {
+            System.out.println("Available seats in Section ID " + sectionId + ":");
+            availableSeats.forEach(System.out::println);
+        } else {
+            System.out.println("No available seats in Section ID " + sectionId + ".");
+        }
+    }
+
+    /**
+     * Retrieves all available Seats in a specific Venue.
+     */
+    public void getAvailableSeatsInVenue(int venueId) {
+        List<Seat> availableSeats = seatService.getAvailableSeatsInVenue(venueId);
+
+        if (!availableSeats.isEmpty()) {
+            System.out.println("Available seats in Venue ID " + venueId + ":");
+            availableSeats.forEach(System.out::println);
+        } else {
+            System.out.println("No available seats in Venue ID " + venueId + ".");
+        }
+    }
+
+    /**
+     * Reserves a Seat for a specific Event.
+     */
+    public void reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
+        boolean reserved = seatService.reserveSeat(seatId, event, customer, price, ticketType);
+
+        if (reserved) {
+            System.out.println("Seat with ID " + seatId + " reserved successfully for Event ID " + event.getID() + ".");
+        } else {
+            System.out.println("Failed to reserve seat. Either seat is already reserved, or invalid data provided.");
+        }
+    }
+
+    /**
+     * Checks if a Seat is reserved for a specific Event.
+     */
+    public void isSeatReservedForEvent(int seatId, int eventId) {
+        boolean isReserved = seatService.isSeatReservedForEvent(seatId, eventId);
+
+        if (isReserved) {
+            System.out.println("Seat with ID " + seatId + " is reserved for Event ID " + eventId + ".");
+        } else {
+            System.out.println("Seat with ID " + seatId + " is not reserved for Event ID " + eventId + ".");
+        }
+    }
+
+    /**
+     * Unreserves a Seat.
+     */
+    public void unreserveSeat(int seatId) {
+        seatService.unreserveSeat(seatId);
+        System.out.println("Seat with ID " + seatId + " has been unreserved.");
+    }
+
+    /**
+     * Recommends the closest available Seat to a specific seat number in a Row.
+     */
+    public void recommendClosestSeat(int rowId, int seatNumber) {
+        Seat recommendedSeat = seatService.recommendClosestSeat(rowId, seatNumber);
+
+        if (recommendedSeat != null) {
+            System.out.println("Recommended closest seat: " + recommendedSeat);
+        } else {
+            System.out.println("No available seats found near seat number " + seatNumber + " in Row ID " + rowId + ".");
         }
     }
 }

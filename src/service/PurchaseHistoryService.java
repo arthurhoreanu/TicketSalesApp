@@ -95,4 +95,8 @@ public class PurchaseHistoryService {
     public List<PurchaseHistory> getAllPurchaseHistories() {
         return purchaseHistoryRepository.getAll();
     }
+
+    public PurchaseHistory findPurchaseHistoryByID(int id) {
+        purchaseHistoryRepository.read(id);
+    }
 }

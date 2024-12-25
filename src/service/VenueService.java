@@ -41,7 +41,6 @@ public class VenueService {
         }
     }
 
-
     /**
      * Creates a new Venue and saves it to both repositories.
      */
@@ -53,7 +52,8 @@ public class VenueService {
             return null; // Duplicate found
         }
 
-        Venue venue = new Venue(0, name, location, capacity, hasSeats);
+        int newID = venueRepository.getAll().size() + 1;
+        Venue venue = new Venue(newID, name, location, capacity, hasSeats);
         venueRepository.create(venue);          // Add to in-memory repository
         venueFileRepository.create(venue);     // Add to CSV
         return venue;
@@ -62,7 +62,7 @@ public class VenueService {
     /**
      * Retrieves a Venue by its ID.
      */
-    public Venue getVenueById(int venueId) {
+    public Venue findVenueByID(int venueId) {
         return venueRepository.read(venueId);
     }
 
@@ -180,10 +180,5 @@ public class VenueService {
 
         return availableSeats;
     }
-
-
-
-
-
 
 }

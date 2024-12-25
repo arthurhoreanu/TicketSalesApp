@@ -21,18 +21,15 @@ public class RowService {
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Row> rowFileRepository;
     private final FileRepository<Seat> seatFileRepository;
-    private final SeatService seatService;
     private final SectionService sectionService;
 
     /**
      * Constructs a RowService with dependencies for managing rows and seats.
      *
-     * @param seatService    the service for managing seat-related operations
      * @param rowRepository  the repository for managing row data
      * @param seatRepository the repository for managing seat data
      */
-    public RowService(SeatService seatService, IRepository<Row> rowRepository, IRepository<Seat> seatRepository, SectionService sectionService) {
-        this.seatService = seatService;
+    public RowService(IRepository<Row> rowRepository, IRepository<Seat> seatRepository, SectionService sectionService) {
         this.rowRepository = rowRepository;
         this.seatRepository = seatRepository;
         this.sectionService = sectionService;
@@ -66,7 +63,7 @@ public class RowService {
      * @return the created Row object.
      */
     public Row createRow(int sectionId, int rowCapacity) {
-        Section section = sectionService.getSectionById(sectionId); // Assuming SectionService is accessible
+        Section section = sectionService.findSectionByID(sectionId); // Assuming SectionService is accessible
         if (section == null) {
             return null; // Section not found
         }
@@ -79,7 +76,6 @@ public class RowService {
         return row;
     }
 
-
     /**
      * Updates an existing Row.
      *
@@ -88,7 +84,7 @@ public class RowService {
      * @return the updated Row object, or null if not found.
      */
     public Row updateRow(int rowId, int rowCapacity) {
-        Row row = getRowById(rowId);
+        Row row = findRowByID(rowId);
         if (row == null) {
             return null; // Row not found
         }
@@ -107,7 +103,7 @@ public class RowService {
      * @return true if the Row was successfully deleted, false otherwise.
      */
     public boolean deleteRow(int rowId) {
-        Row row = getRowById(rowId);
+        Row row = findRowByID(rowId);
         if (row == null) {
             return false; // Row not found
         }
@@ -130,7 +126,7 @@ public class RowService {
      * @param rowId the ID of the Row to retrieve.
      * @return the Row object, or null if not found.
      */
-    public Row getRowById(int rowId) {
+    public Row findRowByID(int rowId) {
         return rowRepository.read(rowId);
     }
 
@@ -150,7 +146,7 @@ public class RowService {
      * @param numberOfSeats the number of seats to add.
      */
     public void addSeatsToRow(int rowId, int numberOfSeats) {
-        Row row = getRowById(rowId);
+        Row row = findRowByID(rowId);
         if (row == null) {
             return; // Row not found
         }
@@ -173,7 +169,7 @@ public class RowService {
      * @return a list of Seats in the Row.
      */
     public List<Seat> getSeatsByRowId(int rowId) {
-        Row row = getRowById(rowId);
+        Row row = findRowByID(rowId);
         return (row != null) ? row.getSeats() : new ArrayList<>();
     }
 
@@ -189,7 +185,6 @@ public class RowService {
                 .collect(Collectors.toList());
     }
 
-
     /**
      * Retrieves all available Seats in a Row for a specific Event.
      *
@@ -198,7 +193,7 @@ public class RowService {
      * @return a list of available Seats in the Row.
      */
     public List<Seat> getAvailableSeatsInRow(int rowId, int eventId) {
-        Row row = getRowById(rowId);
+        Row row = findRowByID(rowId);
         if (row == null) {
             return new ArrayList<>();
         }
@@ -208,6 +203,5 @@ public class RowService {
                         && seat.getTicket().getEvent().getID() == eventId)
                 .collect(Collectors.toList());
     }
-
 
 }

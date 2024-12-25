@@ -82,7 +82,7 @@ public class TicketService {
         //todo if venue null case
 
         // Retrieve available seats
-        List<Seat> availableSeats = venueService.getAvailableSeats(venue, event);
+        List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(venue, event);
         List<Ticket> generatedTickets = availableSeats.stream()
                 .map(seat -> {
                     TicketType type = determineTicketType(seat);
@@ -120,7 +120,7 @@ public class TicketService {
     public boolean reserveTicket(Ticket ticket, String purchaserName) {
         if (!ticket.isSold()) {
             ticket.markAsSold(purchaserName);
-            seatService.reserveSeatForEvent(ticket.getSeat(), ticket.getEvent());
+            seatService.reserveSeat(ticket.getSeat(), ticket.getEvent());
             // Update repositories
             updateTicketInRepositories(ticket);
             return true;
@@ -222,3 +222,5 @@ public class TicketService {
                 .sum();
     }
 }
+
+// TODO toate erorile de aici

@@ -1,9 +1,6 @@
 package service;
 
-import model.Customer;
-import model.Event;
-import model.Row;
-import model.Seat;
+import model.*;
 import repository.FileRepository;
 import repository.IRepository;
 import repository.DBRepository;
@@ -23,7 +20,6 @@ public class SeatService {
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Seat> seatFileRepository;
     private final RowService rowService;
-
 
     /**
      * Constructs a SeatService with the specified repository for managing seat data.
@@ -60,7 +56,7 @@ public class SeatService {
      * @return the created Seat object.
      */
     public Seat createSeat(int rowId, int seatNumber) {
-        Row row = rowService.getRowById(rowId);
+        Row row = rowService.findRowByID(rowId);
         if (row == null) {
             return null; // Row not found
         }
@@ -80,7 +76,7 @@ public class SeatService {
      * @return true if the Seat was successfully deleted, false otherwise.
      */
     public boolean deleteSeatById(int seatId) {
-        Seat seat = getSeatById(seatId);
+        Seat seat = findSeatByID(seatId);
         if (seat == null) {
             return false; // Seat not found
         }
@@ -103,7 +99,7 @@ public class SeatService {
      * @param seatId the ID of the Seat to retrieve.
      * @return the Seat object, or null if not found.
      */
-    public Seat getSeatById(int seatId) {
+    public Seat findSeatByID(int seatId) {
         return seatRepository.read(seatId);
     }
 
@@ -123,7 +119,7 @@ public class SeatService {
      * @return a list of Seats in the Row.
      */
     public List<Seat> getSeatsByRow(int rowId) {
-        Row row = rowService.getRowById(rowId);
+        Row row = rowService.findRowByID(rowId);
         return (row != null) ? row.getSeats() : new ArrayList<>();
     }
 
@@ -185,7 +181,7 @@ public class SeatService {
      * @return the recommended Seat, or null if no suitable Seat is found.
      */
     public Seat recommendClosestSeat(int rowId, int seatNumber) {
-        Row row = rowService.getRowById(rowId);
+        Row row = rowService.findRowByID(rowId);
         if (row == null) {
             return null; // Row not found
         }
@@ -214,22 +210,23 @@ public class SeatService {
      * @param event   the Event for which the Seat is reserved.
      * @return true if the Seat was successfully reserved, false otherwise.
      */
-    public boolean reserveSeat(int seatId, Event event) {
-        Seat seat = getSeatById(seatId);
-        if (seat == null || seat.isReserved() || event == null) {
-            return false; // Seat not found, already reserved, or event is invalid
+    public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
+        Seat seat = findSeatByID(seatId);
+        if (seat == null || seat.isReserved() || event == null || customer == null) {
+            return false; // Seat not found, already reserved, or invalid input
         }
 
-        Ticket ticket = new Ticket(0, event, seat); // Create a Ticket for the reservation
+        // Create a Ticket for the reservation
+        Ticket ticket = new Ticket(0, event, seat, customer, price, ticketType);
         seat.setReserved(true);
         seat.setTicket(ticket);
 
+        // Update the seat in the repositories
         seatRepository.update(seat);
         seatFileRepository.update(seat);
 
         return true;
     }
-
 
     /**
      * Checks if a Seat is reserved for a specific Event.
@@ -239,7 +236,7 @@ public class SeatService {
      * @return true if the Seat is reserved for the Event, false otherwise.
      */
     public boolean isSeatReservedForEvent(int seatId, int eventId) {
-        Seat seat = getSeatById(seatId);
+        Seat seat = findSeatByID(seatId);
         return seat != null && seat.isReserved()
                 && seat.getTicket() != null
                 && seat.getTicket().getEvent().getID() == eventId;
@@ -251,7 +248,7 @@ public class SeatService {
      * @param seatId the ID of the Seat to unreserve.
      */
     public void unreserveSeat(int seatId) {
-        Seat seat = getSeatById(seatId);
+        Seat seat = findSeatByID(seatId);
         if (seat == null || !seat.isReserved()) {
             return; // Seat not found or not reserved
         }
@@ -262,5 +259,4 @@ public class SeatService {
         seatRepository.update(seat);
         seatFileRepository.update(seat);
     }
-
 }

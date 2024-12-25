@@ -65,7 +65,8 @@ public class Ticket implements Identifiable {
      * @param price       the price of the ticket
      * @param ticketType  the type of the ticket (e.g., STANDARD, VIP)
      */
-    public Ticket(Event event, Seat seat, Customer customer, double price, TicketType ticketType) {
+    public Ticket(int ticketID, Event event, Seat seat, Customer customer, double price, TicketType ticketType) {
+        this.ticketID = ticketID;
         this.event = event;
         this.seat = seat;
         this.customer = customer;
@@ -237,10 +238,9 @@ public class Ticket implements Identifiable {
         Event event = controller.findEventByID(eventID);
         Seat seat = seatID != null ? controller.findSeatByID(seatID) : null;
         Customer customer = controller.findCustomerByID(customerID);
-        // TODO metoda din Controller
         PurchaseHistory purchaseHistory = purchaseHistoryID != null ? controller.findPurchaseHistoryByID(purchaseHistoryID) : null;
 
-        Ticket ticket = new Ticket(event, seat, customer, price, ticketType);
+        Ticket ticket = new Ticket(ticketID, event, seat, customer, price, ticketType);
         ticket.setTicketID(ticketID);
         ticket.setSold(isSold);
         ticket.setPurchaseDate(purchaseDate);
