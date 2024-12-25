@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class VenueService {
     private final IRepository<Venue> venueRepository;
     private final FileRepository<Venue> venueFileRepository;
-    private final DBRepository<Venue> venueDatabaseRepository;
     private final SectionService sectionService;
 
     /**
@@ -30,11 +29,6 @@ public class VenueService {
         // Initialize file repository for CSV operations
         this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsv);
         syncFromCsv();
-
-        // Initialize database repository
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.venueDatabaseRepository = new DBRepository<>(entityManagerFactory, Venue.class);
-        syncFromDatabase();
     }
 
     /**
@@ -47,108 +41,38 @@ public class VenueService {
         }
     }
 
-    /**
-     * Syncs venues from the database into the unified repository.
-     */
-    private void syncFromDatabase() {
-        List<Venue> venues = venueDatabaseRepository.getAll();
-        for (Venue venue : venues) {
-            venueRepository.create(venue);
-        }
-    }
 
     /**
-     * Creates a new venue and adds it to all repositories.
-     *
-     * @param name     the name of the venue.
-     * @param location the location of the venue.
-     * @param capacity the capacity of the venue.
-     * @return true if the venue was successfully created, false if a duplicate exists.
+     * Creates a new Venue and saves it to both repositories.
      */
-    public boolean createVenue(String name, String location, int capacity) {
+    public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
         // Check for duplicates
-        for (Venue existingVenue : venueRepository.getAll()) {
-            if (existingVenue.getVenueName().equalsIgnoreCase(name) &&
-                    existingVenue.getLocation().equalsIgnoreCase(location)) {
-                return false; // Duplicate venue
-            }
+        boolean duplicate = venueRepository.getAll().stream()
+                .anyMatch(v -> v.getVenueName().equalsIgnoreCase(name) && v.getLocation().equalsIgnoreCase(location));
+        if (duplicate) {
+            return null; // Duplicate found
         }
 
-        Venue newVenue = new Venue();
-        newVenue.setVenueName(name);
-        newVenue.setLocation(location);
-        newVenue.setVenueCapacity(capacity);
-
-        // Add to all repositories
-        venueRepository.create(newVenue);
-        venueFileRepository.create(newVenue);
-        venueDatabaseRepository.create(newVenue);
-        return true;
+        Venue venue = new Venue(0, name, location, capacity, hasSeats);
+        venueRepository.create(venue);          // Add to in-memory repository
+        venueFileRepository.create(venue);     // Add to CSV
+        return venue;
     }
 
     /**
-     * Updates an existing venue's details.
-     *
-     * @param venueId    the ID of the venue to update.
-     * @param newName    the new name of the venue.
-     * @param newLocation the new location of the venue.
-     * @param newCapacity the new capacity of the venue.
-     * @return true if the venue was updated, false otherwise.
+     * Retrieves a Venue by its ID.
      */
-    public boolean updateVenue(int venueId, String newName, String newLocation, int newCapacity) {
-        Venue venue = findVenueByID(venueId);
-        if (venue != null) {
-            venue.setVenueName(newName);
-            venue.setLocation(newLocation);
-            venue.setVenueCapacity(newCapacity);
-
-            // Update in all repositories
-            venueRepository.update(venue);
-            venueFileRepository.update(venue);
-            venueDatabaseRepository.update(venue);
-            return true;
-        }
-        return false;
+    public Venue getVenueById(int venueId) {
+        return venueRepository.read(venueId);
     }
 
     /**
-     * Deletes a venue by its ID.
-     *
-     * @param venueId the ID of the venue to delete.
-     * @return true if the venue was deleted, false otherwise.
+     * Finds Venues by location or name.
      */
-    public boolean deleteVenue(int venueId) {
-        Venue venue = findVenueByID(venueId);
-        if (venue != null) {
-            // Remove from all repositories
-            venueRepository.delete(venueId);
-            venueFileRepository.delete(venueId);
-            venueDatabaseRepository.delete(venueId);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves all venues.
-     *
-     * @return a list of all venues in the repository.
-     */
-    public List<Venue> getAllVenues() {
-        return venueRepository.getAll();
-    }
-
-    /**
-     * Finds a venue by its ID.
-     *
-     * @param venueId the ID of the venue to find.
-     * @return the Venue object if found, null otherwise.
-     */
-    public Venue findVenueByID(int venueId) {
+    public List<Venue> findVenuesByLocationOrName(String keyword) {
         return venueRepository.getAll().stream()
-                .filter(venue -> venue.getID() == venueId)
-                .findFirst()
-                .orElse(null);
+                .filter(venue -> venue.getVenueName().equalsIgnoreCase(keyword) || venue.getLocation().equalsIgnoreCase(keyword))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -165,46 +89,101 @@ public class VenueService {
     }
 
     /**
-     * Retrieves all venues that match the specified location or name.
-     *
-     * @param locationOrName the location or name to search for.
-     * @return a list of matching venues.
+     * Retrieves all Venues from the in-memory repository.
      */
-    public List<Venue> findVenuesByLocationOrName(String locationOrName) {
-        return venueRepository.getAll().stream()
-                .filter(venue -> venue.getVenueName().equalsIgnoreCase(locationOrName) ||
-                        venue.getLocation().equalsIgnoreCase(locationOrName))
-                .collect(Collectors.toList());
-    } //Collectors.toList() --> collects elements into a list,
+    public List<Venue> getAllVenues() {
+        return venueRepository.getAll();
+    }
 
     /**
-     * Calculates the total number of available seats for a specific event in a venue.
-     *
-     * @param venue the venue to check.
-     * @param event the event to calculate availability for.
-     * @return the total number of available seats.
+     * Updates an existing Venue.
      */
-    public List<Seat> getAvailableSeats(Venue venue, Event event) {
-        return venue.getSections().stream()
-                .flatMap(section -> sectionService.getAvailableSeats(section, event).stream())
-                .collect(Collectors.toList());
+    public Venue updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
+        Venue venue = venueRepository.read(venueId);
+        if (venue == null) {
+            return null; // Venue not found
+        }
+
+        venue.setVenueName(name);
+        venue.setLocation(location);
+        venue.setVenueCapacity(capacity);
+        venue.setHasSeats(hasSeats);
+
+        venueRepository.update(venue);         // Update in-memory repository
+        venueFileRepository.update(venue);    // Update CSV
+        return venue;
+    }
+
+    /**
+     * Deletes a Venue and its associated Sections.
+     */
+    public boolean deleteVenue(int venueId) {
+        Venue venue = venueRepository.read(venueId);
+        if (venue == null) {
+            return false; // Venue not found
+        }
+
+        for (Section section : venue.getSections()) {
+            sectionService.deleteSection(section.getID()); // Clean up related sections
+        }
+
+        venueRepository.delete(venueId);      // Remove from in-memory repository
+        venueFileRepository.delete(venueId); // Remove from CSV
+        return true;
+    }
+
+    /**
+     * Adds a Section to a Venue.
+     */
+    public Section addSectionToVenue(int venueId, String sectionName, int sectionCapacity) {
+        Venue venue = venueRepository.read(venueId);
+        if (venue == null || sectionCapacity > venue.getVenueCapacity()) {
+            return null; // Venue not found or invalid capacity
+        }
+
+        Section section = new Section(0, sectionName, sectionCapacity, venue);
+        venue.addSection(section);            // Update relationship in-memory
+        venueRepository.update(venue);        // Update in-memory repository
+        venueFileRepository.update(venue);   // Update CSV
+        sectionService.createSection(section); // Persist the new section
+        return section;
+    }
+
+    /**
+     * Retrieves all Sections associated with a specific Venue.
+     */
+    public List<Section> getSectionsByVenueId(int venueId) {
+        Venue venue = venueRepository.read(venueId);
+        return (venue != null) ? venue.getSections() : new ArrayList<>();
+    }
+
+    /**
+     * Retrieves all available Seats in a Venue for a specific Event.
+     */
+    public List<Seat> getAvailableSeatsInVenue(int venueId, int eventId) {
+        Venue venue = venueRepository.read(venueId);
+        if (venue == null) {
+            return new ArrayList<>(); // Venue not found
+        }
+
+        List<Seat> availableSeats = new ArrayList<>();
+        for (Section section : venue.getSections()) {
+            for (Row row : section.getRows()) {
+                availableSeats.addAll(
+                        row.getSeats().stream()
+                                .filter(seat -> !seat.isReserved() && seat.getTicket() != null
+                                        && seat.getTicket().getEvent().getID() == eventId)
+                                .collect(Collectors.toList())
+                );
+            }
+        }
+
+        return availableSeats;
     }
 
 
-   /* *//**
-     * Recommends a seat for a customer in a specific venue for an event.
-     *
-     * @param customer the customer for whom to recommend a seat.
-     * @param venue    the venue in which to recommend a seat.
-     * @param event    the event to recommend a seat for.
-     * @return the recommended seat, or null if none are available.
-     *//*
-    public Seat recommendSeat(Customer customer, Venue venue, Event event) {
-        return venue.getSections().stream()
-                .map(section -> sectionService.recommendSeat(customer, section, event))
-                .filter(seat -> seat != null)
-                .findFirst()
-                .orElse(null);
-    }*/
+
+
+
 
 }
