@@ -8,6 +8,8 @@ import repository.FileRepository;
 import repository.IRepository;
 import repository.DBRepository;
 
+import java.util.ArrayList;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
@@ -20,25 +22,24 @@ public class SeatService {
 
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Seat> seatFileRepository;
-    private final DBRepository<Seat> seatDatabaseRepository;
+    private final RowService rowService;
+
 
     /**
      * Constructs a SeatService with the specified repository for managing seat data.
      *
      * @param seatRepository the primary repository for seat data.
      */
-    public SeatService(IRepository<Seat> seatRepository) {
+    public SeatService(IRepository<Seat> seatRepository, RowService rowService) {
         this.seatRepository = seatRepository;
+        this.rowService = rowService;
+
 
         // Initialize file and database repositories
         this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsv);
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.seatDatabaseRepository = new DBRepository<>(entityManagerFactory, Seat.class);
-
         // Sync data from file and database repositories to the primary repository
         syncFromCsv();
-        syncFromDatabase();
     }
 
     /**
@@ -52,174 +53,214 @@ public class SeatService {
     }
 
     /**
-     * Synchronizes seats from the database into the main repository.
+     * Creates a new Seat and saves it to all repositories.
+     *
+     * @param rowId    the ID of the Row to which the Seat belongs.
+     * @param seatNumber the number of the Seat.
+     * @return the created Seat object.
      */
-    private void syncFromDatabase() {
-        List<Seat> seats = seatDatabaseRepository.getAll();
-        for (Seat seat : seats) {
-            seatRepository.create(seat);
+    public Seat createSeat(int rowId, int seatNumber) {
+        Row row = rowService.getRowById(rowId);
+        if (row == null) {
+            return null; // Row not found
         }
+
+        Seat seat = new Seat(0, seatNumber, false, row);
+        seatRepository.create(seat);
+        seatFileRepository.create(seat);
+
+        row.addSeat(seat); // Update the Row with the new Seat
+        return seat;
     }
 
     /**
-     * Creates and adds a new seat to all repositories if a seat with the given ID does not already exist.
+     * Deletes a Seat by its ID.
      *
-     * @param seatID           the unique ID of the seat.
-     * @param row              the row to which the seat belongs.
-     * @param isReserved       the reserved status of the seat.
-     * @param reservedForEvent the event for which the seat is reserved, or null if not reserved.
-     * @return true if the seat was successfully created; false if a seat with the specified ID already exists.
+     * @param seatId the ID of the Seat to delete.
+     * @return true if the Seat was successfully deleted, false otherwise.
      */
-    public boolean createSeat(int seatID, Row row, boolean isReserved, Event reservedForEvent) {
-        if (findSeatByID(seatID) == null) {
-            Seat seat = new Seat(seatID, row, isReserved, reservedForEvent);
-
-            // Save the seat to all repositories
-            seatRepository.create(seat);
-            seatFileRepository.create(seat);
-            seatDatabaseRepository.create(seat);
-
-            return true;
+    public boolean deleteSeatById(int seatId) {
+        Seat seat = getSeatById(seatId);
+        if (seat == null) {
+            return false; // Seat not found
         }
-        return false; // Seat with this ID already exists
+
+        Row row = seat.getRow();
+        if (row != null) {
+            row.removeSeat(seat); // Update the Row to remove the Seat
+        }
+
+        seatRepository.delete(seatId);
+        seatFileRepository.delete(seatId);
+        return true;
     }
 
+
+
     /**
-     * Retrieves a seat by its unique ID.
+     * Retrieves a Seat by its ID.
      *
-     * @param seatID the unique ID of the seat.
-     * @return the Seat object if found; otherwise, null.
+     * @param seatId the ID of the Seat to retrieve.
+     * @return the Seat object, or null if not found.
      */
-    public Seat findSeatByID(int seatID) {
-        return seatRepository.read(seatID);
+    public Seat getSeatById(int seatId) {
+        return seatRepository.read(seatId);
     }
 
     /**
-     * Retrieves all seats in a specific row.
+     * Retrieves all Seats from the repository.
      *
-     * @param row the row to filter seats by.
-     * @return a list of seats belonging to the specified row.
-     */
-    public List<Seat> getSeatsByRow(Row row) {
-        return seatRepository.getAll().stream()
-                .filter(seat -> seat.getRow().getID().equals(row.getID()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Retrieves all seats in the repository.
-     *
-     * @return a list of all Seat objects.
+     * @return a list of all Seats.
      */
     public List<Seat> getAllSeats() {
         return seatRepository.getAll();
     }
 
     /**
-     * Checks if a seat is reserved for a specific event.
+     * Retrieves all Seats in a specific Row.
      *
-     * @param seat  the seat to check.
-     * @param event the event for which to check the reservation.
-     * @return true if the seat is reserved for the specified event; false otherwise.
+     * @param rowId the ID of the Row.
+     * @return a list of Seats in the Row.
+     */
+    public List<Seat> getSeatsByRow(int rowId) {
+        Row row = rowService.getRowById(rowId);
+        return (row != null) ? row.getSeats() : new ArrayList<>();
+    }
+
+    /**
+     * Retrieves all available Seats in a Section.
+     *
+     * @param sectionId the ID of the Section.
+     * @return a list of available Seats in the Section.
+     */
+    public List<Seat> getAvailableSeatsInSection(int sectionId) {
+        List<Row> rows = rowService.findRowsBySection(sectionId);
+        List<Seat> availableSeats = new ArrayList<>();
+        for (Row row : rows) {
+            availableSeats.addAll(
+                    row.getSeats().stream()
+                            .filter(seat -> !seat.isReserved())
+                            .collect(Collectors.toList())
+            );
+        }
+        return availableSeats;
+    }
+
+    /**
+     * Retrieves all available Seats in a Venue.
+     *
+     * @param venueId the ID of the Venue.
+     * @return a list of available Seats in the Venue.
+     */
+    public List<Seat> getAvailableSeatsInVenue(int venueId) {
+        List<Row> rows = rowService.getAllRows();
+        return rows.stream()
+                .filter(row -> row.getSection() != null && row.getSection().getVenue().getID() == venueId)
+                .flatMap(row -> row.getSeats().stream())
+                .filter(seat -> !seat.isReserved())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if a Seat is reserved for a specific Event.
+     *
+     * @param seat  the Seat to check.
+     * @param event the Event for which to check the reservation.
+     * @return true if the Seat is reserved for the specified Event; false otherwise.
      */
     public boolean isSeatReservedForEvent(Seat seat, Event event) {
-        return seat.getReservedForEvent() != null && seat.getReservedForEvent().equals(event);
-    }
-
-    /**
-     * Reserves a seat for a specific event if it is not already reserved.
-     *
-     * @param seat  the seat to reserve.
-     * @param event the event for which the seat is to be reserved.
-     * @return true if the seat was successfully reserved; false if it was already reserved for the event.
-     */
-    public boolean reserveSeatForEvent(Seat seat, Event event) {
-        if (!isSeatReservedForEvent(seat, event)) {
-            seat.setReservedForEvent(event);
-            seat.setReserved(true);
-
-            // Update all repositories
-            seatRepository.update(seat);
-            seatFileRepository.update(seat);
-            seatDatabaseRepository.update(seat);
-
-            return true;
+        if (seat == null || !seat.isReserved() || seat.getTicket() == null) {
+            return false; // Seat is not reserved or has no associated ticket
         }
-        return false; // Seat is already reserved for the event
+
+        return seat.getTicket().getEvent().equals(event); // Check if the Ticket is for the given Event
     }
 
+
     /**
-     * Clears the reservation of a seat for a specific event if it is currently reserved for that event.
+     * Recommends the closest Seat to a given seat number in a Row.
      *
-     * @param seat  the seat to clear the reservation for.
-     * @param event the event for which the reservation is to be cleared.
-     * @return true if the reservation was successfully cleared; false if the seat was not reserved for this event.
+     * @param rowId       the ID of the Row.
+     * @param seatNumber  the desired seat number.
+     * @return the recommended Seat, or null if no suitable Seat is found.
      */
-    public boolean clearSeatReservationForEvent(Seat seat, Event event) {
-        if (isSeatReservedForEvent(seat, event)) {
-            seat.setReservedForEvent(null);
-            seat.setReserved(false);
-
-            // Update all repositories
-            seatRepository.update(seat);
-            seatFileRepository.update(seat);
-            seatDatabaseRepository.update(seat);
-
-            return true;
+    public Seat recommendClosestSeat(int rowId, int seatNumber) {
+        Row row = rowService.getRowById(rowId);
+        if (row == null) {
+            return null; // Row not found
         }
-        return false; // Seat was not reserved for this event
-    }
 
+        Seat closestSeat = null;
+        int closestDistance = Integer.MAX_VALUE;
 
-    /**
-     * Recommends a seat from a list of available seats based on customer preferences.
-     *
-     * @param customer       the customer for whom the seat is recommended.
-     * @param availableSeats the list of available seats to consider.
-     * @return the recommended Seat object, or null if no suitable seat is found.
-     *//*
-    public Seat recommendSeatFromList(Customer customer, List<Seat> availableSeats) {
-        // Sort seats by row preference (if customer preferences exist)
-        availableSeats.sort((s1, s2) -> {
-            int preference1 = customer.getPreferredRows().getOrDefault(s1.getRow().getID(), 0);
-            int preference2 = customer.getPreferredRows().getOrDefault(s2.getRow().getID(), 0);
-            return Integer.compare(preference2, preference1); // Higher preference first
-        });
-
-        return availableSeats.isEmpty() ? null : availableSeats.get(0);
-    }*/
-
-    /**
-     * Recommends a front-row seat from a list of available seats.
-     * If multiple seats are in the front row, the first one in the list is returned.
-     *
-     * @param availableSeats the list of available seats to consider.
-     * @return the seat in the front-most row; null if the list of available seats is empty.
-     */
-    public Seat recommendFrontRowSeat(List<Seat> availableSeats) {
-        return availableSeats.stream()
-                .min((s1, s2) -> Integer.compare(s1.getRow().getRowCapacity(), s2.getRow().getRowCapacity()))
-                .orElse(null);
-    }
-
-    /**
-     * Deletes a seat by its ID.
-     *
-     * @param seatID the ID of the seat to delete.
-     * @return true if the seat was deleted; false otherwise.
-     */
-    public boolean deleteSeatByID(int seatID) {
-        Seat seat = findSeatByID(seatID);
-        if (seat != null) {
-            // Delete from all repositories
-            seatRepository.delete(seatID);
-            seatFileRepository.delete(seatID);
-            seatDatabaseRepository.delete(seatID);
-
-            return true;
+        for (Seat seat : row.getSeats()) {
+            if (!seat.isReserved()) {
+                int distance = Math.abs(seat.getNumber() - seatNumber);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestSeat = seat;
+                }
+            }
         }
-        return false;
+
+        return closestSeat;
     }
 
+
+    /**
+     * Reserves a Seat for a specific Event.
+     *
+     * @param seatId  the ID of the Seat to reserve.
+     * @param event   the Event for which the Seat is reserved.
+     * @return true if the Seat was successfully reserved, false otherwise.
+     */
+    public boolean reserveSeat(int seatId, Event event) {
+        Seat seat = getSeatById(seatId);
+        if (seat == null || seat.isReserved() || event == null) {
+            return false; // Seat not found, already reserved, or event is invalid
+        }
+
+        Ticket ticket = new Ticket(0, event, seat); // Create a Ticket for the reservation
+        seat.setReserved(true);
+        seat.setTicket(ticket);
+
+        seatRepository.update(seat);
+        seatFileRepository.update(seat);
+
+        return true;
+    }
+
+
+    /**
+     * Checks if a Seat is reserved for a specific Event.
+     *
+     * @param seatId  the ID of the Seat.
+     * @param eventId the ID of the Event.
+     * @return true if the Seat is reserved for the Event, false otherwise.
+     */
+    public boolean isSeatReservedForEvent(int seatId, int eventId) {
+        Seat seat = getSeatById(seatId);
+        return seat != null && seat.isReserved()
+                && seat.getTicket() != null
+                && seat.getTicket().getEvent().getID() == eventId;
+    }
+
+    /**
+     * Unreserves a Seat, removing its association with any Event.
+     *
+     * @param seatId the ID of the Seat to unreserve.
+     */
+    public void unreserveSeat(int seatId) {
+        Seat seat = getSeatById(seatId);
+        if (seat == null || !seat.isReserved()) {
+            return; // Seat not found or not reserved
+        }
+
+        seat.setReserved(false);
+        seat.setTicket(null); // Remove the Ticket association
+
+        seatRepository.update(seat);
+        seatFileRepository.update(seat);
+    }
 
 }
