@@ -20,17 +20,14 @@ public class SectionService {
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Section> sectionFileRepository;
     private final FileRepository<Seat> seatFileRepository;
-    private final SeatService seatService;
 
     /**
      * Constructs a SectionService with dependencies for managing sections and seats.
      *
-     * @param seatService        the service for managing seat-related operations
      * @param sectionRepository  the repository for managing section data
      * @param seatRepository     the repository for managing seat data
      */
-    public SectionService(SeatService seatService, IRepository<Section> sectionRepository, IRepository<Seat> seatRepository) {
-        this.seatService = seatService;
+    public SectionService(IRepository<Section> sectionRepository, IRepository<Seat> seatRepository) {
         this.sectionRepository = sectionRepository;
         this.seatRepository = seatRepository;
 
@@ -137,7 +134,7 @@ public class SectionService {
      * @param sectionId the ID of the Section to retrieve.
      * @return the Section object if found, null otherwise.
      */
-    public Section getSectionById(int sectionId) {
+    public Section findSectionByID(int sectionId) {
         return sectionRepository.read(sectionId);
     }
 
@@ -185,9 +182,6 @@ public class SectionService {
                             .collect(Collectors.toList())
             );
         }
-
         return availableSeats;
     }
 }
-
-

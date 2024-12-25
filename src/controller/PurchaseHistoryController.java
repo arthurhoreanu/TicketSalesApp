@@ -27,4 +27,8 @@ public class PurchaseHistoryController {
     public List<PurchaseHistory> getAllPurchaseHistories() {
         return purchaseHistoryService.getAllPurchaseHistories();
     }
+
+    public PurchaseHistory findPurchaseHistoryByID(int id) {
+        return purchaseHistoryService.findPurchaseHistoryByID(id);
+    }
 }

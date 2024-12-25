@@ -6,8 +6,7 @@ import service.RowService;
 import java.util.List;
 
 /**
- * The RowController class handles operations related to rows within sections,
- * including creating rows with seats, managing rows, and seat-related actions.
+ * Controller for managing row-related operations.
  */
 public class RowController {
     private final RowService rowService;
@@ -15,143 +14,124 @@ public class RowController {
     /**
      * Constructs a RowController with the specified RowService.
      *
-     * @param rowService the service handling row-related operations
+     * @param rowService The service for managing rows.
      */
     public RowController(RowService rowService) {
         this.rowService = rowService;
     }
 
     /**
-     * Finds and retrieves a row by its unique ID.
-     *
-     * @param rowID the ID of the row to find
-     * @return the Row object if found, or null if not
+     * Creates a new Row in a specific Section.
      */
-    public Row findRowByID(int rowID) {
-        Row row = rowService.findRowByID(rowID);
+    public void createRow(int sectionId, int rowCapacity) {
+        Row row = rowService.createRow(sectionId, rowCapacity);
+
         if (row != null) {
-            System.out.println("Row found: ID " + row.getID() + ", Capacity: " + row.getRowCapacity());
+            System.out.println("Row created successfully: " + row);
         } else {
-            System.out.println("Row with ID " + rowID + " not found.");
-        }
-        return row;
-    }
-
-    /**
-     * Creates a new row within a specified section and initializes seats for the row.
-     *
-     * @param rowCapacity the number of seats in the row
-     * @param section     the section to which the row belongs
-     */
-    public void createRowWithSeats(int rowCapacity, Section section) {
-        Row row = rowService.createRowWithSeats(rowCapacity, section);
-        System.out.println("Row created with ID " + row.getID() + " in section '" + section.getSectionName() + "' with " + rowCapacity + " seats.");
-    }
-
-    /**
-     * Updates an existing row's capacity.
-     *
-     * @param rowID       the ID of the row to update
-     * @param newCapacity the new capacity for the row
-     */
-    public void updateRow(int rowID, int newCapacity) {
-        boolean isUpdated = rowService.updateRow(rowID, newCapacity);
-        if (isUpdated) {
-            System.out.println("Row with ID " + rowID + " updated to new capacity: " + newCapacity);
-        } else {
-            System.out.println("Row with ID " + rowID + " not found. Update failed.");
+            System.out.println("Failed to create row. Section with ID " + sectionId + " not found.");
         }
     }
 
     /**
-     * Deletes a row by its ID, including all associated seats.
-     *
-     * @param rowID the ID of the row to delete
+     * Updates an existing Row.
      */
-    public void deleteRow(int rowID) {
-        boolean isDeleted = rowService.deleteRow(rowID);
-        if (isDeleted) {
-            System.out.println("Row with ID " + rowID + " and its associated seats have been deleted.");
+    public void updateRow(int rowId, int rowCapacity) {
+        Row updatedRow = rowService.updateRow(rowId, rowCapacity);
+
+        if (updatedRow != null) {
+            System.out.println("Row updated successfully: " + updatedRow);
         } else {
-            System.out.println("Row with ID " + rowID + " not found. Deletion failed.");
+            System.out.println("Failed to update row. Row with ID " + rowId + " not found.");
         }
     }
 
     /**
-     * Retrieves and displays all rows in the repository.
+     * Deletes a Row by its ID.
+     */
+    public void deleteRow(int rowId) {
+        boolean deleted = rowService.deleteRow(rowId);
+
+        if (deleted) {
+            System.out.println("Row with ID " + rowId + " deleted successfully.");
+        } else {
+            System.out.println("Failed to delete row. Row with ID " + rowId + " not found.");
+        }
+    }
+
+    /**
+     * Retrieves a Row by its ID.
+     */
+    public Row findRowByID(int rowId) {
+        Row row = rowService.findRowByID(rowId);
+        if (row != null) {
+            System.out.println("Row found: " + row);
+        } else {
+            System.out.println("Row with ID " + rowId + " not found.");
+        }
+    }
+
+    /**
+     * Retrieves all Rows.
      */
     public void getAllRows() {
         List<Row> rows = rowService.getAllRows();
-        if (rows.isEmpty()) {
-            System.out.println("No rows available.");
-        } else {
+
+        if (!rows.isEmpty()) {
             System.out.println("All rows:");
-            rows.forEach(row -> System.out.println("- ID: " + row.getID() + ", Capacity: " + row.getRowCapacity()));
+            rows.forEach(System.out::println);
+        } else {
+            System.out.println("No rows available.");
         }
     }
 
     /**
-     * Retrieves and displays rows by section.
-     *
-     * @param section the section to filter rows by
+     * Adds Seats to a specific Row.
      */
-    public void findRowsBySection(Section section) {
-        List<Row> rows = rowService.findRowsBySection(section);
-        if (rows.isEmpty()) {
-            System.out.println("No rows found for section '" + section.getSectionName() + "'.");
+    public void addSeatsToRow(int rowId, int numberOfSeats) {
+        rowService.addSeatsToRow(rowId, numberOfSeats);
+        System.out.println("Added " + numberOfSeats + " seats to Row with ID " + rowId + ".");
+    }
+
+    /**
+     * Retrieves all Seats in a specific Row.
+     */
+    public void getSeatsByRowId(int rowId) {
+        List<Seat> seats = rowService.getSeatsByRowId(rowId);
+
+        if (!seats.isEmpty()) {
+            System.out.println("Seats in Row ID " + rowId + ":");
+            seats.forEach(System.out::println);
         } else {
-            System.out.println("Rows in section '" + section.getSectionName() + "':");
-            rows.forEach(row -> System.out.println("- ID: " + row.getID() + ", Capacity: " + row.getRowCapacity()));
+            System.out.println("No seats found for Row ID " + rowId + ".");
         }
     }
 
     /**
-     * Retrieves and displays available seats in a row for a specific event.
-     *
-     * @param row   the row to check
-     * @param event the event for which seat availability is checked
+     * Finds Rows by their associated Section.
      */
-    public void getAvailableSeatsInRow(Row row, Event event) {
-        List<Seat> availableSeats = rowService.getAvailableSeatsInRow(row, event);
-        if (availableSeats.isEmpty()) {
-            System.out.println("No available seats in row with ID " + row.getID() + " for event '" + event.getEventName() + "'.");
+    public void findRowsBySection(int sectionId) {
+        List<Row> rows = rowService.findRowsBySection(sectionId);
+
+        if (!rows.isEmpty()) {
+            System.out.println("Rows in Section ID " + sectionId + ":");
+            rows.forEach(System.out::println);
         } else {
-            System.out.println("Available seats in row with ID " + row.getID() + " for event '" + event.getEventName() + "':");
-            availableSeats.forEach(seat -> System.out.println("- Seat ID: " + seat.getID() + ", Number: " + seat.getRow()));
+            System.out.println("No rows found for Section ID " + sectionId + ".");
         }
     }
 
     /**
-     * Retrieves and displays all seats in a specific row.
-     *
-     * @param row the row to retrieve seats from
+     * Retrieves all available Seats in a Row for a specific Event.
      */
-    public void getSeatsByRow(Row row) {
-        List<Seat> seats = rowService.getSeatsByRow(row);
-        if (seats.isEmpty()) {
-            System.out.println("No seats found in row with ID " + row.getID() + ".");
+    public void getAvailableSeatsInRow(int rowId, int eventId) {
+        List<Seat> availableSeats = rowService.getAvailableSeatsInRow(rowId, eventId);
+
+        if (!availableSeats.isEmpty()) {
+            System.out.println("Available seats in Row ID " + rowId + " for Event ID " + eventId + ":");
+            availableSeats.forEach(System.out::println);
         } else {
-            System.out.println("Seats in row with ID " + row.getID() + ":");
-            seats.forEach(seat -> System.out.println("- Seat ID: " + seat.getID() + ", Number: " + seat.getRow()));
+            System.out.println("No available seats in Row ID " + rowId + " for Event ID " + eventId + ".");
         }
     }
-
-    /* *//**
-     * Recommends a seat in a row for a customer based on preferences and availability.
-     *
-     * @param customer the customer for whom the seat is recommended
-     * @param row      the row to check
-     * @param event    the event for which the seat is recommended
-     *//*
-    public void recommendSeatInRow(Customer customer, Row row, Event event) {
-        Seat recommendedSeat = rowService.recommendSeatInRow(customer, row, event);
-        if (recommendedSeat != null) {
-            System.out.println("Recommended seat for customer '" + customer.getUsername() + "' in row with ID " + row.getID() +
-                    " for event '" + event.getEventName() + "': Seat ID " + recommendedSeat.getID() +
-                    ", Number: " + recommendedSeat.getSeatNumber());
-        } else {
-            System.out.println("No preferred seat available for customer '" + customer.getUsername() +
-                    "' in row with ID " + row.getID() + " for event '" + event.getEventName() + "'.");
-        }
-    }*/
 }

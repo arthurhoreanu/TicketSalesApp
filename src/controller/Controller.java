@@ -66,6 +66,8 @@ public class Controller {
         purchaseHistoryController.getPurchaseHistoryForCustomer(customer);}
     public List<PurchaseHistory> getAllPurchaseHistories() {
         return purchaseHistoryController.getAllPurchaseHistories();}
+    public PurchaseHistory findPurchaseHistoryByID(int id) {
+        return purchaseHistoryController.findPurchaseHistoryByID(id);}
 
     // Payment related
     public void processPayment(Cart cart, String cardNumber, String cardholderName,
@@ -74,22 +76,24 @@ public class Controller {
     }
 
     // Row related
-    public Row findRowByID(int rowID) {
-        return rowController.findRowByID(rowID);}
-    public void createRowWithSeats(int rowCapacity, Section section) {
-        rowController.createRowWithSeats(rowCapacity, section);}
-    public void updateRow(int rowID, int newCapacity) {
-        rowController.updateRow(rowID, newCapacity);}
-    public void deleteRow(int rowID) {
-        rowController.deleteRow(rowID);}
+    public void createRow(int sectionId, int rowCapacity) {
+        rowController.createRow(sectionId, rowCapacity);}
+    public void updateRow(int rowId, int rowCapacity) {
+        rowController.updateRow(rowId, rowCapacity);}
+    public void deleteRow(int rowId) {
+        rowController.deleteRow(rowId);}
+    public Row findRowByID(int rowId) {
+        return rowController.findRowByID(rowId);}
     public void getAllRows() {
         rowController.getAllRows();}
-    public void findRowsBySection(Section section) {
-        rowController.findRowsBySection(section);}
-    public void getAvailableSeatsInRow(Row row, Event event) {
-        rowController.getAvailableSeatsInRow(row, event);}
-    public void getSeatsByRow(Row row) {
-        rowController.getSeatsByRow(row);}
+    public void addSeatsToRow(int rowId, int numberOfSeats) {
+        rowController.addSeatsToRow(rowId, numberOfSeats);}
+    public void getSeatsByRowId(int rowId) {
+        rowController.getSeatsByRowId(rowId);}
+    public void findRowsBySection(int sectionId) {
+        rowController.findRowsBySection(sectionId);}
+    public void getAvailableSeatsInRow(int rowId, int eventId) {
+        rowController.getAvailableSeatsInRow(rowId, eventId);}
 
     // Customer related
     public void addFavourite(FavouriteEntity item) {
@@ -99,7 +103,7 @@ public class Controller {
     public Set<FavouriteEntity> getFavourites() {
         return customerController.getFavourites();}
 
-    //Athlete related
+    // Athlete related
     public List<Athlete> findAthletesBySport(String sport) {
         return athleteController.findAthletesBySport(sport);}
     public void createAthlete(String athleteName, String athleteSport) {
@@ -115,7 +119,7 @@ public class Controller {
     public Athlete findAthleteByID(int athleteID) {
         return athleteController.findAthleteByID(athleteID); }
 
-    //Artist related
+    // Artist related
     public List<Artist> findArtistsByGenre(String genre) {
         return artistController.findArtistsByGenre(genre);}
     public void createArtist(String artistName, String genre) {
@@ -132,62 +136,66 @@ public class Controller {
         return artistController.findArtistByID(artistId); }
 
     // Seat related
-    public void createSeat(int seatID, Row row, boolean isReserved, Event reservedForEvent) {
-        seatController.createSeat(seatID, row, isReserved, reservedForEvent);}
-    public Seat findSeatByID(int seatID) {
-        return seatController.findSeatByID(seatID);}
-    // TODO has the same name as the one from row
-    public void getSeatsByRow_SEAT(Row row) {
-        seatController.getSeatsByRow_SEAT(row);}
-    public void checkSeatReservation(Seat seat, Event event) {
-        seatController.checkSeatReservation(seat, event);}
-    public void reserveSeatForEvent(Seat seat, Event event) {
-        seatController.reserveSeatForEvent(seat, event);}
-    public void clearSeatReservationForEvent(Seat seat, Event event) {
-        seatController.clearSeatReservationForEvent(seat, event);}
-    // TODO has the same name as the one from row
-    public void getAvailableSeatsInRow_SEAT(Row row, Event event) {
-        seatController.getAvailableSeatsInRow_SEAT(row, event);}
-    public void recommendFrontRowSeat(List<Seat> availableSeats) {
-        seatController.recommendFrontRowSeat(availableSeats);}
-    public void deleteSeatByID(int seatID) {
-        seatController.deleteSeatByID(seatID);}
+    public void createSeat(int rowId, int seatNumber) {
+        seatController.createSeat(rowId, seatNumber);}
+    public void deleteSeatById(int seatId) {
+        seatController.deleteSeatById(seatId);}
+    public Seat findSeatByID(int seatId) {
+        return seatController.findSeatByID(seatId);}
     public void getAllSeats() {
         seatController.getAllSeats();}
+    public void getSeatsByRow(int rowId) {
+        seatController.getSeatsByRow(rowId);}
+    public void getAvailableSeatsInSection(int sectionId) {
+        seatController.getAvailableSeatsInSection(sectionId);}
+    public void getAvailableSeatsInVenue(int venueId) {
+        seatController.getAvailableSeatsInVenue(venueId);}
+    public void reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
+        seatController.reserveSeat(seatId, event, customer, price, ticketType);}
+    public void isSeatReservedForEvent(int seatId, int eventId) {
+        seatController.isSeatReservedForEvent(seatId, eventId);}
+    public void unreserveSeat(int seatId) {
+        seatController.unreserveSeat(seatId);}
+    public void recommendClosestSeat(int rowId, int seatNumber) {
+        seatController.recommendClosestSeat(rowId, seatNumber);}
 
     // Section related
     public void createSection(String sectionName, int sectionCapacity, Venue venue) {
         sectionController.createSection(sectionName, sectionCapacity, venue);}
-    public void updateSection(int sectionID, String newSectionName, int newSectionCapacity) {
-        sectionController.updateSection(sectionID, newSectionName, newSectionCapacity);}
-    public void deleteSection(int sectionID) {
-        sectionController.deleteSection(sectionID);}
-    public List<Section> getAllSections() {
-        return sectionController.getAllSections();}
-    public Section findSectionByID(int sectionID) {
-        return sectionController.findSectionByID(sectionID);}
-    public void getSectionInfo(String sectionName) {
-        sectionController.getSectionInfo(sectionName);}
+    public void updateSection(int sectionId, String sectionName, int sectionCapacity) {
+        sectionController.updateSection(sectionId, sectionName, sectionCapacity);}
+    public void deleteSection(int sectionId) {
+        sectionController.deleteSection(sectionId);}
+    public Section findSectionByID(int sectionId) {
+        return sectionController.findSectionByID(sectionId);}
+    public void getAllSections() {
+        sectionController.getAllSections();}
+    public void findSectionsByName(String name) {
+        sectionController.findSectionsByName(name);}
+    public void getAvailableSeats(int sectionId, int eventId) {
+        sectionController.getAvailableSeats(sectionId, eventId);}
 
     // Venue related
-    public void createVenue(String name, String location, int capacity) {
-        venueController.createVenue(name, location, capacity);}
-    public void updateVenue(int venueId, String newName, String newLocation, int newCapacity) {
-        venueController.updateVenue(venueId, newName, newLocation, newCapacity);}
-    public void deleteVenue(int id) {
-        venueController.deleteVenue(id);}
-    public List<Venue> getAllVenues() {
-        return venueController.getAllVenues();}
-    public Venue findVenueByID(int id){
-        return venueController.findVenueByID(id);}
-    public Venue findVenueByName(String name) {
-        return venueController.findVenueByName(name);}
-    public List<Venue> findVenuesByLocationOrName(String locationOrVenueName) {
-        return venueController.findVenuesByLocationOrName(locationOrVenueName);}
-    public void getAvailableSeats(Venue venue, Event event) {
-        venueController.getAvailableSeats(venue, event);}
-//    public Seat recommendSeat(Customer customer, Venue venue, Event event) {
-//        return venueController.recommendSeat(customer, venue, event);}
+    public void createVenue(String name, String location, int capacity, boolean hasSeats) {
+        venueController.createVenue(name, location, capacity, hasSeats);}
+    public Venue findVenueByID(int venueId) {
+        return venueController.findVenueByID(venueId);}
+    public void findVenuesByLocationOrName(String keyword) {
+        venueController.findVenuesByLocationOrName(keyword);}
+    public void findVenueByName(String name) {
+        venueController.findVenueByName(name);}
+    public void getAllVenues() {
+        venueController.getAllVenues();}
+    public void updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
+        venueController.updateVenue(venueId, name, location, capacity, hasSeats);}
+    public void deleteVenue(int venueId) {
+        venueController.deleteVenue(venueId);}
+    public void addSectionToVenue(int venueId, String sectionName, int sectionCapacity) {
+        venueController.addSectionToVenue(venueId, sectionName, sectionCapacity);}
+    public void getSectionsByVenueId(int venueId) {
+        venueController.getSectionsByVenueId(venueId);}
+    public void getAvailableSeatsInVenue(int venueId, int eventId) {
+        venueController.getAvailableSeatsInVenue(venueId, eventId);}
 
     // Ticket related
     public List<Ticket> getTicketsByEvent(Event event) {
