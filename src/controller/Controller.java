@@ -198,8 +198,8 @@ public class Controller {
         venueController.getAvailableSeatsInVenue(venueId, eventId);}
 
     // Ticket related
-    public void generateTicketsForEvent(Event event, double basePrice) {
-        ticketController.generateTicketsForEvent(event, basePrice);}
+    public List<Ticket> generateTicketsForEvent(Event event, double basePrice) {
+        return ticketController.generateTicketsForEvent(event, basePrice);}
     public void reserveTicket(Ticket ticket, Customer customer) {
         ticketController.reserveTicket(ticket, customer);}
     public void releaseTicket(Ticket ticket) {
