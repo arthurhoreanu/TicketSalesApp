@@ -17,8 +17,6 @@ public class UserService {
     private User currentUser;
     private final FileRepository<Admin> adminFileRepository;
     private final FileRepository<Customer> customerFileRepository;
-    private final DBRepository<Admin> adminDatabaseRepository;
-    private final DBRepository<Customer> customerDatabaseRepository;
 
     public UserService(IRepository<User> userRepository, CustomerService customerService) {
         this.userIRepository = userRepository;
@@ -26,10 +24,6 @@ public class UserService {
         this.adminFileRepository = new FileRepository<>("src/repository/data/admins.csv", Admin::fromCsv);
         this.customerFileRepository = new FileRepository<>("src/repository/data/customers.csv", Customer::fromCsv);
         syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.adminDatabaseRepository = new DBRepository<>(entityManagerFactory, Admin.class);
-        this.customerDatabaseRepository = new DBRepository<>(entityManagerFactory, Customer.class);
-        syncFromDatabase();
     }
 
     private void syncFromCsv() {
@@ -38,17 +32,6 @@ public class UserService {
         for (Admin admin : admins) {
             userIRepository.create(admin);
         }
-        for (Customer customer : customers) {
-            userIRepository.create(customer);
-        }
-    }
-
-    private void syncFromDatabase() {
-        List<Admin> admins = adminDatabaseRepository.getAll();
-        for (Admin admin : admins) {
-            userIRepository.create(admin);
-        }
-        List<Customer> customers = customerDatabaseRepository.getAll();
         for (Customer customer : customers) {
             userIRepository.create(customer);
         }
@@ -110,13 +93,11 @@ public class UserService {
             Customer customer = new Customer(newID, username, email, password);
             userIRepository.create(customer);
             customerFileRepository.create(customer);
-            customerDatabaseRepository.create(customer);
             return true;
         } else if ("Admin".equalsIgnoreCase(role) && domainEmail(email)) {
             Admin admin = new Admin(newID, username, email, password);
             userIRepository.create(admin);
             adminFileRepository.create(admin);
-            adminDatabaseRepository.create(admin);
             return true;
         }
         return false;
@@ -174,10 +155,8 @@ public class UserService {
             userIRepository.delete(id);
             if (userToDelete instanceof Admin) {
                 adminFileRepository.delete(id);
-                adminDatabaseRepository.delete(id);
             } else if (userToDelete instanceof Customer) {
                 customerFileRepository.delete(id);
-                customerDatabaseRepository.delete(id);
             }
             return true;
         }
