@@ -76,8 +76,8 @@ public class Controller {
     }
 
     // Row related
-    public void createRow(int sectionId, int rowCapacity) {
-        rowController.createRow(sectionId, rowCapacity);}
+    public Row createRow(int sectionId, int rowCapacity) {
+        return rowController.createRow(sectionId, rowCapacity);}
     public void updateRow(int rowId, int rowCapacity) {
         rowController.updateRow(rowId, rowCapacity);}
     public void deleteRow(int rowId) {
@@ -88,10 +88,10 @@ public class Controller {
         rowController.getAllRows();}
     public void addSeatsToRow(int rowId, int numberOfSeats) {
         rowController.addSeatsToRow(rowId, numberOfSeats);}
-    public void getSeatsByRowId(int rowId) {
-        rowController.getSeatsByRowId(rowId);}
-    public void findRowsBySection(int sectionId) {
-        rowController.findRowsBySection(sectionId);}
+    public List<Seat> getSeatsByRowID(int rowId) {
+        return rowController.getSeatsByRowID(rowId);}
+    public List<Row> findRowsBySection(int sectionId) {
+        return rowController.findRowsBySection(sectionId);}
     public void getAvailableSeatsInRow(int rowId, int eventId) {
         rowController.getAvailableSeatsInRow(rowId, eventId);}
 
@@ -182,57 +182,40 @@ public class Controller {
         return venueController.findVenueByID(venueId);}
     public void findVenuesByLocationOrName(String keyword) {
         venueController.findVenuesByLocationOrName(keyword);}
-    public void findVenueByName(String name) {
-        venueController.findVenueByName(name);}
-    public void getAllVenues() {
-        venueController.getAllVenues();}
+    public Venue findVenueByName(String name) {
+        return venueController.findVenueByName(name);}
+    public List<Venue> getAllVenues() {
+        return venueController.getAllVenues();}
     public void updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
         venueController.updateVenue(venueId, name, location, capacity, hasSeats);}
     public void deleteVenue(int venueId) {
         venueController.deleteVenue(venueId);}
     public void addSectionToVenue(int venueId, String sectionName, int sectionCapacity) {
         venueController.addSectionToVenue(venueId, sectionName, sectionCapacity);}
-    public void getSectionsByVenueId(int venueId) {
-        venueController.getSectionsByVenueId(venueId);}
+    public List<Section> getSectionsByVenueID(int venueId) {
+        return venueController.getSectionsByVenueID(venueId);}
     public void getAvailableSeatsInVenue(int venueId, int eventId) {
         venueController.getAvailableSeatsInVenue(venueId, eventId);}
 
     // Ticket related
-    public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
-        ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);
-    }
+    public void generateTicketsForEvent(Event event, double basePrice) {
+        ticketController.generateTicketsForEvent(event, basePrice);}
     public void reserveTicket(Ticket ticket, Customer customer) {
-        ticketController.reserveTicket(ticket, customer);
-    }
+        ticketController.reserveTicket(ticket, customer);}
     public void releaseTicket(Ticket ticket) {
-        ticketController.releaseTicket(ticket);
-    }
-    //todo do we relly need them in the controller?
-    /*public void updateTicket(Ticket ticket) {
-        ticketController.updateTicket(ticket);
-    }
-    public TicketType determineTicketType(Seat seat) {
-        return ticketController.determineTicketType(seat);
-    }*/
+        ticketController.releaseTicket(ticket);}
     public List<Ticket> getTicketsByEvent(Event event) {
-        return ticketController.getTicketsByEvent(event);
-    }
+        return ticketController.getTicketsByEvent(event);}
     public List<Ticket> getAvailableTicketsForEvent(Event event) {
-        return ticketController.getAvailableTicketsForEvent(event);
-    }
+        return ticketController.getAvailableTicketsForEvent(event);}
     public List<Ticket> findTicketsByCartID(int cartID) {
-        return ticketController.findTicketsByCartID(cartID);
-    }
+        return ticketController.findTicketsByCartID(cartID);}
     public void deleteTicket(int ticketID) {
-        ticketController.deleteTicket(ticketID);
-    }
+        ticketController.deleteTicket(ticketID);}
     public Ticket findTicketByID(int ticketID) {
-        return ticketController.findTicketByID(ticketID);
-    }
+        return ticketController.findTicketByID(ticketID);}
     public double calculateTotalPrice(List<Ticket> tickets) {
-        return ticketController.calculateTotalPrice(tickets);
-    }
-
+        return ticketController.calculateTotalPrice(tickets);}
 
     // Cart related
     public Cart createCart(Customer customer, Event event) {

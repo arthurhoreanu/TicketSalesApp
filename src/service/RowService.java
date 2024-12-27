@@ -168,7 +168,7 @@ public class RowService {
      * @param rowId the ID of the Row.
      * @return a list of Seats in the Row.
      */
-    public List<Seat> getSeatsByRowId(int rowId) {
+    public List<Seat> getSeatsByRowID(int rowId) {
         Row row = findRowByID(rowId);
         return (row != null) ? row.getSeats() : new ArrayList<>();
     }

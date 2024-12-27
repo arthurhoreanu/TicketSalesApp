@@ -6,6 +6,7 @@ import repository.IRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -16,19 +17,20 @@ public class TicketService {
     private final IRepository<Ticket> ticketRepository;
     private final FileRepository<Ticket> ticketFileRepository;
     private final SeatService seatService;
-    private final EventService eventService;
+
+    private static final double VIP_PERCENTAGE_INCREASE = 50.0; // +50% față de EARLY_BIRD
+    private static final int EARLY_BIRD_STOCK = 100; // Număr de bilete EARLY_BIRD
+    private static final double LAST_MINUTE_DISCOUNT = -20.0; // -20% în ziua evenimentului
 
     /**
      * Constructs a TicketService with dependencies for managing tickets, seats, and events.
      *
      * @param ticketRepository the repository for ticket persistence.
      * @param seatService      the service for managing seat operations.
-     * @param eventService     the service for managing event operations.
      */
-    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService, EventService eventService) {
+    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService) {
         this.ticketRepository = ticketRepository;
         this.seatService = seatService;
-        this.eventService = eventService;
 
         // Initialize file repository for CSV operations
         this.ticketFileRepository = new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsv);
@@ -49,34 +51,80 @@ public class TicketService {
      * Generates tickets for an event based on its available seats.
      *
      * @param event         the event for which tickets are generated.
-     * @param standardPrice the price for standard tickets.
-     * @param vipPrice      the price for VIP tickets.
+     * @param basePrice     the base price for early bird tickets.
      * @return the list of generated tickets.
      */
-    public List<Ticket> generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
+    public List<Ticket> generateTicketsForEvent(Event event, double basePrice) {
         List<Seat> availableSeats = seatService.getAvailableSeatsInVenue(event.getVenueID());
-        List<Ticket> tickets = availableSeats.stream().map(seat -> {
-            TicketType type = determineTicketType(seat);
-            double price = (type == TicketType.VIP) ? vipPrice : standardPrice;
-            return new Ticket(0, event, seat, null, price, type);
-        }).collect(Collectors.toList());
 
-        for (Ticket ticket : tickets) {
+        // Distribuirea tipurilor de bilete
+        List<Ticket> earlyBirdTickets = generateEarlyBirdTickets(availableSeats, event, basePrice);
+        List<Ticket> vipTickets = generateVipTickets(availableSeats, event, basePrice);
+        List<Ticket> standardTickets = generateStandardTickets(availableSeats, event, basePrice);
+
+        // Salvăm biletele generate
+        List<Ticket> allTickets = new ArrayList<>();
+        allTickets.addAll(earlyBirdTickets);
+        allTickets.addAll(vipTickets);
+        allTickets.addAll(standardTickets);
+
+        for (Ticket ticket : allTickets) {
             ticketRepository.create(ticket);
             ticketFileRepository.create(ticket);
         }
-
-        return tickets;
+        return allTickets;
     }
 
     /**
-     * Determines the ticket type based on seat characteristics.
-     *
-     * @param seat the seat for which to determine the ticket type.
-     * @return the ticket type.
+     * Generates EARLY_BIRD tickets for an event.
      */
-    private TicketType determineTicketType(Seat seat) {
-        return (seat.getRow().getRowCapacity() <= 5) ? TicketType.VIP : TicketType.STANDARD;
+    private List<Ticket> generateEarlyBirdTickets(List<Seat> availableSeats, Event event, double basePrice) {
+        return availableSeats.stream()
+                .limit(EARLY_BIRD_STOCK)
+                .map(seat -> new Ticket(0, event, seat, null, basePrice, TicketType.EARLY_BIRD))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Generates VIP tickets for an event.
+     */
+    private List<Ticket> generateVipTickets(List<Seat> availableSeats, Event event, double basePrice) {
+        double vipPrice = basePrice * (1 + VIP_PERCENTAGE_INCREASE / 100);
+        return availableSeats.stream()
+                .filter(seat -> seat.getRow().getRowCapacity() <= 5) // VIP logic
+                .map(seat -> new Ticket(0, event, seat, null, vipPrice, TicketType.VIP))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Generates STANDARD tickets for an event with dynamic pricing.
+     */
+    private List<Ticket> generateStandardTickets(List<Seat> availableSeats, Event event, double basePrice) {
+        LocalDateTime eventDate = event.getStartDateTime();
+        double dynamicPrice = calculateDynamicStandardPrice(basePrice, eventDate);
+
+        return availableSeats.stream()
+                .skip(EARLY_BIRD_STOCK)
+                .map(seat -> new Ticket(0, event, seat, null, dynamicPrice, TicketType.STANDARD))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Calculates dynamic price for STANDARD tickets based on event proximity.
+     */
+    private double calculateDynamicStandardPrice(double basePrice, LocalDateTime eventDate) {
+        LocalDateTime now = LocalDateTime.now();
+        long daysToEvent = java.time.Duration.between(now, eventDate).toDays();
+
+        if (daysToEvent > 30) {
+            return basePrice * 1.1; // +10% dacă evenimentul e la mai mult de 30 de zile
+        } else if (daysToEvent <= 30 && daysToEvent > 7) {
+            return basePrice * 1.2; // +20% între 7 și 30 de zile
+        } else if (daysToEvent <= 7 && daysToEvent > 1) {
+            return basePrice * 1.5; // +50% cu o săptămână înainte
+        } else {
+            return basePrice * (1 + LAST_MINUTE_DISCOUNT / 100); // Reducere de ultim moment (-20%)
+        }
     }
 
     /**

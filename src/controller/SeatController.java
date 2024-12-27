@@ -56,6 +56,7 @@ public class SeatController {
         } else {
             System.out.println("Seat with ID " + seatId + " not found.");
         }
+        return seat;
     }
 
     /**

@@ -36,7 +36,7 @@ public class ConsoleApp {
         EventService eventService = new EventService(eventRepository, venueService);
         ArtistService artistService = new ArtistService(artistRepository, eventRepository);
         AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
-        TicketService ticketService = new TicketService(ticketRepository, seatService, eventService, venueService);
+        TicketService ticketService = new TicketService(ticketRepository, seatService);
         CartService cartService = new CartService(cartRepository);
         PaymentService paymentService = new PaymentService();
         PurchaseHistoryService purchaseHistoryService = new PurchaseHistoryService(purchaseHistoryRepository);

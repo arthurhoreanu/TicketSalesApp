@@ -23,14 +23,14 @@ public class RowController {
     /**
      * Creates a new Row in a specific Section.
      */
-    public void createRow(int sectionId, int rowCapacity) {
+    public Row createRow(int sectionId, int rowCapacity) {
         Row row = rowService.createRow(sectionId, rowCapacity);
-
         if (row != null) {
             System.out.println("Row created successfully: " + row);
         } else {
             System.out.println("Failed to create row. Section with ID " + sectionId + " not found.");
         }
+        return row;
     }
 
     /**
@@ -69,6 +69,7 @@ public class RowController {
         } else {
             System.out.println("Row with ID " + rowId + " not found.");
         }
+        return row;
     }
 
     /**
@@ -96,29 +97,29 @@ public class RowController {
     /**
      * Retrieves all Seats in a specific Row.
      */
-    public void getSeatsByRowId(int rowId) {
-        List<Seat> seats = rowService.getSeatsByRowId(rowId);
-
+    public List<Seat> getSeatsByRowID(int rowId) {
+        List<Seat> seats = rowService.getSeatsByRowID(rowId);
         if (!seats.isEmpty()) {
             System.out.println("Seats in Row ID " + rowId + ":");
             seats.forEach(System.out::println);
         } else {
             System.out.println("No seats found for Row ID " + rowId + ".");
         }
+        return seats;
     }
 
     /**
      * Finds Rows by their associated Section.
      */
-    public void findRowsBySection(int sectionId) {
+    public List<Row> findRowsBySection(int sectionId) {
         List<Row> rows = rowService.findRowsBySection(sectionId);
-
         if (!rows.isEmpty()) {
             System.out.println("Rows in Section ID " + sectionId + ":");
             rows.forEach(System.out::println);
         } else {
             System.out.println("No rows found for Section ID " + sectionId + ".");
         }
+        return rows;
     }
 
     /**
