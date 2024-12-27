@@ -17,16 +17,12 @@ public class AthleteService {
     private final IRepository<Athlete> athleteRepository;
     private final IRepository<Event> eventRepository;
     private final FileRepository<Athlete> athleteFileRepository;
-    private final DBRepository<Athlete> athleteDatabaseRepository;
 
     public AthleteService(IRepository<Athlete> athleteRepository, IRepository<Event> eventRepository) {
         this.athleteRepository = athleteRepository;
         this.eventRepository = eventRepository;
         this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
         syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.athleteDatabaseRepository = new DBRepository<>(entityManagerFactory, Athlete.class);
-        syncFromDatabase();
     }
 
     private void syncFromCsv() {
@@ -54,7 +50,6 @@ public class AthleteService {
         Athlete athlete = new Athlete(newID, athleteName, genre);
         athleteRepository.create(athlete);
         athleteFileRepository.create(athlete);
-        athleteDatabaseRepository.create(athlete);
         return true;
     }
 
@@ -72,7 +67,6 @@ public class AthleteService {
             athlete.setAthleteSport(newGenre);
             athleteRepository.update(athlete);
             athleteFileRepository.update(athlete);
-            athleteDatabaseRepository.update(athlete);
             return true;
         } else {
             return false;
@@ -89,7 +83,6 @@ public class AthleteService {
         if (athlete != null) {
             athleteRepository.delete(athelteID);
             athleteFileRepository.delete(athelteID);
-            athleteDatabaseRepository.delete(athelteID);
             return true;
         } else {
             return false;

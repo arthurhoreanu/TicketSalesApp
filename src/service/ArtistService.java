@@ -18,27 +18,16 @@ public class ArtistService {
     private final IRepository<Artist> artistRepository;
     private final IRepository<Event> eventRepository;
     private final FileRepository<Artist> artistFileRepository;
-    private final DBRepository<Artist> artistDatabaseRepository;
 
     public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
         this.artistRepository = artistRepository;
         this.eventRepository = eventRepository;
         this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
         syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.artistDatabaseRepository = new DBRepository<>(entityManagerFactory, Artist.class);
-        syncFromDatabase();
     }
 
     private void syncFromCsv() {
         List<Artist> artists = artistFileRepository.getAll();
-        for (Artist artist : artists) {
-            artistRepository.create(artist);
-        }
-    }
-
-    private void syncFromDatabase() {
-        List<Artist> artists = artistDatabaseRepository.getAll();
         for (Artist artist : artists) {
             artistRepository.create(artist);
         }
@@ -55,7 +44,6 @@ public class ArtistService {
         Artist artist = new Artist(newID, artistName, genre);
         artistRepository.create(artist);
         artistFileRepository.create(artist);
-        artistDatabaseRepository.create(artist);
         return true;
     }
 
@@ -73,7 +61,6 @@ public class ArtistService {
             artist.setGenre(newGenre);
             artistRepository.update(artist);
             artistFileRepository.update(artist);
-            artistDatabaseRepository.update(artist);
             return true;
         } else {
             return false;
@@ -90,7 +77,6 @@ public class ArtistService {
         if (artist != null) {
             artistRepository.delete(artistId);
             artistFileRepository.delete(artistId);
-            artistDatabaseRepository.delete(artistId);
             return true;
         } else {
             return false;
