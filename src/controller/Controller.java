@@ -198,24 +198,41 @@ public class Controller {
         venueController.getAvailableSeatsInVenue(venueId, eventId);}
 
     // Ticket related
-    public List<Ticket> getTicketsByEvent(Event event) {
-        return ticketController.getTicketsByEvent(event);}
     public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
-        ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);}
+        ticketController.generateTicketsForEvent(event, standardPrice, vipPrice);
+    }
+    public void reserveTicket(Ticket ticket, Customer customer) {
+        ticketController.reserveTicket(ticket, customer);
+    }
+    public void releaseTicket(Ticket ticket) {
+        ticketController.releaseTicket(ticket);
+    }
+    //todo do we relly need them in the controller?
+    /*public void updateTicket(Ticket ticket) {
+        ticketController.updateTicket(ticket);
+    }
+    public TicketType determineTicketType(Seat seat) {
+        return ticketController.determineTicketType(seat);
+    }*/
+    public List<Ticket> getTicketsByEvent(Event event) {
+        return ticketController.getTicketsByEvent(event);
+    }
     public List<Ticket> getAvailableTicketsForEvent(Event event) {
         return ticketController.getAvailableTicketsForEvent(event);
     }
-    public void reserveTicket(Ticket ticket, String purchaserName) {
-        ticketController.reserveTicket(ticket, purchaserName);}
-    public void releaseTicket(Ticket ticket) {
-        ticketController.releaseTicket(ticket);}
-    public Ticket findTicketByID(int ticketId) {
-        return ticketController.findTicketByID(ticketId);
+    public List<Ticket> findTicketsByCartID(int cartID) {
+        return ticketController.findTicketsByCartID(cartID);
     }
-    public void deleteTicket(int ticketId) {
-        ticketController.deleteTicket(ticketId);}
+    public void deleteTicket(int ticketID) {
+        ticketController.deleteTicket(ticketID);
+    }
+    public Ticket findTicketByID(int ticketID) {
+        return ticketController.findTicketByID(ticketID);
+    }
     public double calculateTotalPrice(List<Ticket> tickets) {
-      return ticketController.calculateTotalPrice(tickets);}
+        return ticketController.calculateTotalPrice(tickets);
+    }
+
 
     // Cart related
     public Cart createCart(Customer customer, Event event) {
