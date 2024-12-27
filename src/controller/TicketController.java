@@ -30,6 +30,11 @@ public class TicketController {
      * @param vipPrice      the price for VIP tickets
      */
     public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
+        if (event == null) {
+            System.out.println("Invalid event. Cannot generate tickets.");
+            return;
+        }
+
         List<Ticket> tickets = ticketService.generateTicketsForEvent(event, standardPrice, vipPrice);
         if (tickets.isEmpty()) {
             System.out.println("No tickets were generated for the event: " + event.getEventName());
@@ -40,17 +45,22 @@ public class TicketController {
     }
 
     /**
-     * Reserves a ticket for a purchaser.
+     * Reserves a ticket for a customer.
      *
-     * @param ticket        the ticket to reserve
-     * @param purchaserName the name of the purchaser
+     * @param ticket   the ticket to reserve
+     * @param customer the customer reserving the ticket
      */
-    public void reserveTicket(Ticket ticket, String purchaserName) {
-        boolean success = ticketService.reserveTicket(ticket, purchaserName);
-        if (success) {
-            System.out.println("Ticket reserved successfully for: " + purchaserName);
+    public void reserveTicket(Ticket ticket, Customer customer) {
+        if (ticket == null || customer == null) {
+            System.out.println("Invalid ticket or customer. Reservation failed.");
+            return;
+        }
+
+        if (ticket.isSold()) {
+            System.out.println("Ticket is already reserved. Reservation failed.");
         } else {
-            System.out.println("Failed to reserve ticket. It may already be sold.");
+            ticketService.reserveTicket(ticket, customer);
+            System.out.println("Ticket reserved successfully for customer: " + customer.getUsername());
         }
     }
 
@@ -60,11 +70,16 @@ public class TicketController {
      * @param ticket the ticket to release
      */
     public void releaseTicket(Ticket ticket) {
-        boolean success = ticketService.releaseTicket(ticket);
-        if (success) {
-            System.out.println("Ticket released successfully.");
+        if (ticket == null) {
+            System.out.println("Invalid ticket. Release operation failed.");
+            return;
+        }
+
+        if (!ticket.isSold()) {
+            System.out.println("Ticket is not reserved. Release operation failed.");
         } else {
-            System.out.println("Failed to release ticket. It may not be reserved.");
+            ticketService.releaseTicket(ticket);
+            System.out.println("Ticket released successfully.");
         }
     }
 
@@ -75,6 +90,11 @@ public class TicketController {
      * @return the list of tickets for the event
      */
     public List<Ticket> getTicketsByEvent(Event event) {
+        if (event == null) {
+            System.out.println("Invalid event. Cannot retrieve tickets.");
+            return List.of();
+        }
+
         List<Ticket> tickets = ticketService.getTicketsByEvent(event);
         if (tickets.isEmpty()) {
             System.out.println("No tickets found for the event: " + event.getEventName());
@@ -92,6 +112,11 @@ public class TicketController {
      * @return the list of available tickets
      */
     public List<Ticket> getAvailableTicketsForEvent(Event event) {
+        if (event == null) {
+            System.out.println("Invalid event. Cannot retrieve available tickets.");
+            return List.of();
+        }
+
         List<Ticket> availableTickets = ticketService.getAvailableTicketsForEvent(event);
         if (availableTickets.isEmpty()) {
             System.out.println("No available tickets for the event: " + event.getEventName());
@@ -103,16 +128,44 @@ public class TicketController {
     }
 
     /**
+     * Finds tickets by the ID of the cart they belong to.
+     *
+     * @param cartID the ID of the cart
+     * @return the list of tickets associated with the cart
+     */
+    public List<Ticket> findTicketsByCartID(int cartID) {
+        if (cartID <= 0) {
+            System.out.println("Invalid cart ID. Cannot retrieve tickets.");
+            return List.of();
+        }
+
+        List<Ticket> tickets = ticketService.findTicketsByCartID(cartID);
+        if (tickets.isEmpty()) {
+            System.out.println("No tickets found for cart ID: " + cartID);
+        } else {
+            System.out.println("Tickets associated with cart ID: " + cartID);
+            tickets.forEach(ticket -> System.out.println(ticket));
+        }
+        return tickets;
+    }
+
+    /**
      * Deletes a ticket by its ID.
      *
      * @param ticketID the ID of the ticket to delete
      */
     public void deleteTicket(int ticketID) {
-        boolean success = ticketService.deleteTicket(ticketID);
-        if (success) {
-            System.out.println("Ticket with ID " + ticketID + " deleted successfully.");
+        if (ticketID <= 0) {
+            System.out.println("Invalid ticket ID. Cannot delete ticket.");
+            return;
+        }
+
+        Ticket ticket = ticketService.findTicketByID(ticketID);
+        if (ticket == null) {
+            System.out.println("Ticket with ID " + ticketID + " not found. Cannot delete.");
         } else {
-            System.out.println("Failed to delete ticket. Ticket ID not found: " + ticketID);
+            ticketService.deleteTicket(ticketID);
+            System.out.println("Ticket with ID " + ticketID + " deleted successfully.");
         }
     }
 
@@ -123,6 +176,11 @@ public class TicketController {
      * @return the Ticket object, or null if not found
      */
     public Ticket findTicketByID(int ticketID) {
+        if (ticketID <= 0) {
+            System.out.println("Invalid ticket ID. Cannot find ticket.");
+            return null;
+        }
+
         Ticket ticket = ticketService.findTicketByID(ticketID);
         if (ticket != null) {
             System.out.println("Ticket found: " + ticket);
@@ -139,6 +197,11 @@ public class TicketController {
      * @return the total price of the tickets
      */
     public double calculateTotalPrice(List<Ticket> tickets) {
+        if (tickets == null || tickets.isEmpty()) {
+            System.out.println("No tickets provided. Total price is 0.");
+            return 0;
+        }
+
         double totalPrice = ticketService.calculateTotalPrice(tickets);
         System.out.println("Total price for selected tickets: " + totalPrice);
         return totalPrice;
