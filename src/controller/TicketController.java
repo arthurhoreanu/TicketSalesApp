@@ -26,16 +26,14 @@ public class TicketController {
      * Generates tickets for an event based on seat availability and pricing.
      *
      * @param event         the event for which tickets are generated
-     * @param standardPrice the price for standard tickets
-     * @param vipPrice      the price for VIP tickets
+     * @param basePrice     the base price for early bird tickets
      */
-    public void generateTicketsForEvent(Event event, double standardPrice, double vipPrice) {
+    public void generateTicketsForEvent(Event event, double basePrice) {
         if (event == null) {
             System.out.println("Invalid event. Cannot generate tickets.");
             return;
         }
-
-        List<Ticket> tickets = ticketService.generateTicketsForEvent(event, standardPrice, vipPrice);
+        List<Ticket> tickets = ticketService.generateTicketsForEvent(event, basePrice);
         if (tickets.isEmpty()) {
             System.out.println("No tickets were generated for the event: " + event.getEventName());
         } else {

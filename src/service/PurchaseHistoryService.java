@@ -97,6 +97,6 @@ public class PurchaseHistoryService {
     }
 
     public PurchaseHistory findPurchaseHistoryByID(int id) {
-        purchaseHistoryRepository.read(id);
-    }  //TODO solve error --> missing return statement
+        return purchaseHistoryRepository.read(id);
+    }
 }

@@ -42,6 +42,7 @@ public class VenueController {
         } else {
             System.out.println("Venue with ID " + venueId + " not found.");
         }
+        return venue;
     }
 
     /**
@@ -60,19 +61,20 @@ public class VenueController {
     /**
      * Finds a venue by its name.
      */
-    public void findVenueByName(String name) {
+    public Venue findVenueByName(String name) {
         Venue venue = venueService.findVenueByName(name);
         if (venue != null) {
             System.out.println("Venue found: " + venue);
         } else {
             System.out.println("Venue with name '" + name + "' not found.");
         }
+        return venue;
     }
 
     /**
      * Retrieves all venues.
      */
-    public void getAllVenues() {
+    public List<Venue> getAllVenues() {
         List<Venue> venues = venueService.getAllVenues();
         if (!venues.isEmpty()) {
             System.out.println("All venues:");
@@ -80,6 +82,7 @@ public class VenueController {
         } else {
             System.out.println("No venues available.");
         }
+        return venues;
     }
 
     /**
@@ -121,14 +124,15 @@ public class VenueController {
     /**
      * Retrieves all sections by venue ID.
      */
-    public void getSectionsByVenueId(int venueId) {
-        List<Section> sections = venueService.getSectionsByVenueId(venueId);
+    public List<Section> getSectionsByVenueID(int venueId) {
+        List<Section> sections = venueService.getSectionsByVenueID(venueId);
         if (!sections.isEmpty()) {
             System.out.println("Sections for venue ID " + venueId + ":");
             sections.forEach(System.out::println);
         } else {
             System.out.println("No sections found for venue ID " + venueId + ".");
         }
+        return sections;
     }
 
     /**

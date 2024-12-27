@@ -152,7 +152,7 @@ public class VenueService {
     /**
      * Retrieves all Sections associated with a specific Venue.
      */
-    public List<Section> getSectionsByVenueId(int venueId) {
+    public List<Section> getSectionsByVenueID(int venueId) {
         Venue venue = venueRepository.read(venueId);
         return (venue != null) ? venue.getSections() : new ArrayList<>();
     }

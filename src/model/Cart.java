@@ -92,7 +92,6 @@ public class Cart implements Identifiable {
         this.totalPrice = totalPrice;
     }
 
-    // TODO va merge când e gata TicketService
     public List<Ticket> getTickets() {
         if (tickets.isEmpty() && cartID > 0) {
             tickets = controller.findTicketsByCartID(cartID);

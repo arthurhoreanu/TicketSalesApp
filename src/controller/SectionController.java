@@ -70,6 +70,7 @@ public class SectionController {
         } else {
             System.out.println("Section with ID " + sectionId + " not found.");
         }
+        return section;
     }
 
     /**
