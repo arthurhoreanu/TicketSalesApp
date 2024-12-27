@@ -28,10 +28,10 @@ public class TicketController {
      * @param event         the event for which tickets are generated
      * @param basePrice     the base price for early bird tickets
      */
-    public void generateTicketsForEvent(Event event, double basePrice) {
+    public List<Ticket> generateTicketsForEvent(Event event, double basePrice) {
         if (event == null) {
             System.out.println("Invalid event. Cannot generate tickets.");
-            return;
+            return null;
         }
         List<Ticket> tickets = ticketService.generateTicketsForEvent(event, basePrice);
         if (tickets.isEmpty()) {
@@ -40,6 +40,7 @@ public class TicketController {
             System.out.println("Tickets successfully generated for event: " + event.getEventName());
             tickets.forEach(ticket -> System.out.println(ticket));
         }
+        return tickets;
     }
 
     /**
