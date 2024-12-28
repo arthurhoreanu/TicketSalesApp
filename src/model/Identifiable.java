@@ -21,5 +21,5 @@ public interface Identifiable {
         return null;
     }
 
-    void setID(int anInt);
+    void setID(int Int);
 }

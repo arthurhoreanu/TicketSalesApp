@@ -50,6 +50,11 @@ public class Cart implements Identifiable {
         return cartID;
     }
 
+    @Override
+    public void setID(int cartID){
+        this.cartID = cartID;
+    }
+
     public void setCartID(int cartID) {
         this.cartID = cartID;
     }

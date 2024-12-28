@@ -34,8 +34,8 @@ public class ConsoleApp {
         SeatService seatService = new SeatService(seatRepository, rowService);
         VenueService venueService = new VenueService(venueRepository, sectionService);
         EventService eventService = new EventService(eventRepository, venueService);
-        ArtistService artistService = new ArtistService(artistRepository, eventRepository);
-        AthleteService athleteService = new AthleteService(athleteRepository, eventRepository);
+        ArtistService artistService = new ArtistService(artistRepository);
+        AthleteService athleteService = new AthleteService(athleteRepository);
         TicketService ticketService = new TicketService(ticketRepository, seatService);
         CartService cartService = new CartService(cartRepository);
         PaymentService paymentService = new PaymentService();

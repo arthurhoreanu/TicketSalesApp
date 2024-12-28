@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  */
 public class SeatService {
 
+    // TODO db
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Seat> seatFileRepository;
     private final RowService rowService;

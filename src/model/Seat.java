@@ -56,7 +56,8 @@ public class Seat implements Identifiable {
         return seatID;
     }
 
-    public void setSeatID(int seatID) {
+    @Override
+    public void setID(int seatID) {
         this.seatID = seatID;
     }
 

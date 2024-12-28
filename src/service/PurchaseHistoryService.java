@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  */
 public class PurchaseHistoryService {
 
+    // TODO db
     private final IRepository<PurchaseHistory> purchaseHistoryRepository;
     private final FileRepository<PurchaseHistory> purchaseHistoryFileRepository;
 
