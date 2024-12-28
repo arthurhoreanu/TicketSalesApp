@@ -15,31 +15,30 @@ import java.util.stream.Collectors;
 
 public class AthleteService {
     private final IRepository<Athlete> athleteRepository;
-    private final IRepository<Event> eventRepository;
     private final FileRepository<Athlete> athleteFileRepository;
-    private final DBRepository<Athlete> athleteDatabaseRepository;
+    private final DBRepository<Athlete> athleteDBRepository;
 
-    public AthleteService(IRepository<Athlete> athleteRepository, IRepository<Event> eventRepository) {
+    public AthleteService(IRepository<Athlete> athleteRepository) {
         this.athleteRepository = athleteRepository;
-        this.eventRepository = eventRepository;
         this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
-        syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.athleteDatabaseRepository = new DBRepository<>(entityManagerFactory, Athlete.class);
-        syncFromDatabase();
+        this.athleteDBRepository = new DBRepository<>(Athlete.class);
+        syncFromSource(athleteFileRepository, athleteDBRepository);
     }
 
-    private void syncFromCsv() {
-        List<Athlete> athletes = athleteRepository.getAll();
-        for (Athlete athlete : athletes) {
-            athleteRepository.create(athlete);
+    private void syncFromSource(FileRepository<Athlete> fileRepository, DBRepository<Athlete> dbRepository) {
+        List<Athlete> fileAthletes = fileRepository.getAll();
+        List<Athlete> dbAthletes = dbRepository.getAll();
+
+        for (Athlete athlete : fileAthletes) {
+            if(findAthleteByID(athlete.getID()) == null) {
+                athleteRepository.create(athlete);
+            }
         }
-    }
 
-    private void syncFromDatabase() {
-        List<Athlete> athletes = athleteRepository.getAll();
-        for (Athlete athlete : athletes) {
-            athleteRepository.create(athlete);
+        for (Athlete athlete : dbAthletes) {
+            if(findAthleteByID(athlete.getID()) == null) {
+                athleteRepository.create(athlete);
+            }
         }
     }
 
@@ -54,7 +53,6 @@ public class AthleteService {
         Athlete athlete = new Athlete(newID, athleteName, genre);
         athleteRepository.create(athlete);
         athleteFileRepository.create(athlete);
-        athleteDatabaseRepository.create(athlete);
         return true;
     }
 
@@ -72,7 +70,6 @@ public class AthleteService {
             athlete.setAthleteSport(newGenre);
             athleteRepository.update(athlete);
             athleteFileRepository.update(athlete);
-            athleteDatabaseRepository.update(athlete);
             return true;
         } else {
             return false;
@@ -89,7 +86,6 @@ public class AthleteService {
         if (athlete != null) {
             athleteRepository.delete(athelteID);
             athleteFileRepository.delete(athelteID);
-            athleteDatabaseRepository.delete(athelteID);
             return true;
         } else {
             return false;

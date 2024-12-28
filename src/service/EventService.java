@@ -16,26 +16,35 @@ public class EventService {
     private final IRepository<Event> eventRepository;
     private final VenueService venueService;
     private final FileRepository<Concert> concertFileRepository;
+    private final DBRepository<Concert> concertDBRepository;
     private final FileRepository<SportsEvent> sportsEventFileRepository;
+    private final DBRepository<SportsEvent> sportsEventDBRepository;
+
     private int lastCreatedEventID;
-    static Controller controller = ControllerProvider.getController();
 
     public EventService(IRepository<Event> eventRepository, VenueService venueService) {
         this.eventRepository = eventRepository;
         this.venueService = venueService;
         this.concertFileRepository = new FileRepository<>("src/repository/data/concerts.csv", Concert::fromCsv);
+        this.concertDBRepository = new DBRepository<>(Concert.class);
         this.sportsEventFileRepository = new FileRepository<>("src/repository/data/sportsevents.csv", SportsEvent::fromCsv);
-        syncFromCsv();
+        this.sportsEventDBRepository = new DBRepository<>(SportsEvent.class);
+        syncFromSource(concertFileRepository, concertDBRepository);
+        syncFromSource(sportsEventFileRepository, sportsEventDBRepository);
     }
 
-    private void syncFromCsv() {
-        List<Concert> concerts = concertFileRepository.getAll();
-        List<SportsEvent> sportsEvents = sportsEventFileRepository.getAll();
-        for (Concert concert : concerts) {
-            eventRepository.create(concert);
+    private <T extends Event> void syncFromSource(FileRepository<T> fileRepository, DBRepository<T> dbRepository) {
+        List<T> eventsFromFile = fileRepository.getAll();
+        List<T> eventsFromDB = dbRepository.getAll();
+
+        for (T event : eventsFromFile) {
+            if(findEventByID(event.getID())==null)
+                eventRepository.create(event);
         }
-        for (SportsEvent sportsEvent : sportsEvents) {
-            eventRepository.create(sportsEvent);
+
+        for (T event : eventsFromDB) {
+            if(findEventByID(event.getID())==null)
+                eventRepository.create(event);
         }
     }
 
@@ -54,11 +63,10 @@ public class EventService {
      * @return true if the concert event was successfully created and added.
      */
     public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        int eventID = eventRepository.getAll().size() + 1;
-        Concert concert = new Concert(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-        eventRepository.create(concert);
+        Concert concert = new Concert(0, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
+        concertDBRepository.create(concert);
         concertFileRepository.create(concert);
-        this.lastCreatedEventID = eventID;
+        eventRepository.create(concert);
         return true;
     }
 
@@ -73,11 +81,10 @@ public class EventService {
      * @return true if the sports event was successfully created and added.
      */
     public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        int eventID = eventRepository.getAll().size() + 1;
-        SportsEvent sportsEvent = new SportsEvent(eventID, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-        eventRepository.create(sportsEvent);
+        SportsEvent sportsEvent = new SportsEvent(0, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
+        sportsEventDBRepository.create(sportsEvent);
         sportsEventFileRepository.create(sportsEvent);
-        this.lastCreatedEventID = eventID;
+        eventRepository.create(sportsEvent);
         return true;
     }
 
@@ -124,9 +131,11 @@ public class EventService {
             eventRepository.update(event);
             if(event instanceof Concert) {
                 concertFileRepository.update((Concert) event);
+                concertDBRepository.update((Concert) event);
             }
             else if(event instanceof SportsEvent) {
                 sportsEventFileRepository.update((SportsEvent) event);
+                sportsEventDBRepository.update((SportsEvent) event);
             }
             return true;
         } else {
@@ -145,9 +154,11 @@ public class EventService {
             eventRepository.delete(eventId);
             if(event instanceof Concert) {
                 concertFileRepository.delete(eventId);
+                concertDBRepository.delete(eventId);
             }
             else if(event instanceof SportsEvent) {
                 sportsEventFileRepository.delete(eventId);
+                sportsEventDBRepository.delete(eventId);
             }
             return true;
         } else {

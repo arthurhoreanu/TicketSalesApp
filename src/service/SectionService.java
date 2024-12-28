@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  */
 public class SectionService {
 
+    // TODO db
     private final IRepository<Section> sectionRepository;
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Section> sectionFileRepository;

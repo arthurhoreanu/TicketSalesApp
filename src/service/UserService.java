@@ -7,50 +7,43 @@ import repository.DBRepository;
 import repository.FileRepository;
 import repository.IRepository;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 
 public class UserService {
-    private final IRepository<User> userIRepository;
+    private final IRepository<User> userRepository;
     private final CustomerService customerService;
     private User currentUser;
     private final FileRepository<Admin> adminFileRepository;
+    private final DBRepository<Admin> adminDBRepository;
     private final FileRepository<Customer> customerFileRepository;
-    private final DBRepository<Admin> adminDatabaseRepository;
-    private final DBRepository<Customer> customerDatabaseRepository;
+    private final DBRepository<Customer> customerDBRepository;
 
     public UserService(IRepository<User> userRepository, CustomerService customerService) {
-        this.userIRepository = userRepository;
+        this.userRepository = userRepository;
         this.customerService = customerService;
         this.adminFileRepository = new FileRepository<>("src/repository/data/admins.csv", Admin::fromCsv);
+        this.adminDBRepository = new DBRepository<>(Admin.class);
         this.customerFileRepository = new FileRepository<>("src/repository/data/customers.csv", Customer::fromCsv);
-        syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.adminDatabaseRepository = new DBRepository<>(entityManagerFactory, Admin.class);
-        this.customerDatabaseRepository = new DBRepository<>(entityManagerFactory, Customer.class);
-        syncFromDatabase();
+        this.customerDBRepository = new DBRepository<>(Customer.class);
+
+        syncFromSource(customerFileRepository, customerDBRepository);
+        syncFromSource(adminFileRepository, adminDBRepository);
     }
 
-    private void syncFromCsv() {
-        List<Admin> admins = adminFileRepository.getAll();
-        List<Customer> customers = customerFileRepository.getAll();
-        for (Admin admin : admins) {
-            userIRepository.create(admin);
-        }
-        for (Customer customer : customers) {
-            userIRepository.create(customer);
-        }
-    }
+    private <T extends User> void syncFromSource(FileRepository<T> fileRepository, DBRepository<T> dbRepository) {
+        List<T> usersFromFile = fileRepository.getAll();
+        List<T> usersFromDB = dbRepository.getAll();
 
-    private void syncFromDatabase() {
-        List<Admin> admins = adminDatabaseRepository.getAll();
-        for (Admin admin : admins) {
-            userIRepository.create(admin);
+        for (T user : usersFromFile) {
+            if (findUserByID(user.getID()) == null) {
+                userRepository.create(user);
+            }
         }
-        List<Customer> customers = customerDatabaseRepository.getAll();
-        for (Customer customer : customers) {
-            userIRepository.create(customer);
+
+        for (T user : usersFromDB) {
+            if (findUserByID(user.getID()) == null) {
+                userRepository.create(user);
+            }
         }
     }
 
@@ -67,7 +60,7 @@ public class UserService {
      * @return A list of all users stored in the repository.
      */
     public List<User> getAllUsers() {
-        return userIRepository.getAll();
+        return userRepository.getAll();
     }
 
     /**
@@ -76,7 +69,7 @@ public class UserService {
      * @return true if the username is already taken, false if the username is unique.
      */
     public boolean takenUsername(String username) {
-        for (User user : userIRepository.getAll()) {
+        for (User user : userRepository.getAll()) {
             if (user.getUsername().equals(username)) {
                 return true; // Username exists
             }
@@ -93,35 +86,48 @@ public class UserService {
         return email.endsWith("@tsc.com"); // [TicketSalesCompany placeholder]
     }
 
-    /**
-     * Creates a new user account with the specified details.
-     * @param role The role of the new user ("Customer" or "Admin").
-     * @param username The username of the new user.
-     * @param email The email of the new user.
-     * @param password The password for the new user.
-     * @return true if the account is successfully created, false if the account creation failed (e.g., username is taken or invalid role/email).
-     */
-    public boolean createAccount(String role, String username, String email, String password) {
+    public boolean createCustomer(String username, String email, String password) {
         if (takenUsername(username)) {
             return false;
         }
-        int newID = userIRepository.getAll().size() + 1;
+
+        Customer customer = new Customer(0, username, email, password);
+        customerDBRepository.create(customer); // DB generează ID-ul
+
+        if (customer.getID() == 0) {
+            throw new IllegalStateException("Database did not generate an ID for the customer.");
+        }
+
+        customerFileRepository.create(customer);
+        userRepository.create(customer);
+        return true;
+    }
+
+    public boolean createAdmin(String username, String email, String password) {
+        if (takenUsername(username) || !domainEmail(email)) {
+            return false;
+        }
+
+        Admin admin = new Admin(0, username, email, password);
+        adminDBRepository.create(admin); // DB generează ID-ul
+
+        if (admin.getID() == 0) {
+            throw new IllegalStateException("Database did not generate an ID for the admin.");
+        }
+
+        adminFileRepository.create(admin);
+        userRepository.create(admin);
+        return true;
+    }
+
+    public boolean createAccount(String role, String username, String email, String password) {
         if ("Customer".equalsIgnoreCase(role)) {
-            Customer customer = new Customer(newID, username, email, password);
-            userIRepository.create(customer);
-            customerFileRepository.create(customer);
-            customerDatabaseRepository.create(customer);
-            return true;
-        } else if ("Admin".equalsIgnoreCase(role) && domainEmail(email)) {
-            Admin admin = new Admin(newID, username, email, password);
-            userIRepository.create(admin);
-            adminFileRepository.create(admin);
-            adminDatabaseRepository.create(admin);
-            return true;
+            return createCustomer(username, email, password);
+        } else if ("Admin".equalsIgnoreCase(role)) {
+            return createAdmin(username, email, password);
         }
         return false;
     }
-
 
     /**
      * Logs in a user with the provided username and password.
@@ -130,7 +136,7 @@ public class UserService {
      * @return true if login is successful (correct username and password), false if login fails (incorrect credentials).
      */
     public boolean login(String username, String password) {
-        for (User user : userIRepository.getAll()) {
+        for (User user : userRepository.getAll()) {
             if (user.getUsername().equals(username)) {
                 if (user.getPassword().equals(password)) {
                     currentUser = user;
@@ -169,23 +175,27 @@ public class UserService {
         if (currentUser == null || !(currentUser instanceof Admin)) {
             return false;
         }
-        User userToDelete = userIRepository.read(id);
+        User userToDelete = userRepository.read(id);
         if (userToDelete != null) {
-            userIRepository.delete(id);
+            userRepository.delete(id);
             if (userToDelete instanceof Admin) {
                 adminFileRepository.delete(id);
-                adminDatabaseRepository.delete(id);
+                adminDBRepository.delete(id);
             } else if (userToDelete instanceof Customer) {
                 customerFileRepository.delete(id);
-                customerDatabaseRepository.delete(id);
+                customerDBRepository.delete(id);
             }
             return true;
         }
         return false;
     }
 
+    public User findUserByID(int id) {
+        return userRepository.read(id);
+    }
+
     public Customer findCustomerByID(int customerID) {
-        return userIRepository.getAll().stream()
+        return userRepository.getAll().stream()
                 .filter(user -> user instanceof Customer)
                 .map(user -> (Customer) user)
                 .filter(customer -> customer.getID() == customerID)

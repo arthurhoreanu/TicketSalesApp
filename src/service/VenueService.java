@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class VenueService {
     private final IRepository<Venue> venueRepository;
     private final FileRepository<Venue> venueFileRepository;
+    private final DBRepository<Venue> venueDBRepository;
     private final SectionService sectionService;
 
     /**
@@ -26,18 +27,25 @@ public class VenueService {
         this.venueRepository = venueRepository;
         this.sectionService = sectionService;
 
-        // Initialize file repository for CSV operations
         this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsv);
-        syncFromCsv();
+        this.venueDBRepository = new DBRepository<>(Venue.class);
+        syncFromSource(venueFileRepository, venueDBRepository);
     }
 
-    /**
-     * Syncs venues from the CSV file into the unified repository.
-     */
-    private void syncFromCsv() {
-        List<Venue> venues = venueFileRepository.getAll();
-        for (Venue venue : venues) {
-            venueRepository.create(venue);
+    private void syncFromSource(FileRepository<Venue> venueFileRepository, DBRepository<Venue> venueDBRepository) {
+        List<Venue> fileVenues = venueFileRepository.getAll();
+        List<Venue> dbVenues = venueDBRepository.getAll();
+
+        for (Venue venue : fileVenues) {
+            if(findVenueByID(venue.getID()) == null) {
+                venueRepository.create(venue);
+            }
+        }
+
+        for (Venue venue : dbVenues) {
+            if(findVenueByID(venue.getID()) == null) {
+                venueRepository.create(venue);
+            }
         }
     }
 

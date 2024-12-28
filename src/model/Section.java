@@ -57,6 +57,11 @@ public class Section implements Identifiable {
         return sectionID;
     }
 
+    @Override
+    public void setID(int sectionID) {
+        this.sectionID = sectionID;
+    }
+
     public void setSectionID(int sectionID) {
         this.sectionID = sectionID;
     }

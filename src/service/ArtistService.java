@@ -16,31 +16,30 @@ import java.util.stream.Collectors;
 
 public class ArtistService {
     private final IRepository<Artist> artistRepository;
-    private final IRepository<Event> eventRepository;
     private final FileRepository<Artist> artistFileRepository;
-    private final DBRepository<Artist> artistDatabaseRepository;
+    private final DBRepository<Artist> artistDBRepository;
 
-    public ArtistService(IRepository<Artist> artistRepository, IRepository<Event> eventRepository) {
+    public ArtistService(IRepository<Artist> artistRepository) {
         this.artistRepository = artistRepository;
-        this.eventRepository = eventRepository;
         this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
-        syncFromCsv();
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ticketSalesPU");
-        this.artistDatabaseRepository = new DBRepository<>(entityManagerFactory, Artist.class);
-        syncFromDatabase();
+        this.artistDBRepository = new DBRepository<>(Artist.class);
+        syncFromSource(artistFileRepository, artistDBRepository);
     }
 
-    private void syncFromCsv() {
-        List<Artist> artists = artistFileRepository.getAll();
-        for (Artist artist : artists) {
-            artistRepository.create(artist);
+    private void syncFromSource(FileRepository<Artist> fileRepository, DBRepository<Artist> dbRepository) {
+        List<Artist> fileArtists = fileRepository.getAll();
+        List<Artist> dbArtists = dbRepository.getAll();
+
+        for (Artist artist : fileArtists) {
+            if(findArtistByID(artist.getID()) == null) {
+                artistRepository.create(artist);
+            }
         }
-    }
 
-    private void syncFromDatabase() {
-        List<Artist> artists = artistDatabaseRepository.getAll();
-        for (Artist artist : artists) {
-            artistRepository.create(artist);
+        for (Artist artist : dbArtists) {
+            if(findArtistByID(artist.getID()) == null) {
+                artistRepository.create(artist);
+            }
         }
     }
 
@@ -51,11 +50,16 @@ public class ArtistService {
      * @return true if the artist was successfully created and added to the repository, false otherwise.
      */
     public boolean createArtist(String artistName, String genre) {
-        int newID = artistRepository.getAll().size() + 1;
-        Artist artist = new Artist(newID, artistName, genre);
-        artistRepository.create(artist);
+        Artist artist = new Artist(0, artistName, genre); // ID-ul este setat la 0 inițial
+        artistDBRepository.create(artist); // Baza de date generează ID-ul
+
+        // Verificare: ID-ul generat este setat corect
+        if (artist.getID() == 0) {
+            throw new IllegalStateException("ID-ul nu a fost generat de baza de date.");
+        }
+
         artistFileRepository.create(artist);
-        artistDatabaseRepository.create(artist);
+        artistRepository.create(artist); // InMemory primește ID-ul generat
         return true;
     }
 
@@ -73,7 +77,7 @@ public class ArtistService {
             artist.setGenre(newGenre);
             artistRepository.update(artist);
             artistFileRepository.update(artist);
-            artistDatabaseRepository.update(artist);
+            artistDBRepository.update(artist);
             return true;
         } else {
             return false;
@@ -90,7 +94,7 @@ public class ArtistService {
         if (artist != null) {
             artistRepository.delete(artistId);
             artistFileRepository.delete(artistId);
-            artistDatabaseRepository.delete(artistId);
+            artistDBRepository.delete(artistId);
             return true;
         } else {
             return false;

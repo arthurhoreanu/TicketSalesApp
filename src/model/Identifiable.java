@@ -16,8 +16,10 @@ public interface Identifiable {
     Integer getID();
 
     String toCsv();
+
     static <T> T fromCsv(String csvLine) {
         return null;
     }
 
+    void setID(int Int);
 }

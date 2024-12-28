@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  */
 public class TicketService {
 
+    // TODO db
     private final IRepository<Ticket> ticketRepository;
     private final FileRepository<Ticket> ticketFileRepository;
     private final SeatService seatService;
