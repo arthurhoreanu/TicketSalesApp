@@ -56,7 +56,8 @@ public class Venue implements Identifiable {
         return venueID;
     }
 
-    public void setVenueID(int venueID) {
+    @Override
+    public void setID(int venueID) {
         this.venueID = venueID;
     }
 

@@ -80,7 +80,8 @@ public class Ticket implements Identifiable {
         return ticketID;
     }
 
-    public void setTicketID(int ticketID) {
+    @Override
+    public void setID(int ticketID) {
         this.ticketID = ticketID;
     }
 
@@ -241,7 +242,7 @@ public class Ticket implements Identifiable {
         PurchaseHistory purchaseHistory = purchaseHistoryID != null ? controller.findPurchaseHistoryByID(purchaseHistoryID) : null;
 
         Ticket ticket = new Ticket(ticketID, event, seat, customer, price, ticketType);
-        ticket.setTicketID(ticketID);
+        ticket.setID(ticketID);
         ticket.setSold(isSold);
         ticket.setPurchaseDate(purchaseDate);
         ticket.setPurchaseHistory(purchaseHistory);

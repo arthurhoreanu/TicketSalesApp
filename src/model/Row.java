@@ -50,7 +50,8 @@ public class Row implements Identifiable {
         return rowID;
     }
 
-    public void setRowID(int rowID) {
+    @Override
+    public void setID(int rowID) {
         this.rowID = rowID;
     }
 

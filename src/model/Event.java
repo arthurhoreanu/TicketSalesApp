@@ -55,6 +55,11 @@ public abstract class Event implements Identifiable {
         return eventID;
     }
 
+    @Override
+    public void setID(int eventID) {
+        this.eventID = eventID;
+    }
+
     public String getEventName() {
         return eventName;
     }
