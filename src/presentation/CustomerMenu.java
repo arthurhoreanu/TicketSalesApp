@@ -5,54 +5,40 @@ import model.*;
 
 import java.util.*;
 
-/**
- * Provides a menu for customers to manage their interactions within the application,
- * including viewing events, managing favourites, shopping carts, and orders.
- */
 public class CustomerMenu {
-
     private static Controller controller;
 
-    /**
-     * Displays the customer menu and processes the selected options.
-     *
-     * @param scanner    the scanner to read user input
-     * @param controller the controller to handle customer-related actions
-     * @return {@code true} to keep displaying the menu; {@code false} to exit the application
-     */
     public static boolean display(Scanner scanner, Controller controller) {
         while (true) {
             System.out.println("==== Customer Menu ====");
             System.out.println("1. Logout");
             System.out.println("2. Search for Artists/Athletes");
-            System.out.println("3. Search for Locations/Venues");
+            System.out.println("3. Search Events by Location/Venue");
             System.out.println("4. View Suggested Events");
-            System.out.println("5. Manage Shopping Cart"); // TODO de șters
-            System.out.println("6. Checkout Shopping Cart"); // TODO de șters
-            System.out.println("7. View Previous Orders"); // TODO va deveni History
+            System.out.println("5. View All Events");
+            System.out.println("6. Finish Order");
+            System.out.println("7. View Orders History");
             System.out.println("8. Manage Favourites");
             System.out.println("0. Exit");
             System.out.println("=======================");
-
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
-
             switch (choice) {
                 case "1":
                     controller.logout();
                     System.out.println("Logged out successfully.");
-                    return true; // Go back to login menu
+                    return true;
                 case "2":
                     handleSearchArtistsAndAthletes(scanner, controller);
                     break;
                 case "3":
-                    handleViewEventsByLocation(scanner, controller);
+                    handleSearchEventsByLocation(scanner, controller);
                     break;
                 case "4":
                     handleViewSuggestedEvents(scanner, controller);
                     break;
                 case "5":
-                    handleManageShoppingCart(scanner, controller);
+                    handleViewAllEvents(scanner, controller);
                     break;
                 case "6":
                     handleCheckout(scanner, controller);
@@ -72,234 +58,185 @@ public class CustomerMenu {
         }
     }
 
-    /**
-     * Searches for a performer (artist/athlete) and allows viewing upcoming events and tickets.
-     */
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
         System.out.print("Enter the name of an artist or athlete: ");
         String name = scanner.nextLine();
-
         Artist artist = controller.findArtistByName(name);
         if (artist != null) {
-            viewEventsAndManageTickets(scanner, controller, artist);
-            return;
-        }
-
-        Athlete athlete = controller.findAthleteByName(name);
-        if (athlete != null) {
-            viewEventsAndManageTickets(scanner, controller, athlete);
+            handleEventSelectionForPerformer(scanner, controller, artist);
         } else {
-            System.out.println("No artist or athlete found with the name: " + name);
+            Athlete athlete = controller.findAthleteByName(name);
+            if (athlete != null) {
+                handleEventSelectionForPerformer(scanner, controller, athlete);
+            } else {
+                System.out.println("No artist or athlete found with the name: " + name);
+            }
         }
     }
 
-    /**
-     * Handles searching events by location/venue and allows adding tickets to the cart.
-     */
-    private static void handleViewEventsByLocation(Scanner scanner, Controller controller) {
+    private static void handleSearchEventsByLocation(Scanner scanner, Controller controller) {
         System.out.print("Enter location or venue name: ");
         String location = scanner.nextLine();
-
         List<Event> events = controller.getEventsByLocation(location);
-        if (events.isEmpty()) {
-            System.out.println("No events found for the given location.");
-            return;
-        }
-
-        System.out.println("Events found:");
-        events.forEach(System.out::println);
-
-        viewTicketsAndAddToCart(scanner, controller);
+        handleEventSelectionFromList(scanner, controller, events);
     }
 
-    /**
-     * Displays suggested events based on the user's favourites.
-     */
     private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
-        System.out.println("==== Suggested Events ====");
         Set<FavouriteEntity> favourites = controller.getFavourites();
-
         if (favourites.isEmpty()) {
             System.out.println("No favourites to generate suggestions from.");
             return;
         }
 
         List<Event> suggestedEvents = new ArrayList<>();
-        for (FavouriteEntity entity : favourites) {
-            if (entity instanceof Artist artist) {
+        for (FavouriteEntity favourite : favourites) {
+            if (favourite instanceof Artist artist) {
                 suggestedEvents.addAll(controller.getUpcomingEventsForArtist(artist.getID()));
-            } else if (entity instanceof Athlete athlete) {
+            } else if (favourite instanceof Athlete athlete) {
                 suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(athlete.getID()));
             }
         }
 
-        if (suggestedEvents.isEmpty()) {
-            System.out.println("No suggested events found.");
-        } else {
-            System.out.println("Suggested Events:");
-            suggestedEvents.forEach(System.out::println);
-        }
+        handleEventSelectionFromList(scanner, controller, suggestedEvents);
     }
 
-    /**
-     * Manages shopping cart operations: view cart and remove tickets.
-     */
-    private static void handleManageShoppingCart(Scanner scanner, Controller controller) {
-        while (true) {
-            System.out.println("==== Shopping Cart ====");
-            System.out.println("1. View Cart");
-            System.out.println("2. Remove Ticket from Cart");
-            System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    ShoppingCart cart = ((Customer) controller.getCurrentUser()).getShoppingCart();
-                    if (cart.getItems().isEmpty()) {
-                        System.out.println("Your shopping cart is empty.");
-                    } else {
-                        cart.getItems().forEach(System.out::println); // todo methoda asta getItems cred ca se leaga de getTicketsByShoppingCart din shopping cart service, aia iti da lista, doar ca e facuta shi metoda
-                    }
-                    break;
-                case "2":
-                    System.out.print("Enter Ticket ID to remove: ");
-                    try {
-                        int ticketId = Integer.parseInt(scanner.nextLine());
-                        Ticket ticket = controller.findTicketByID(ticketId);
-                        if (ticket != null) {
-                            controller.removeTicketFromCart(ticket);
-                            System.out.println("Ticket removed from cart.");
-                        } else {
-                            System.out.println("Ticket not found in cart.");
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid Ticket ID.");
-                    }
-                    break;
-                case "0":
-                    return;
-                default:
-                    System.out.println("Invalid option.");
-            }
-        }
+    private static void handleViewAllEvents(Scanner scanner, Controller controller) {
+        List<Event> events = controller.getAllEvents();
+        handleEventSelectionFromList(scanner, controller, events);
     }
 
-    /**
-     * Handles checkout of shopping cart.
-     */
-    private static void handleCheckout(Scanner scanner, Controller controller) {
-        Customer currentCustomer = (Customer) controller.getCurrentUser();
-        ShoppingCart cart = currentCustomer.getShoppingCart();
+    private static void handleEventSelectionForPerformer(Scanner scanner, Controller controller, Object performer) {
+        List<Event> events = performer instanceof Artist artist
+                ? controller.getUpcomingEventsForArtist(artist.getID())
+                : controller.getUpcomingEventsForAthlete(((Athlete) performer).getID());
+        handleEventSelectionFromList(scanner, controller, events);
+    }
 
-        if (cart.getItems().isEmpty()) {
-            System.out.println("Your shopping cart is empty. Add tickets before checking out.");
+    private static void handleEventSelectionFromList(Scanner scanner, Controller controller, List<Event> events) {
+        if (events.isEmpty()) {
+            System.out.println("No events found.");
             return;
         }
 
-        System.out.println("Proceeding to checkout...");
-        System.out.println("Total amount: $" + cart.getTotalPrice());
-        System.out.print("Enter payment card number: ");
-        String cardNumber = scanner.nextLine();
-        System.out.print("Enter CVV: ");
-        String cvv = scanner.nextLine();
-
-        System.out.println("Processing payment...");
-        controller.orderAllTicketsFromCart(currentCustomer);
-        System.out.println("Checkout successful. Order has been placed!");
-    }
-
-    /**
-     * Displays previous orders for the user.
-     */
-    private static void handleViewPreviousOrders(Controller controller) {
-        Customer currentCustomer = (Customer) controller.getCurrentUser();
-        List<Order> orders = controller.getOrderHistory(currentCustomer);
-
-        if (orders.isEmpty()) {
-            System.out.println("No previous orders found.");
-        } else {
-            System.out.println("Previous Orders:");
-            orders.forEach(System.out::println);
-        }
-    }
-    /**
-     * Handles managing user favourites.
-     */
-    private static void handleManageFavourites(Scanner scanner, Controller controller) {
-        System.out.println("==== Favourites ====");
-        Set<FavouriteEntity> favourites = controller.getFavourites();
-
-        if (favourites.isEmpty()) {
-            System.out.println("You have no favourites.");
-        } else {
-            favourites.forEach(fav -> System.out.println("- " + fav.getName()));
-            System.out.print("Enter the name of the favourite to remove: ");
-            String name = scanner.nextLine();
-
-            favourites.stream()
-                    .filter(fav -> fav.getName().equalsIgnoreCase(name))
-                    .findFirst()
-                    .ifPresentOrElse(
-                            fav -> {
-                                controller.removeFavourite(fav);
-                                System.out.println(name + " removed from favourites.");
-                            },
-                            () -> System.out.println("Favourite not found.")
-                    );
-        }
-    }
-
-    /**
-     * Common method to view tickets for an event and add them to the cart.
-     */
-    private static void viewTicketsAndAddToCart(Scanner scanner, Controller controller) {
-        System.out.print("Enter Event ID to view tickets: ");
+        events.forEach(System.out::println);
+        System.out.print("Enter Event ID to view sections and tickets: ");
         try {
             int eventId = Integer.parseInt(scanner.nextLine());
             Event event = controller.findEventByID(eventId);
-
             if (event != null) {
-                List<Ticket> tickets = controller.getTicketsByEvent(event);
-                if (tickets.isEmpty()) {
-                    System.out.println("No tickets available for this event.");
-                } else {
-                    System.out.println("Available Tickets:");
-                    tickets.forEach(System.out::println);
-
-                    System.out.print("Enter Ticket ID to add to cart: ");
-                    int ticketId = Integer.parseInt(scanner.nextLine());
-                    Ticket ticket = controller.findTicketByID(ticketId);
-
-                    if (ticket != null) {
-                        controller.addTicketToCart(event, ticket);
-                        System.out.println("Ticket added to cart.");
-                    } else {
-                        System.out.println("Invalid Ticket ID.");
-                    }
-                }
+                handleSectionAndTicketSelection(scanner, controller, event);
             } else {
-                System.out.println("Event not found.");
+                System.out.println("Invalid Event ID.");
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input.");
         }
     }
 
-    private static void viewEventsAndManageTickets(Scanner scanner, Controller controller, Object performer) {
-        if (performer instanceof Artist artist) {
-            viewPerformerEvents(scanner, controller.getUpcomingEventsForArtist(artist.getID()));
-        } else if (performer instanceof Athlete athlete) {
-            viewPerformerEvents(scanner, controller.getUpcomingEventsForAthlete(athlete.getID()));
+    private static void handleSectionAndTicketSelection(Scanner scanner, Controller controller, Event event) {
+        Venue venue = controller.findVenueByID(event.getVenueID());
+        List<Section> sections = controller.getSectionsByVenueID(venue.getID());
+
+        if (sections.isEmpty() || (sections.size() == 1 && !venue.isHasSeats())) {
+            handleSimpleTicketSelection(scanner, controller, event, venue);
+        } else {
+            handleSeatSelection(scanner, controller, sections, event);
         }
     }
 
-    private static void viewPerformerEvents(Scanner scanner, List<Event> events) {
-        if (events.isEmpty()) {
-            System.out.println("No upcoming events.");
+    private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {
+        System.out.print("Enter the number of tickets to purchase (max " + venue.getVenueCapacity() + "): ");
+        try {
+            int ticketCount = Integer.parseInt(scanner.nextLine());
+            if (ticketCount > venue.getVenueCapacity()) {
+                System.out.println("Invalid ticket count. Try again.");
+                return;
+            }
+            handleCheckout(scanner, controller, event, null, ticketCount);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
+    private static void handleSeatSelection(Scanner scanner, Controller controller, List<Section> sections, Event event) {
+        System.out.println("Sections available:");
+        sections.forEach(System.out::println);
+        System.out.print("Enter Section ID to view available seats: ");
+        try {
+            int sectionId = Integer.parseInt(scanner.nextLine());
+            List<Seat> availableSeats = controller.getAvailableSeatsInSection(sectionId);
+            if (availableSeats.isEmpty()) {
+                System.out.println("No seats available.");
+                return;
+            }
+
+            System.out.println("Available Seats:");
+            availableSeats.forEach(System.out::println);
+
+            System.out.print("Enter Seat IDs to select (comma-separated): ");
+            String[] seatIds = scanner.nextLine().split(",");
+            List<Seat> selectedSeats = new ArrayList<>();
+            for (String seatId : seatIds) {
+                Seat seat = controller.findSeatByID(Integer.parseInt(seatId.trim()));
+                if (seat != null) selectedSeats.add(seat);
+            }
+
+            System.out.print("Do you want seat recommendations? (yes/no): ");
+            if (scanner.nextLine().equalsIgnoreCase("yes")) {
+                Seat closestSeat = controller.recommendClosestSeat(sectionId, selectedSeats.get(0).getNumber());
+                if (closestSeat != null) selectedSeats.add(closestSeat);
+            }
+
+            handleCheckout(scanner, controller, event, selectedSeats, selectedSeats.size());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
+    private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Seat> seats, int ticketCount) {
+        System.out.println("Proceeding to checkout...");
+        Customer customer = (Customer) controller.getCurrentUser();
+        Cart cart = controller.createCart(customer, event);
+        if (seats != null) {
+            for (Seat seat : seats) {
+                Ticket ticket = controller.reserveSeat(seat.getID(), event, customer, event.getBasePrice(), TicketType.STANDARD);
+                controller.addTicketToCart(cart, ticket);
+            }
+        }
+        controller.finalizeCart(cart);
+        System.out.println("Order finalized!");
+    }
+
+    private static void handleViewPreviousOrders(Controller controller) {
+        Customer currentCustomer = (Customer) controller.getCurrentUser();
+        List<PurchaseHistory> history = controller.getPurchaseHistoryForCustomer(currentCustomer);
+        if (history.isEmpty()) {
+            System.out.println("No previous orders found.");
+        } else {
+            System.out.println("Previous Orders:");
+            history.forEach(System.out::println);
+        }
+    }
+
+    private static void handleManageFavourites(Scanner scanner, Controller controller) {
+        System.out.println("==== Manage Favourites ====");
+        Set<FavouriteEntity> favourites = controller.getFavourites();
+        if (favourites.isEmpty()) {
+            System.out.println("You have no favourites.");
             return;
         }
-        events.forEach(System.out::println);
-        viewTicketsAndAddToCart(scanner, controller); // Replace with valid controller
+        favourites.forEach(fav -> System.out.println("- " + fav.getName()));
+        System.out.print("Enter the name of the favourite to remove: ");
+        String name = scanner.nextLine();
+        favourites.stream()
+                .filter(fav -> fav.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .ifPresentOrElse(
+                        fav -> {
+                            controller.removeFavourite(fav);
+                            System.out.println(name + " removed from favourites.");
+                        },
+                        () -> System.out.println("Favourite not found.")
+                );
     }
-}   // todo toate errorile tin de metoda aia cu getItems() si de rahatu asta de mai sus, da nu m am uitat atent
+}
