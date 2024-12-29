@@ -15,6 +15,10 @@ public class InMemoryRepository<T extends Identifiable> implements IRepository<T
      */
     @Override
     public void create(T obj) {
+        if (obj.getID() == 0) {
+            int newId = data.keySet().stream().max(Integer::compareTo).orElse(0) + 1;
+            obj.setID(newId);
+        }
         data.putIfAbsent(obj.getID(), obj);
     }
 

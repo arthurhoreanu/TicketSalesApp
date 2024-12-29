@@ -6,6 +6,7 @@ import model.SportsEvent;
 import repository.DBRepository;
 import repository.FileRepository;
 import repository.IRepository;
+import repository.factory.RepositoryFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -15,44 +16,20 @@ import java.util.stream.Collectors;
 
 public class AthleteService {
     private final IRepository<Athlete> athleteRepository;
-    private final FileRepository<Athlete> athleteFileRepository;
-    private final DBRepository<Athlete> athleteDBRepository;
 
-    public AthleteService(IRepository<Athlete> athleteRepository) {
-        this.athleteRepository = athleteRepository;
-        this.athleteFileRepository = new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
-        this.athleteDBRepository = new DBRepository<>(Athlete.class);
-        syncFromSource(athleteFileRepository, athleteDBRepository);
-    }
-
-    private void syncFromSource(FileRepository<Athlete> fileRepository, DBRepository<Athlete> dbRepository) {
-        List<Athlete> fileAthletes = fileRepository.getAll();
-        List<Athlete> dbAthletes = dbRepository.getAll();
-
-        for (Athlete athlete : fileAthletes) {
-            if(findAthleteByID(athlete.getID()) == null) {
-                athleteRepository.create(athlete);
-            }
-        }
-
-        for (Athlete athlete : dbAthletes) {
-            if(findAthleteByID(athlete.getID()) == null) {
-                athleteRepository.create(athlete);
-            }
-        }
+    public AthleteService(RepositoryFactory repositoryFactory) {
+        this.athleteRepository = repositoryFactory.createAthleteRepository();
     }
 
     /**
      * Creates a new athlete and adds them to the repository.
      * @param athleteName The name of the athlete.
-     * @param genre The sport genre the athlete specializes in.
+     * @param sport The sport genre the athlete specializes in.
      * @return true if the athlete was successfully created and added to the repository, false otherwise.
      */
-    public boolean createAthlete(String athleteName, String genre) {
-        int newID = athleteRepository.getAll().size() + 1;
-        Athlete athlete = new Athlete(newID, athleteName, genre);
+    public boolean createAthlete(String athleteName, String sport) {
+        Athlete athlete = new Athlete(0, athleteName, sport);
         athleteRepository.create(athlete);
-        athleteFileRepository.create(athlete);
         return true;
     }
 
@@ -60,16 +37,15 @@ public class AthleteService {
      * Updates an existing athlete's details.
      * @param athelteID The ID of the athlete to be updated.
      * @param newName The new name for the athlete.
-     * @param newGenre The new sport genre for the athlete.
+     * @param newSport The new sport genre for the athlete.
      * @return true if the athlete was found and successfully updated, false if the athlete was not found.
      */
-    public boolean updateAthlete(int athelteID, String newName, String newGenre) {
+    public boolean updateAthlete(int athelteID, String newName, String newSport) {
         Athlete athlete = findAthleteByID(athelteID);
         if (athlete != null) {
             athlete.setAthleteName(newName);
-            athlete.setAthleteSport(newGenre);
+            athlete.setAthleteSport(newSport);
             athleteRepository.update(athlete);
-            athleteFileRepository.update(athlete);
             return true;
         } else {
             return false;
@@ -78,14 +54,13 @@ public class AthleteService {
 
     /**
      * Deletes an athlete from the repository by their ID.
-     * @param athelteID The ID of the athlete to be deleted.
+     * @param athleteID The ID of the athlete to be deleted.
      * @return true if the athlete was found and successfully deleted, false if the athlete was not found.
      */
-    public boolean deleteAthlete(int athelteID) {
-        Athlete athlete = findAthleteByID(athelteID);
+    public boolean deleteAthlete(int athleteID) {
+        Athlete athlete = findAthleteByID(athleteID);
         if (athlete != null) {
-            athleteRepository.delete(athelteID);
-            athleteFileRepository.delete(athelteID);
+            athleteRepository.delete(athleteID);
             return true;
         } else {
             return false;

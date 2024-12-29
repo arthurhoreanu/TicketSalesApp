@@ -7,6 +7,7 @@ import model.Event;
 import repository.FileRepository;
 import repository.IRepository;
 import repository.DBRepository;
+import repository.factory.RepositoryFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -16,31 +17,9 @@ import java.util.stream.Collectors;
 
 public class ArtistService {
     private final IRepository<Artist> artistRepository;
-    private final FileRepository<Artist> artistFileRepository;
-    private final DBRepository<Artist> artistDBRepository;
 
-    public ArtistService(IRepository<Artist> artistRepository) {
-        this.artistRepository = artistRepository;
-        this.artistFileRepository = new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
-        this.artistDBRepository = new DBRepository<>(Artist.class);
-        syncFromSource(artistFileRepository, artistDBRepository);
-    }
-
-    private void syncFromSource(FileRepository<Artist> fileRepository, DBRepository<Artist> dbRepository) {
-        List<Artist> fileArtists = fileRepository.getAll();
-        List<Artist> dbArtists = dbRepository.getAll();
-
-        for (Artist artist : fileArtists) {
-            if(findArtistByID(artist.getID()) == null) {
-                artistRepository.create(artist);
-            }
-        }
-
-        for (Artist artist : dbArtists) {
-            if(findArtistByID(artist.getID()) == null) {
-                artistRepository.create(artist);
-            }
-        }
+    public ArtistService(RepositoryFactory repositoryFactory) {
+        this.artistRepository = repositoryFactory.createArtistRepository();
     }
 
     /**
@@ -50,16 +29,8 @@ public class ArtistService {
      * @return true if the artist was successfully created and added to the repository, false otherwise.
      */
     public boolean createArtist(String artistName, String genre) {
-        Artist artist = new Artist(0, artistName, genre); // ID-ul este setat la 0 inițial
-        artistDBRepository.create(artist); // Baza de date generează ID-ul
-
-        // Verificare: ID-ul generat este setat corect
-        if (artist.getID() == 0) {
-            throw new IllegalStateException("ID-ul nu a fost generat de baza de date.");
-        }
-
-        artistFileRepository.create(artist);
-        artistRepository.create(artist); // InMemory primește ID-ul generat
+        Artist artist = new Artist(0, artistName, genre);
+        artistRepository.create(artist);
         return true;
     }
 
@@ -76,8 +47,6 @@ public class ArtistService {
             artist.setArtistName(newName);
             artist.setGenre(newGenre);
             artistRepository.update(artist);
-            artistFileRepository.update(artist);
-            artistDBRepository.update(artist);
             return true;
         } else {
             return false;
@@ -93,8 +62,6 @@ public class ArtistService {
         Artist artist = findArtistByID(artistId);
         if (artist != null) {
             artistRepository.delete(artistId);
-            artistFileRepository.delete(artistId);
-            artistDBRepository.delete(artistId);
             return true;
         } else {
             return false;

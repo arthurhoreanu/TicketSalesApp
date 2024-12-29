@@ -5,15 +5,7 @@ import repository.*;
 
 public class InMemoryRepositoryFactory implements RepositoryFactory {
 
-    @Override
-    public IRepository<User> createUserRepository() {
-        return new InMemoryRepository<>();
-    }
-
-    @Override
-    public IRepository<Event> createEventRepository() {
-        return new InMemoryRepository<>();
-    }
+    // TODO aici noile Repo-uri InMemory
 
     @Override
     public IRepository<Artist> createArtistRepository() {
@@ -21,9 +13,8 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
     }
 
     @Override
-    public IRepository<Venue> createVenueRepository() {
+    public IRepository<Athlete> createAthleteRepository() {
         return new InMemoryRepository<>();
     }
 
-    // Adaugă metode pentru celelalte entități
 }

@@ -14,43 +14,39 @@ public class ConsoleApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Alegerea reprezentării datelor
         RepositoryFactory repositoryFactory = StartMenu.select(scanner);
 
-        // Inițializarea serviciilor și controller-elor
         Controller controller = initializeController(repositoryFactory);
 
         boolean running = true;
 
         while (running) {
             if (controller.getAllUsers().isEmpty()) {
-                running = MainMenu.display(scanner, controller); // Niciun utilizator în sistem
+                running = MainMenu.display(scanner, controller);
             } else if (controller.getCurrentUser() == null) {
-                running = LoginMenu.display(scanner, controller); // Autentificare
+                running = LoginMenu.display(scanner, controller);
             } else if (controller.getCurrentUser() instanceof Admin) {
-                running = AdminMenu.display(scanner, controller); // Funcționalități Admin
+                running = AdminMenu.display(scanner, controller);
             } else if (controller.getCurrentUser() instanceof Customer) {
-                running = CustomerMenu.display(scanner, controller); // Funcționalități Customer
+                running = CustomerMenu.display(scanner, controller);
             }
         }
         scanner.close();
     }
 
     private static Controller initializeController(RepositoryFactory repositoryFactory) {
-        // Inițializare servicii
-        // Arthur's TODO
-        UserService userService = new UserService(repositoryFactory.createUserRepository(), new CustomerService());
-        EventService eventService = new EventService(repositoryFactory.createEventRepository(), new VenueService(repositoryFactory.createVenueRepository()));
-        ArtistService artistService = new ArtistService(repositoryFactory.createArtistRepository());
-        // Adaugă alte servicii similare aici
 
-        // Inițializare controller-e
-        UserController userController = new UserController(userService);
-        EventController eventController = new EventController(eventService);
+        // TODO aici noile Serivce și Controller, alfabetic ar fi mai nice
+
+        // Service
+        ArtistService artistService = new ArtistService((RepositoryFactory) repositoryFactory.createArtistRepository());
+        AthleteService athleteService = new AthleteService((RepositoryFactory) repositoryFactory.createAthleteRepository());
+
+        // Controller
         ArtistController artistController = new ArtistController(artistService);
-        // Adaugă alte controller-e similare aici
+        AthleteController athleteController = new AthleteController(athleteService);
 
-        // Arthur's TODO
-        return new Controller(userController, eventController, artistController /*, alte controller-e */);
+        // Main Controller
+        return new Controller(artistController, athleteController);
     }
 }
