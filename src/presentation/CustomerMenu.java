@@ -15,7 +15,7 @@ public class CustomerMenu {
             System.out.println("3. Search Events by Location/Venue");
             System.out.println("4. View Suggested Events");
             System.out.println("5. View All Events");
-            System.out.println("6. Finish Order"); // TODO checkout să fie cadrul search-urilor 2 și 3
+            System.out.println("6. Finish Order");
             System.out.println("7. View Orders History");
             System.out.println("8. Manage Favourites");
             System.out.println("0. Exit");
@@ -39,8 +39,8 @@ public class CustomerMenu {
                 case "5":
                     handleViewAllEvents(scanner, controller);
                     break;
-                case "6": //TODO
-                    handleCheckout(scanner, controller,/* event, seat, ticketCount*/);
+                case "6":
+                    handleFinishOrder(scanner, controller); // Refactored case
                     break;
                 case "7":
                     handleViewPreviousOrders(controller);
@@ -55,6 +55,12 @@ public class CustomerMenu {
                     System.out.println("Invalid option. Please try again.");
             }
         }
+    }
+
+    private static void handleFinishOrder(Scanner scanner, Controller controller) {
+        System.out.println("==== Finish Order ====");
+        System.out.println("Please select an event to proceed with checkout.");
+        handleViewAllEvents(scanner, controller); // Reuse the event selection and checkout flow
     }
 
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
@@ -192,53 +198,42 @@ public class CustomerMenu {
         }
     }
 
-    // Add the pricing methods below this line
     private static double getPriceForGeneralAdmission(Controller controller, Event event) {
-        // Implement logic to calculate the price for general admission tickets.
-        return event.getBasePrice(); // Assuming `getBasePrice()` gives the base price of the event.
+        return event.getBasePrice();
     }
 
     private static double getPriceForSeat(Controller controller, Seat seat, Event event) {
-        // Implement logic to calculate the price for seat-specific tickets.
         if (seat.getRow().getRowCapacity() <= 5) {
-            // VIP Pricing Logic
-            return event.getBasePrice() * 1.5; // Assuming VIP seats cost 50% more.
+            return event.getBasePrice() * 1.5;
         } else {
-            return event.getBasePrice(); // Standard seat price.
+            return event.getBasePrice();
         }
     }
 
-
-    // Other methods like handleCheckout, handleViewAllEvents, etc.
     private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Seat> seats, int ticketCount) {
         System.out.println("Proceeding to checkout...");
 
-        // Step 1: Create Cart
         Customer customer = (Customer) controller.getCurrentUser();
         Cart cart = controller.createCart(customer, event);
 
-        // Step 2: Add Tickets to Cart
         if (seats != null) {
             for (Seat seat : seats) {
                 Ticket ticket = new Ticket(0, event, seat, customer, getPriceForSeat(controller, seat, event), TicketType.STANDARD);
                 controller.addTicketToCart(cart, ticket);
             }
         } else {
-            // General Admission Tickets (no seats)
             for (int i = 0; i < ticketCount; i++) {
                 Ticket ticket = new Ticket(0, event, null, customer, getPriceForGeneralAdmission(controller, event), TicketType.STANDARD);
                 controller.addTicketToCart(cart, ticket);
             }
         }
 
-        // Step 3: Display Cart Summary
         List<Ticket> ticketsInCart = controller.getTicketsInCart(cart);
         double totalPrice = controller.calculateTotalPrice(ticketsInCart);
         System.out.println("Cart Summary:");
         ticketsInCart.forEach(System.out::println);
         System.out.println("Total Price: $" + totalPrice);
 
-        // Step 4: Payment Details
         System.out.println("Please provide payment details:");
         System.out.print("Card Number: ");
         String cardNumber = scanner.nextLine();
@@ -253,10 +248,9 @@ public class CustomerMenu {
         System.out.print("Currency (e.g., USD): ");
         String currency = scanner.nextLine();
 
-        // Step 5: Process Payment
         try {
             controller.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
-            controller.finalizeCart(cart); // Finalize the cart and mark as paid
+            controller.finalizeCart(cart);
             System.out.println("Payment successful! Order finalized.");
         } catch (IllegalArgumentException e) {
             System.out.println("Payment failed: " + e.getMessage());
