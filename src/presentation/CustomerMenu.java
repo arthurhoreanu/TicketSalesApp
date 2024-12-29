@@ -6,7 +6,6 @@ import model.*;
 import java.util.*;
 
 public class CustomerMenu {
-    private static Controller controller;
 
     public static boolean display(Scanner scanner, Controller controller) {
         while (true) {
@@ -16,7 +15,7 @@ public class CustomerMenu {
             System.out.println("3. Search Events by Location/Venue");
             System.out.println("4. View Suggested Events");
             System.out.println("5. View All Events");
-            System.out.println("6. Finish Order");
+            System.out.println("6. Finish Order"); // TODO checkout să fie cadrul search-urilor 2 și 3
             System.out.println("7. View Orders History");
             System.out.println("8. Manage Favourites");
             System.out.println("0. Exit");
@@ -263,7 +262,6 @@ public class CustomerMenu {
             System.out.println("Payment failed: " + e.getMessage());
         }
     }
-
 
     private static void handleViewPreviousOrders(Controller controller) {
         Customer currentCustomer = (Customer) controller.getCurrentUser();
