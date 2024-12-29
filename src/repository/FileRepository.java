@@ -54,9 +54,19 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
     @Override
     public void create(T obj) {
         lock.lock();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(obj.toCsv());
-            writer.newLine();
+        try {
+            if (obj.getID() == 0) {
+                List<T> allItems = getAll();
+                int newId = allItems.stream()
+                        .map(Identifiable::getID)
+                        .max(Integer::compareTo)
+                        .orElse(0) + 1;
+                obj.setID(newId);
+            }
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+                writer.write(obj.toCsv());
+                writer.newLine();
+            }
         } catch (IOException e) {
             throw new RuntimeException("Error writing to file: " + filePath, e);
         } finally {
@@ -170,5 +180,3 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
         return items;
     }
 }
-
-

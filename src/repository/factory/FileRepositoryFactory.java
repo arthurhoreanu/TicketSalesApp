@@ -5,15 +5,7 @@ import repository.*;
 
 public class FileRepositoryFactory implements RepositoryFactory {
 
-    @Override
-    public FileRepository<User> createUserRepository() {
-        return new FileRepository<>("src/repository/data/users.csv", User::fromCsv);
-    }
-
-    @Override
-    public FileRepository<Event> createEventRepository() {
-        return new FileRepository<>("src/repository/data/events.csv", Event::fromCsv);
-    }
+    // TODO aici noile Repo-uri File
 
     @Override
     public FileRepository<Artist> createArtistRepository() {
@@ -21,9 +13,8 @@ public class FileRepositoryFactory implements RepositoryFactory {
     }
 
     @Override
-    public FileRepository<Venue> createVenueRepository() {
-        return new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsv);
+    public FileRepository<Athlete> createAthleteRepository() {
+        return new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
     }
 
-    // Adaugă metode pentru celelalte entități
 }

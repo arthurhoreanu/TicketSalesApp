@@ -5,15 +5,7 @@ import repository.*;
 
 public class DBRepositoryFactory implements RepositoryFactory {
 
-    @Override
-    public DBRepository<User> createUserRepository() {
-        return new DBRepository<>(User.class);
-    }
-
-    @Override
-    public DBRepository<Event> createEventRepository() {
-        return new DBRepository<>(Event.class);
-    }
+    // TODO aici noile Repo-uri DB
 
     @Override
     public DBRepository<Artist> createArtistRepository() {
@@ -21,9 +13,8 @@ public class DBRepositoryFactory implements RepositoryFactory {
     }
 
     @Override
-    public DBRepository<Venue> createVenueRepository() {
-        return new DBRepository<>(Venue.class);
+    public DBRepository<Athlete> createAthleteRepository() {
+        return new DBRepository<>(Athlete.class);
     }
 
-    // Adaugă metode pentru celelalte entități
 }

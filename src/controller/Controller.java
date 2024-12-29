@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Set;
 
 public class Controller {
+    private final ArtistController artistController;
+    private final AthleteController athleteController;
+
+    //
     private final UserController userController;
     private final EventController eventController;
     private final VenueController venueController;
     public final SectionController sectionController;
     private final SeatController seatController;
-    private final ArtistController artistController;
-    private final AthleteController athleteController;
     private final CustomerController customerController;
     private final CartController cartController;
     private final TicketController ticketController;
@@ -26,29 +28,31 @@ public class Controller {
      * events, venues, seating, artists, athletes, customers, orders, shopping carts, and tickets. Each of these
      * responsibilities is handled by a specific controller, which is injected into the Controller.
      *
+     * @param artistController The controller responsible for managing artists.
+     * @param athleteController The controller responsible for managing athletes.
      * @param userController The controller responsible for managing user accounts.
      * @param eventController The controller responsible for managing events.
      * @param venueController The controller responsible for managing venues.
      * @param sectionController The controller responsible for managing sections within venues.
      * @param seatController The controller responsible for managing seats in venues.
-     * @param artistController The controller responsible for managing artists.
-     * @param athleteController The controller responsible for managing athletes.
      * @param customerController The controller responsible for managing customers.
      * @param cartController The controller responsible for managing shopping carts.
      * @param ticketController The controller responsible for managing tickets.
      */
-    public Controller(UserController userController, EventController eventController, VenueController venueController,
-                      SectionController sectionController, SeatController seatController, ArtistController artistController,
-                      AthleteController athleteController, CustomerController customerController, CartController cartController,
+    public Controller(ArtistController artistController, AthleteController athleteController,
+                      UserController userController, EventController eventController,
+                      VenueController venueController, SectionController sectionController, SeatController seatController,
+                      CustomerController customerController, CartController cartController,
                       TicketController ticketController, RowController rowController, PaymentController paymentController,
                       PurchaseHistoryController purchaseHistoryController) {
+        this.artistController = artistController;
+        this.athleteController = athleteController;
+        //
         this.userController = userController;
         this.eventController = eventController;
         this.venueController = venueController;
         this.sectionController = sectionController;
         this.seatController = seatController;
-        this.artistController = artistController;
-        this.athleteController = athleteController;
         this.customerController = customerController;
         this.cartController = cartController;
         this.ticketController = ticketController;
