@@ -15,9 +15,8 @@ public class CustomerMenu {
             System.out.println("3. Search Events by Location/Venue");
             System.out.println("4. View Suggested Events");
             System.out.println("5. View All Events");
-            System.out.println("6. Finish Order");
-            System.out.println("7. View Orders History");
-            System.out.println("8. Manage Favourites");
+            System.out.println("6. View Orders History");
+            System.out.println("7. Manage Favourites");
             System.out.println("0. Exit");
             System.out.println("=======================");
             System.out.print("Choose an option: ");
@@ -40,12 +39,9 @@ public class CustomerMenu {
                     handleViewAllEvents(scanner, controller);
                     break;
                 case "6":
-                    handleFinishOrder(scanner, controller); // Refactored case
-                    break;
-                case "7":
                     handleViewPreviousOrders(controller);
                     break;
-                case "8":
+                case "7":
                     handleManageFavourites(scanner, controller);
                     break;
                 case "0":
@@ -55,12 +51,6 @@ public class CustomerMenu {
                     System.out.println("Invalid option. Please try again.");
             }
         }
-    }
-
-    private static void handleFinishOrder(Scanner scanner, Controller controller) {
-        System.out.println("==== Finish Order ====");
-        System.out.println("Please select an event to proceed with checkout.");
-        handleViewAllEvents(scanner, controller); // Reuse the event selection and checkout flow
     }
 
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
@@ -198,18 +188,6 @@ public class CustomerMenu {
         }
     }
 
-    private static double getPriceForGeneralAdmission(Controller controller, Event event) {
-        return event.getBasePrice();
-    }
-
-    private static double getPriceForSeat(Controller controller, Seat seat, Event event) {
-        if (seat.getRow().getRowCapacity() <= 5) {
-            return event.getBasePrice() * 1.5;
-        } else {
-            return event.getBasePrice();
-        }
-    }
-
     private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Seat> seats, int ticketCount) {
         System.out.println("Proceeding to checkout...");
 
@@ -254,6 +232,18 @@ public class CustomerMenu {
             System.out.println("Payment successful! Order finalized.");
         } catch (IllegalArgumentException e) {
             System.out.println("Payment failed: " + e.getMessage());
+        }
+    }
+
+    private static double getPriceForGeneralAdmission(Controller controller, Event event) {
+        return event.getBasePrice();
+    }
+
+    private static double getPriceForSeat(Controller controller, Seat seat, Event event) {
+        if (seat.getRow().getRowCapacity() <= 5) {
+            return event.getBasePrice() * 1.5;
+        } else {
+            return event.getBasePrice();
         }
     }
 
