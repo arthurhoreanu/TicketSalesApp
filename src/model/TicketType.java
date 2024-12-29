@@ -1,7 +1,7 @@
 package model;
 
 /**
- * Represents the type of a ticket, specifying the level of access or service provided.
+ * Represents the type of ticket, specifying the level of access or service provided.
  */
 public enum TicketType {
     /**

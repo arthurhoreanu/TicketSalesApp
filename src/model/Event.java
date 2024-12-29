@@ -37,6 +37,10 @@ public abstract class Event implements Identifiable {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
+    @Column(name = "base_price", nullable = false)
+    private double basePrice;
+
+
     protected Event() {}
 
     public Event(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
@@ -58,6 +62,14 @@ public abstract class Event implements Identifiable {
     @Override
     public void setID(int eventID) {
         this.eventID = eventID;
+    }
+
+    public double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(double basePrice) {
+        this.basePrice = basePrice;
     }
 
     public String getEventName() {
