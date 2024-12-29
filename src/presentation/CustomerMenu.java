@@ -40,8 +40,8 @@ public class CustomerMenu {
                 case "5":
                     handleViewAllEvents(scanner, controller);
                     break;
-                case "6":
-                    handleCheckout(scanner, controller);
+                case "6": //TODO
+                    handleCheckout(scanner, controller,/* event, seat, ticketCount*/);
                     break;
                 case "7":
                     handleViewPreviousOrders(controller);
@@ -193,19 +193,77 @@ public class CustomerMenu {
         }
     }
 
+    // Add the pricing methods below this line
+    private static double getPriceForGeneralAdmission(Controller controller, Event event) {
+        // Implement logic to calculate the price for general admission tickets.
+        return event.getBasePrice(); // Assuming `getBasePrice()` gives the base price of the event.
+    }
+
+    private static double getPriceForSeat(Controller controller, Seat seat, Event event) {
+        // Implement logic to calculate the price for seat-specific tickets.
+        if (seat.getRow().getRowCapacity() <= 5) {
+            // VIP Pricing Logic
+            return event.getBasePrice() * 1.5; // Assuming VIP seats cost 50% more.
+        } else {
+            return event.getBasePrice(); // Standard seat price.
+        }
+    }
+
+
+    // Other methods like handleCheckout, handleViewAllEvents, etc.
     private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Seat> seats, int ticketCount) {
         System.out.println("Proceeding to checkout...");
+
+        // Step 1: Create Cart
         Customer customer = (Customer) controller.getCurrentUser();
         Cart cart = controller.createCart(customer, event);
+
+        // Step 2: Add Tickets to Cart
         if (seats != null) {
             for (Seat seat : seats) {
-                Ticket ticket = controller.reserveSeat(seat.getID(), event, customer, event.getBasePrice(), TicketType.STANDARD);
+                Ticket ticket = new Ticket(0, event, seat, customer, getPriceForSeat(controller, seat, event), TicketType.STANDARD);
+                controller.addTicketToCart(cart, ticket);
+            }
+        } else {
+            // General Admission Tickets (no seats)
+            for (int i = 0; i < ticketCount; i++) {
+                Ticket ticket = new Ticket(0, event, null, customer, getPriceForGeneralAdmission(controller, event), TicketType.STANDARD);
                 controller.addTicketToCart(cart, ticket);
             }
         }
-        controller.finalizeCart(cart);
-        System.out.println("Order finalized!");
+
+        // Step 3: Display Cart Summary
+        List<Ticket> ticketsInCart = controller.getTicketsInCart(cart);
+        double totalPrice = controller.calculateTotalPrice(ticketsInCart);
+        System.out.println("Cart Summary:");
+        ticketsInCart.forEach(System.out::println);
+        System.out.println("Total Price: $" + totalPrice);
+
+        // Step 4: Payment Details
+        System.out.println("Please provide payment details:");
+        System.out.print("Card Number: ");
+        String cardNumber = scanner.nextLine();
+        System.out.print("Cardholder Name: ");
+        String cardholderName = scanner.nextLine();
+        System.out.print("Expiry Month (MM): ");
+        int expiryMonth = Integer.parseInt(scanner.nextLine());
+        System.out.print("Expiry Year (YYYY): ");
+        int expiryYear = Integer.parseInt(scanner.nextLine());
+        System.out.print("CVV: ");
+        String cvv = scanner.nextLine();
+        System.out.print("Currency (e.g., USD): ");
+        String currency = scanner.nextLine();
+
+        // Step 5: Process Payment
+        try {
+            controller.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
+            controller.finalizeCart(cart); // Finalize the cart and mark as paid
+            System.out.println("Payment successful! Order finalized.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Payment failed: " + e.getMessage());
+        }
     }
+
 
     private static void handleViewPreviousOrders(Controller controller) {
         Customer currentCustomer = (Customer) controller.getCurrentUser();

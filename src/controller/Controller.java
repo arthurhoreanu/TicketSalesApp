@@ -62,12 +62,15 @@ public class Controller {
     // Purchase History related
     public void createPurchaseHistory(Cart cart) {
         purchaseHistoryController.createPurchaseHistory(cart);}
-    public void getPurchaseHistoryForCustomer(Customer customer) {
-        purchaseHistoryController.getPurchaseHistoryForCustomer(customer);}
+    // Purchase History-related changes
+    public List<PurchaseHistory> getPurchaseHistoryForCustomer(Customer customer) {
+        return purchaseHistoryController.getPurchaseHistoryForCustomer(customer);
+    }
     public List<PurchaseHistory> getAllPurchaseHistories() {
         return purchaseHistoryController.getAllPurchaseHistories();}
     public PurchaseHistory findPurchaseHistoryByID(int id) {
         return purchaseHistoryController.findPurchaseHistoryByID(id);}
+
 
     // Payment related
     public void processPayment(Cart cart, String cardNumber, String cardholderName,
@@ -144,20 +147,26 @@ public class Controller {
         return seatController.findSeatByID(seatId);}
     public void getAllSeats() {
         seatController.getAllSeats();}
-    public void getSeatsByRow(int rowId) {
-        seatController.getSeatsByRow(rowId);}
-    public void getAvailableSeatsInSection(int sectionId) {
-        seatController.getAvailableSeatsInSection(sectionId);}
+    public List<Seat> getSeatsByRow(int rowId) {
+        return seatController.getSeatsByRow(rowId);
+    }
+    public List<Seat> getAvailableSeatsInSection(int sectionId) {
+        return seatController.getAvailableSeatsInSection(sectionId);
+    }
+
     public void getAvailableSeatsInVenue(int venueId) {
         seatController.getAvailableSeatsInVenue(venueId);}
     public void reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
         seatController.reserveSeat(seatId, event, customer, price, ticketType);}
     public void isSeatReservedForEvent(int seatId, int eventId) {
-        seatController.isSeatReservedForEvent(seatId, eventId);}
+        seatController.isSeatReservedForEvent(seatId, eventId);
+    }
     public void unreserveSeat(int seatId) {
         seatController.unreserveSeat(seatId);}
-    public void recommendClosestSeat(int rowId, int seatNumber) {
-        seatController.recommendClosestSeat(rowId, seatNumber);}
+    public Seat recommendClosestSeat(int rowId, int seatNumber) {
+        return seatController.recommendClosestSeat(rowId, seatNumber);
+    }
+
 
     // Section related
     public void createSection(String sectionName, int sectionCapacity, Venue venue) {
