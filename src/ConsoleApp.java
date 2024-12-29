@@ -39,14 +39,27 @@ public class ConsoleApp {
         // TODO aici noile Serivce și Controller, alfabetic ar fi mai nice
 
         // Service
-        ArtistService artistService = new ArtistService((RepositoryFactory) repositoryFactory.createArtistRepository());
-        AthleteService athleteService = new AthleteService((RepositoryFactory) repositoryFactory.createAthleteRepository());
+        ArtistService artistService = new ArtistService(repositoryFactory);
+        AthleteService athleteService = new AthleteService(repositoryFactory);
+        CartService cartService = new CartService(repositoryFactory);
+        CustomerService customerService = new CustomerService();
+        PaymentService paymentService = new PaymentService();
+        PurchaseHistoryService purchaseHistoryService = new PurchaseHistoryService(repositoryFactory);
+        UserService userService = new UserService(repositoryFactory, customerService);
+        EventService eventService = new EventService(repositoryFactory);
 
         // Controller
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
+        CartController cartController = new CartController(cartService);
+        CustomerController customerController = new CustomerController(customerService);
+        PaymentController paymentController = new PaymentController(paymentService);
+        PurchaseHistoryController purchaseHistoryController = new PurchaseHistoryController(purchaseHistoryService);
+        UserController userController = new UserController(userService);
+        EventController eventController = new EventController(eventService);
 
         // Main Controller
-        return new Controller(artistController, athleteController);
+        return new Controller(artistController, athleteController, cartController, customerController, paymentController,
+                purchaseHistoryController, userController, eventController);
     }
 }

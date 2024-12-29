@@ -6,6 +6,7 @@ import model.User;
 import repository.DBRepository;
 import repository.FileRepository;
 import repository.IRepository;
+import repository.factory.RepositoryFactory;
 
 import java.util.List;
 
@@ -13,38 +14,10 @@ public class UserService {
     private final IRepository<User> userRepository;
     private final CustomerService customerService;
     private User currentUser;
-    private final FileRepository<Admin> adminFileRepository;
-    private final DBRepository<Admin> adminDBRepository;
-    private final FileRepository<Customer> customerFileRepository;
-    private final DBRepository<Customer> customerDBRepository;
 
-    public UserService(IRepository<User> userRepository, CustomerService customerService) {
-        this.userRepository = userRepository;
+    public UserService(RepositoryFactory repositoryFactory, CustomerService customerService) {
+        this.userRepository = repositoryFactory.createUserRepository();
         this.customerService = customerService;
-        this.adminFileRepository = new FileRepository<>("src/repository/data/admins.csv", Admin::fromCsv);
-        this.adminDBRepository = new DBRepository<>(Admin.class);
-        this.customerFileRepository = new FileRepository<>("src/repository/data/customers.csv", Customer::fromCsv);
-        this.customerDBRepository = new DBRepository<>(Customer.class);
-
-        syncFromSource(customerFileRepository, customerDBRepository);
-        syncFromSource(adminFileRepository, adminDBRepository);
-    }
-
-    private <T extends User> void syncFromSource(FileRepository<T> fileRepository, DBRepository<T> dbRepository) {
-        List<T> usersFromFile = fileRepository.getAll();
-        List<T> usersFromDB = dbRepository.getAll();
-
-        for (T user : usersFromFile) {
-            if (findUserByID(user.getID()) == null) {
-                userRepository.create(user);
-            }
-        }
-
-        for (T user : usersFromDB) {
-            if (findUserByID(user.getID()) == null) {
-                userRepository.create(user);
-            }
-        }
     }
 
     /**
@@ -90,15 +63,7 @@ public class UserService {
         if (takenUsername(username)) {
             return false;
         }
-
         Customer customer = new Customer(0, username, email, password);
-        customerDBRepository.create(customer); // DB generează ID-ul
-
-        if (customer.getID() == 0) {
-            throw new IllegalStateException("Database did not generate an ID for the customer.");
-        }
-
-        customerFileRepository.create(customer);
         userRepository.create(customer);
         return true;
     }
@@ -107,15 +72,7 @@ public class UserService {
         if (takenUsername(username) || !domainEmail(email)) {
             return false;
         }
-
         Admin admin = new Admin(0, username, email, password);
-        adminDBRepository.create(admin); // DB generează ID-ul
-
-        if (admin.getID() == 0) {
-            throw new IllegalStateException("Database did not generate an ID for the admin.");
-        }
-
-        adminFileRepository.create(admin);
         userRepository.create(admin);
         return true;
     }
@@ -178,13 +135,6 @@ public class UserService {
         User userToDelete = userRepository.read(id);
         if (userToDelete != null) {
             userRepository.delete(id);
-            if (userToDelete instanceof Admin) {
-                adminFileRepository.delete(id);
-                adminDBRepository.delete(id);
-            } else if (userToDelete instanceof Customer) {
-                customerFileRepository.delete(id);
-                customerDBRepository.delete(id);
-            }
             return true;
         }
         return false;

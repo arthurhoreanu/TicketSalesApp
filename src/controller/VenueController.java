@@ -48,7 +48,7 @@ public class VenueController {
     /**
      * Finds venues by location or name.
      */
-    public void findVenuesByLocationOrName(String keyword) {
+    public List<Venue> findVenuesByLocationOrName(String keyword) {
         List<Venue> venues = venueService.findVenuesByLocationOrName(keyword);
         if (!venues.isEmpty()) {
             System.out.println("Venues found:");
@@ -56,6 +56,7 @@ public class VenueController {
         } else {
             System.out.println("No venues found for the keyword: " + keyword);
         }
+        return venues;
     }
 
     /**
