@@ -9,5 +9,9 @@ public interface RepositoryFactory {
 
     IRepository<Artist> createArtistRepository();
     IRepository<Athlete> createAthleteRepository();
+    IRepository<Cart> createCartRepository();
+    IRepository<PurchaseHistory> createPurchaseHistoryRepository();
+    IRepository<User> createUserRepository();
+    IRepository<Event> createEventRepository();
 
 }

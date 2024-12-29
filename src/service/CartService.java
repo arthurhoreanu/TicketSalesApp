@@ -6,6 +6,7 @@ import model.Event;
 import model.Ticket;
 import repository.FileRepository;
 import repository.IRepository;
+import repository.factory.RepositoryFactory;
 
 import java.util.List;
 
@@ -15,27 +16,9 @@ import java.util.List;
 public class CartService {
 
     private final IRepository<Cart> cartRepository;
-    private final FileRepository<Cart> cartFileRepository;
 
-    /**
-     * Constructs a CartService with dependencies for managing carts.
-     *
-     * @param cartRepository the repository for managing Cart persistence.
-     */
-    public CartService(IRepository<Cart> cartRepository) {
-        this.cartRepository = cartRepository;
-        this.cartFileRepository = new FileRepository<>("src/repository/data/carts.csv", Cart::fromCsv);
-        syncFromCsv();
-    }
-
-    /**
-     * Synchronizes carts from the CSV file into the main repository.
-     */
-    private void syncFromCsv() {
-        List<Cart> carts = cartFileRepository.getAll();
-        for (Cart cart : carts) {
-            cartRepository.create(cart);
-        }
+    public CartService(RepositoryFactory repositoryFactory) {
+        this.cartRepository = repositoryFactory.createCartRepository();
     }
 
     /**
@@ -48,7 +31,6 @@ public class CartService {
     public Cart createCart(Customer customer, Event event) {
         Cart cart = new Cart(customer, event);
         cartRepository.create(cart);
-        cartFileRepository.create(cart);
         return cart;
     }
 
@@ -63,7 +45,6 @@ public class CartService {
         try {
             cart.addTicket(ticket);
             cartRepository.update(cart);
-            cartFileRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -82,7 +63,6 @@ public class CartService {
         try {
             cart.removeTicket(ticket);
             cartRepository.update(cart);
-            cartFileRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -99,7 +79,6 @@ public class CartService {
         double totalPrice = cart.calculateTotalPrice();
         cart.setTotalPrice(totalPrice);
         cartRepository.update(cart);
-        cartFileRepository.update(cart);
     }
 
     /**
@@ -111,7 +90,6 @@ public class CartService {
         cart.clearCart();
         cart.setTotalPrice(0.0);
         cartRepository.update(cart);
-        cartFileRepository.update(cart);
     }
 
     /**

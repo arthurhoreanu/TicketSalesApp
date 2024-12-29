@@ -17,4 +17,24 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
         return new InMemoryRepository<>();
     }
 
+    @Override
+    public IRepository<Cart> createCartRepository() {
+        return new InMemoryRepository<>();
+    }
+
+    @Override
+    public IRepository<PurchaseHistory> createPurchaseHistoryRepository() {
+        return new InMemoryRepository<>();
+    }
+
+    @Override
+    public IRepository<User> createUserRepository() {
+        return new InMemoryRepository<>();
+    }
+
+    @Override
+    public IRepository<Event> createEventRepository() {
+        return new InMemoryRepository<>();
+    }
+
 }

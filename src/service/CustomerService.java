@@ -6,6 +6,7 @@ import model.FavouriteEntity;
 import java.util.Set;
 
 public class CustomerService {
+
     private Customer currentCustomer;
 
     public CustomerService() {}

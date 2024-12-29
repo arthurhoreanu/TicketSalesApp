@@ -17,10 +17,6 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    public int getLastCreatedEventID() {
-        return eventService.getLastCreatedEventID();
-    }
-
     /**
      * Creates a new Concert event.
      * Displays a message indicating whether the creation was successful or not.

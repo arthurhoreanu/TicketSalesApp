@@ -6,6 +6,7 @@ import model.PurchaseHistory;
 import model.Ticket;
 import repository.FileRepository;
 import repository.IRepository;
+import repository.factory.RepositoryFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,24 +18,16 @@ import java.util.stream.Collectors;
 public class PurchaseHistoryService {
 
     private final IRepository<PurchaseHistory> purchaseHistoryRepository;
-    private final FileRepository<PurchaseHistory> purchaseHistoryFileRepository;
 
-    /**
-     * Constructs a PurchaseHistoryService with necessary dependencies.
-     *
-     * @param purchaseHistoryRepository The repository for managing purchase history persistence.
-     */
-    public PurchaseHistoryService(IRepository<PurchaseHistory> purchaseHistoryRepository) {
-        this.purchaseHistoryRepository = purchaseHistoryRepository;
-        this.purchaseHistoryFileRepository = new FileRepository<>("src/repository/data/purchaseHistories.csv", PurchaseHistory::fromCsv);
-        syncFromCsv();
+    public PurchaseHistoryService(RepositoryFactory repositoryFactory) {
+        this.purchaseHistoryRepository = repositoryFactory.createPurchaseHistoryRepository();
     }
 
     /**
      * Synchronizes purchase histories from the CSV file into the main repository.
      */
     private void syncFromCsv() {
-        List<PurchaseHistory> histories = purchaseHistoryFileRepository.getAll();
+        List<PurchaseHistory> histories = purchaseHistoryRepository.getAll();
         for (PurchaseHistory history : histories) {
             purchaseHistoryRepository.create(history);
         }
@@ -53,22 +46,16 @@ public class PurchaseHistoryService {
         if (cart.getTickets().isEmpty()) {
             throw new IllegalArgumentException("Cannot create purchase history from an empty cart.");
         }
-
         Customer customer = cart.getCustomer();
         PurchaseHistory purchaseHistory = new PurchaseHistory(customer, LocalDate.now());
-
         // Add tickets to purchase history
         for (Ticket ticket : cart.getTickets()) {
             purchaseHistory.addTicket(ticket);
         }
-
         // Calculate total amount
         purchaseHistory.calculateTotalAmount();
-
         // Save to repositories
         purchaseHistoryRepository.create(purchaseHistory);
-        purchaseHistoryFileRepository.create(purchaseHistory);
-
         return purchaseHistory;
     }
 
