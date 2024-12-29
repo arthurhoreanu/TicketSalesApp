@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  */
 public class RowService {
 
-    // TODO db
     private final IRepository<Row> rowRepository;
     private final IRepository<Seat> seatRepository;
     private final FileRepository<Row> rowFileRepository;
