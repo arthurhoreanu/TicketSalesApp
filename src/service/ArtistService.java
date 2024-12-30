@@ -1,19 +1,11 @@
 package service;
 
 import model.Artist;
-import model.Concert;
-import model.Event;
-
-import repository.FileRepository;
 import repository.IRepository;
-import repository.DBRepository;
 import repository.factory.RepositoryFactory;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ArtistService {
     private final IRepository<Artist> artistRepository;

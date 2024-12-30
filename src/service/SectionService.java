@@ -1,12 +1,10 @@
 package service;
 
+import controller.Controller;
 import model.*;
-import repository.FileRepository;
 import repository.IRepository;
-import repository.DBRepository;
+import repository.factory.RepositoryFactory;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,65 +15,24 @@ import java.util.stream.Collectors;
 public class SectionService {
 
     private final IRepository<Section> sectionRepository;
-    private final IRepository<Seat> seatRepository;
-    private final FileRepository<Section> sectionFileRepository;
-    private final FileRepository<Seat> seatFileRepository;
+    private final RowService rowService;
+    static Controller controller = ControllerProvider.getController();
 
-    /**
-     * Constructs a SectionService with dependencies for managing sections and seats.
-     *
-     * @param sectionRepository  the repository for managing section data
-     * @param seatRepository     the repository for managing seat data
-     */
-    public SectionService(IRepository<Section> sectionRepository, IRepository<Seat> seatRepository) {
-        this.sectionRepository = sectionRepository;
-        this.seatRepository = seatRepository;
-
-        // File repositories
-        this.sectionFileRepository = new FileRepository<>("src/repository/data/sections.csv", Section::fromCsv);
-        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsv);
-
-        // Sync data from file and database repositories to the primary repository
-        syncFromCsv();
+    public SectionService(RepositoryFactory repositoryFactory, RowService rowService) {
+        this.sectionRepository = repositoryFactory.createSectionRepository();
+        this.rowService = rowService;
     }
 
-    /**
-     * Synchronizes sections from the CSV file into the main repository.
-     */
-    private void syncFromCsv() {
-        List<Section> sections = sectionFileRepository.getAll();
-        for (Section section : sections) {
-            sectionRepository.create(section);
+    public Section createSection(Venue venue, int sectionCapacity, String sectionName) {
+        if (venue == null) {
+            throw new IllegalArgumentException("Venue cannot be null");
         }
-
-        List<Seat> seats = seatFileRepository.getAll();
-        for (Seat seat : seats) {
-            seatRepository.create(seat);
-        }
-    }
-
-
-    /**
-     * Creates a new section and saves it to all repositories.
-     *
-     * @param sectionName     the name of the section
-     * @param sectionCapacity the capacity of the section
-     * @param venue           the venue to which the section belongs
-     * @return the created Section object
-     */
-    /**
-     * Creates a new section and saves it to all repositories.
-     *
-     * @param section the Section object to be created.
-     * @return the created Section object.
-     */
-    public Section createSection(Section section) {
-        // Save to repositories
+        Section section = new Section(0, sectionName, sectionCapacity, venue);
         sectionRepository.create(section);
-        sectionFileRepository.create(section);
-
+        venue.addSection(section);
         return section;
     }
+
 
     /**
      * Updates an existing Section.
@@ -90,43 +47,36 @@ public class SectionService {
         if (section == null) {
             return null; // Section not found
         }
-
         section.setSectionName(sectionName);
         section.setSectionCapacity(sectionCapacity);
-
-        sectionRepository.update(section);             // Update in-memory repository
-        sectionFileRepository.update(section);         // Update CSV
+        sectionRepository.update(section);
         return section;
     }
 
-
+    public void deleteSectionByVenue(int venueID) {
+        List<Section> sections = sectionRepository.getAll().stream().
+                filter(section -> section.getVenue().getID() == venueID)
+                .toList();
+        for (Section section : sections) {
+            rowService.deleteRowsBySection(section.getID());
+            sectionRepository.delete(section.getID());
+        }
+    }
 
     /**
      * Deletes a Section by its ID.
      *
-     * @param sectionId the ID of the Section to delete.
+     * @param sectionID the ID of the Section to delete.
      * @return true if the Section was successfully deleted, false otherwise.
      */
-    public boolean deleteSection(int sectionId) {
-        Section section = sectionRepository.read(sectionId);
+    public void deleteSection(int sectionID) {
+        Section section = sectionRepository.read(sectionID);
         if (section == null) {
-            return false; // Section not found
+            throw new IllegalArgumentException("Section not found");
         }
-
-        // Delete all seats associated with the Section
-        for (Row row : section.getRows()) {
-            for (Seat seat : row.getSeats()) {
-                seatRepository.delete(seat.getID());
-                seatFileRepository.delete(seat.getID());
-            }
-        }
-
-        sectionRepository.delete(sectionId);           // Remove from in-memory repository
-        sectionFileRepository.delete(sectionId);       // Remove from CSV
-        return true;
+        rowService.deleteRowsBySection(sectionID);
+        sectionRepository.delete(sectionID);
     }
-
-
 
     /**
      * Retrieves a Section by its ID.
@@ -147,6 +97,17 @@ public class SectionService {
         return sectionRepository.getAll();
     }
 
+    public void addRowsToSection(int sectionID, int numberOfRows, int rowCapacity) {
+        Section section = sectionRepository.read(sectionID);
+        if (section == null) {
+            throw new IllegalArgumentException("Section not found");
+        }
+        for (int i = 0; i < numberOfRows; i++) {
+            rowService.createRow(section, rowCapacity);
+        }
+        sectionRepository.update(section);
+    }
+
     /**
      * Finds Sections by their name.
      *
@@ -159,7 +120,6 @@ public class SectionService {
                 .collect(Collectors.toList());
     }
 
-
     /**
      * Retrieves all available Seats in a Section for a specific Event.
      *
@@ -167,21 +127,26 @@ public class SectionService {
      * @param eventId   the ID of the Event.
      * @return a list of available Seats in the Section.
      */
-    public List<Seat> getAvailableSeats(int sectionId, int eventId) {
+    public List<Seat> getAvailableSeatsInSection(int sectionId, int eventId) {
         Section section = sectionRepository.read(sectionId);
         if (section == null) {
             return new ArrayList<>(); // Section not found
         }
-
         List<Seat> availableSeats = new ArrayList<>();
         for (Row row : section.getRows()) {
             availableSeats.addAll(
                     row.getSeats().stream()
                             .filter(seat -> !seat.isReserved() && seat.getTicket() != null
                                     && seat.getTicket().getEvent().getID() == eventId)
-                            .collect(Collectors.toList())
+                            .toList()
             );
         }
         return availableSeats;
     }
+
+    public List<Row> findRowsBySection(int sectionId) {
+        Section section = sectionRepository.read(sectionId);
+        return (section != null) ? section.getRows() : new ArrayList<>();
+    }
+
 }

@@ -5,8 +5,6 @@ import repository.*;
 
 public class FileRepositoryFactory implements RepositoryFactory {
 
-    // TODO aici noile Repo-uri File
-
     @Override
     public FileRepository<Artist> createArtistRepository() {
         return new FileRepository<>("src/repository/data/artists.csv", Artist::fromCsv);
@@ -15,6 +13,31 @@ public class FileRepositoryFactory implements RepositoryFactory {
     @Override
     public FileRepository<Athlete> createAthleteRepository() {
         return new FileRepository<>("src/repository/data/athletes.csv", Athlete::fromCsv);
+    }
+
+    @Override
+    public FileRepository<Seat> createSeatRepository() {
+        return new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsv);
+    }
+
+    @Override
+    public FileRepository<Row> createRowRepository() {
+        return new FileRepository<>("src/repository/data/rows.csv", Row::fromCsv);
+    }
+
+    @Override
+    public FileRepository<Section> createSectionRepository() {
+        return new FileRepository<>("src/repository/data/sections.csv", Section::fromCsv);
+    }
+
+    @Override
+    public FileRepository<Venue> createVenueRepository() {
+        return new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsv);
+    }
+
+    @Override
+    public FileRepository<Ticket> createTicketRepository() {
+        return new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsv);
     }
 
     @Override

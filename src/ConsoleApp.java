@@ -36,30 +36,39 @@ public class ConsoleApp {
 
     private static Controller initializeController(RepositoryFactory repositoryFactory) {
 
-        // TODO aici noile Serivce și Controller, alfabetic ar fi mai nice
-
         // Service
         ArtistService artistService = new ArtistService(repositoryFactory);
         AthleteService athleteService = new AthleteService(repositoryFactory);
+        SeatService seatService = new SeatService(repositoryFactory);
+        RowService rowService = new RowService(repositoryFactory, seatService);
+        SectionService sectionService = new SectionService(repositoryFactory, rowService);
+        VenueService venueService = new VenueService(repositoryFactory, sectionService);
+        EventService eventService = new EventService(repositoryFactory, venueService);
+        TicketService ticketService = new TicketService(repositoryFactory, seatService, venueService);
         CartService cartService = new CartService(repositoryFactory);
         CustomerService customerService = new CustomerService();
         PaymentService paymentService = new PaymentService();
         PurchaseHistoryService purchaseHistoryService = new PurchaseHistoryService(repositoryFactory);
         UserService userService = new UserService(repositoryFactory, customerService);
-        EventService eventService = new EventService(repositoryFactory);
 
         // Controller
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
+        SeatController seatController = new SeatController(seatService);
+        RowController rowController = new RowController(rowService);
+        SectionController sectionController = new SectionController(sectionService);
+        VenueController venueController = new VenueController(venueService);
+        TicketController ticketController = new TicketController(ticketService);
         CartController cartController = new CartController(cartService);
         CustomerController customerController = new CustomerController(customerService);
+        EventController eventController = new EventController(eventService);
         PaymentController paymentController = new PaymentController(paymentService);
         PurchaseHistoryController purchaseHistoryController = new PurchaseHistoryController(purchaseHistoryService);
         UserController userController = new UserController(userService);
-        EventController eventController = new EventController(eventService);
 
         // Main Controller
-        return new Controller(artistController, athleteController, cartController, customerController, paymentController,
-                purchaseHistoryController, userController, eventController);
+        return new Controller(artistController, athleteController, seatController, rowController, sectionController,
+                venueController, ticketController, cartController, customerController, eventController,
+                paymentController, purchaseHistoryController, userController);
     }
 }

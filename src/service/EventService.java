@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 public class EventService {
     private final IRepository<Event> eventRepository;
+    private final VenueService venueService;
 
-    static Controller controller = ControllerProvider.getController();
-
-    public EventService(RepositoryFactory repositoryFactory) {
+    public EventService(RepositoryFactory repositoryFactory, VenueService venueService) {
         this.eventRepository = repositoryFactory.createEventRepository();
+        this.venueService = venueService;
     }
 
     /**
@@ -223,7 +223,7 @@ public class EventService {
      * @return A list of upcoming events scheduled at venues that match the location or venue name.
      */
     public List<Event> getEventsByLocation(String locationOrVenueName) {
-        List<Venue> matchingVenues = controller.findVenuesByLocationOrName(locationOrVenueName);
+        List<Venue> matchingVenues = venueService.findVenuesByLocationOrName(locationOrVenueName);
         List<Event> events = new ArrayList<>();
         for (Venue venue : matchingVenues) {
             int venueID = venue.getID();

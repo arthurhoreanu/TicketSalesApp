@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Controller for managing venue-related operations.
  */
+// TODO de rescris pentru noul Service
 public class VenueController {
     private final VenueService venueService;
 

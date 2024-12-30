@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Controller for managing section-related operations.
  */
+// TODO de rescris pentru noul Service
 public class SectionController {
     private final SectionService sectionService;
 
