@@ -1,8 +1,10 @@
 package service;
 
+import controller.Controller;
 import model.*;
 import repository.FileRepository;
 import repository.IRepository;
+import repository.factory.RepositoryFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,36 +17,17 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final IRepository<Ticket> ticketRepository;
-    private final FileRepository<Ticket> ticketFileRepository;
     private final SeatService seatService;
+    private final VenueService venueService;
 
     private static final double VIP_PERCENTAGE_INCREASE = 50.0; // +50% for VIP tickets
     private static final int EARLY_BIRD_STOCK = 100; // Number of EARLY_BIRD tickets
     private static final double LAST_MINUTE_DISCOUNT = -20.0; // -20% for last-minute tickets
 
-    /**
-     * Constructs a TicketService with dependencies for managing tickets and seats.
-     *
-     * @param ticketRepository the repository for ticket persistence.
-     * @param seatService      the service for managing seat operations.
-     */
-    public TicketService(IRepository<Ticket> ticketRepository, SeatService seatService) {
-        this.ticketRepository = ticketRepository;
+    public TicketService(RepositoryFactory repositoryFactory, SeatService seatService, VenueService venueService) {
+        this.ticketRepository = repositoryFactory.createTicketRepository();
         this.seatService = seatService;
-
-        // Initialize file repository for CSV operations
-        this.ticketFileRepository = new FileRepository<>("src/repository/data/tickets.csv", Ticket::fromCsv);
-        syncFromCsv();
-    }
-
-    /**
-     * Synchronizes tickets from the CSV file into the main repository.
-     */
-    private void syncFromCsv() {
-        List<Ticket> tickets = ticketFileRepository.getAll();
-        for (Ticket ticket : tickets) {
-            ticketRepository.create(ticket);
-        }
+        this.venueService = venueService;
     }
 
     /**
@@ -55,8 +38,7 @@ public class TicketService {
      * @return the list of generated tickets.
      */
     public List<Ticket> generateTicketsForEvent(Event event, double basePrice) {
-        List<Seat> availableSeats = seatService.getAvailableSeatsInVenue(event.getVenueID());
-
+        List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(event.getVenueID(), event.getID());
         List<Ticket> earlyBirdTickets = generateEarlyBirdTickets(availableSeats, event, basePrice);
         List<Ticket> vipTickets = generateVipTickets(availableSeats, event, basePrice);
         List<Ticket> standardTickets = generateStandardTickets(availableSeats, event, basePrice);
@@ -68,7 +50,6 @@ public class TicketService {
 
         for (Ticket ticket : allTickets) {
             ticketRepository.create(ticket);
-            ticketFileRepository.create(ticket);
         }
         return allTickets;
     }
@@ -157,7 +138,6 @@ public class TicketService {
 
     private void updateTicket(Ticket ticket) {
         ticketRepository.update(ticket);
-        ticketFileRepository.update(ticket);
     }
 
     public Ticket findTicketByID(int ticketID) {
@@ -168,7 +148,6 @@ public class TicketService {
         Ticket ticket = findTicketByID(ticketID);
         if (ticket != null) {
             ticketRepository.delete(ticketID);
-            ticketFileRepository.delete(ticketID);
         }
     }
 

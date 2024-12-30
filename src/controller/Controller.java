@@ -9,19 +9,17 @@ import java.util.Set;
 public class Controller {
     private final ArtistController artistController;
     private final AthleteController athleteController;
+    private final SeatController seatController;
+    private final RowController rowController;
+    private final SectionController sectionController;
+    private final VenueController venueController;
+    private final TicketController ticketController;
     private final CartController cartController;
     private final CustomerController customerController;
+    private final EventController eventController;
     private final PaymentController paymentController;
     private final PurchaseHistoryController purchaseHistoryController;
     private final UserController userController;
-
-    //
-    private final EventController eventController;
-    private final VenueController venueController;
-    public final SectionController sectionController;
-    private final SeatController seatController;
-    private final TicketController ticketController;
-    private final RowController rowController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -30,39 +28,37 @@ public class Controller {
      *
      * @param artistController The controller responsible for managing artists.
      * @param athleteController The controller responsible for managing athletes.
+     * @param seatController The controller responsible for managing seats in venues.
+     * @param rowController The controller responsible for managing rows in venues.
+     * @param sectionController The controller responsible for managing sections within venues.
+     * @param venueController The controller responsible for managing venues.
+     * @param ticketController The controller responsible for managing tickets.
      * @param cartController The controller responsible for managing shopping carts.
      * @param customerController The controller responsible for managing customers.
+     * @param eventController The controller responsible for managing events.
      * @param paymentController The controller responsible for managing payments.
      * @param userController The controller responsible for managing user accounts.
-     *
-     * @param eventController The controller responsible for managing events.
-     * @param venueController The controller responsible for managing venues.
-     * @param sectionController The controller responsible for managing sections within venues.
-     * @param seatController The controller responsible for managing seats in venues.
-     * @param ticketController The controller responsible for managing tickets.
      */
     public Controller(ArtistController artistController, AthleteController athleteController,
-                      CartController cartController, CustomerController customerController,
+                      SeatController seatController, RowController rowController,
+                      SectionController sectionController, VenueController venueController,
+                      TicketController ticketController, CartController cartController,
+                      CustomerController customerController, EventController eventController,
                       PaymentController paymentController, PurchaseHistoryController purchaseHistoryController,
-                      UserController userController,
-                      //
-                      EventController eventController,
-                      VenueController venueController, SectionController sectionController, SeatController seatController,
-                      TicketController ticketController, RowController rowController) {
+                      UserController userController) {
         this.artistController = artistController;
         this.athleteController = athleteController;
+        this.seatController = seatController;
+        this.rowController = rowController;
+        this.sectionController = sectionController;
+        this.venueController = venueController;
+        this.ticketController = ticketController;
         this.cartController = cartController;
         this.customerController = customerController;
+        this.eventController = eventController;
         this.paymentController = paymentController;
         this.purchaseHistoryController = purchaseHistoryController;
         this.userController = userController;
-        //
-        this.eventController = eventController;
-        this.venueController = venueController;
-        this.sectionController = sectionController;
-        this.seatController = seatController;
-        this.ticketController = ticketController;
-        this.rowController = rowController;
     }
 
     // 1. Artist
@@ -121,43 +117,7 @@ public class Controller {
     public Set<FavouriteEntity> getFavourites() {
         return customerController.getFavourites();}
 
-    // 5. Payment
-    public void processPayment(Cart cart, String cardNumber, String cardholderName,
-                               int expiryMonth, int expiryYear, String cvv, String currency) {
-        paymentController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
-    }
-
-    // 6. Purchase History
-    public void createPurchaseHistory(Cart cart) {
-        purchaseHistoryController.createPurchaseHistory(cart);}
-    public List<PurchaseHistory> getPurchaseHistoryForCustomer(Customer customer) {
-        return purchaseHistoryController.getPurchaseHistoryForCustomer(customer);}
-    public List<PurchaseHistory> getAllPurchaseHistories() {
-        return purchaseHistoryController.getAllPurchaseHistories();}
-    public PurchaseHistory findPurchaseHistoryByID(int id) {
-        return purchaseHistoryController.findPurchaseHistoryByID(id);}
-
-    // 7. User
-    public Customer findCustomerByID(int customerID) {
-        return userController.findCustomerByID(customerID);}
-    public User getCurrentUser() {
-        return userController.getCurrentUser();}
-    public List<User> getAllUsers() {
-        return userController.getAllUsers();}
-    public boolean isUsernameTaken(String username) {
-        return userController.isUsernameTaken(username);}
-    public boolean domainEmail(String email) {
-        return userController.domainEmail(email);}
-    public void createAccount(String role, String username, String email, String password) {
-        userController.createAccount(role, username, email, password);}
-    public void login(String username, String password) {
-        userController.login(username, password);}
-    public void logout() {
-        userController.logout();}
-    public void deleteAccount(int id) {
-        userController.deleteAccount(id);}
-
-    // 8. Event
+    // 5. Event
     public boolean addArtistToConcert(int eventId, int artistId) {
         return eventController.addArtistToConcert(eventId, artistId);}
     public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
@@ -184,6 +144,42 @@ public class Controller {
 //    public boolean isEventSoldOut(Event event) {
 //        return eventController.isEventSoldOut(event);}
 
+    // 6. Payment
+    public void processPayment(Cart cart, String cardNumber, String cardholderName,
+                               int expiryMonth, int expiryYear, String cvv, String currency) {
+        paymentController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
+    }
+
+    // 7. Purchase History
+    public void createPurchaseHistory(Cart cart) {
+        purchaseHistoryController.createPurchaseHistory(cart);}
+    public List<PurchaseHistory> getPurchaseHistoryForCustomer(Customer customer) {
+        return purchaseHistoryController.getPurchaseHistoryForCustomer(customer);}
+    public List<PurchaseHistory> getAllPurchaseHistories() {
+        return purchaseHistoryController.getAllPurchaseHistories();}
+    public PurchaseHistory findPurchaseHistoryByID(int id) {
+        return purchaseHistoryController.findPurchaseHistoryByID(id);}
+
+    // 8. User
+    public Customer findCustomerByID(int customerID) {
+        return userController.findCustomerByID(customerID);}
+    public User getCurrentUser() {
+        return userController.getCurrentUser();}
+    public List<User> getAllUsers() {
+        return userController.getAllUsers();}
+    public boolean isUsernameTaken(String username) {
+        return userController.isUsernameTaken(username);}
+    public boolean domainEmail(String email) {
+        return userController.domainEmail(email);}
+    public void createAccount(String role, String username, String email, String password) {
+        userController.createAccount(role, username, email, password);}
+    public void login(String username, String password) {
+        userController.login(username, password);}
+    public void logout() {
+        userController.logout();}
+    public void deleteAccount(int id) {
+        userController.deleteAccount(id);}
+
     // Row related
     public Row createRow(int sectionId, int rowCapacity) {
         return rowController.createRow(sectionId, rowCapacity);}
@@ -193,8 +189,8 @@ public class Controller {
         rowController.deleteRow(rowId);}
     public Row findRowByID(int rowId) {
         return rowController.findRowByID(rowId);}
-    public void getAllRows() {
-        rowController.getAllRows();}
+    public List<Row> getAllRows() {
+        return rowController.getAllRows();}
     public void addSeatsToRow(int rowId, int numberOfSeats) {
         rowController.addSeatsToRow(rowId, numberOfSeats);}
     public List<Seat> getSeatsByRowID(int rowId) {
@@ -219,8 +215,8 @@ public class Controller {
     public List<Seat> getAvailableSeatsInSection(int sectionId) {
         return seatController.getAvailableSeatsInSection(sectionId);
     }
-    public void getAvailableSeatsInVenue(int venueId) {
-        seatController.getAvailableSeatsInVenue(venueId);}
+    public List<Seat> getAvailableSeatsInVenue(int venueId) {
+        return seatController.getAvailableSeatsInVenue(venueId);}
     public void reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
         seatController.reserveSeat(seatId, event, customer, price, ticketType);}
     public void isSeatReservedForEvent(int seatId, int eventId) {

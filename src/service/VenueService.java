@@ -1,70 +1,29 @@
 package service;
 
 import model.*;
-import repository.FileRepository;
 import repository.IRepository;
-import repository.DBRepository;
+import repository.factory.RepositoryFactory;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class VenueService {
     private final IRepository<Venue> venueRepository;
-    private final FileRepository<Venue> venueFileRepository;
-    private final DBRepository<Venue> venueDBRepository;
     private final SectionService sectionService;
 
-    /**
-     * Constructs a VenueService with the specified dependencies.
-     *
-     * @param venueRepository the unified repository for managing venues.
-     * @param sectionService  the service for managing sections within venues.
-     */
-    public VenueService(IRepository<Venue> venueRepository, SectionService sectionService) {
-        this.venueRepository = venueRepository;
+    public VenueService(RepositoryFactory repositoryFactory, SectionService sectionService) {
+        this.venueRepository = repositoryFactory.createVenueRepository();
         this.sectionService = sectionService;
-
-        this.venueFileRepository = new FileRepository<>("src/repository/data/venues.csv", Venue::fromCsv);
-        this.venueDBRepository = new DBRepository<>(Venue.class);
-        syncFromSource(venueFileRepository, venueDBRepository);
-    }
-
-    private void syncFromSource(FileRepository<Venue> venueFileRepository, DBRepository<Venue> venueDBRepository) {
-        List<Venue> fileVenues = venueFileRepository.getAll();
-        List<Venue> dbVenues = venueDBRepository.getAll();
-
-        for (Venue venue : fileVenues) {
-            if(findVenueByID(venue.getID()) == null) {
-                venueRepository.create(venue);
-            }
-        }
-
-        for (Venue venue : dbVenues) {
-            if(findVenueByID(venue.getID()) == null) {
-                venueRepository.create(venue);
-            }
-        }
     }
 
     /**
      * Creates a new Venue and saves it to both repositories.
      */
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
-        // Check for duplicates
-        boolean duplicate = venueRepository.getAll().stream()
-                .anyMatch(v -> v.getVenueName().equalsIgnoreCase(name) && v.getLocation().equalsIgnoreCase(location));
-        if (duplicate) {
-            return null; // Duplicate found
-        }
-
-        int newID = venueRepository.getAll().size() + 1;
-        Venue venue = new Venue(newID, name, location, capacity, hasSeats);
-        venueRepository.create(venue);          // Add to in-memory repository
-        venueFileRepository.create(venue);     // Add to CSV
-        return venue;
+       Venue venue = new Venue(0, name, location, capacity, hasSeats);
+       venueRepository.create(venue);
+       return venue;
     }
 
     /**
@@ -111,14 +70,11 @@ public class VenueService {
         if (venue == null) {
             return null; // Venue not found
         }
-
         venue.setVenueName(name);
         venue.setLocation(location);
         venue.setVenueCapacity(capacity);
         venue.setHasSeats(hasSeats);
-
         venueRepository.update(venue);         // Update in-memory repository
-        venueFileRepository.update(venue);    // Update CSV
         return venue;
     }
 
@@ -130,31 +86,25 @@ public class VenueService {
         if (venue == null) {
             return false; // Venue not found
         }
-
-        for (Section section : venue.getSections()) {
-            sectionService.deleteSection(section.getID()); // Clean up related sections
-        }
-
-        venueRepository.delete(venueId);      // Remove from in-memory repository
-        venueFileRepository.delete(venueId); // Remove from CSV
+        sectionService.deleteSectionByVenue(venueId);
+        venueRepository.delete(venueId);
         return true;
     }
 
     /**
      * Adds a Section to a Venue.
      */
-    public Section addSectionToVenue(int venueId, String sectionName, int sectionCapacity) {
+    public void addSectionsToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
         Venue venue = venueRepository.read(venueId);
-        if (venue == null || sectionCapacity > venue.getVenueCapacity()) {
-            return null; // Venue not found or invalid capacity
+        if (venue == null) {
+            throw new IllegalArgumentException("Venue not found");
         }
-
-        Section section = new Section(0, sectionName, sectionCapacity, venue);
-        venue.addSection(section);            // Update relationship in-memory
-        venueRepository.update(venue);        // Update in-memory repository
-        venueFileRepository.update(venue);   // Update CSV
-        sectionService.createSection(section); // Persist the new section
-        return section;
+        for (int i = 0; i < numberOfSections; i++) {
+            Section section = sectionService.createSection(venue, sectionCapacity, defaultSectionName + " " + (i + 1));
+            venue.addSection(section); // Update Venue in-memory state
+        }
+        // Update venue repository after adding sections
+        venueRepository.update(venue);
     }
 
     /**
@@ -173,7 +123,6 @@ public class VenueService {
         if (venue == null) {
             return new ArrayList<>(); // Venue not found
         }
-
         List<Seat> availableSeats = new ArrayList<>();
         for (Section section : venue.getSections()) {
             for (Row row : section.getRows()) {
@@ -181,12 +130,10 @@ public class VenueService {
                         row.getSeats().stream()
                                 .filter(seat -> !seat.isReserved() && seat.getTicket() != null
                                         && seat.getTicket().getEvent().getID() == eventId)
-                                .collect(Collectors.toList())
+                                .toList()
                 );
             }
         }
-
         return availableSeats;
     }
-
 }

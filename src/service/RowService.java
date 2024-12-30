@@ -1,207 +1,117 @@
 package service;
 
+import controller.Controller;
 import model.*;
-import repository.FileRepository;
 import repository.IRepository;
-import repository.DBRepository;
-import java.util.ArrayList;
+import repository.factory.RepositoryFactory;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Service class for managing row-related operations, including creating rows with seats,
- * retrieving seats, and handling row-related updates and deletions.
+ * Service class for managing row-related operations.
  */
 public class RowService {
 
     private final IRepository<Row> rowRepository;
-    private final IRepository<Seat> seatRepository;
-    private final FileRepository<Row> rowFileRepository;
-    private final FileRepository<Seat> seatFileRepository;
-    private final SectionService sectionService;
+    private final SeatService seatService;
+    static Controller controller = ControllerProvider.getController();
 
-    /**
-     * Constructs a RowService with dependencies for managing rows and seats.
-     *
-     * @param rowRepository  the repository for managing row data
-     * @param seatRepository the repository for managing seat data
-     */
-    public RowService(IRepository<Row> rowRepository, IRepository<Seat> seatRepository, SectionService sectionService) {
-        this.rowRepository = rowRepository;
-        this.seatRepository = seatRepository;
-        this.sectionService = sectionService;
-        // File repositories
-        this.rowFileRepository = new FileRepository<>("src/repository/data/rows.csv", Row::fromCsv);
-        this.seatFileRepository = new FileRepository<>("src/repository/data/seats.csv", Seat::fromCsv);
-
-        // Sync data from file and database repositories to the primary repository
-        syncFromCsv();
+    public RowService(RepositoryFactory repositoryFactory, SeatService seatService) {
+        this.rowRepository = repositoryFactory.createRowRepository();
+        this.seatService = seatService;
     }
 
-    /**
-     * Synchronizes rows from the CSV file into the main repository.
-     */
-    private void syncFromCsv() {
-        List<Row> rows = rowFileRepository.getAll();
-        for (Row row : rows) {
-            rowRepository.create(row);
-        }
-
-        List<Seat> seats = seatFileRepository.getAll();
-        for (Seat seat : seats) {
-            seatRepository.create(seat);
-        }
-    }
-    /**
-     * Creates a new Row and saves it to all repositories.
-     *
-     * @param sectionId  the ID of the Section to which the Row belongs.
-     * @param rowCapacity the capacity of the Row.
-     * @return the created Row object.
-     */
-    public Row createRow(int sectionId, int rowCapacity) {
-        Section section = sectionService.findSectionByID(sectionId); // Assuming SectionService is accessible
+    public Row createRow(Section section, int rowCapacity) {
         if (section == null) {
-            return null; // Section not found
+            throw new IllegalArgumentException("Section cannot be null");
         }
-
-        int newId = rowRepository.getAll().size() + 1; // Generate a new ID dynamically
-        Row row = new Row(newId, rowCapacity, section);
+        Row row = new Row(0, rowCapacity, section);
         rowRepository.create(row);
-        rowFileRepository.create(row);
-
+        section.addRow(row);
         return row;
     }
 
-    /**
-     * Updates an existing Row.
-     *
-     * @param rowId       the ID of the Row to update.
-     * @param rowCapacity the new capacity for the Row.
-     * @return the updated Row object, or null if not found.
-     */
     public Row updateRow(int rowId, int rowCapacity) {
         Row row = findRowByID(rowId);
         if (row == null) {
-            return null; // Row not found
+            return null;
         }
-
         row.setRowCapacity(rowCapacity);
         rowRepository.update(row);
-        rowFileRepository.update(row);
-
         return row;
     }
 
-    /**
-     * Deletes a Row by its ID.
-     *
-     * @param rowId the ID of the Row to delete.
-     * @return true if the Row was successfully deleted, false otherwise.
-     */
-    public boolean deleteRow(int rowId) {
-        Row row = findRowByID(rowId);
-        if (row == null) {
-            return false; // Row not found
+    public void deleteRowsBySection(int sectionID) {
+        List<Row> rows = rowRepository.getAll().stream().
+                filter(row -> row.getSection().getID()==sectionID)
+                .toList();
+        for (Row row : rows) {
+            seatService.deleteSeatsByRow(row.getID());
+            rowRepository.delete(row.getID());
         }
-
-        // Remove associated seats
-        for (Seat seat : row.getSeats()) {
-            seatRepository.delete(seat.getID());
-            seatFileRepository.delete(seat.getID());
-        }
-
-        rowRepository.delete(rowId);
-        rowFileRepository.delete(rowId);
-
-        return true;
     }
 
-    /**
-     * Retrieves a Row by its ID.
-     *
-     * @param rowId the ID of the Row to retrieve.
-     * @return the Row object, or null if not found.
-     */
+    public void deleteRow(int rowID) {
+        Row row = findRowByID(rowID);
+        if (row == null) {
+            throw new IllegalArgumentException("Row not found");
+        }
+        seatService.deleteSeatsByRow(rowID);
+        rowRepository.delete(rowID);
+    }
+
     public Row findRowByID(int rowId) {
         return rowRepository.read(rowId);
     }
 
-    /**
-     * Retrieves all rows.
-     *
-     * @return a list of all rows
-     */
     public List<Row> getAllRows() {
         return rowRepository.getAll();
     }
 
-    /**
-     * Adds seats to a Row.
-     *
-     * @param rowId         the ID of the Row.
-     * @param numberOfSeats the number of seats to add.
-     */
     public void addSeatsToRow(int rowId, int numberOfSeats) {
         Row row = findRowByID(rowId);
         if (row == null) {
-            return; // Row not found
+            throw new IllegalArgumentException("Row not found");
         }
-
         for (int i = 1; i <= numberOfSeats; i++) {
-            Seat seat = new Seat(0, i, false, row); // Create a new Seat
-            row.addSeat(seat); // Add the Seat to the Row
-            seatRepository.create(seat);
-            seatFileRepository.create(seat);
+            seatService.createSeat(rowId, i);
         }
-
-        rowRepository.update(row); // Update the Row in the repository
-        rowFileRepository.update(row);
+        rowRepository.update(row);
     }
 
-    /**
-     * Retrieves all Seats in a Row by its ID.
-     *
-     * @param rowId the ID of the Row.
-     * @return a list of Seats in the Row.
-     */
-    public List<Seat> getSeatsByRowID(int rowId) {
-        Row row = findRowByID(rowId);
-        return (row != null) ? row.getSeats() : new ArrayList<>();
-    }
-
-    /**
-     * Finds Rows by their associated Section.
-     *
-     * @param sectionId the ID of the Section.
-     * @return a list of Rows belonging to the Section.
-     */
     public List<Row> findRowsBySection(int sectionId) {
-        return rowRepository.getAll().stream()
-                .filter(row -> row.getSection() != null && row.getSection().getID() == sectionId)
-                .collect(Collectors.toList());
+        Section section = controller.findSectionByID(sectionId);
+        return section != null ? section.getRows() : new ArrayList<>();
     }
 
-    /**
-     * Retrieves all available Seats in a Row for a specific Event.
-     *
-     * @param rowId   the ID of the Row.
-     * @param eventId the ID of the Event.
-     * @return a list of available Seats in the Row.
-     */
     public List<Seat> getAvailableSeatsInRow(int rowId, int eventId) {
         Row row = findRowByID(rowId);
         if (row == null) {
             return new ArrayList<>();
         }
-
         return row.getSeats().stream()
-                .filter(seat -> !seat.isReserved() && seat.getTicket() != null
-                        && seat.getTicket().getEvent().getID() == eventId)
+                .filter(seat -> !seat.isReserved() && seatService.isSeatForEvent(seat, eventId))
                 .collect(Collectors.toList());
     }
 
+    public Seat recommendClosestSeat(int rowId, int seatNumber) {
+        Row row = findRowByID(rowId);
+        if (row == null) {
+            return null;
+        }
+        return row.getSeats().stream()
+                .filter(seat -> !seat.isReserved())
+                .min((seat1, seat2) -> Integer.compare(
+                        Math.abs(seat1.getNumber() - seatNumber),
+                        Math.abs(seat2.getNumber() - seatNumber)
+                ))
+                .orElse(null);
+    }
+
+    public List<Seat> getSeatsByRow(int rowId) {
+        Row row = findRowByID(rowId);
+        return (row != null) ? row.getSeats() : new ArrayList<>();
+    }
 }

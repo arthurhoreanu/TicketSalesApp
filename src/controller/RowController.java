@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Controller for managing row-related operations.
  */
+// TODO de rescris pentru noul Service
 public class RowController {
     private final RowService rowService;
 
@@ -51,7 +52,6 @@ public class RowController {
      */
     public void deleteRow(int rowId) {
         boolean deleted = rowService.deleteRow(rowId);
-
         if (deleted) {
             System.out.println("Row with ID " + rowId + " deleted successfully.");
         } else {
@@ -75,15 +75,15 @@ public class RowController {
     /**
      * Retrieves all Rows.
      */
-    public void getAllRows() {
+    public List<Row> getAllRows() {
         List<Row> rows = rowService.getAllRows();
-
         if (!rows.isEmpty()) {
             System.out.println("All rows:");
             rows.forEach(System.out::println);
         } else {
             System.out.println("No rows available.");
         }
+        return rows;
     }
 
     /**

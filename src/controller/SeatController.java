@@ -8,7 +8,9 @@ import java.util.List;
 /**
  * Controller for managing seat-related operations.
  */
+// TODO de rescris pentru noul Service
 public class SeatController {
+
     private final SeatService seatService;
 
     /**
@@ -32,7 +34,7 @@ public class SeatController {
     }
 
     public boolean deleteSeatById(int seatId) {
-        boolean deleted = seatService.deleteSeatById(seatId);
+        boolean deleted = seatService.deleteSeat(seatId);
         System.out.println(deleted ? "Seat deleted successfully." : "Failed to delete seat. Seat not found.");
         return deleted;
     }

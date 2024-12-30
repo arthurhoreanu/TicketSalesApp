@@ -5,8 +5,6 @@ import repository.*;
 
 public class DBRepositoryFactory implements RepositoryFactory {
 
-    // TODO aici noile Repo-uri DB
-
     @Override
     public DBRepository<Artist> createArtistRepository() {
         return new DBRepository<>(Artist.class);
@@ -15,6 +13,31 @@ public class DBRepositoryFactory implements RepositoryFactory {
     @Override
     public DBRepository<Athlete> createAthleteRepository() {
         return new DBRepository<>(Athlete.class);
+    }
+
+    @Override
+    public DBRepository<Seat> createSeatRepository() {
+        return new DBRepository<>(Seat.class);
+    }
+
+    @Override
+    public DBRepository<Row> createRowRepository() {
+        return new DBRepository<>(Row.class);
+    }
+
+    @Override
+    public DBRepository<Section> createSectionRepository() {
+        return new DBRepository<>(Section.class);
+    }
+
+    @Override
+    public DBRepository<Venue> createVenueRepository() {
+        return new DBRepository<>(Venue.class);
+    }
+
+    @Override
+    public DBRepository<Ticket> createTicketRepository() {
+        return new DBRepository<>(Ticket.class);
     }
 
     @Override
