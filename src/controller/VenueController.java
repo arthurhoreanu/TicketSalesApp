@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * Controller for managing venue-related operations.
  */
-// TODO de rescris pentru noul Service
 public class VenueController {
     private final VenueService venueService;
 
@@ -24,13 +23,14 @@ public class VenueController {
     /**
      * Creates a new venue.
      */
-    public void createVenue(String name, String location, int capacity, boolean hasSeats) {
+    public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
         Venue venue = venueService.createVenue(name, location, capacity, hasSeats);
         if (venue != null) {
             System.out.println("Venue created successfully: " + venue);
         } else {
-            System.out.println("Failed to create venue. A duplicate may exist.");
+            System.out.println("Failed to create venue.");
         }
+        return venue;
     }
 
     /**
@@ -90,36 +90,38 @@ public class VenueController {
     /**
      * Updates an existing venue.
      */
-    public void updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
+    public Venue updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
         Venue updatedVenue = venueService.updateVenue(venueId, name, location, capacity, hasSeats);
         if (updatedVenue != null) {
             System.out.println("Venue updated successfully: " + updatedVenue);
         } else {
             System.out.println("Failed to update venue. Venue with ID " + venueId + " not found.");
         }
+        return updatedVenue;
     }
 
     /**
      * Deletes a venue by its ID.
      */
-    public void deleteVenue(int venueId) {
+    public boolean deleteVenue(int venueId) {
         boolean deleted = venueService.deleteVenue(venueId);
         if (deleted) {
             System.out.println("Venue with ID " + venueId + " deleted successfully.");
         } else {
             System.out.println("Failed to delete venue. Venue with ID " + venueId + " not found.");
         }
+        return deleted;
     }
 
     /**
-     * Adds a section to a venue.
+     * Adds multiple sections to a venue.
      */
-    public void addSectionToVenue(int venueId, String sectionName, int sectionCapacity) {
-        Section section = venueService.addSectionToVenue(venueId, sectionName, sectionCapacity);
-        if (section != null) {
-            System.out.println("Section added successfully: " + section);
-        } else {
-            System.out.println("Failed to add section. Venue not found or capacity exceeded.");
+    public void addSectionsToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
+        try {
+            venueService.addSectionsToVenue(venueId, numberOfSections, sectionCapacity, defaultSectionName);
+            System.out.println("Added " + numberOfSections + " sections to Venue ID " + venueId);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -140,7 +142,7 @@ public class VenueController {
     /**
      * Retrieves all available seats in a venue for a specific event.
      */
-    public void getAvailableSeatsInVenue(int venueId, int eventId) {
+    public List<Seat> getAvailableSeatsInVenue(int venueId, int eventId) {
         List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(venueId, eventId);
         if (!availableSeats.isEmpty()) {
             System.out.println("Available seats for venue ID " + venueId + " and event ID " + eventId + ":");
@@ -148,5 +150,6 @@ public class VenueController {
         } else {
             System.out.println("No available seats for venue ID " + venueId + " and event ID " + eventId + ".");
         }
+        return availableSeats;
     }
 }
