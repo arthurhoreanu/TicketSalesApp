@@ -14,20 +14,24 @@ import java.util.List;
 @Table(name = "sport_event")
 public class SportsEvent extends Event {
 
-    @ManyToMany
-    @JoinTable(
-            name = "sport_event_lineup", // Tabelul de legătură specific pentru SportsEvent și Athlete
-            joinColumns = @JoinColumn(name = "event_id"), // Coloana care leagă SportsEvent
-            inverseJoinColumns = @JoinColumn(name = "athlete_id") // Coloana care leagă Athlete
-    )
-    private List<Athlete> athletes;
+    @OneToMany(mappedBy = "sportsEvent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SportsEventLineUp> sportsEventLineUps;
 
-    public List<Athlete> getAthletes() {
-        return athletes;
+    public List<SportsEventLineUp> getSportsEventLineUps() {
+        return sportsEventLineUps;
     }
 
-    public void setAthletes(List<Athlete> athletes) {
-        this.athletes = athletes;
+    public void setSportsEventLineUps(List<SportsEventLineUp> sportsEventLineUps) {
+        this.sportsEventLineUps = sportsEventLineUps;
+    }
+
+    public void addAthleteToLineUp(Athlete athlete, Integer lineupOrder) {
+        SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(this, athlete);
+        sportsEventLineUps.add(sportsEventLineUp);
+    }
+
+    public void removeAthleteFromLineUp(Athlete athlete) {
+        sportsEventLineUps.removeIf(lineUp -> lineUp.getAthlete().equals(athlete));
     }
 
     public SportsEvent() {}
@@ -40,7 +44,6 @@ public class SportsEvent extends Event {
     @Override
     public String toString() {
         return "SportsEvent{" +
-                "athletes=" + athletes +
                 ", " + super.toString() +
                 '}';
     }

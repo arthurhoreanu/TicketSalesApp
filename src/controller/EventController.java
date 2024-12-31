@@ -150,6 +150,16 @@ public class EventController {
         return success;
     }
 
+    public boolean removeArtistFromConcert(int eventID, int artistID) {
+        boolean success = eventService.removeArtistFromConcert(eventID, artistID);
+        if (success) {
+            System.out.println("Artist with ID " + artistID + " removed from Concert with ID " + eventID + ".");
+        } else {
+            System.out.println("Failed to remove artist with ID " + artistID + " from Concert with ID " + eventID + ".");
+        }
+        return success;
+    }
+
     /**
      * Adds an athlete to a sports event.
      * @return true if the athlete was successfully added, false otherwise.
@@ -163,4 +173,31 @@ public class EventController {
         }
         return success;
     }
+
+    public boolean removeAthleteFromSportsEvent(int eventID, int athleteID) {
+        boolean success = eventService.removeAthleteFromSportsEvent(eventID, athleteID);
+        if (success) {
+            System.out.println("Athlete with ID " + athleteID + " removed from Sports Event with ID " + eventID + ".");
+        } else {
+            System.out.println("Failed to remove athlete with ID " + athleteID + " from Sports Event with ID " + eventID + ".");
+        }
+        return success;
+    }
+
+    public Concert findConcertByID(int concertID) {
+        return eventService.findConcertByID(concertID);
+    }
+
+    public SportsEvent findSportsEventByID(int sportsEventID) {
+        return eventService.findSportsEventByID(sportsEventID);
+    }
+
+    public List<Artist> getArtistsByConcert(int concertID) {
+        return eventService.getArtistsByConcert(concertID);
+    }
+
+    public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
+        return eventService.getAthletesBySportsEvent(sportsEventID);
+    }
+
 }

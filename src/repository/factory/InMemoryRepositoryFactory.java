@@ -62,4 +62,14 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
         return new InMemoryRepository<>();
     }
 
+    @Override
+    public IRepository<ConcertLineUp> createConcertLineUpRepository() {
+        return new InMemoryRepository<>();
+    }
+
+    @Override
+    public IRepository<SportsEventLineUp> createSportsEventLineUpRepository() {
+        return new InMemoryRepository<>();
+    }
+
 }

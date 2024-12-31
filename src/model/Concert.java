@@ -16,20 +16,24 @@ import java.util.List;
 @Table(name = "concert")
 public class Concert extends Event {
 
-    @ManyToMany
-    @JoinTable(
-            name = "concert_lineup", // Tabelul de legătură specific pentru Concert și Artist
-            joinColumns = @JoinColumn(name = "event_id"), // Coloana care leagă Concert
-            inverseJoinColumns = @JoinColumn(name = "artist_id") // Coloana care leagă Artist
-    )
-    private List<Artist> artists;
+    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConcertLineUp> concertLineUps;
 
-    public List<Artist> getArtists() {
-        return artists;
+    public List<ConcertLineUp> getConcertLineUps() {
+        return concertLineUps;
     }
 
-    public void setArtists(List<Artist> artists) {
-        this.artists = artists;
+    public void setConcertLineUps(List<ConcertLineUp> concertLineUps) {
+        this.concertLineUps = concertLineUps;
+    }
+
+    public void addArtistToLineUp(Artist artist, Integer lineupOrder) {
+        ConcertLineUp concertLineUp = new ConcertLineUp(this, artist);
+        concertLineUps.add(concertLineUp);
+    }
+
+    public void removeArtistFromLineUp(Artist artist) {
+        concertLineUps.removeIf(lineUp -> lineUp.getArtist().equals(artist));
     }
 
     public Concert() {}
@@ -42,7 +46,6 @@ public class Concert extends Event {
     @Override
     public String toString() {
         return "Concert{" +
-                "artists=" + artists +
                 ", " + super.toString() +
                 '}';
     }

@@ -101,16 +101,17 @@ public class AdminEventMenu {
         while (true) {
             System.out.println("1. Add Artist");
             System.out.println("2. Remove Artist");
+            System.out.println("3. View Artists");
             System.out.println("0. Back");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
-
             switch (choice) {
                 case "1":
                     System.out.print("Enter Artist Name: ");
                     String artistName = scanner.nextLine();
                     Artist artist = controller.findArtistByName(artistName);
                     if (artist == null) {
+                        System.out.println("Artist not found. Creating new artist.");
                         controller.createArtist(artistName, "No genre set.");
                         artist = controller.findArtistByName(artistName);
                     }
@@ -118,16 +119,33 @@ public class AdminEventMenu {
                     System.out.println("Artist added to the concert.");
                     break;
                 case "2":
-                    if (concert.getArtists().isEmpty())
+                    List<Artist> artists = controller.getArtistsByConcert(concert.getID());
+                    if (artists.isEmpty()) {
                         System.out.println("No artists to remove.");
-                    else {
-                        System.out.print("Enter Artist Name: ");
-                        String removeArtistName = scanner.nextLine();
-                        Artist artistToRemove = controller.findArtistByName(removeArtistName);
-                        if (artistToRemove != null && concert.getArtists().remove(artistToRemove)) {
-                            System.out.println("Artist removed from the concert.");
-                        } else {
-                            System.out.println("Artist not found in the concert.");
+                        break;
+                    }
+                    System.out.println("Artists in this concert:");
+                    for (Artist a : artists) {
+                        System.out.println("- " + a.getArtistName());
+                    }
+                    System.out.print("Enter Artist Name to remove: ");
+                    String removeArtistName = scanner.nextLine();
+                    Artist artistToRemove = controller.findArtistByName(removeArtistName);
+                    if (artistToRemove != null) {
+                        controller.removeArtistFromConcert(concert.getID(), artistToRemove.getID());
+                        System.out.println("Artist removed from the concert.");
+                    } else {
+                        System.out.println("Artist not found in the concert.");
+                    }
+                    break;
+                case "3":
+                    List<Artist> currentArtists = controller.getArtistsByConcert(concert.getID());
+                    if (currentArtists.isEmpty()) {
+                        System.out.println("No artists associated with this concert.");
+                    } else {
+                        System.out.println("Artists in this concert:");
+                        for (Artist a : currentArtists) {
+                            System.out.println("- " + a.getArtistName());
                         }
                     }
                     break;
@@ -144,16 +162,17 @@ public class AdminEventMenu {
         while (true) {
             System.out.println("1. Add Athlete");
             System.out.println("2. Remove Athlete");
+            System.out.println("3. View Athletes");
             System.out.println("0. Back");
             System.out.print("Choose an option: ");
             String choice = scanner.nextLine();
-
             switch (choice) {
                 case "1":
                     System.out.print("Enter Athlete Name: ");
                     String athleteName = scanner.nextLine();
                     Athlete athlete = controller.findAthleteByName(athleteName);
                     if (athlete == null) {
+                        System.out.println("Athlete not found. Creating new athlete.");
                         controller.createAthlete(athleteName, "No sport set.");
                         athlete = controller.findAthleteByName(athleteName);
                     }
@@ -161,21 +180,40 @@ public class AdminEventMenu {
                     System.out.println("Athlete added to the sports event.");
                     break;
                 case "2":
-                    if (sportsEvent.getAthletes().isEmpty())
+                    List<Athlete> athletes = controller.getAthletesBySportsEvent(sportsEvent.getID());
+                    if (athletes.isEmpty()) {
                         System.out.println("No athletes to remove.");
-                    else {
-                        System.out.print("Enter Athlete Name: ");
-                        String removeAthleteName = scanner.nextLine();
-                        Athlete athleteToRemove = controller.findAthleteByName(removeAthleteName);
-                        if (athleteToRemove != null && sportsEvent.getAthletes().remove(athleteToRemove)) {
-                            System.out.println("Athlete removed from the sports event.");
-                        } else {
-                            System.out.println("Athlete not found in the sports event.");
+                        break;
+                    }
+                    System.out.println("Athletes in this sports event:");
+                    for (Athlete a : athletes) {
+                        System.out.println("- " + a.getName());
+                    }
+                    System.out.print("Enter Athlete Name to remove: ");
+                    String removeAthleteName = scanner.nextLine();
+                    Athlete athleteToRemove = controller.findAthleteByName(removeAthleteName);
+                    if (athleteToRemove != null) {
+                        controller.removeAthleteFromSportsEvent(sportsEvent.getID(), athleteToRemove.getID());
+                        System.out.println("Athlete removed from the sports event.");
+                    } else {
+                        System.out.println("Athlete not found in the sports event.");
+                    }
+                    break;
+                case "3":
+                    List<Athlete> currentAthletes = controller.getAthletesBySportsEvent(sportsEvent.getID());
+                    if (currentAthletes.isEmpty()) {
+                        System.out.println("No athletes associated with this sports event.");
+                    } else {
+                        System.out.println("Athletes in this sports event:");
+                        for (Athlete a : currentAthletes) {
+                            System.out.println("- " + a.getName());
                         }
                     }
                     break;
+
                 case "0":
                     return;
+
                 default:
                     System.out.println("Invalid option.");
             }
