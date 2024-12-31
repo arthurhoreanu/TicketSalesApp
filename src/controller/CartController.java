@@ -42,14 +42,16 @@ public class CartController {
      *
      * @param cart   The cart to which the ticket is added.
      * @param ticket The ticket to add to the cart.
+     * @return true if the ticket was successfully added, false otherwise.
      */
-    public void addTicketToCart(Cart cart, Ticket ticket) {
+    public boolean addTicketToCart(Cart cart, Ticket ticket) {
         boolean isAdded = cartService.addTicketToCart(cart, ticket);
         if (isAdded) {
             System.out.println("Ticket successfully added to the cart.");
         } else {
             System.out.println("Failed to add ticket to the cart. Ensure it belongs to the same event.");
         }
+        return isAdded;
     }
 
     /**
@@ -57,14 +59,16 @@ public class CartController {
      *
      * @param cart   The cart from which the ticket is removed.
      * @param ticket The ticket to remove.
+     * @return true if the ticket was successfully removed, false otherwise.
      */
-    public void removeTicketFromCart(Cart cart, Ticket ticket) {
+    public boolean removeTicketFromCart(Cart cart, Ticket ticket) {
         boolean isRemoved = cartService.removeTicketFromCart(cart, ticket);
         if (isRemoved) {
             System.out.println("Ticket successfully removed from the cart.");
         } else {
             System.out.println("Ticket not found in the cart.");
         }
+        return isRemoved;
     }
 
     /**

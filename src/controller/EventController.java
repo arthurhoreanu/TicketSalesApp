@@ -19,73 +19,58 @@ public class EventController {
 
     /**
      * Creates a new Concert event.
-     * Displays a message indicating whether the creation was successful or not.
-     * @param eventName The name of the event.
-     * @param eventDescription The description of the event.
-     * @param startDateTime The start date and time of the event.
-     * @param endDateTime The end date and time of the event.
-     * @param venueID The venue where the event will take place.
-     * @param eventStatus The status of the event (e.g., Scheduled, Postponed).
+     * @return true if the event was successfully created, false otherwise.
      */
-    public void createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         if (success) {
-            System.out.println("Event created successfully");
+            System.out.println("Concert created successfully.");
         } else {
-            System.out.println("Event creation failed");
+            System.out.println("Failed to create concert.");
         }
+        return success;
     }
 
     /**
      * Creates a new SportsEvent.
-     * Displays a message indicating whether the creation was successful or not.
-     * @param eventName The name of the event.
-     * @param eventDescription The description of the event.
-     * @param startDateTime The start date and time of the event.
-     * @param endDateTime The end date and time of the event.
-     * @param venueID The venue where the event will take place.
-     * @param eventStatus The status of the event.
+     * @return true if the event was successfully created, false otherwise.
      */
-    public void createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         if (success) {
-            System.out.println("Event created successfully");
+            System.out.println("Sports event created successfully.");
         } else {
-            System.out.println("Event creation failed");
+            System.out.println("Failed to create sports event.");
         }
+        return success;
     }
 
     /**
      * Updates an existing event.
-     * Displays a message indicating whether the update was successful or not.
-     * @param eventId The ID of the event to be updated.
-     * @param newName The new name for the event.
-     * @param newDescription The new description for the event.
-     * @param newStartDateTime The new start date and time for the event.
-     * @param newEndDateTime The new end date and time for the event.
-     * @param newStatus The new status of the event.
+     * @return true if the event was successfully updated, false otherwise.
      */
-    public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
+    public boolean updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
         boolean success = eventService.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
         if (success) {
-            System.out.println("Event updated successfully");
+            System.out.println("Event updated successfully.");
         } else {
-            System.out.println("Event update failed");
+            System.out.println("Failed to update event. Event ID not found.");
         }
+        return success;
     }
 
     /**
      * Deletes an event by its ID.
-     * Displays a message indicating whether the deletion was successful or not.
-     * @param eventId The ID of the event to be deleted.
+     * @return true if the event was successfully deleted, false otherwise.
      */
-    public void deleteEvent(int eventId) {
+    public boolean deleteEvent(int eventId) {
         boolean success = eventService.deleteEvent(eventId);
         if (success) {
-            System.out.println("Event deleted successfully");
+            System.out.println("Event deleted successfully.");
         } else {
-            System.out.println("Event deletion failed");
+            System.out.println("Failed to delete event. Event ID not found.");
         }
+        return success;
     }
 
     /**
@@ -93,60 +78,101 @@ public class EventController {
      * @return A list of all events.
      */
     public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+        List<Event> events = eventService.getAllEvents();
+        if (!events.isEmpty()) {
+            System.out.println("All Events:");
+            events.forEach(System.out::println);
+        } else {
+            System.out.println("No events found.");
+        }
+        return events;
     }
 
     /**
-     * Checks if an event is sold out by checking available tickets.
-     * @param event The event to be checked.
-     * @return true if the event is sold out, otherwise false.
-     */
-//    public boolean isEventSoldOut(Event event) {
-//        return eventService.isEventSoldOut(event);
-//    }
-
-    /**
      * Retrieves upcoming events for a specific artist.
-     * @param artistID The ID of the artist.
      * @return A list of upcoming events featuring the specified artist.
      */
     public List<Event> getUpcomingEventsForArtist(int artistID) {
-        return eventService.getUpcomingEventsForArtist(artistID);
+        List<Event> events = eventService.getUpcomingEventsForArtist(artistID);
+        if (!events.isEmpty()) {
+            System.out.println("Upcoming Events for Artist ID " + artistID + ":");
+            events.forEach(System.out::println);
+        } else {
+            System.out.println("No upcoming events found for Artist ID " + artistID + ".");
+        }
+        return events;
     }
 
     /**
      * Retrieves upcoming events for a specific athlete.
-     * @param athleteID The ID of the athlete.
      * @return A list of upcoming events featuring the specified athlete.
      */
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
-        return eventService.getUpcomingEventsForAthlete(athleteID);
+        List<Event> events = eventService.getUpcomingEventsForAthlete(athleteID);
+        if (!events.isEmpty()) {
+            System.out.println("Upcoming Events for Athlete ID " + athleteID + ":");
+            events.forEach(System.out::println);
+        } else {
+            System.out.println("No upcoming events found for Athlete ID " + athleteID + ".");
+        }
+        return events;
     }
 
     /**
      * Retrieves events by location or venue name.
      * Filters results to include only upcoming events.
-     * @param locationOrVenueName The name of the location or venue.
      * @return A list of upcoming events at the specified location or venue.
      */
     public List<Event> getEventsByLocation(String locationOrVenueName) {
-        return eventService.getEventsByLocation(locationOrVenueName);
+        List<Event> events = eventService.getEventsByLocation(locationOrVenueName);
+        if (!events.isEmpty()) {
+            System.out.println("Upcoming Events at location/venue '" + locationOrVenueName + "':");
+            events.forEach(System.out::println);
+        } else {
+            System.out.println("No upcoming events found at location/venue '" + locationOrVenueName + "'.");
+        }
+        return events;
     }
 
     /**
      * Finds an event by its ID.
-     * @param eventId The ID of the event to find.
      * @return The event with the specified ID, or null if not found.
      */
     public Event findEventByID(int eventId) {
-        return eventService.findEventByID(eventId);
+        Event event = eventService.findEventByID(eventId);
+        if (event != null) {
+            System.out.println("Event Found: " + event);
+        } else {
+            System.out.println("Event with ID " + eventId + " not found.");
+        }
+        return event;
     }
 
+    /**
+     * Adds an artist to a concert.
+     * @return true if the artist was successfully added, false otherwise.
+     */
     public boolean addArtistToConcert(int eventId, int artistId) {
-        return eventService.addArtistToConcert(eventId, artistId);
+        boolean success = eventService.addArtistToConcert(eventId, artistId);
+        if (success) {
+            System.out.println("Artist with ID " + artistId + " added to Concert with ID " + eventId + " successfully.");
+        } else {
+            System.out.println("Failed to add Artist with ID " + artistId + " to Concert with ID " + eventId + ".");
+        }
+        return success;
     }
 
+    /**
+     * Adds an athlete to a sports event.
+     * @return true if the athlete was successfully added, false otherwise.
+     */
     public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
-        return eventService.addAthleteToSportsEvent(eventId, athleteId);
+        boolean success = eventService.addAthleteToSportsEvent(eventId, athleteId);
+        if (success) {
+            System.out.println("Athlete with ID " + athleteId + " added to Sports Event with ID " + eventId + " successfully.");
+        } else {
+            System.out.println("Failed to add Athlete with ID " + athleteId + " to Sports Event with ID " + eventId + ".");
+        }
+        return success;
     }
 }
