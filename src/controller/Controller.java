@@ -235,6 +235,18 @@ public class Controller {
         return eventController.deleteEvent(eventId);}
     public List<Event> getAllEvents() {
         return eventController.getAllEvents();}
+    public Concert findConcertByID(int concertID) {
+        return eventController.findConcertByID(concertID);}
+    public SportsEvent findSportsEventByID(int sportsEventID) {
+        return eventController.findSportsEventByID(sportsEventID);}
+    public boolean removeArtistFromConcert(int eventID, int artistID) {
+        return eventController.removeArtistFromConcert(eventID, artistID);}
+    public boolean removeAthleteFromSportsEvent(int eventID, int athleteID) {
+        return eventController.removeAthleteFromSportsEvent(eventID, athleteID);}
+    public List<Artist> getArtistsByConcert(int concertID) {
+        return eventController.getArtistsByConcert(concertID);}
+    public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
+        return eventController.getAthletesBySportsEvent(sportsEventID);}
     // TODO
 //    public boolean isEventSoldOut(Event event) {
 //        return eventController.isEventSoldOut(event);}

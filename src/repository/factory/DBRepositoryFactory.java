@@ -66,4 +66,14 @@ public class DBRepositoryFactory implements RepositoryFactory {
         return combinedRepository;
     }
 
+    @Override
+    public DBRepository<ConcertLineUp> createConcertLineUpRepository() {
+        return new DBRepository<>(ConcertLineUp.class);
+    }
+
+    @Override
+    public DBRepository<SportsEventLineUp> createSportsEventLineUpRepository() {
+        return new DBRepository<>(SportsEventLineUp.class);
+    }
+
 }

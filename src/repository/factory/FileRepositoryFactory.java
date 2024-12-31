@@ -66,4 +66,14 @@ public class FileRepositoryFactory implements RepositoryFactory {
         return combinedRepository;
     }
 
+    @Override
+    public FileRepository<ConcertLineUp> createConcertLineUpRepository() {
+        return new FileRepository<>("src/repository/data/concert_line_ups.csv", ConcertLineUp::fromCsv);
+    }
+
+    @Override
+    public FileRepository<SportsEventLineUp> createSportsEventLineUpRepository() {
+        return new FileRepository<>("src/repository/data/sports_event_line_ups.csv", SportsEventLineUp::fromCsv);
+    }
+
 }
