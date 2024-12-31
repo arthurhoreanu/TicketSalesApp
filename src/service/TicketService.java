@@ -17,16 +17,14 @@ import java.util.stream.Collectors;
 public class TicketService {
 
     private final IRepository<Ticket> ticketRepository;
-    private final SeatService seatService;
     private final VenueService venueService;
 
     private static final double VIP_PERCENTAGE_INCREASE = 50.0; // +50% for VIP tickets
     private static final int EARLY_BIRD_STOCK = 100; // Number of EARLY_BIRD tickets
     private static final double LAST_MINUTE_DISCOUNT = -20.0; // -20% for last-minute tickets
 
-    public TicketService(RepositoryFactory repositoryFactory, SeatService seatService, VenueService venueService) {
+    public TicketService(RepositoryFactory repositoryFactory, VenueService venueService) {
         this.ticketRepository = repositoryFactory.createTicketRepository();
-        this.seatService = seatService;
         this.venueService = venueService;
     }
 
@@ -94,7 +92,7 @@ public class TicketService {
 
     public void reserveTicket(Ticket ticket, Customer customer) {
         if (ticket.getSeat() != null) {
-            seatService.reserveSeat(
+            venueService.reserveSeat(
                     ticket.getSeat().getID(),
                     ticket.getEvent(),
                     customer,
@@ -110,7 +108,7 @@ public class TicketService {
 
     public void releaseTicket(Ticket ticket) {
         if (ticket.getSeat() != null) {
-            seatService.unreserveSeat(ticket.getSeat().getID());
+            venueService.unreserveSeat(ticket.getSeat().getID());
         }
         ticket.setSold(false);
         ticket.setCustomer(null);

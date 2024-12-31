@@ -10,12 +10,351 @@ import java.util.stream.Collectors;
 
 public class VenueService {
     private final IRepository<Venue> venueRepository;
-    private final SectionService sectionService;
+    private final IRepository<Section> sectionRepository;
+    private final IRepository<Row> rowRepository;
+    private final IRepository<Seat> seatRepository;
 
-    public VenueService(RepositoryFactory repositoryFactory, SectionService sectionService) {
-        this.venueRepository = repositoryFactory.createVenueRepository();
-        this.sectionService = sectionService;
+    public VenueService(RepositoryFactory venueFactory, RepositoryFactory sectionFactory,
+                        RepositoryFactory rowFactory, RepositoryFactory seatFactory) {
+        this.venueRepository = venueFactory.createVenueRepository();
+        this.sectionRepository = sectionFactory.createSectionRepository();
+        this.rowRepository = rowFactory.createRowRepository();
+        this.seatRepository = seatFactory.createSeatRepository();
     }
+
+    // Seat
+
+    /**
+     * Creates a new Seat and saves it to all repositories.
+     *
+     * @param rowId       the ID of the Row to which the Seat belongs.
+     * @param seatNumber  the number of the Seat.
+     * @return the created Seat object.
+     */
+    public Seat createSeat(int rowId, int seatNumber) {
+        Seat seat = new Seat(0, seatNumber, false, findRowByID(rowId));
+        seatRepository.create(seat);
+        return seat;
+    }
+
+    public void deleteSeatsByRow(int rowId) {
+        List<Seat> seats = seatRepository.getAll().stream()
+                .filter(seat -> seat.getRow().getID() == rowId)
+                .toList();
+        for (Seat seat : seats) {
+            seatRepository.delete(seat.getID());
+        }
+    }
+
+    /**
+     * Deletes a Seat by its ID.
+     *
+     * @param seatID the ID of the Seat to delete.
+     * @return true if the Seat was successfully deleted, false otherwise.
+     */
+    public boolean deleteSeat(int seatID) {
+        Seat seat = findSeatByID(seatID);
+        if (seat == null) {
+            return false; // Seat not found
+        }
+        Row row = seat.getRow();
+        if (row != null) {
+            row.removeSeat(seat); // Update the Row to remove the Seat
+        }
+        seatRepository.delete(seatID);
+        return true;
+    }
+
+    /**
+     * Retrieves a Seat by its ID.
+     *
+     * @param seatId the ID of the Seat to retrieve.
+     * @return the Seat object, or null if not found.
+     */
+    public Seat findSeatByID(int seatId) {
+        return seatRepository.read(seatId);
+    }
+
+    /**
+     * Retrieves all Seats from the repository.
+     *
+     * @return a list of all Seats.
+     */
+    public List<Seat> getAllSeats() {
+        return seatRepository.getAll();
+    }
+
+    /**
+     * Reserves a Seat by associating it with a Ticket.
+     *
+     * @param seatId     the ID of the Seat to reserve.
+     * @return true if the Seat was successfully reserved, false otherwise.
+     */
+    public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
+        Seat seat = findSeatByID(seatId);
+        if (seat == null || seat.isReserved() || event == null || customer == null) {
+            return false; // Seat not found, already reserved, or invalid input
+        }
+        // Create a Ticket object and associate it with the Seat
+        Ticket ticket = new Ticket(0, event, seat, customer, price, ticketType);
+        seat.setReserved(true);
+        seat.setTicket(ticket);
+        // Update the seat in the repositories
+        seatRepository.update(seat);
+        return true;
+    }
+
+    /**
+     * Unreserves a Seat, removing its association with any Ticket.
+     *
+     * @param seatId the ID of the Seat to unreserve.
+     */
+    public void unreserveSeat(int seatId) {
+        Seat seat = findSeatByID(seatId);
+        if (seat == null || !seat.isReserved()) {
+            return; // Seat not found or not reserved
+        }
+        seat.setReserved(false);
+        seat.setTicket(null); // Remove the Ticket association
+        seatRepository.update(seat);
+    }
+
+    /**
+     * Checks if a Seat is reserved for a specific Event.
+     *
+     * @param seatId  the ID of the Seat.
+     * @param eventId the ID of the Event.
+     * @return true if the Seat is reserved for the Event, false otherwise.
+     */
+    public boolean isSeatReservedForEvent(int seatId, int eventId) {
+        Seat seat = findSeatByID(seatId);
+        return seat != null && seat.isReserved()
+                && seat.getTicket() != null
+                && seat.getTicket().getEvent().getID() == eventId;
+    }
+
+    public boolean isSeatForEvent(Seat seat, int eventId) {
+        return seat.getTicket() != null && seat.getTicket().getEvent().getID() == eventId;
+    }
+
+    // Row
+
+    public Row createRow(Section section, int rowCapacity) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+        Row row = new Row(0, rowCapacity, section);
+        rowRepository.create(row);
+        section.addRow(row);
+        return row;
+    }
+
+    public Row updateRow(int rowId, int rowCapacity) {
+        Row row = findRowByID(rowId);
+        if (row == null) {
+            return null;
+        }
+        row.setRowCapacity(rowCapacity);
+        rowRepository.update(row);
+        return row;
+    }
+
+    public void deleteRowsBySection(int sectionID) {
+        List<Row> rows = rowRepository.getAll().stream().
+                filter(row -> row.getSection().getID()==sectionID)
+                .toList();
+        for (Row row : rows) {
+            deleteSeatsByRow(row.getID());
+            rowRepository.delete(row.getID());
+        }
+    }
+
+    public void deleteRow(int rowID) {
+        Row row = findRowByID(rowID);
+        if (row == null) {
+            throw new IllegalArgumentException("Row not found");
+        }
+        deleteSeatsByRow(rowID);
+        rowRepository.delete(rowID);
+    }
+
+    public Row findRowByID(int rowId) {
+        return rowRepository.read(rowId);
+    }
+
+    public List<Row> getAllRows() {
+        return rowRepository.getAll();
+    }
+
+    public void addSeatsToRow(int rowId, int numberOfSeats) {
+        Row row = findRowByID(rowId);
+        if (row == null) {
+            throw new IllegalArgumentException("Row not found");
+        }
+        for (int i = 1; i <= numberOfSeats; i++) {
+            createSeat(rowId, i);
+        }
+        rowRepository.update(row);
+    }
+
+    public List<Row> findRowsBySection(int sectionId) {
+        Section section = findSectionByID(sectionId);
+        return section != null ? section.getRows() : new ArrayList<>();
+    }
+
+    public List<Seat> getAvailableSeatsInRow(int rowId, int eventId) {
+        Row row = findRowByID(rowId);
+        if (row == null) {
+            return new ArrayList<>();
+        }
+        return row.getSeats().stream()
+                .filter(seat -> !seat.isReserved() && isSeatForEvent(seat, eventId))
+                .collect(Collectors.toList());
+    }
+
+    public Seat recommendClosestSeat(int rowId, int seatNumber) {
+        Row row = findRowByID(rowId);
+        if (row == null) {
+            return null;
+        }
+        return row.getSeats().stream()
+                .filter(seat -> !seat.isReserved())
+                .min((seat1, seat2) -> Integer.compare(
+                        Math.abs(seat1.getNumber() - seatNumber),
+                        Math.abs(seat2.getNumber() - seatNumber)
+                ))
+                .orElse(null);
+    }
+
+    public List<Seat> getSeatsByRow(int rowId) {
+        Row row = findRowByID(rowId);
+        return (row != null) ? row.getSeats() : new ArrayList<>();
+    }
+
+    // Section
+
+    public Section createSection(Venue venue, int sectionCapacity, String sectionName) {
+        if (venue == null) {
+            throw new IllegalArgumentException("Venue cannot be null");
+        }
+        Section section = new Section(0, sectionName, sectionCapacity, venue);
+        sectionRepository.create(section);
+        venue.addSection(section);
+        return section;
+    }
+
+
+    /**
+     * Updates an existing Section.
+     *
+     * @param sectionId       the ID of the Section to update.
+     * @param sectionName     the new name for the Section.
+     * @param sectionCapacity the new capacity for the Section.
+     * @return the updated Section object, or null if the Section does not exist.
+     */
+    public Section updateSection(int sectionId, String sectionName, int sectionCapacity) {
+        Section section = sectionRepository.read(sectionId);
+        if (section == null) {
+            return null; // Section not found
+        }
+        section.setSectionName(sectionName);
+        section.setSectionCapacity(sectionCapacity);
+        sectionRepository.update(section);
+        return section;
+    }
+
+    public void deleteSectionByVenue(int venueID) {
+        List<Section> sections = sectionRepository.getAll().stream().
+                filter(section -> section.getVenue().getID() == venueID)
+                .toList();
+        for (Section section : sections) {
+            deleteRowsBySection(section.getID());
+            sectionRepository.delete(section.getID());
+        }
+    }
+
+    /**
+     * Deletes a Section by its ID.
+     *
+     * @param sectionID the ID of the Section to delete.
+     * @return true if the Section was successfully deleted, false otherwise.
+     */
+    public void deleteSection(int sectionID) {
+        Section section = sectionRepository.read(sectionID);
+        if (section == null) {
+            throw new IllegalArgumentException("Section not found");
+        }
+        deleteRowsBySection(sectionID);
+        sectionRepository.delete(sectionID);
+    }
+
+    /**
+     * Retrieves a Section by its ID.
+     *
+     * @param sectionId the ID of the Section to retrieve.
+     * @return the Section object if found, null otherwise.
+     */
+    public Section findSectionByID(int sectionId) {
+        return sectionRepository.read(sectionId);
+    }
+
+    /**
+     * Retrieves all Sections from the repository.
+     *
+     * @return a list of all Sections.
+     */
+    public List<Section> getAllSections() {
+        return sectionRepository.getAll();
+    }
+
+    public void addRowsToSection(int sectionID, int numberOfRows, int rowCapacity) {
+        Section section = sectionRepository.read(sectionID);
+        if (section == null) {
+            throw new IllegalArgumentException("Section not found");
+        }
+        for (int i = 0; i < numberOfRows; i++) {
+            createRow(section, rowCapacity);
+        }
+        sectionRepository.update(section);
+    }
+
+    /**
+     * Finds Sections by their name.
+     *
+     * @param name the name of the Sections to search for.
+     * @return a list of Sections matching the given name.
+     */
+    public List<Section> findSectionsByName(String name) {
+        return sectionRepository.getAll().stream()
+                .filter(section -> section.getSectionName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves all available Seats in a Section for a specific Event.
+     *
+     * @param sectionId the ID of the Section.
+     * @param eventId   the ID of the Event.
+     * @return a list of available Seats in the Section.
+     */
+    public List<Seat> getAvailableSeatsInSection(int sectionId, int eventId) {
+        Section section = sectionRepository.read(sectionId);
+        if (section == null) {
+            return new ArrayList<>(); // Section not found
+        }
+        List<Seat> availableSeats = new ArrayList<>();
+        for (Row row : section.getRows()) {
+            availableSeats.addAll(
+                    row.getSeats().stream()
+                            .filter(seat -> !seat.isReserved() && seat.getTicket() != null
+                                    && seat.getTicket().getEvent().getID() == eventId)
+                            .toList()
+            );
+        }
+        return availableSeats;
+    }
+
+    //
 
     /**
      * Creates a new Venue and saves it to both repositories.
@@ -86,7 +425,7 @@ public class VenueService {
         if (venue == null) {
             return false; // Venue not found
         }
-        sectionService.deleteSectionByVenue(venueId);
+        deleteSectionByVenue(venueId);
         venueRepository.delete(venueId);
         return true;
     }
@@ -100,7 +439,7 @@ public class VenueService {
             throw new IllegalArgumentException("Venue not found");
         }
         for (int i = 0; i < numberOfSections; i++) {
-            Section section = sectionService.createSection(venue, sectionCapacity, defaultSectionName + " " + (i + 1));
+            Section section = createSection(venue, sectionCapacity, defaultSectionName + " " + (i + 1));
             venue.addSection(section); // Update Venue in-memory state
         }
         // Update venue repository after adding sections

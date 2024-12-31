@@ -4,7 +4,6 @@ import model.*;
 import repository.*;
 
 public interface RepositoryFactory {
-
     IRepository<Artist> createArtistRepository();
     IRepository<Athlete> createAthleteRepository();
     IRepository<Seat> createSeatRepository();

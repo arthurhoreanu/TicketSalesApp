@@ -38,12 +38,9 @@ public class ConsoleApp {
         // Service
         ArtistService artistService = new ArtistService(repositoryFactory);
         AthleteService athleteService = new AthleteService(repositoryFactory);
-        SeatService seatService = new SeatService(repositoryFactory);
-        RowService rowService = new RowService(repositoryFactory, seatService);
-        SectionService sectionService = new SectionService(repositoryFactory, rowService);
-        VenueService venueService = new VenueService(repositoryFactory, sectionService);
+        VenueService venueService = new VenueService(repositoryFactory, repositoryFactory, repositoryFactory, repositoryFactory);
         EventService eventService = new EventService(repositoryFactory, venueService);
-        TicketService ticketService = new TicketService(repositoryFactory, seatService, venueService);
+        TicketService ticketService = new TicketService(repositoryFactory, venueService);
         CartService cartService = new CartService(repositoryFactory);
         CustomerService customerService = new CustomerService();
         PaymentService paymentService = new PaymentService();
@@ -53,9 +50,6 @@ public class ConsoleApp {
         // Controller
         ArtistController artistController = new ArtistController(artistService);
         AthleteController athleteController = new AthleteController(athleteService);
-        SeatController seatController = new SeatController(seatService);
-        RowController rowController = new RowController(rowService);
-        SectionController sectionController = new SectionController(sectionService);
         VenueController venueController = new VenueController(venueService);
         TicketController ticketController = new TicketController(ticketService);
         CartController cartController = new CartController(cartService);
@@ -66,8 +60,7 @@ public class ConsoleApp {
         UserController userController = new UserController(userService);
 
         // Main Controller
-        return new Controller(artistController, athleteController, seatController, rowController, sectionController,
-                venueController, ticketController, cartController, customerController, eventController,
-                paymentController, purchaseHistoryController, userController);
+        return new Controller(artistController, athleteController, venueController, ticketController,
+                cartController, customerController, eventController, paymentController, purchaseHistoryController, userController);
     }
 }
