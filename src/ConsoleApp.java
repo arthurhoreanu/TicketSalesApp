@@ -15,7 +15,6 @@ public class ConsoleApp {
         Scanner scanner = new Scanner(System.in);
 
         RepositoryFactory repositoryFactory = StartMenu.select(scanner);
-
         Controller controller = initializeController(repositoryFactory);
 
         boolean running = true;

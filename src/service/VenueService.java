@@ -94,7 +94,7 @@ public class VenueService {
     /**
      * Adds a Section to a Venue.
      */
-    public void addSectionsToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
+    public void addSectionToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
         Venue venue = venueRepository.read(venueId);
         if (venue == null) {
             throw new IllegalArgumentException("Venue not found");

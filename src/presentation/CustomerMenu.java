@@ -158,8 +158,8 @@ public class CustomerMenu {
         sections.forEach(System.out::println);
         System.out.print("Enter Section ID to view available seats: ");
         try {
-            int sectionId = Integer.parseInt(scanner.nextLine());
-            List<Seat> availableSeats = controller.getAvailableSeatsInSection(sectionId);
+            int sectionID = Integer.parseInt(scanner.nextLine());
+            List<Seat> availableSeats = controller.getAvailableSeatsInSection(sectionID, event.getID());
             if (availableSeats.isEmpty()) {
                 System.out.println("No seats available.");
                 return;
@@ -178,7 +178,7 @@ public class CustomerMenu {
 
             System.out.print("Do you want seat recommendations? (yes/no): ");
             if (scanner.nextLine().equalsIgnoreCase("yes")) {
-                Seat closestSeat = controller.recommendClosestSeat(sectionId, selectedSeats.get(0).getNumber());
+                Seat closestSeat = controller.recommendClosestSeat(sectionID, selectedSeats.get(0).getNumber());
                 if (closestSeat != null) selectedSeats.add(closestSeat);
             }
 

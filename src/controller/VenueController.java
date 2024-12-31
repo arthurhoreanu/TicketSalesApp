@@ -116,9 +116,9 @@ public class VenueController {
     /**
      * Adds multiple sections to a venue.
      */
-    public void addSectionsToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
+    public void addSectionToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
         try {
-            venueService.addSectionsToVenue(venueId, numberOfSections, sectionCapacity, defaultSectionName);
+            venueService.addSectionToVenue(venueId, numberOfSections, sectionCapacity, defaultSectionName);
             System.out.println("Added " + numberOfSections + " sections to Venue ID " + venueId);
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());

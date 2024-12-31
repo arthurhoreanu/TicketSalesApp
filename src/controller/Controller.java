@@ -199,11 +199,11 @@ public class Controller {
         return eventController.getUpcomingEventsForAthlete(athleteID);
     }
 
-    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public Concert createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         return eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
-    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public SportsEvent createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         return eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
@@ -394,8 +394,8 @@ public class Controller {
         return venueController.deleteVenue(venueId);
     }
 
-    public void addSectionsToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
-        venueController.addSectionsToVenue(venueId, numberOfSections, sectionCapacity, defaultSectionName);
+    public void addSectionToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
+        venueController.addSectionToVenue(venueId, numberOfSections, sectionCapacity, defaultSectionName);
     }
 
     public List<Section> getSectionsByVenueID(int venueId) {

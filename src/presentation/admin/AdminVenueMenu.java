@@ -97,23 +97,43 @@ public class AdminVenueMenu {
     private static void handleAddSectionToVenue(Scanner scanner, Controller controller) {
         System.out.println("=== Add Section to Venue ===");
         handleViewVenues(controller);
-
         System.out.print("Enter Venue ID: ");
-        int venueId = Integer.parseInt(scanner.nextLine());
+        int venueId;
+        try {
+            venueId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Venue ID must be a number.");
+            return;
+        }
         Venue venue = controller.findVenueByID(venueId);
-
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
         }
-
-        System.out.print("Enter section name: ");
-        String sectionName = scanner.nextLine();
+        System.out.print("Enter the number of sections to add: ");
+        int numberOfSections;
+        try {
+            numberOfSections = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Number of sections must be a number.");
+            return;
+        }
         System.out.print("Enter section capacity: ");
-        int sectionCapacity = Integer.parseInt(scanner.nextLine());
-
-        controller.addSectionToVenue(venueId, sectionName, sectionCapacity);
-        System.out.println("Section added successfully.");
+        int sectionCapacity;
+        try {
+            sectionCapacity = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Section capacity must be a number.");
+            return;
+        }
+        System.out.print("Enter default section name prefix: ");
+        String sectionNamePrefix = scanner.nextLine();
+        try {
+            controller.addSectionToVenue(venueId, numberOfSections, sectionCapacity, sectionNamePrefix);
+            System.out.println("Sections added successfully.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     /**
@@ -121,38 +141,78 @@ public class AdminVenueMenu {
      */
     private static void handleAddRowsAndSeatsToSection(Scanner scanner, Controller controller) {
         System.out.println("=== Add Rows and Seats to Section ===");
+
+        // Display venues and prompt for Venue ID
         handleViewVenues(controller);
-
         System.out.print("Enter Venue ID: ");
-        int venueId = Integer.parseInt(scanner.nextLine());
-        Venue venue = controller.findVenueByID(venueId);
+        int venueId;
+        try {
+            venueId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Venue ID must be a number.");
+            return;
+        }
 
+        Venue venue = controller.findVenueByID(venueId);
         if (venue == null) {
             System.out.println("Venue not found.");
             return;
         }
 
-        controller.getSectionsByVenueID(venueId);
-        System.out.print("Enter Section ID: ");
-        int sectionId = Integer.parseInt(scanner.nextLine());
-        Section section = controller.findSectionByID(sectionId);
+        // Display sections for the selected venue
+        System.out.println("Sections in the venue:");
+        List<Section> sections = controller.getSectionsByVenueID(venueId);
+        if (sections.isEmpty()) {
+            System.out.println("No sections found for this venue.");
+            return;
+        }
+        sections.forEach(System.out::println);
 
+        // Prompt for Section ID
+        System.out.print("Enter Section ID: ");
+        int sectionId;
+        try {
+            sectionId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Section ID must be a number.");
+            return;
+        }
+
+        Section section = controller.findSectionByID(sectionId);
         if (section == null) {
             System.out.println("Section not found.");
             return;
         }
 
+        // Prompt for number of rows and seats per row
         System.out.print("Enter number of rows: ");
-        int numberOfRows = Integer.parseInt(scanner.nextLine());
-        System.out.print("Enter seats per row: ");
-        int seatsPerRow = Integer.parseInt(scanner.nextLine());
-
-        for (int i = 1; i <= numberOfRows; i++) {
-            Row row = controller.createRow(sectionId, seatsPerRow);
-            controller.addSeatsToRow(row.getID(), seatsPerRow);
+        int numberOfRows;
+        try {
+            numberOfRows = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Number of rows must be a number.");
+            return;
         }
 
-        System.out.println("Rows and seats added successfully to section: " + section.getSectionName());
+        System.out.print("Enter seats per row: ");
+        int seatsPerRow;
+        try {
+            seatsPerRow = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Seats per row must be a number.");
+            return;
+        }
+
+        // Add rows and seats to the section
+        try {
+            for (int i = 1; i <= numberOfRows; i++) {
+                Row row = controller.createRow(section, seatsPerRow); // Create a new row
+                controller.addSeatsToRow(row.getID(), seatsPerRow);    // Add seats to the created row
+            }
+            System.out.println("Rows and seats added successfully to section: " + section.getSectionName());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     /**
@@ -180,7 +240,7 @@ public class AdminVenueMenu {
 
             for (Row row : rows) {
                 System.out.println("    Row: " + row.getID());
-                List<Seat> seats = controller.getSeatsByRowID(row.getID());
+                List<Seat> seats = controller.getSeatsByRow(row.getID());
 
                 System.out.println("      Seats: " + seats.size());
             }
