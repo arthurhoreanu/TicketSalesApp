@@ -23,8 +23,6 @@ public class EventService {
         this.venueService = venueService;
     }
 
-
-
     /**
      * Creates and adds a new concert event to the repository.
      * @param eventName The name of the concert event.
@@ -35,10 +33,10 @@ public class EventService {
      * @param eventStatus The status of the event (e.g., upcoming, completed).
      * @return true if the concert event was successfully created and added.
      */
-    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public Concert createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         Concert concert = new Concert(0, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         eventRepository.create(concert);
-        return true;
+        return concert;
     }
 
     /**
@@ -51,10 +49,10 @@ public class EventService {
      * @param eventStatus The status of the event (e.g., upcoming, completed).
      * @return true if the sports event was successfully created and added.
      */
-    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+    public SportsEvent createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         SportsEvent sportsEvent = new SportsEvent(0, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
         eventRepository.create(sportsEvent);
-        return true;
+        return sportsEvent;
     }
 
     public boolean addArtistToConcert(int eventID, int artistID) {

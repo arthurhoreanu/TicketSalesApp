@@ -21,28 +21,16 @@ public class EventController {
      * Creates a new Concert event.
      * @return true if the event was successfully created, false otherwise.
      */
-    public boolean createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        boolean success = eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-        if (success) {
-            System.out.println("Concert created successfully.");
-        } else {
-            System.out.println("Failed to create concert.");
-        }
-        return success;
+    public Concert createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        return eventService.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
     /**
      * Creates a new SportsEvent.
      * @return true if the event was successfully created, false otherwise.
      */
-    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        boolean success = eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-        if (success) {
-            System.out.println("Sports event created successfully.");
-        } else {
-            System.out.println("Failed to create sports event.");
-        }
-        return success;
+    public SportsEvent createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        return eventService.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
     }
 
     /**

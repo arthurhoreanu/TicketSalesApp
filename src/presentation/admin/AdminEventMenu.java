@@ -82,16 +82,12 @@ public class AdminEventMenu {
         int venueID = venue.getID();
         EventStatus eventStatus = EventStatus.SCHEDULED;
         if ("Concert".equalsIgnoreCase(eventType)) {
-            controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-            int eventId = controller.getLastCreatedEventID();
-            Concert concert = (Concert) controller.findEventByID(eventId);
+            Concert concert = controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
             if (concert != null) {
                 manageArtistsForConcert(scanner, controller, concert);
             }
         } else if ("Sports Event".equalsIgnoreCase(eventType)) {
-            controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-            int eventId = controller.getLastCreatedEventID();
-            SportsEvent sportsEvent = (SportsEvent) controller.findEventByID(eventId);
+            SportsEvent sportsEvent = controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
             if (sportsEvent != null) {
                 manageAthletesForSportsEvent(scanner, controller, sportsEvent);
             }
