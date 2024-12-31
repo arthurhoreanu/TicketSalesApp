@@ -1,5 +1,6 @@
 package controller;
 
+import model.Admin;
 import model.Customer;
 import model.User;
 import service.UserService;
@@ -11,7 +12,7 @@ public class UserController {
 
     /**
      * Constructor for UserController.
-     * @param userService The instance of AccountService used to perform account operations.
+     * @param userService The instance of UserService used to perform account operations.
      */
     public UserController(UserService userService) {
         this.userService = userService;
@@ -22,7 +23,13 @@ public class UserController {
      * @return The current user, or null if no user is logged in.
      */
     public User getCurrentUser() {
-        return userService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
+        if (currentUser != null) {
+            System.out.println("Current user: " + currentUser.getUsername());
+        } else {
+            System.out.println("No user is currently logged in.");
+        }
+        return currentUser;
     }
 
     /**
@@ -30,7 +37,14 @@ public class UserController {
      * @return A list containing all users in the system.
      */
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        List<User> users = userService.getAllUsers();
+        if (!users.isEmpty()) {
+            System.out.println("Registered users:");
+            users.forEach(user -> System.out.println(user.getUsername()));
+        } else {
+            System.out.println("No users found.");
+        }
+        return users;
     }
 
     /**
@@ -39,7 +53,13 @@ public class UserController {
      * @return true if the username is taken; false if it's available.
      */
     public boolean isUsernameTaken(String username) {
-        return userService.takenUsername(username);
+        boolean isTaken = userService.takenUsername(username);
+        if (isTaken) {
+            System.out.println("The username '" + username + "' is already taken.");
+        } else {
+            System.out.println("The username '" + username + "' is available.");
+        }
+        return isTaken;
     }
 
     /**
@@ -48,7 +68,13 @@ public class UserController {
      * @return true if the email ends with the required domain suffix; false otherwise.
      */
     public boolean domainEmail(String email) {
-        return userService.domainEmail(email);
+        boolean isValid = userService.domainEmail(email);
+        if (isValid) {
+            System.out.println("The email '" + email + "' is valid for the required domain.");
+        } else {
+            System.out.println("The email '" + email + "' is not valid for the required domain.");
+        }
+        return isValid;
     }
 
     /**
@@ -58,18 +84,20 @@ public class UserController {
      * @param username The desired username for the account.
      * @param email The email associated with the account.
      * @param password The password for the account.
+     * @return true if the account was successfully created, false otherwise.
      */
-    public void createAccount(String role, String username, String email, String password) {
+    public boolean createAccount(String role, String username, String email, String password) {
         if (username == null || username.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty()) {
             System.out.println("All fields are required for account creation.");
-            return;
+            return false;
         }
         boolean success = userService.createAccount(role, username, email, password);
         if (success) {
-            System.out.println("Account created successfully.");
+            System.out.println("Account created successfully for role '" + role + "'.");
         } else {
-            System.out.println("Failed to create account.");
+            System.out.println("Failed to create account. Please check the provided information.");
         }
+        return success;
     }
 
     /**
@@ -77,11 +105,12 @@ public class UserController {
      * Displays a success message if login is successful or an error message if it fails.
      * @param username The username for login.
      * @param password The password for login.
+     * @return true if login is successful, false otherwise.
      */
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
             System.out.println("Username and password are required for login.");
-            return;
+            return false;
         }
         boolean success = userService.login(username, password);
         if (success) {
@@ -89,36 +118,103 @@ public class UserController {
         } else {
             System.out.println("Login failed. Incorrect username or password.");
         }
+        return success;
     }
 
     /**
      * Logs out the currently logged-in user.
      * Displays a success message if logout is successful or an error message if no user is logged in.
+     * @return true if logout is successful, false otherwise.
      */
-    public void logout() {
+    public boolean logout() {
         boolean success = userService.logout();
         if (success) {
             System.out.println("Logout successful.");
         } else {
             System.out.println("No user is currently logged in.");
         }
+        return success;
     }
 
     /**
      * Deletes the account with the specified ID if the current user has permission.
      * Displays a success message if deletion is successful or an error message if it fails.
      * @param id The ID of the account to delete.
+     * @return true if the account was successfully deleted, false otherwise.
      */
-    public void deleteAccount(int id) {
+    public boolean deleteAccount(int id) {
         boolean success = userService.deleteAccount(id);
         if (success) {
             System.out.println("Account with ID " + id + " has been deleted.");
         } else {
             System.out.println("Failed to delete account. Either the account was not found or you lack the permissions.");
         }
+        return success;
     }
 
+    /**
+     * Finds a user by their ID.
+     * @param id The ID of the user to find.
+     * @return The User object, or null if no user with the given ID exists.
+     */
+    public User findUserByID(int id) {
+        User user = userService.findUserByID(id);
+        if (user != null) {
+            System.out.println("User found: " + user.getUsername());
+        } else {
+            System.out.println("No user found with ID " + id + ".");
+        }
+        return user;
+    }
+
+    /**
+     * Finds a customer by their ID.
+     * @param customerID The ID of the customer to find.
+     * @return The Customer object, or null if no customer with the given ID exists.
+     */
     public Customer findCustomerByID(int customerID) {
-        return userService.findCustomerByID(customerID);
+        Customer customer = userService.findCustomerByID(customerID);
+        if (customer != null) {
+            System.out.println("Customer found: " + customer.getUsername());
+        } else {
+            System.out.println("No customer found with ID " + customerID + ".");
+        }
+        return customer;
+    }
+
+    /**
+     * Creates a new customer account.
+     * Displays success or failure messages based on the result.
+     * @param username The username for the customer account.
+     * @param email The email for the customer account.
+     * @param password The password for the customer account.
+     * @return true if the customer account was created successfully, false otherwise.
+     */
+    public boolean createCustomer(String username, String email, String password) {
+        boolean success = userService.createCustomer(username, email, password);
+        if (success) {
+            System.out.println("Customer account created successfully.");
+        } else {
+            System.out.println("Failed to create customer account. Username may already be taken.");
+        }
+        return success;
+    }
+
+    /**
+     * Creates a new admin account.
+     * Displays success or failure messages based on the result.
+     * @param username The username for the admin account.
+     * @param email The email for the admin account.
+     * @param password The password for the admin account.
+     * @return true if the admin account was created successfully, false otherwise.
+     */
+    public boolean createAdmin(String username, String email, String password) {
+        boolean success = userService.createAdmin(username, email, password);
+        if (success) {
+            System.out.println("Admin account created successfully.");
+        } else {
+            System.out.println("Failed to create admin account. Username may already be taken or email domain is invalid.");
+        }
+        return success;
     }
 }

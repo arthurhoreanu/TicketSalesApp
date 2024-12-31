@@ -17,10 +17,13 @@ public class EventService {
     private final IRepository<Event> eventRepository;
     private final VenueService venueService;
 
+
     public EventService(RepositoryFactory repositoryFactory, VenueService venueService) {
         this.eventRepository = repositoryFactory.createEventRepository();
         this.venueService = venueService;
     }
+
+
 
     /**
      * Creates and adds a new concert event to the repository.
