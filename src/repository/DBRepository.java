@@ -1,8 +1,8 @@
 package repository;
 
-import model.Identifiable;
-import javax.persistence.Column;
+import model.*;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.lang.reflect.Field;
@@ -21,10 +21,14 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
 
     public DBRepository(Class<T> type) {
         this.type = type;
-        this.tableName = getTableNameFromHibernate(type);
+        this.tableName = isAbstract(type) ? null : getTableNameFromHibernate(type);
     }
 
-    private String getTableNameFromHibernate(Class<T> entityClass) {
+    private boolean isAbstract(Class<?> clazz) {
+        return clazz.isInterface() || java.lang.reflect.Modifier.isAbstract(clazz.getModifiers());
+    }
+
+    private String getTableNameFromHibernate(Class<?> entityClass) {
         if (!entityClass.isAnnotationPresent(Entity.class)) {
             throw new IllegalArgumentException("Class " + entityClass.getSimpleName() + " is not annotated with @Entity");
         }
@@ -36,7 +40,6 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             }
         }
 
-        // Dacă nu există @Table sau numele nu este definit, folosește numele clasei
         return entityClass.getSimpleName().toLowerCase();
     }
 
@@ -47,16 +50,22 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     @Override
     public void create(T obj) {
         try (Connection conn = getConnection()) {
-            Field[] fields = type.getDeclaredFields();
-            String columns = String.join(", ", getFieldNames(fields));
-            String placeholders = String.join(", ", getPlaceholders(fields));
+            Class<?> actualType = resolveConcreteType(obj.getClass());
+            String actualTable = getTableNameFromHibernate(actualType);
 
-            String sql = "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + placeholders + ")";
+            Field[] fields = actualType.getDeclaredFields();
+            List<String> columns = getFieldNames(fields);
+            List<String> placeholders = getPlaceholders(fields);
+
+            if (columns.isEmpty() || placeholders.isEmpty()) {
+                throw new IllegalStateException("Cannot generate SQL: no columns or placeholders available.");
+            }
+
+            String sql = "INSERT INTO " + actualTable + " (" + String.join(", ", columns) + ") VALUES (" + String.join(", ", placeholders) + ")";
             try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 setStatementParameters(stmt, fields, obj);
                 stmt.executeUpdate();
 
-                // Setează ID-ul generat automat în obiect
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         obj.setID(rs.getInt(1));
@@ -68,15 +77,22 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         }
     }
 
+
     @Override
     public T read(Integer id) {
         try (Connection conn = getConnection()) {
-            String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return mapResultSetToEntity(rs);
+            if (type.equals(User.class)) {
+                return (T) readFromSubtypes(conn, id, getUserSubtypes());
+            } else if (type.equals(Event.class)) {
+                return (T) readFromSubtypes(conn, id, getEventSubtypes());
+            } else {
+                String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, id);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            return mapResultSetToEntity(rs);
+                        }
                     }
                 }
             }
@@ -86,15 +102,22 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         return null;
     }
 
+
     @Override
     public List<T> getAll() {
         List<T> results = new ArrayList<>();
         try (Connection conn = getConnection()) {
-            String sql = "SELECT * FROM " + tableName;
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    results.add(mapResultSetToEntity(rs));
+            if (type.equals(User.class)) {
+                results.addAll((java.util.Collection<? extends T>) getAllFromSubtypes(conn, getUserSubtypes()));
+            } else if (type.equals(Event.class)) {
+                results.addAll((java.util.Collection<? extends T>) getAllFromSubtypes(conn, getEventSubtypes()));
+            } else {
+                String sql = "SELECT * FROM " + tableName;
+                try (PreparedStatement stmt = conn.prepareStatement(sql);
+                     ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        results.add(mapResultSetToEntity(rs));
+                    }
                 }
             }
         } catch (Exception e) {
@@ -106,10 +129,13 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     @Override
     public void update(T obj) {
         try (Connection conn = getConnection()) {
-            Field[] fields = type.getDeclaredFields();
+            Class<?> actualType = resolveConcreteType(obj.getClass());
+            String actualTable = getTableNameFromHibernate(actualType);
+
+            Field[] fields = actualType.getDeclaredFields();
             String setClause = String.join(", ", getSetClauses(fields));
 
-            String sql = "UPDATE " + tableName + " SET " + setClause + " WHERE id = ?";
+            String sql = "UPDATE " + actualTable + " SET " + setClause + " WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 setStatementParameters(stmt, fields, obj);
                 stmt.setInt(fields.length + 1, obj.getID());
@@ -123,10 +149,30 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     @Override
     public void delete(Integer id) {
         try (Connection conn = getConnection()) {
-            String sql = "DELETE FROM " + tableName + " WHERE id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                stmt.executeUpdate();
+            if (type.equals(User.class)) {
+                for (Class<? extends User> subtype : getUserSubtypes()) {
+                    String tableName = getTableNameFromHibernate((Class<T>) subtype);
+                    String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.setInt(1, id);
+                        stmt.executeUpdate();
+                    }
+                }
+            } else if (type.equals(Event.class)) {
+                for (Class<? extends Event> subtype : getEventSubtypes()) {
+                    String tableName = getTableNameFromHibernate((Class<T>) subtype);
+                    String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                        stmt.setInt(1, id);
+                        stmt.executeUpdate();
+                    }
+                }
+            } else {
+                String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, id);
+                    stmt.executeUpdate();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,11 +180,78 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     }
 
     // Helper Methods
+    private Class<?> resolveConcreteType(Class<?> clazz) {
+        return isAbstract(clazz) ? null : clazz;
+    }
+
+    private List<Class<? extends User>> getUserSubtypes() {
+        return List.of(Admin.class, Customer.class);
+    }
+
+    private List<Class<? extends Event>> getEventSubtypes() {
+        return List.of(Concert.class, SportsEvent.class);
+    }
+
+    private <S> S readFromSubtypes(Connection conn, Integer id, List<Class<? extends S>> subtypes) throws Exception {
+        for (Class<? extends S> subtype : subtypes) {
+            String tableName = getTableNameFromHibernate((Class<T>) subtype);
+            String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        S entity = subtype.getDeclaredConstructor().newInstance();
+                        mapResultSetToFields(rs, entity);
+                        return entity;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private <S> List<S> getAllFromSubtypes(Connection conn, List<Class<? extends S>> subtypes) throws Exception {
+        List<S> results = new ArrayList<>();
+        for (Class<? extends S> subtype : subtypes) {
+            String tableName = getTableNameFromHibernate((Class<T>) subtype);
+            String sql = "SELECT * FROM " + tableName;
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    S entity = subtype.getDeclaredConstructor().newInstance();
+                    mapResultSetToFields(rs, entity);
+                    results.add(entity);
+                }
+            }
+        }
+        return results;
+    }
+
+    private <S> void mapResultSetToFields(ResultSet rs, S entity) throws Exception {
+        Field[] fields = entity.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            String columnName = field.isAnnotationPresent(Column.class)
+                    ? field.getAnnotation(Column.class).name()
+                    : field.getName();
+            Object value = rs.getObject(columnName);
+            if (value != null) {
+                field.set(entity, value);
+            }
+        }
+    }
+
     private List<String> getFieldNames(Field[] fields) {
         List<String> names = new ArrayList<>();
         for (Field field : fields) {
-            if (!field.getName().equalsIgnoreCase("id")) { // Exclude "id" field
-                names.add(field.getName());
+            if (field.isAnnotationPresent(Column.class)) {
+                Column column = field.getAnnotation(Column.class);
+                String columnName = column.name().isEmpty() ? field.getName() : column.name();
+
+                // Exclude câmpurile care se termină cu "_id"
+                if (!columnName.endsWith("_id")) {
+                    names.add(columnName);
+                }
             }
         }
         return names;
@@ -147,17 +260,23 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private List<String> getPlaceholders(Field[] fields) {
         List<String> placeholders = new ArrayList<>();
         for (Field field : fields) {
-            if (!field.getName().equalsIgnoreCase("id")) { // Exclude "id" field
-                placeholders.add("?");
+            if (field.isAnnotationPresent(Column.class)) {
+                String columnName = field.getAnnotation(Column.class).name().isEmpty() ? field.getName() : field.getAnnotation(Column.class).name();
+
+                // Exclude câmpurile care se termină cu "_id"
+                if (!columnName.endsWith("_id")) {
+                    placeholders.add("?");
+                }
             }
         }
         return placeholders;
     }
 
+
     private List<String> getSetClauses(Field[] fields) {
         List<String> clauses = new ArrayList<>();
         for (Field field : fields) {
-            if (!field.getName().equalsIgnoreCase("id")) { // Exclude "id" field
+            if (!field.getName().equalsIgnoreCase("id")) {
                 clauses.add(field.getName() + " = ?");
             }
         }
@@ -167,30 +286,25 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private void setStatementParameters(PreparedStatement stmt, Field[] fields, T obj) throws Exception {
         int index = 1;
         for (Field field : fields) {
-            if (!field.getName().equalsIgnoreCase("id")) { // Exclude "id" field
-                field.setAccessible(true);
-                stmt.setObject(index++, field.get(obj));
+            if (field.isAnnotationPresent(Column.class)) {
+                Column column = field.getAnnotation(Column.class);
+                String columnName = column.name().isEmpty() ? field.getName() : column.name();
+
+                // Exclude câmpurile care se termină cu "_id"
+                if (!columnName.endsWith("_id")) {
+                    field.setAccessible(true);
+                    stmt.setObject(index++, field.get(obj));
+                }
             }
         }
     }
 
     private T mapResultSetToEntity(ResultSet rs) throws Exception {
-        T obj = type.getDeclaredConstructor().newInstance();
-        Field[] fields = type.getDeclaredFields();
-
-        for (Field field : fields) {
-            field.setAccessible(true);
-
-            // Obține numele coloanei din @Column sau folosește numele câmpului
-            String columnName = field.isAnnotationPresent(Column.class)
-                    ? field.getAnnotation(Column.class).name()
-                    : field.getName();
-
-            Object value = rs.getObject(columnName);
-            if (value != null) {
-                field.set(obj, value);
-            }
+        if (type.isInterface() || java.lang.reflect.Modifier.isAbstract(type.getModifiers())) {
+            throw new InstantiationException("Cannot instantiate abstract class or interface: " + type.getName());
         }
+        T obj = type.getDeclaredConstructor().newInstance();
+        mapResultSetToFields(rs, obj);
         return obj;
     }
 

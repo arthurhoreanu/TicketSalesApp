@@ -19,22 +19,19 @@ public class Athlete implements Identifiable, FavouriteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int athleteID;
 
-    @Column(name = "athleteName", nullable = false)
+    @Column(name = "athlete_name", nullable = false)
     private String athleteName;
 
-    @Column(name = "athleteSport", nullable = false)
+    @Column(name = "athlete_sport", nullable = false)
     private String athleteSport;
 
-    @ManyToMany(mappedBy = "athletes")
+    @ManyToMany
+    @JoinTable(
+            name = "sports_event_lineup",
+            joinColumns = @JoinColumn(name = "athlete_id"),
+            inverseJoinColumns = @JoinColumn(name = "sports_event_id")
+    )
     private List<SportsEvent> sportsEvents;
-
-    public List<SportsEvent> getSportsEvents() {
-        return sportsEvents;
-    }
-
-    public void setSportsEvents(List<SportsEvent> sportsEvents) {
-        this.sportsEvents = sportsEvents;
-    }
 
     /**
      * Constructs an Athlete with the specified ID, name, and sport.

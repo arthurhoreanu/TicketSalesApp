@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "sports_event_lineup")
-public class SportsEventLineUp implements Serializable, Identifiable {
+public class SportsEventLineUp implements Identifiable {
 
     @Id
     @ManyToOne
@@ -56,15 +56,6 @@ public class SportsEventLineUp implements Serializable, Identifiable {
     }
 
     @Override
-    public Integer getID() {
-        return 0;
-    }
-
-    @Override
-    public void setID(int Int) {
-    }
-
-    @Override
     public String toCsv() {
         return getSportsEvent().getID() + "," + getAthlete().getID();
     }
@@ -74,5 +65,14 @@ public class SportsEventLineUp implements Serializable, Identifiable {
         int sportsEventID = Integer.parseInt(fields[0]);
         int athleteID = Integer.parseInt(fields[1]);
         return new SportsEventLineUp(controller.findSportsEventByID(sportsEventID), controller.findAthleteByID(athleteID));
+    }
+
+    @Override
+    public Integer getID() {
+        return 0;
+    }
+
+    @Override
+    public void setID(int Int) {
     }
 }

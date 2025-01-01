@@ -51,19 +51,13 @@ public class DBRepositoryFactory implements RepositoryFactory {
     }
 
     @Override
-    public IRepository<User> createUserRepository() {
-        CombinedRepository<User> combinedRepository = new CombinedRepository<>();
-        combinedRepository.registerRepository(Admin.class, new DBRepository<>(Admin.class));
-        combinedRepository.registerRepository(User.class, new DBRepository<>(User.class));
-        return combinedRepository;
+    public DBRepository<User> createUserRepository() {
+        return new DBRepository<>(User.class);
     }
 
     @Override
-    public IRepository<Event> createEventRepository() {
-        CombinedRepository<Event> combinedRepository = new CombinedRepository<>();
-        combinedRepository.registerRepository(Concert.class, new DBRepository<>(Concert.class));
-        combinedRepository.registerRepository(SportsEvent.class, new DBRepository<>(SportsEvent.class));
-        return combinedRepository;
+    public DBRepository<Event> createEventRepository() {
+        return new DBRepository<>(Event.class);
     }
 
     @Override

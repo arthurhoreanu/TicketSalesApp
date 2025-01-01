@@ -6,8 +6,7 @@ import javax.persistence.*;
  * Represents a general user in the system, containing basic information such as ID, username, email, and password.
  * This class serves as a base for more specific user types (e.g., Admin, Customer).
  */
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@MappedSuperclass
 public abstract class User implements Identifiable {
 
     @Id
@@ -15,15 +14,15 @@ public abstract class User implements Identifiable {
     private int userID;
 
     @Column(name = "username", nullable = false)
-    protected String username;
+    private String username;
 
     @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "password", nullable = false)
-    protected String password;
+    private String password;
 
-    protected User() {}
+    public User() {}
 
     /**
      * Constructs a User with the specified ID, username, email, and password.

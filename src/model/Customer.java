@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
 
 /**
  * Represents a customer user with specific preferences, favourites, and a shopping cart.
@@ -14,13 +13,25 @@ import java.util.ArrayList;
 @Table(name = "customer")
 public class Customer extends User {
 
+    @Column(name = "user_id", nullable = false)
+    private int userID;
+
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Transient
     private Set<FavouriteEntity> favourites;
 
+    @Transient
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id", nullable = true)
     private Cart cart;
-
 
     @Transient
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
@@ -37,7 +48,7 @@ public class Customer extends User {
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
         this.favourites = new HashSet<>();
-        this.cart = new Cart();
+//        this.cart = new Cart(); TODO dacă-l las, crapă
         this.preferredSections = new HashMap<>();
     }
 
@@ -129,4 +140,48 @@ public class Customer extends User {
         return new Customer(id, username, email, password);
     }
 
+    // Getters and setters
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setFavourites(Set<FavouriteEntity> favourites) {
+        this.favourites = favourites;
+    }
+
+    public void setPreferredSections(Map<Integer, Integer> preferredSections) {
+        this.preferredSections = preferredSections;
+    }
 }

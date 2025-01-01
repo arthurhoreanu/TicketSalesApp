@@ -55,15 +55,6 @@ public class ConcertLineUp implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
-        return 0;
-    }
-
-    @Override
-    public void setID(int Int) {
-    }
-
-    @Override
     public String toCsv() {
         return getConcert().getID() + "," + getArtist().getID();
     }
@@ -73,5 +64,14 @@ public class ConcertLineUp implements Identifiable {
         int concertID = Integer.parseInt(fields[0]);
         int artistID = Integer.parseInt(fields[1]);
         return new ConcertLineUp(controller.findConcertByID(concertID), controller.findArtistByID(artistID));
+    }
+
+    @Override
+    public Integer getID() {
+        return 0;
+    }
+
+    @Override
+    public void setID(int Int) {
     }
 }

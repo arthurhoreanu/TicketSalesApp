@@ -16,25 +16,8 @@ import java.util.List;
 @Table(name = "concert")
 public class Concert extends Event {
 
-    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ConcertLineUp> concertLineUps;
-
-    public List<ConcertLineUp> getConcertLineUps() {
-        return concertLineUps;
-    }
-
-    public void setConcertLineUps(List<ConcertLineUp> concertLineUps) {
-        this.concertLineUps = concertLineUps;
-    }
-
-    public void addArtistToLineUp(Artist artist, Integer lineupOrder) {
-        ConcertLineUp concertLineUp = new ConcertLineUp(this, artist);
-        concertLineUps.add(concertLineUp);
-    }
-
-    public void removeArtistFromLineUp(Artist artist) {
-        concertLineUps.removeIf(lineUp -> lineUp.getArtist().equals(artist));
-    }
+    @ManyToMany(mappedBy = "concerts", cascade = CascadeType.ALL)
+    private List<Artist> artists;
 
     public Concert() {}
 
