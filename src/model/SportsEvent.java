@@ -14,25 +14,8 @@ import java.util.List;
 @Table(name = "sport_event")
 public class SportsEvent extends Event {
 
-    @OneToMany(mappedBy = "sportsEvent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SportsEventLineUp> sportsEventLineUps;
-
-    public List<SportsEventLineUp> getSportsEventLineUps() {
-        return sportsEventLineUps;
-    }
-
-    public void setSportsEventLineUps(List<SportsEventLineUp> sportsEventLineUps) {
-        this.sportsEventLineUps = sportsEventLineUps;
-    }
-
-    public void addAthleteToLineUp(Athlete athlete, Integer lineupOrder) {
-        SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(this, athlete);
-        sportsEventLineUps.add(sportsEventLineUp);
-    }
-
-    public void removeAthleteFromLineUp(Athlete athlete) {
-        sportsEventLineUps.removeIf(lineUp -> lineUp.getAthlete().equals(athlete));
-    }
+    @ManyToMany(mappedBy = "sportsEvents", cascade = CascadeType.ALL)
+    private List<Athlete> athletes;
 
     public SportsEvent() {}
 

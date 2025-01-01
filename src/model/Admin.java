@@ -9,7 +9,19 @@ import javax.persistence.*;
 @Table(name = "admin")
 public class Admin extends User {
 
-    protected Admin() {}
+    @Column(name = "user_id", nullable = false)
+    private int userID;
+
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    public Admin() {}
 
     /**
      * Constructs an Admin with the specified user details.
@@ -21,6 +33,8 @@ public class Admin extends User {
     public Admin(int userID, String username, String email, String password) {
         super(userID, username, email, password);
     }
+
+    // Representations
 
     /**
      * Returns a string representation of the admin, including role, username, and password.
@@ -59,4 +73,40 @@ public class Admin extends User {
         return new Admin(id, username, email, password);
     }
 
+    // Getters and setters
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

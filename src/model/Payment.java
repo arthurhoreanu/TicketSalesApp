@@ -5,8 +5,6 @@ import controller.Controller;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "payment")
 public class Payment {
 
     @Id

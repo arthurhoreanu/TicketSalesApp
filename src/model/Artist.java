@@ -16,22 +16,19 @@ public class Artist implements Identifiable, FavouriteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int artistID;
 
-    @Column(name = "artistName", nullable = false)
+    @Column(name = "artist_name", nullable = false)
     private String artistName;
 
     @Column(name = "genre", nullable = false)
     private String genre;
 
-    @ManyToMany(mappedBy = "artists")
+    @ManyToMany
+    @JoinTable(
+            name = "concert_lineup",
+            joinColumns = @JoinColumn(name = "artist_id"),
+            inverseJoinColumns = @JoinColumn(name = "concert_id")
+    )
     private List<Concert> concerts;
-
-    public List<Concert> getConcerts() {
-        return concerts;
-    }
-
-    public void setConcerts(List<Concert> concerts) {
-        this.concerts = concerts;
-    }
 
     /**
      * Constructs an Artist with the specified ID, name, and genre.

@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Table(name = "purchase_history")
 public class PurchaseHistory implements Identifiable {

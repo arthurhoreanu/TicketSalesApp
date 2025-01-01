@@ -3,8 +3,6 @@ package service;
 import model.Admin;
 import model.Customer;
 import model.User;
-import repository.DBRepository;
-import repository.FileRepository;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
 
@@ -42,13 +40,15 @@ public class UserService {
      * @return true if the username is already taken, false if the username is unique.
      */
     public boolean takenUsername(String username) {
-        for (User user : userRepository.getAll()) {
-            if (user.getUsername().equals(username)) {
-                return true; // Username exists
+        List<User> users = userRepository.getAll();
+        for (User user : users) {
+            if (user.getUsername() != null && user.getUsername().equals(username)) {
+                return true;
             }
         }
-        return false; // Username is unique
+        return false;
     }
+
 
     /**
      * Validates if the email is from the "@tsc.com" domain.
@@ -72,7 +72,10 @@ public class UserService {
         if (takenUsername(username) || !domainEmail(email)) {
             return false;
         }
-        Admin admin = new Admin(0, username, email, password);
+        Admin admin = new Admin();
+        admin.setUsername(username);
+        admin.setPassword(password);
+        admin.setEmail(email);
         userRepository.create(admin);
         return true;
     }

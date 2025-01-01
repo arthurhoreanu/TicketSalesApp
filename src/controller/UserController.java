@@ -181,40 +181,4 @@ public class UserController {
         }
         return customer;
     }
-
-    /**
-     * Creates a new customer account.
-     * Displays success or failure messages based on the result.
-     * @param username The username for the customer account.
-     * @param email The email for the customer account.
-     * @param password The password for the customer account.
-     * @return true if the customer account was created successfully, false otherwise.
-     */
-    public boolean createCustomer(String username, String email, String password) {
-        boolean success = userService.createCustomer(username, email, password);
-        if (success) {
-            System.out.println("Customer account created successfully.");
-        } else {
-            System.out.println("Failed to create customer account. Username may already be taken.");
-        }
-        return success;
-    }
-
-    /**
-     * Creates a new admin account.
-     * Displays success or failure messages based on the result.
-     * @param username The username for the admin account.
-     * @param email The email for the admin account.
-     * @param password The password for the admin account.
-     * @return true if the admin account was created successfully, false otherwise.
-     */
-    public boolean createAdmin(String username, String email, String password) {
-        boolean success = userService.createAdmin(username, email, password);
-        if (success) {
-            System.out.println("Admin account created successfully.");
-        } else {
-            System.out.println("Failed to create admin account. Username may already be taken or email domain is invalid.");
-        }
-        return success;
-    }
 }
