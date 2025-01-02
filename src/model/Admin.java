@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Table(name = "admin")
 public class Admin extends User {
 
+    @Id
     @Column(name = "user_id", nullable = false)
     private int userID;
 

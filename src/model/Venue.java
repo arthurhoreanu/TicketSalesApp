@@ -13,7 +13,7 @@ import java.util.List;
 public class Venue implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "venue_id", nullable = false)
     private int venueID;
 
     @Column(name = "venue_name", nullable = false)
@@ -28,6 +28,7 @@ public class Venue implements Identifiable {
     @Column(name = "has_seats", nullable = false)
     private boolean hasSeats;
 
+    @Transient
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -169,5 +170,13 @@ public class Venue implements Identifiable {
 
         // No need to initialize sections list; it's already initialized
         return new Venue(venueID, venueName, location, venueCapacity, hasSeats);
+    }
+
+    public int getVenueID() {
+        return venueID;
+    }
+
+    public void setVenueID(int venueID) {
+        this.venueID = venueID;
     }
 }

@@ -2,9 +2,7 @@ package repository;
 
 import model.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
@@ -54,8 +52,9 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             String actualTable = getTableNameFromHibernate(actualType);
 
             Field[] fields = actualType.getDeclaredFields();
-            List<String> columns = getFieldNames(fields);
-            List<String> placeholders = getPlaceholders(fields);
+            // Exclude cheia primară
+            List<String> columns = getFieldNamesExcludingPrimaryKey(fields);
+            List<String> placeholders = getPlaceholdersExcludingPrimaryKey(fields);
 
             if (columns.isEmpty() || placeholders.isEmpty()) {
                 throw new IllegalStateException("Cannot generate SQL: no columns or placeholders available.");
@@ -63,12 +62,15 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
 
             String sql = "INSERT INTO " + actualTable + " (" + String.join(", ", columns) + ") VALUES (" + String.join(", ", placeholders) + ")";
             try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                setStatementParameters(stmt, fields, obj);
+                setStatementParametersExcludingPrimaryKey(stmt, fields, obj);
                 stmt.executeUpdate();
 
+                // Obține ID-ul generat de baza de date
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
-                        obj.setID(rs.getInt(1));
+                        Field primaryKeyField = getPrimaryKeyField(actualType);
+                        primaryKeyField.setAccessible(true);
+                        primaryKeyField.set(obj, rs.getInt(1));
                     }
                 }
             }
@@ -76,7 +78,6 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public T read(Integer id) {
@@ -86,7 +87,8 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             } else if (type.equals(Event.class)) {
                 return (T) readFromSubtypes(conn, id, getEventSubtypes());
             } else {
-                String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+                String primaryKeyColumn = getPrimaryKeyColumnName(type);
+                String sql = "SELECT * FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setInt(1, id);
                     try (ResultSet rs = stmt.executeQuery()) {
@@ -101,7 +103,6 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         }
         return null;
     }
-
 
     @Override
     public List<T> getAll() {
@@ -126,7 +127,6 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         return results;
     }
 
-    @Override
     public void update(T obj) {
         try (Connection conn = getConnection()) {
             Class<?> actualType = resolveConcreteType(obj.getClass());
@@ -134,16 +134,31 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
 
             Field[] fields = actualType.getDeclaredFields();
             String setClause = String.join(", ", getSetClauses(fields));
+            String primaryKeyColumn = getPrimaryKeyColumnName(actualType);
 
-            String sql = "UPDATE " + actualTable + " SET " + setClause + " WHERE id = ?";
+            String sql = "UPDATE " + actualTable + " SET " + setClause + " WHERE " + primaryKeyColumn + " = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 setStatementParameters(stmt, fields, obj);
-                stmt.setInt(fields.length + 1, obj.getID());
+
+                // Setează valoarea cheii primare
+                Field primaryKeyField = getPrimaryKeyField(actualType);
+                primaryKeyField.setAccessible(true);
+                stmt.setObject(fields.length, primaryKeyField.get(obj));
+
                 stmt.executeUpdate();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Field getPrimaryKeyField(Class<?> clazz) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Id.class)) {
+                return field;
+            }
+        }
+        throw new IllegalArgumentException("No primary key field found in class: " + clazz.getName());
     }
 
     @Override
@@ -152,7 +167,8 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             if (type.equals(User.class)) {
                 for (Class<? extends User> subtype : getUserSubtypes()) {
                     String tableName = getTableNameFromHibernate((Class<T>) subtype);
-                    String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+                    String primaryKeyColumn = getPrimaryKeyColumnName(subtype);
+                    String sql = "DELETE FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?";
                     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                         stmt.setInt(1, id);
                         stmt.executeUpdate();
@@ -161,14 +177,17 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             } else if (type.equals(Event.class)) {
                 for (Class<? extends Event> subtype : getEventSubtypes()) {
                     String tableName = getTableNameFromHibernate((Class<T>) subtype);
-                    String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+                    String primaryKeyColumn = getPrimaryKeyColumnName(subtype);
+                    String sql = "DELETE FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?";
                     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                         stmt.setInt(1, id);
                         stmt.executeUpdate();
                     }
                 }
             } else {
-                String sql = "DELETE FROM " + tableName + " WHERE id = ?";
+                // Ștergere pentru un tip concret
+                String primaryKeyColumn = getPrimaryKeyColumnName(type);
+                String sql = "DELETE FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setInt(1, id);
                     stmt.executeUpdate();
@@ -194,8 +213,9 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
 
     private <S> S readFromSubtypes(Connection conn, Integer id, List<Class<? extends S>> subtypes) throws Exception {
         for (Class<? extends S> subtype : subtypes) {
-            String tableName = getTableNameFromHibernate((Class<T>) subtype);
-            String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+            String tableName = getTableNameFromHibernate(subtype);
+            String primaryKeyColumn = getPrimaryKeyColumnName(subtype);
+            String sql = "SELECT * FROM " + tableName + " WHERE " + primaryKeyColumn + " = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, id);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -213,7 +233,7 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private <S> List<S> getAllFromSubtypes(Connection conn, List<Class<? extends S>> subtypes) throws Exception {
         List<S> results = new ArrayList<>();
         for (Class<? extends S> subtype : subtypes) {
-            String tableName = getTableNameFromHibernate((Class<T>) subtype);
+            String tableName = getTableNameFromHibernate(subtype);
             String sql = "SELECT * FROM " + tableName;
             try (PreparedStatement stmt = conn.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
@@ -230,6 +250,9 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private <S> void mapResultSetToFields(ResultSet rs, S entity) throws Exception {
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field : fields) {
+            if (field.isAnnotationPresent(Transient.class)) {
+                continue;
+            }
             field.setAccessible(true);
             String columnName = field.isAnnotationPresent(Column.class)
                     ? field.getAnnotation(Column.class).name()
@@ -244,14 +267,10 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private List<String> getFieldNames(Field[] fields) {
         List<String> names = new ArrayList<>();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(Column.class)) {
+            if (field.isAnnotationPresent(Column.class) && !field.getName().endsWith("_id")) {
                 Column column = field.getAnnotation(Column.class);
                 String columnName = column.name().isEmpty() ? field.getName() : column.name();
-
-                // Exclude câmpurile care se termină cu "_id"
-                if (!columnName.endsWith("_id")) {
-                    names.add(columnName);
-                }
+                names.add(columnName);
             }
         }
         return names;
@@ -260,24 +279,21 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private List<String> getPlaceholders(Field[] fields) {
         List<String> placeholders = new ArrayList<>();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(Column.class)) {
-                String columnName = field.getAnnotation(Column.class).name().isEmpty() ? field.getName() : field.getAnnotation(Column.class).name();
-
-                // Exclude câmpurile care se termină cu "_id"
-                if (!columnName.endsWith("_id")) {
-                    placeholders.add("?");
-                }
+            if (field.isAnnotationPresent(Column.class) && !field.getName().endsWith("_id")) {
+                placeholders.add("?");
             }
         }
         return placeholders;
     }
 
-
     private List<String> getSetClauses(Field[] fields) {
         List<String> clauses = new ArrayList<>();
         for (Field field : fields) {
-            if (!field.getName().equalsIgnoreCase("id")) {
-                clauses.add(field.getName() + " = ?");
+            if (field.isAnnotationPresent(Column.class) && !field.getName().endsWith("_id")) {
+                String columnName = field.getAnnotation(Column.class).name().isEmpty()
+                        ? field.getName()
+                        : field.getAnnotation(Column.class).name();
+                clauses.add(columnName + " = ?");
             }
         }
         return clauses;
@@ -286,15 +302,9 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
     private void setStatementParameters(PreparedStatement stmt, Field[] fields, T obj) throws Exception {
         int index = 1;
         for (Field field : fields) {
-            if (field.isAnnotationPresent(Column.class)) {
-                Column column = field.getAnnotation(Column.class);
-                String columnName = column.name().isEmpty() ? field.getName() : column.name();
-
-                // Exclude câmpurile care se termină cu "_id"
-                if (!columnName.endsWith("_id")) {
-                    field.setAccessible(true);
-                    stmt.setObject(index++, field.get(obj));
-                }
+            if (field.isAnnotationPresent(Column.class) && !field.getName().endsWith("_id")) {
+                field.setAccessible(true);
+                stmt.setObject(index++, field.get(obj));
             }
         }
     }
@@ -307,5 +317,47 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         mapResultSetToFields(rs, obj);
         return obj;
     }
+
+    private String getPrimaryKeyColumnName(Class<?> clazz) {
+        Field primaryKeyField = getPrimaryKeyField(clazz);
+        if (primaryKeyField.isAnnotationPresent(Column.class)) {
+            Column columnAnnotation = primaryKeyField.getAnnotation(Column.class);
+            return columnAnnotation.name().isEmpty() ? primaryKeyField.getName() : columnAnnotation.name();
+        }
+        return primaryKeyField.getName();
+    }
+
+    private List<String> getFieldNamesExcludingPrimaryKey(Field[] fields) {
+        List<String> names = new ArrayList<>();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class)) {
+                Column column = field.getAnnotation(Column.class);
+                String columnName = column.name().isEmpty() ? field.getName() : column.name();
+                names.add(columnName);
+            }
+        }
+        return names;
+    }
+
+    private List<String> getPlaceholdersExcludingPrimaryKey(Field[] fields) {
+        List<String> placeholders = new ArrayList<>();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class)) {
+                placeholders.add("?");
+            }
+        }
+        return placeholders;
+    }
+
+    private void setStatementParametersExcludingPrimaryKey(PreparedStatement stmt, Field[] fields, T obj) throws Exception {
+        int index = 1;
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Id.class)) {
+                field.setAccessible(true);
+                stmt.setObject(index++, field.get(obj));
+            }
+        }
+    }
+
 
 }

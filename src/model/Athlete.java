@@ -16,7 +16,7 @@ public class Athlete implements Identifiable, FavouriteEntity {
     public Athlete() {}
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "athlete_id", nullable = false)
     private int athleteID;
 
     @Column(name = "athlete_name", nullable = false)
@@ -25,6 +25,7 @@ public class Athlete implements Identifiable, FavouriteEntity {
     @Column(name = "athlete_sport", nullable = false)
     private String athleteSport;
 
+    @Transient
     @ManyToMany
     @JoinTable(
             name = "sports_event_lineup",

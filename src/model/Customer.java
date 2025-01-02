@@ -13,6 +13,7 @@ import java.util.Set;
 @Table(name = "customer")
 public class Customer extends User {
 
+    @Id
     @Column(name = "user_id", nullable = false)
     private int userID;
 
@@ -36,7 +37,7 @@ public class Customer extends User {
     @Transient
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
 
-    protected Customer() {}
+    public Customer() {}
 
     /**
      * Constructs a Customer with the specified user details and initializes default values.
@@ -47,9 +48,9 @@ public class Customer extends User {
      */
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-        this.favourites = new HashSet<>();
+//        this.favourites = new HashSet<>();
 //        this.cart = new Cart(); TODO dacă-l las, crapă
-        this.preferredSections = new HashMap<>();
+//        this.preferredSections = new HashMap<>();
     }
 
     /**

@@ -16,7 +16,7 @@ import java.util.List;
 public class Section implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "section_id", nullable = false)
     private int sectionID;
 
     @Column(name = "section_name", nullable = false)

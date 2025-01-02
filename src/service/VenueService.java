@@ -360,7 +360,11 @@ public class VenueService {
      * Creates a new Venue and saves it to both repositories.
      */
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
-       Venue venue = new Venue(0, name, location, capacity, hasSeats);
+       Venue venue = new Venue();
+       venue.setVenueName(name);
+       venue.setLocation(location);
+       venue.setVenueCapacity(capacity);
+       venue.setHasSeats(hasSeats);
        venueRepository.create(venue);
        return venue;
     }

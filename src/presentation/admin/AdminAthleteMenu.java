@@ -73,15 +73,7 @@ public class AdminAthleteMenu {
      */
     public static void handleViewAthletes(Controller controller) {
         System.out.println("=== View Athletes ===");
-        List<Athlete> athletes = controller.getAllAthletes();
-
-        if (athletes.isEmpty()) {
-            System.out.println("No athletes found.");
-        } else {
-            for (Athlete athlete : athletes) {
-                System.out.println(athlete);
-            }
-        }
+        controller.getAllAthletes();
     }
 
     /**
@@ -92,15 +84,7 @@ public class AdminAthleteMenu {
     public static void handleUpdateAthlete(Scanner scanner, Controller controller) {
         System.out.println("=== Update Athlete ===");
 
-        List<Athlete> athletes = controller.getAllAthletes();
-        if (athletes.isEmpty()) {
-            System.out.println("No athletes available.");
-            return;
-        } else {
-            for (Athlete athlete : athletes) {
-                System.out.println(athlete);
-            }
-        }
+        controller.getAllAthletes();
 
         System.out.print("Enter athlete ID to update: ");
         int athleteID = Integer.parseInt(scanner.nextLine());
@@ -133,17 +117,7 @@ public class AdminAthleteMenu {
      */
     public static void handleDeleteAthlete(Scanner scanner, Controller controller) {
         System.out.println("=== Delete Athlete ===");
-
-        List<Athlete> athletes = controller.getAllAthletes();
-        if (athletes.isEmpty()) {
-            System.out.println("No athletes available.");
-            return;
-        } else {
-            for (Athlete athlete : athletes) {
-                System.out.println(athlete);
-            }
-        }
-
+        controller.getAllAthletes();
         System.out.print("Enter athlete ID to delete: ");
         int athleteID = Integer.parseInt(scanner.nextLine());
 
