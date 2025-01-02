@@ -13,7 +13,7 @@ public class Artist implements Identifiable, FavouriteEntity {
     public Artist() {}
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "artist_id", nullable = false)
     private int artistID;
 
     @Column(name = "artist_name", nullable = false)
@@ -22,6 +22,7 @@ public class Artist implements Identifiable, FavouriteEntity {
     @Column(name = "genre", nullable = false)
     private String genre;
 
+    @Transient
     @ManyToMany
     @JoinTable(
             name = "concert_lineup",

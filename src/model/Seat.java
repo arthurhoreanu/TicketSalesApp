@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Seat implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seat_id", nullable = false)
     private int seatID;
 
     @Column(name = "seat_number", nullable = false)

@@ -14,7 +14,7 @@ import java.util.List;
 public class Row implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "row_id", nullable = false)
     private int rowID;
 
     @Column(name = "row_capacity", nullable = false)

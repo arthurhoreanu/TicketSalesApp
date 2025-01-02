@@ -14,34 +14,16 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Event implements Identifiable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventID;
-
-    @Column(name = "event_name", nullable = false)
     private String eventName;
-
-    @Column(name = "event_description", nullable = false)
     private String eventDescription;
-
-    @Column(name = "start_date_time", nullable = false)
     private LocalDateTime startDateTime;
-
-    @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
-
-    @Column(name = "venue_id", nullable = false)
     private int venueID;
-
-    @Column(name = "event_status", nullable = false)
-    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
-
-    @Column(name = "base_price", nullable = false)
     private double basePrice;
 
-
-    protected Event() {}
+    public Event() {}
 
     public Event(int eventID, String eventName, String eventDescription, LocalDateTime startDateTime,
                  LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {

@@ -11,7 +11,7 @@ import java.util.List;
 public class Cart implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cart_id", nullable = false)
     private int cartID;
 
     @OneToOne(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)

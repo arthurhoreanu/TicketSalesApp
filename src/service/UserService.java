@@ -63,7 +63,10 @@ public class UserService {
         if (takenUsername(username)) {
             return false;
         }
-        Customer customer = new Customer(0, username, email, password);
+        Customer customer = new Customer();
+        customer.setUsername(username);
+        customer.setEmail(email);
+        customer.setPassword(password);
         userRepository.create(customer);
         return true;
     }

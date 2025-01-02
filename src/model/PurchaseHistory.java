@@ -12,7 +12,7 @@ import java.util.List;
 public class PurchaseHistory implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "purchase_history_id", nullable = false)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)

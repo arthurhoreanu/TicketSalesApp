@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Ticket implements Identifiable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ticket_id", nullable = false)
     private int ticketID;
 
     @ManyToOne(fetch = FetchType.LAZY)
