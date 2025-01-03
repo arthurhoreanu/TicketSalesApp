@@ -115,9 +115,18 @@ public class AdminEventMenu {
                         controller.createArtist(artistName, "No genre set.");
                         artist = controller.findArtistByName(artistName);
                     }
-                    controller.addArtistToConcert(concert.getID(), artist.getID());
-                    System.out.println("Artist added to the concert.");
+                    if (artist != null) {
+                        boolean added = controller.addArtistToConcert(concert.getID(), artist.getID());
+                        if (added) {
+                            System.out.println("Artist added to the concert.");
+                        } else {
+                            System.out.println("Failed to add artist to the concert.");
+                        }
+                    } else {
+                        System.out.println("Failed to create or retrieve artist.");
+                    }
                     break;
+
                 case "2":
                     List<Artist> artists = controller.getArtistsByConcert(concert.getID());
                     if (artists.isEmpty()) {
@@ -138,6 +147,7 @@ public class AdminEventMenu {
                         System.out.println("Artist not found in the concert.");
                     }
                     break;
+
                 case "3":
                     List<Artist> currentArtists = controller.getArtistsByConcert(concert.getID());
                     if (currentArtists.isEmpty()) {
@@ -149,8 +159,10 @@ public class AdminEventMenu {
                         }
                     }
                     break;
+
                 case "0":
                     return;
+
                 default:
                     System.out.println("Invalid option.");
             }
@@ -176,9 +188,18 @@ public class AdminEventMenu {
                         controller.createAthlete(athleteName, "No sport set.");
                         athlete = controller.findAthleteByName(athleteName);
                     }
-                    controller.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID());
-                    System.out.println("Athlete added to the sports event.");
+                    if (athlete != null) {
+                        boolean added = controller.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID());
+                        if (added) {
+                            System.out.println("Athlete added to the sports event.");
+                        } else {
+                            System.out.println("Failed to add athlete to the sports event.");
+                        }
+                    } else {
+                        System.out.println("Failed to create or retrieve athlete.");
+                    }
                     break;
+
                 case "2":
                     List<Athlete> athletes = controller.getAthletesBySportsEvent(sportsEvent.getID());
                     if (athletes.isEmpty()) {
@@ -199,6 +220,7 @@ public class AdminEventMenu {
                         System.out.println("Athlete not found in the sports event.");
                     }
                     break;
+
                 case "3":
                     List<Athlete> currentAthletes = controller.getAthletesBySportsEvent(sportsEvent.getID());
                     if (currentAthletes.isEmpty()) {

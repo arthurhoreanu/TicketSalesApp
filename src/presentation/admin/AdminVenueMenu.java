@@ -69,7 +69,6 @@ public class AdminVenueMenu {
         System.out.print("Does the venue have seats (true/false)? ");
         boolean hasSeats = Boolean.parseBoolean(scanner.nextLine());
         controller.createVenue(name, location, capacity, hasSeats);
-        System.out.println("Venue added successfully.");
     }
 
     /**

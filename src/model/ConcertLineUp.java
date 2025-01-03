@@ -12,11 +12,14 @@ import javax.persistence.*;
 public class ConcertLineUp implements Identifiable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "concert_lineup_id")
+    private int id;
+
     @ManyToOne
     @JoinColumn(name = "concert_id", nullable = false)
     private Concert concert;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "artist_id", nullable = false)
     private Artist artist;
@@ -28,6 +31,14 @@ public class ConcertLineUp implements Identifiable {
     public ConcertLineUp(Concert concert, Artist artist) {
         this.concert = concert;
         this.artist = artist;
+    }
+
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(int id) {
+        this.id = id;
     }
 
     public Concert getConcert() {
@@ -49,29 +60,26 @@ public class ConcertLineUp implements Identifiable {
     @Override
     public String toString() {
         return "ConcertLineUp{" +
-                "concert=" + concert +
+                "id=" + id +
+                ", concert=" + concert +
                 ", artist=" + artist +
                 '}';
     }
 
     @Override
     public String toCsv() {
-        return getConcert().getID() + "," + getArtist().getID();
+        return id + "," + concert.getID() + "," + artist.getID();
     }
 
     public static ConcertLineUp fromCsv(String line) {
         String[] fields = line.split(",");
-        int concertID = Integer.parseInt(fields[0]);
-        int artistID = Integer.parseInt(fields[1]);
-        return new ConcertLineUp(controller.findConcertByID(concertID), controller.findArtistByID(artistID));
-    }
-
-    @Override
-    public Integer getID() {
-        return 0;
-    }
-
-    @Override
-    public void setID(int Int) {
+        int id = Integer.parseInt(fields[0]);
+        int concertID = Integer.parseInt(fields[1]);
+        int artistID = Integer.parseInt(fields[2]);
+        Concert concert = controller.findConcertByID(concertID);
+        Artist artist = controller.findArtistByID(artistID);
+        ConcertLineUp concertLineUp = new ConcertLineUp(concert, artist);
+        concertLineUp.setID(id);
+        return concertLineUp;
     }
 }

@@ -374,13 +374,21 @@ public class VenueService {
      * Creates a new Venue and saves it to both repositories.
      */
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
-       Venue venue = new Venue();
-       venue.setVenueName(name);
-       venue.setLocation(location);
-       venue.setVenueCapacity(capacity);
-       venue.setHasSeats(hasSeats);
-       venueRepository.create(venue);
-       return venue;
+        Venue venue = new Venue();
+        venue.setVenueName(name);
+        venue.setLocation(location);
+        venue.setVenueCapacity(capacity);
+        venue.setHasSeats(hasSeats);
+        venueRepository.create(venue);
+
+        if (!hasSeats) {
+            Section defaultSection = new Section(0, "Default Section", capacity, venue);
+            sectionRepository.create(defaultSection);
+            venue.addSection(defaultSection);
+            venueRepository.update(venue);
+        }
+
+        return venue;
     }
 
     /**
@@ -431,7 +439,7 @@ public class VenueService {
         venue.setLocation(location);
         venue.setVenueCapacity(capacity);
         venue.setHasSeats(hasSeats);
-        venueRepository.update(venue);         // Update in-memory repository
+        venueRepository.update(venue);
         return venue;
     }
 
@@ -441,7 +449,7 @@ public class VenueService {
     public boolean deleteVenue(int venueId) {
         Venue venue = venueRepository.read(venueId);
         if (venue == null) {
-            return false; // Venue not found
+            return false;
         }
         deleteSectionByVenue(venueId);
         venueRepository.delete(venueId);

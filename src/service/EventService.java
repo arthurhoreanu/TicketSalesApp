@@ -5,7 +5,6 @@ import repository.IRepository;
 import repository.factory.RepositoryFactory;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventService {
@@ -13,13 +12,18 @@ public class EventService {
     private final IRepository<ConcertLineUp> concertLineUpRepository;
     private final IRepository<SportsEventLineUp> sportsEventLineUpRepository;
     private final VenueService venueService;
+    private final ArtistService artistService;
+    private final AthleteService athleteService;
 
     public EventService(RepositoryFactory eventRepository, RepositoryFactory concertLineUpRepository,
-                        RepositoryFactory sportsEventLineUpRepository, VenueService venueService) {
+                        RepositoryFactory sportsEventLineUpRepository, VenueService venueService,
+                        ArtistService artistService, AthleteService athleteService) {
         this.eventRepository = eventRepository.createEventRepository();
         this.concertLineUpRepository = concertLineUpRepository.createConcertLineUpRepository();
         this.sportsEventLineUpRepository = sportsEventLineUpRepository.createSportsEventLineUpRepository();
         this.venueService = venueService;
+        this.artistService = artistService;
+        this.athleteService = athleteService;
     }
 
     // --- Concert Methods ---
@@ -33,8 +37,11 @@ public class EventService {
     public boolean addArtistToConcert(int eventID, int artistID) {
         Concert concert = (Concert) findEventByID(eventID);
         if (concert != null) {
-            Artist artist = new Artist();
-            artist.setID(artistID);
+            Artist artist = artistService.findArtistByID(artistID);
+            if (artist == null) {
+                System.out.println("Artist not found.");
+                return false;
+            }
             ConcertLineUp concertLineUp = new ConcertLineUp(concert, artist);
             concertLineUpRepository.create(concertLineUp);
             return true;
@@ -49,7 +56,7 @@ public class EventService {
                 .findFirst()
                 .orElse(null);
         if (lineUp != null) {
-            concertLineUpRepository.delete(lineUp.hashCode());
+            concertLineUpRepository.delete(lineUp.getID());
             return true;
         }
         return false;
@@ -67,7 +74,7 @@ public class EventService {
         return concertLineUpRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getConcert().getID() == concertID)
                 .map(ConcertLineUp::getArtist)
-                .distinct() // Evită duplicarea artiștilor
+                .distinct()
                 .toList();
     }
 
@@ -82,8 +89,11 @@ public class EventService {
     public boolean addAthleteToSportsEvent(int eventID, int athleteID) {
         SportsEvent sportsEvent = (SportsEvent) findEventByID(eventID);
         if (sportsEvent != null) {
-            Athlete athlete = new Athlete();
-            athlete.setID(athleteID);
+            Athlete athlete = athleteService.findAthleteByID(athleteID);
+            if (athlete == null) {
+                System.out.println("Athlete not found.");
+                return false;
+            }
             SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(sportsEvent, athlete);
             sportsEventLineUpRepository.create(sportsEventLineUp);
             return true;
@@ -99,7 +109,7 @@ public class EventService {
                 .orElse(null);
 
         if (lineUp != null) {
-            sportsEventLineUpRepository.delete(lineUp.hashCode());
+            sportsEventLineUpRepository.delete(lineUp.getID());
             return true;
         }
         return false;
