@@ -23,13 +23,7 @@ public class UserController {
      * @return The current user, or null if no user is logged in.
      */
     public User getCurrentUser() {
-        User currentUser = userService.getCurrentUser();
-        if (currentUser != null) {
-            System.out.println("Current user: " + currentUser.getUsername());
-        } else {
-            System.out.println("No user is currently logged in.");
-        }
-        return currentUser;
+        return userService.getCurrentUser();
     }
 
     /**
@@ -37,14 +31,7 @@ public class UserController {
      * @return A list containing all users in the system.
      */
     public List<User> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        if (!users.isEmpty()) {
-            System.out.println("Registered users:");
-            users.forEach(user -> System.out.println(user.getUsername()));
-        } else {
-            System.out.println("No users found.");
-        }
-        return users;
+        return userService.getAllUsers();
     }
 
     /**
