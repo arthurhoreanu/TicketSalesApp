@@ -48,9 +48,9 @@ public class Customer extends User {
      */
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-//        this.favourites = new HashSet<>();
-//        this.cart = new Cart(); TODO dacă-l las, crapă
-//        this.preferredSections = new HashMap<>();
+        this.favourites = new HashSet<>();
+        this.cart = new Cart();
+        this.preferredSections = new HashMap<>();
     }
 
     /**

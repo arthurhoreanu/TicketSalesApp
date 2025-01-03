@@ -27,17 +27,10 @@ public class TicketController {
      * @param basePrice the base price for EARLY_BIRD tickets.
      * @return the list of generated tickets.
      */
-    public List<Ticket> generateTicketsForEvent(Event event, double basePrice) {
-        if (event == null || basePrice <= 0) {
-            System.out.println("Invalid event or base price.");
-            return null;
-        }
-        List<Ticket> tickets = ticketService.generateTicketsForEvent(event, basePrice);
-        if (!tickets.isEmpty()) {
-            System.out.println("Tickets generated successfully:");
-            tickets.forEach(System.out::println);
-        } else {
-            System.out.println("Failed to generate tickets for the event.");
+    public List<Ticket> generateTicketsForEvent(Event event, double basePrice, int earlyBirdCount, int vipCount, int standardCount) {
+        List<Ticket> tickets = ticketService.generateTicketsForEvent(event, basePrice, earlyBirdCount, vipCount, standardCount);
+        if(tickets.isEmpty()) {
+            System.out.println("Failed to generate tickets for event");
         }
         return tickets;
     }
