@@ -98,6 +98,7 @@ public class Seat implements Identifiable {
             ticket.setSeat(this); // Establish the new association
         }
     }
+
     /**
      * Gets the Section to which this seat belongs via its Row.
      *

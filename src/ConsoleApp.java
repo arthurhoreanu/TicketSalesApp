@@ -17,6 +17,9 @@ public class ConsoleApp {
         RepositoryFactory repositoryFactory = StartMenu.select(scanner);
         Controller controller = initializeController(repositoryFactory);
 
+        // Initialize ControllerProvider
+        ControllerProvider.initializeController(controller);
+
         boolean running = true;
 
         while (running) {
@@ -64,3 +67,4 @@ public class ConsoleApp {
                 cartController, customerController, eventController, paymentController, purchaseHistoryController, userController);
     }
 }
+

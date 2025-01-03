@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Event implements Identifiable {
-
+//todo solve error???
     private int eventID;
     private String eventName;
     private String eventDescription;
