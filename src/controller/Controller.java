@@ -164,8 +164,8 @@ public class Controller {
     }
 
     // 4. Ticket
-    public List<Ticket> generateTicketsForEvent(Event event, double basePrice) {
-        return ticketController.generateTicketsForEvent(event, basePrice);}
+    public List<Ticket> generateTicketsForEvent(Event event, double basePrice, int earlyBirdCount, int vipCount, int standardCount) {
+        return ticketController.generateTicketsForEvent(event, basePrice, earlyBirdCount, vipCount, standardCount);}
     public void reserveTicket(Ticket ticket, Customer customer) {
         ticketController.reserveTicket(ticket, customer);}
     public void releaseTicket(Ticket ticket) {

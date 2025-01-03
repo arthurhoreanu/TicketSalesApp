@@ -248,15 +248,7 @@ public class AdminEventMenu {
      */
     public static void handleViewEvents(Controller controller) {
         System.out.println("=== View Events ===");
-        List<Event> events = controller.getAllEvents();
-
-        if (events.isEmpty()) {
-            System.out.println("No events available.");
-        } else {
-            for (Event event : events) {
-                System.out.println(event);
-            }
-        }
+        controller.getAllEvents();
     }
 
     /**

@@ -494,21 +494,26 @@ public class VenueService {
      * Retrieves all available Seats in a Venue for a specific Event.
      */
     public List<Seat> getAvailableSeatsInVenue(int venueId, int eventId) {
-        Venue venue = venueRepository.read(venueId);
+        Venue venue = findVenueByID(venueId);
         if (venue == null) {
             return new ArrayList<>(); // Venue not found
         }
+
+        if (!venue.isHasSeats()) {
+            return new ArrayList<>(); // Venue does not have seats
+        }
+
         List<Seat> availableSeats = new ArrayList<>();
         for (Section section : venue.getSections()) {
             for (Row row : section.getRows()) {
                 availableSeats.addAll(
                         row.getSeats().stream()
-                                .filter(seat -> !seat.isReserved() && seat.getTicket() != null
-                                        && seat.getTicket().getEvent().getID() == eventId)
+                                .filter(seat -> !seat.isReserved() && seat.getTicket() == null)
                                 .toList()
                 );
             }
         }
         return availableSeats;
     }
+
 }

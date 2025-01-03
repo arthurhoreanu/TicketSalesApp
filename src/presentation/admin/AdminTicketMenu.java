@@ -64,11 +64,30 @@ public class AdminTicketMenu {
         Event event = selectEvent(scanner, controller);
         if (event == null) return;
 
+        Venue venue = controller.findVenueByID(event.getVenueID());
+        if (venue == null) {
+            System.out.println("Venue not found for this event.");
+            return;
+        }
+
         System.out.print("Enter Base Price for EARLY_BIRD Tickets: ");
         double basePrice = Double.parseDouble(scanner.nextLine());
 
-        List<Ticket> generatedTickets = controller.generateTicketsForEvent(event, basePrice);
-        System.out.println(generatedTickets.size() + " tickets generated successfully.");
+        System.out.print("Enter Number of EARLY_BIRD Tickets to Generate: ");
+        int earlyBirdCount = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Enter Number of VIP Tickets to Generate: ");
+        int vipCount = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Enter Number of STANDARD Tickets to Generate: ");
+        int standardCount = Integer.parseInt(scanner.nextLine());
+
+        try {
+            List<Ticket> generatedTickets = controller.generateTicketsForEvent(event, basePrice, earlyBirdCount, vipCount, standardCount);
+            System.out.println(generatedTickets.size() + " tickets generated successfully.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     /**
