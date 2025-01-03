@@ -88,9 +88,12 @@ public class Row implements Identifiable {
      * @param seat The Seat to add.
      */
     public void addSeat(Seat seat) {
-        seats.add(seat);
-        seat.setRow(this); // Maintain bidirectional relationship
+        if (!seats.contains(seat)) {
+            seats.add(seat); // Add the Seat to the Row's list
+            seat.setRow(this); // Maintain the bidirectional relationship
+        }
     }
+
 
     /**
      * Removes a Seat from the Row and maintains bidirectional relationship.

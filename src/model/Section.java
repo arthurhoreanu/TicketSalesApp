@@ -14,6 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "section")
 public class Section implements Identifiable {
+//todo think about this!!! the static shit :)
+    private static int idCounter = 1; // Static counter for unique IDs
 
     @Id
     @Column(name = "section_id", nullable = false)
@@ -46,7 +48,7 @@ public class Section implements Identifiable {
      * @param venue           the Venue object associated with this section
      */
     public Section(int sectionID, String sectionName, int sectionCapacity, Venue venue) {
-        this.sectionID = sectionID;
+        this.sectionID = (sectionID > 0) ? sectionID : idCounter++;
         this.sectionName = sectionName;
         this.sectionCapacity = sectionCapacity;
         this.venue = venue;

@@ -32,10 +32,18 @@ public class VenueService {
      * @return the created Seat object.
      */
     public Seat createSeat(int rowId, int seatNumber) {
-        Seat seat = new Seat(0, seatNumber, false, findRowByID(rowId));
-        seatRepository.create(seat);
+        Row row = findRowByID(rowId);
+        if (row == null) {
+            throw new IllegalArgumentException("Row not found");
+        }
+
+        Seat seat = new Seat(0, seatNumber, false, row); // Create the Seat
+        row.addSeat(seat); // Add the Seat to the Row's seats list
+        seatRepository.create(seat); // Persist the Seat in the repository
+
         return seat;
     }
+
 
     public void deleteSeatsByRow(int rowId) {
         List<Seat> seats = seatRepository.getAll().stream()
@@ -191,11 +199,16 @@ public class VenueService {
         if (row == null) {
             throw new IllegalArgumentException("Row not found");
         }
+
         for (int i = 1; i <= numberOfSeats; i++) {
-            createSeat(rowId, i);
+            Seat seat = new Seat(0, i, false, row); // Create the Seat object
+            row.addSeat(seat); // Add the Seat to the Row's seats list
+            seatRepository.create(seat); // Persist the Seat in the repository
         }
-        rowRepository.update(row);
+
+        rowRepository.update(row); // Persist the updated Row with its seats
     }
+
 
     public List<Row> findRowsBySection(int sectionId) {
         Section section = findSectionByID(sectionId);
@@ -237,11 +250,12 @@ public class VenueService {
         if (venue == null) {
             throw new IllegalArgumentException("Venue cannot be null");
         }
-        Section section = new Section(0, sectionName, sectionCapacity, venue);
-        sectionRepository.create(section);
-        venue.addSection(section);
+
+        Section section = new Section(0, sectionName, sectionCapacity, venue); // ID will be auto-assigned
+        sectionRepository.create(section); // Persist the new section
         return section;
     }
+
 
 
     /**
@@ -442,13 +456,23 @@ public class VenueService {
         if (venue == null) {
             throw new IllegalArgumentException("Venue not found");
         }
+
         for (int i = 0; i < numberOfSections; i++) {
-            Section section = createSection(venue, sectionCapacity, defaultSectionName + " " + (i + 1));
-            venue.addSection(section); // Update Venue in-memory state
+            String sectionName = defaultSectionName + " " + (i + 1);
+
+            // Check for duplicate section names
+            if (venue.getSections().stream().anyMatch(s -> s.getSectionName().equals(sectionName))) {
+                System.out.println("Duplicate section name detected: " + sectionName);
+                continue;
+            }
+
+            Section section = createSection(venue, sectionCapacity, sectionName);
+            venue.addSection(section); // Add section to the venue
         }
-        // Update venue repository after adding sections
-        venueRepository.update(venue);
+
+        venueRepository.update(venue); // Persist changes
     }
+
 
     /**
      * Retrieves all Sections associated with a specific Venue.

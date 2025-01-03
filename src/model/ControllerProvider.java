@@ -28,4 +28,9 @@ public class ControllerProvider {
         }
         return controller;
     }
+    public static void initializeController(Controller newController) {
+        if (controller == null) {
+            controller = newController;
+        }
+    }
 }
