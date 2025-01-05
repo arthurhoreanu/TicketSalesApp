@@ -47,8 +47,6 @@ public class ConsoleApp {
         TicketService ticketService = new TicketService(repositoryFactory, venueService);
         CartService cartService = new CartService(repositoryFactory);
         CustomerService customerService = new CustomerService();
-        PaymentService paymentService = new PaymentService();
-        PurchaseHistoryService purchaseHistoryService = new PurchaseHistoryService(repositoryFactory);
         UserService userService = new UserService(repositoryFactory, customerService);
 
         // Controller
@@ -59,13 +57,10 @@ public class ConsoleApp {
         CartController cartController = new CartController(cartService);
         CustomerController customerController = new CustomerController(customerService);
         EventController eventController = new EventController(eventService);
-        PaymentController paymentController = new PaymentController(paymentService);
-        PurchaseHistoryController purchaseHistoryController = new PurchaseHistoryController(purchaseHistoryService);
         UserController userController = new UserController(userService);
 
         // Main Controller
         return new Controller(artistController, athleteController, venueController, ticketController,
-                cartController, customerController, eventController, paymentController, purchaseHistoryController, userController);
+                cartController, customerController, eventController, userController);
     }
 }
-

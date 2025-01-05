@@ -14,8 +14,6 @@ public class Controller {
     private final CartController cartController;
     private final CustomerController customerController;
     private final EventController eventController;
-    private final PaymentController paymentController;
-    private final PurchaseHistoryController purchaseHistoryController;
     private final UserController userController;
 
     /**
@@ -30,14 +28,12 @@ public class Controller {
      * @param cartController The controller responsible for managing shopping carts.
      * @param customerController The controller responsible for managing customers.
      * @param eventController The controller responsible for managing events.
-     * @param paymentController The controller responsible for managing payments.
      * @param userController The controller responsible for managing user accounts.
      */
     public Controller(ArtistController artistController, AthleteController athleteController,
                      VenueController venueController, TicketController ticketController,
                       CartController cartController, CustomerController customerController,
-                      EventController eventController, PaymentController paymentController,
-                      PurchaseHistoryController purchaseHistoryController, UserController userController) {
+                      EventController eventController, UserController userController) {
         this.artistController = artistController;
         this.athleteController = athleteController;
         this.venueController = venueController;
@@ -45,8 +41,6 @@ public class Controller {
         this.cartController = cartController;
         this.customerController = customerController;
         this.eventController = eventController;
-        this.paymentController = paymentController;
-        this.purchaseHistoryController = purchaseHistoryController;
         this.userController = userController;
     }
 
@@ -182,10 +176,14 @@ public class Controller {
         return ticketController.findTicketByID(ticketID);}
     public double calculateTotalPrice(List<Ticket> tickets) {
         return ticketController.calculateTotalPrice(tickets);}
-
+    public List<String> getTicketAvailabilityByType(Event event) {
+        return ticketController.getTicketAvailabilityByType(event);}
     public double getBasePriceForEvent(int eventId) {
-        return eventController.getBasePriceForEvent(eventId);
-    }
+        return eventController.getBasePriceForEvent(eventId);}
+    public List<Ticket> getAvailableTicketsByType(Event event, TicketType ticketType) {
+        return ticketController.getAvailableTicketsByType(event, ticketType);}
+    public List<Ticket> getTicketsByCustomer(Customer customer) {
+        return ticketController.getTicketsByCustomer(customer);}
 
     // 5. Cart
     public Cart createCart(Customer customer, Event event) {
@@ -202,6 +200,8 @@ public class Controller {
         return cartController.getTicketsInCart(cart);}
     public Cart findCartByID(int cartID) {
         return cartController.findCartByID(cartID);}
+    public void processPayment(Cart cart, String cardNumber, String cardholderName, int expiryMonth, int expiryYear, String cvv) {
+        cartController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv);}
 
     // 6. Customer
     public boolean addFavourite(FavouriteEntity item) {
@@ -253,22 +253,6 @@ public class Controller {
     // TODO
 //    public boolean isEventSoldOut(Event event) {
 //        return eventController.isEventSoldOut(event);}
-
-    // 6. Payment
-    public void processPayment(Cart cart, String cardNumber, String cardholderName,
-                               int expiryMonth, int expiryYear, String cvv, String currency) {
-        paymentController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
-    }
-
-    // 7. Purchase History
-    public void createPurchaseHistory(Cart cart) {
-        purchaseHistoryController.createPurchaseHistory(cart);}
-    public List<PurchaseHistory> getPurchaseHistoryForCustomer(Customer customer) {
-        return purchaseHistoryController.getPurchaseHistoryForCustomer(customer);}
-    public List<PurchaseHistory> getAllPurchaseHistories() {
-        return purchaseHistoryController.getAllPurchaseHistories();}
-    public PurchaseHistory findPurchaseHistoryByID(int id) {
-        return purchaseHistoryController.findPurchaseHistoryByID(id);}
 
     // 8. User
     public Customer findCustomerByID(int customerID) {

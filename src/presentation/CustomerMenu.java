@@ -11,7 +11,7 @@ public class CustomerMenu {
         while (true) {
             System.out.println("==== Customer Menu ====");
             System.out.println("1. Logout");
-            System.out.println("2. Search for Artists/Athletes");
+            System.out.println("2. Search Events by Artists/Athletes");
             System.out.println("3. Search Events by Location/Venue");
             System.out.println("4. View Suggested Events");
             System.out.println("5. View All Events");
@@ -99,9 +99,9 @@ public class CustomerMenu {
     }
 
     private static void handleViewAllEvents(Scanner scanner, Controller controller) {
-        List<Event> events = controller.getAllEvents(); // This will handle printing
+        List<Event> events = controller.getAllEvents();
         if (events.isEmpty()) {
-            return; // No further action needed if no events are found
+            return;
         }
         System.out.print("Enter Event ID to view sections and tickets: ");
         try {
@@ -148,7 +148,6 @@ public class CustomerMenu {
         }
     }
 
-
     private static void handleEventSelectionFromList(Scanner scanner, Controller controller, List<Event> events) {
         if (events.isEmpty()) {
             System.out.println("No events found.");
@@ -171,6 +170,10 @@ public class CustomerMenu {
     }
 
     private static void handleSectionAndTicketSelection(Scanner scanner, Controller controller, Event event) {
+        List<String> ticketAvailability = controller.getTicketAvailabilityByType(event);
+        System.out.println("Ticket availability:");
+        ticketAvailability.forEach(System.out::println);
+
         Venue venue = controller.findVenueByID(event.getVenueID());
         List<Section> sections = controller.getSectionsByVenueID(venue.getID());
 
@@ -223,23 +226,76 @@ public class CustomerMenu {
         }
     }
 
-
     private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {
-        System.out.print("Enter the number of tickets to purchase (max " + venue.getVenueCapacity() + "): ");
-        try {
-            int ticketCount = Integer.parseInt(scanner.nextLine());
-            if (ticketCount > venue.getVenueCapacity() || ticketCount <= 0) {
-                System.out.println("Invalid ticket count. Try again.");
-                return;
+        List<Ticket> selectedTickets = new ArrayList<>();
+
+        while (true) {
+            System.out.println("Select ticket type:");
+            System.out.println("1. Early Bird");
+            System.out.println("2. VIP");
+            System.out.println("3. Standard");
+            System.out.println("4. Proceed to Checkout");
+            System.out.println("0. Cancel and Exit");
+            System.out.print("Choose an option: ");
+            String ticketTypeChoice = scanner.nextLine();
+
+            TicketType selectedType = null;
+            switch (ticketTypeChoice) {
+                case "1":
+                    selectedType = TicketType.EARLY_BIRD;
+                    break;
+                case "2":
+                    selectedType = TicketType.VIP;
+                    break;
+                case "3":
+                    selectedType = TicketType.STANDARD;
+                    break;
+                case "4":
+                    // Proceed to checkout
+                    if (!selectedTickets.isEmpty()) {
+                        handleCheckout(scanner, controller, event, selectedTickets, selectedTickets.size());
+                    } else {
+                        System.out.println("No tickets selected. Returning to menu.");
+                    }
+                    return; // Exit this method after checkout
+                case "0":
+                    System.out.println("Exiting ticket selection.");
+                    return; // Exit without proceeding to checkout
+                default:
+                    System.out.println("Invalid choice.");
+                    continue;
             }
-            List<Ticket> tickets = new ArrayList<>();
-            double basePrice = controller.getBasePriceForEvent(event.getID()); // Fetch base price
-            for (int i = 0; i < ticketCount; i++) {
-                tickets.add(new Ticket(0, event, null, null, basePrice, TicketType.STANDARD));
+
+            // Validate and add tickets for the selected type
+            if (selectedType != null) {
+                List<Ticket> availableTickets = controller.getAvailableTicketsByType(event, selectedType);
+                if (availableTickets.isEmpty()) {
+                    System.out.println(selectedType + " tickets are sold out.");
+                    continue;
+                }
+
+                if (selectedType == TicketType.STANDARD) {
+                    List<Ticket> earlyBirdTickets = controller.getAvailableTicketsByType(event, TicketType.EARLY_BIRD);
+                    if (!earlyBirdTickets.isEmpty()) {
+                        System.out.println("You cannot purchase standard tickets until early bird tickets are sold out.");
+                        continue;
+                    }
+                }
+
+                System.out.print("Enter number of tickets to purchase (max " + availableTickets.size() + "): ");
+                try {
+                    int ticketCount = Integer.parseInt(scanner.nextLine());
+                    if (ticketCount > availableTickets.size() || ticketCount <= 0) {
+                        System.out.println("Invalid ticket count. Try again.");
+                        continue;
+                    }
+                    List<Ticket> ticketsToBuy = availableTickets.subList(0, ticketCount);
+                    selectedTickets.addAll(ticketsToBuy);
+                    System.out.println(ticketCount + " " + selectedType + " tickets added to your selection.");
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input.");
+                }
             }
-            handleCheckout(scanner, controller, event, tickets, tickets.size());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input.");
         }
     }
 
@@ -251,87 +307,198 @@ public class CustomerMenu {
 
         if (tickets != null && !tickets.isEmpty()) {
             for (Ticket ticket : tickets) {
-                controller.addTicketToCart(cart, ticket); // Add tickets to the cart
+                boolean added = controller.addTicketToCart(cart, ticket);
+                if (!added) {
+                    System.out.println("Failed to add ticket to cart: " + ticket);
+                    return;
+                }
             }
         }
 
-        // Retrieve updated tickets and calculate the total price
+        // Retrieve tickets and calculate total price using CartService
         List<Ticket> ticketsInCart = controller.getTicketsInCart(cart);
-        double totalPrice = controller.calculateTotalPrice(ticketsInCart); // Fetch updated total price
-        cart.setTotalPrice(totalPrice); // Update cart's total price
+        double totalPrice = cart.calculateTotalPrice(); // Using Cart's calculate method
         System.out.println("Cart Summary:");
         ticketsInCart.forEach(System.out::println);
         System.out.println("Total Price: $" + totalPrice);
 
         // Handle payment details
         System.out.println("Please provide payment details:");
-        System.out.print("Card Number: ");
+        System.out.print("Card Number (16 digits): ");
         String cardNumber = scanner.nextLine();
+
         System.out.print("Cardholder Name: ");
         String cardholderName = scanner.nextLine();
-        System.out.print("Expiry Month (MM): ");
-        int expiryMonth = Integer.parseInt(scanner.nextLine());
-        System.out.print("Expiry Year (YYYY): ");
-        int expiryYear = Integer.parseInt(scanner.nextLine());
-        System.out.print("CVV: ");
+
+        System.out.print("Expiry Date (MM/YY): ");
+        String expiryDate = scanner.nextLine();
+        int expiryMonth, expiryYear;
+        try {
+            String[] parts = expiryDate.split("/");
+            expiryMonth = Integer.parseInt(parts[0]);
+            expiryYear = 2000 + Integer.parseInt(parts[1]); // Convert YY to YYYY
+        } catch (Exception e) {
+            System.out.println("Invalid expiry date format. Must be MM/YY.");
+            return;
+        }
+
+        System.out.print("CVV (3 or 4 digits): ");
         String cvv = scanner.nextLine();
-        System.out.print("Currency (e.g., USD): ");
-        String currency = scanner.nextLine();
 
         try {
-            // Process the payment using the controller
-            controller.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
-            controller.finalizeCart(cart);
+            controller.processPayment(cart, cardNumber, cardholderName,
+                    expiryMonth, expiryYear, cvv);
+            controller.clearCart(cart);
             System.out.println("Payment successful! Order finalized.");
         } catch (IllegalArgumentException e) {
             System.out.println("Payment failed: " + e.getMessage());
-        }
-    }
-
-
-
-    private static double getPriceForGeneralAdmission(Controller controller, Event event) {
-        return event.getBasePrice();
-    }
-
-    private static double getPriceForSeat(Controller controller, Seat seat, Event event) {
-        if (seat.getRow().getRowCapacity() <= 5) {
-            return event.getBasePrice() * 1.5;
-        } else {
-            return event.getBasePrice();
+            controller.clearCart(cart);
+        } catch (IllegalStateException e) {
+            System.out.println("Error processing order: " + e.getMessage());
+            controller.clearCart(cart);
         }
     }
 
     private static void handleViewPreviousOrders(Controller controller) {
         Customer currentCustomer = (Customer) controller.getCurrentUser();
-        List<PurchaseHistory> history = controller.getPurchaseHistoryForCustomer(currentCustomer);
-        if (history.isEmpty()) {
+        List<Ticket> purchasedTickets = controller.getTicketsByCustomer(currentCustomer);
+        if (purchasedTickets.isEmpty()) {
             System.out.println("No previous orders found.");
         } else {
             System.out.println("Previous Orders:");
-            history.forEach(System.out::println);
+            purchasedTickets.forEach(ticket -> {
+                System.out.println("Ticket ID: " + ticket.getID());
+                System.out.println("Event: " + ticket.getEvent().getEventName());
+                System.out.println("Price: $" + ticket.getPrice());
+                System.out.println("Purchase Date: " + ticket.getPurchaseDate());
+                if (ticket.getSeat() != null) {
+                    System.out.println("Seat: " + ticket.getSeat().getNumber());
+                } else {
+                    System.out.println("General Admission");
+                }
+                System.out.println("-----------------------------");
+            });
         }
     }
 
     private static void handleManageFavourites(Scanner scanner, Controller controller) {
-        System.out.println("==== Manage Favourites ====");
-        Set<FavouriteEntity> favourites = controller.getFavourites();
-        if (favourites.isEmpty()) {
-            System.out.println("You have no favourites.");
-            return;
+        while (true) {
+            System.out.println("==== Manage Favourites ====");
+            System.out.println("1. View Favourites");
+            System.out.println("2. Add Favourite (Search by Artist/Athlete)");
+            System.out.println("3. Remove Favourite");
+            System.out.println("0. Return to Main Menu");
+            System.out.println("===========================");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    // View favourites
+                    Set<FavouriteEntity> favourites = controller.getFavourites();
+                    if (favourites.isEmpty()) {
+                        System.out.println("You have no favourites.");
+                    } else {
+                        System.out.println("Your Favourites:");
+                        favourites.forEach(fav -> System.out.println("- " + fav.getName()));
+                    }
+                    break;
+
+                case "2":
+                    // Add favourite
+                    System.out.print("Enter the name of the artist or athlete to add: ");
+                    String nameToAdd = scanner.nextLine();
+
+                    // Caută separat artistul și atletul
+                    Artist foundArtist = controller.findArtistByName(nameToAdd);
+                    Athlete foundAthlete = controller.findAthleteByName(nameToAdd);
+
+                    // Dacă nu s-a găsit niciun rezultat
+                    if (foundArtist == null && foundAthlete == null) {
+                        System.out.println("No artist or athlete found with the name: " + nameToAdd);
+                        break;
+                    }
+
+                    // Creează o listă pentru selecție
+                    Map<Integer, FavouriteEntity> selectionMap = new HashMap<>();
+                    int index = 1;
+
+                    if (foundArtist != null) {
+                        System.out.println(index + ". Artist: " + foundArtist.getName());
+                        selectionMap.put(index, foundArtist);
+                        index++;
+                    }
+
+                    if (foundAthlete != null) {
+                        System.out.println(index + ". Athlete: " + foundAthlete.getName());
+                        selectionMap.put(index, foundAthlete);
+                        index++;
+                    }
+
+                    // Solicită utilizatorului să selecteze un favorit
+                    System.out.print("Enter the number of the favourite to add (or 0 to cancel): ");
+                    try {
+                        int selectedOption = Integer.parseInt(scanner.nextLine());
+                        if (selectedOption == 0) {
+                            System.out.println("Cancelled adding to favourites.");
+                            break;
+                        }
+                        FavouriteEntity selectedEntity = selectionMap.get(selectedOption);
+                        if (selectedEntity != null) {
+                            controller.addFavourite(selectedEntity);
+                            System.out.println(selectedEntity.getName() + " has been added to your favourites.");
+                        } else {
+                            System.out.println("Invalid selection.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case "3":
+                    // Remove favourite
+                    Set<FavouriteEntity> currentFavourites = controller.getFavourites();
+                    if (currentFavourites.isEmpty()) {
+                        System.out.println("You have no favourites to remove.");
+                        break;
+                    }
+                    System.out.println("Your Favourites:");
+                    int removeIndex = 1;
+                    Map<Integer, FavouriteEntity> removeMap = new HashMap<>();
+                    for (FavouriteEntity fav : currentFavourites) {
+                        System.out.println(removeIndex + ". " + fav.getName());
+                        removeMap.put(removeIndex, fav);
+                        removeIndex++;
+                    }
+
+                    System.out.print("Enter the number of the favourite to remove (or 0 to cancel): ");
+                    try {
+                        int selectedRemoveOption = Integer.parseInt(scanner.nextLine());
+                        if (selectedRemoveOption == 0) {
+                            System.out.println("Cancelled removing favourite.");
+                            break;
+                        }
+                        FavouriteEntity entityToRemove = removeMap.get(selectedRemoveOption);
+                        if (entityToRemove != null) {
+                            controller.removeFavourite(entityToRemove);
+                            System.out.println(entityToRemove.getName() + " removed from favourites.");
+                        } else {
+                            System.out.println("Invalid selection.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case "0":
+                    // Return to main menu
+                    System.out.println("Returning to the main menu.");
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
         }
-        favourites.forEach(fav -> System.out.println("- " + fav.getName()));
-        System.out.print("Enter the name of the favourite to remove: ");
-        String name = scanner.nextLine();
-        favourites.stream()
-                .filter(fav -> fav.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .ifPresentOrElse(
-                        fav -> {
-                            controller.removeFavourite(fav);
-                            System.out.println(name + " removed from favourites.");
-                        },
-                        () -> System.out.println("Favourite not found.")
-                );
     }
+
 }

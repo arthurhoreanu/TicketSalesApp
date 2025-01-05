@@ -20,9 +20,6 @@ public class Cart implements Identifiable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
-//todo solve error
-    @OneToOne(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Payment payment;
 
     @Column(name = "is_payment_processed", nullable = false)
     private boolean isPaymentProcessed = false;
@@ -106,14 +103,6 @@ public class Cart implements Identifiable {
 
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets != null ? tickets : new ArrayList<>();
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
     }
 
     /**

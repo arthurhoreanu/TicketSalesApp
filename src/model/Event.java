@@ -1,19 +1,11 @@
 package model;
 
-import controller.Controller;
-
-import javax.persistence.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 /**
  * Represents an abstract event with a unique ID, name, description, schedule, venue ID, and status.
  */
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Event implements Identifiable {
-//todo solve error???
     private int eventID;
     private String eventName;
     private String eventDescription;

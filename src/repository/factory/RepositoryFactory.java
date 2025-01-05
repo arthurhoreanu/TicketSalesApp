@@ -12,7 +12,6 @@ public interface RepositoryFactory {
     IRepository<Venue> createVenueRepository();
     IRepository<Ticket> createTicketRepository();
     IRepository<Cart> createCartRepository();
-    IRepository<PurchaseHistory> createPurchaseHistoryRepository();
     IRepository<User> createUserRepository();
     IRepository<Event> createEventRepository();
     IRepository<ConcertLineUp> createConcertLineUpRepository();

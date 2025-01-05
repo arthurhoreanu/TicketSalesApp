@@ -8,7 +8,10 @@ import repository.FileRepository;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service class for managing Cart-related operations.
@@ -133,4 +136,66 @@ public class CartService {
     public List<Ticket> getTicketsInCart(Cart cart) {
         return cart.getTickets();
     }
+
+    /**
+     * Simulates an online payment.
+     *
+     * @param cart           The cart associated with the payment.
+     * @param cardNumber     The card number entered by the user.
+     * @param cardholderName The name of the cardholder.
+     * @param expiryMonth    The expiry month of the card (1-12).
+     * @param expiryYear     The expiry year of the card (YYYY format).
+     * @param cvv            The CVV code of the card.
+     * @throws IllegalArgumentException If any of the input validation checks fail.
+     */
+    public void processPayment(Cart cart, String cardNumber, String cardholderName,
+                               int expiryMonth, int expiryYear, String cvv) {
+        validateCardDetails(cardNumber, cardholderName, expiryMonth, expiryYear, cvv);
+
+        Customer customer = cart.getCustomer();
+        double paymentAmount = cart.calculateTotalPrice();
+
+        if (paymentAmount <= 0) {
+            throw new IllegalArgumentException("Cannot process payment. Total amount is invalid.");
+        }
+
+        for (Ticket ticket : cart.getTickets()) {
+            ticket.markAsSold(customer);
+            ticket.setCustomer(customer);
+        }
+
+        cart.setPaymentProcessed(true);
+    }
+
+    /**
+     * Validates the card details provided by the user.
+     *
+     * @param cardNumber      The card number.
+     * @param cardholderName  The name on the card.
+     * @param expiryMonth     The expiry month (1-12).
+     * @param expiryYear      The expiry year (YYYY format).
+     * @param cvv             The CVV code (3-4 digits).
+     * @throws IllegalArgumentException If validation fails.
+     */
+    private void validateCardDetails(String cardNumber, String cardholderName,
+                                     int expiryMonth, int expiryYear, String cvv) {
+        if (cardNumber == null || cardNumber.length() != 16 || !cardNumber.matches("\\d{16}")) {
+            throw new IllegalArgumentException("Invalid card number. Must be 16 digits.");
+        }
+        if (cardholderName == null || cardholderName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Cardholder name cannot be empty.");
+        }
+        if (expiryMonth < 1 || expiryMonth > 12) {
+            throw new IllegalArgumentException("Invalid expiry month. Must be between 1 and 12.");
+        }
+        YearMonth currentYearMonth = YearMonth.now();
+        YearMonth cardExpiry = YearMonth.of(expiryYear, expiryMonth);
+        if (cardExpiry.isBefore(currentYearMonth)) {
+            throw new IllegalArgumentException("Card has expired.");
+        }
+        if (cvv == null || !cvv.matches("\\d{3,4}")) {
+            throw new IllegalArgumentException("Invalid CVV. Must be 3 or 4 digits.");
+        }
+    }
+
 }

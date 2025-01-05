@@ -176,4 +176,15 @@ public class TicketController {
         System.out.println("Total price of tickets: " + totalPrice);
         return totalPrice;
     }
+
+    public List<String> getTicketAvailabilityByType(Event event) {
+        return ticketService.getTicketAvailabilityByType(event);
+    }
+
+    public List<Ticket> getAvailableTicketsByType(Event event, TicketType ticketType) {
+        return ticketService.getAvailableTicketsByType(event, ticketType);
+    }
+
+    public List<Ticket> getTicketsByCustomer(Customer customer) {
+        return ticketService.getTicketsByCustomer(customer);}
 }
