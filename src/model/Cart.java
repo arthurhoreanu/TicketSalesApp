@@ -20,7 +20,7 @@ public class Cart implements Identifiable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
-
+//todo solve error
     @OneToOne(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Payment payment;
 

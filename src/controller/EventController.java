@@ -17,6 +17,15 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    public double getBasePriceForEvent(int eventId) {
+        Event event = eventService.findEventByID(eventId);
+        if (event != null) {
+            return event.getBasePrice(); // Assuming `getBasePrice()` exists in the Event model
+        } else {
+            throw new IllegalArgumentException("Event not found for ID: " + eventId);
+        }
+    }
+
     /**
      * Creates a new Concert event.
      * @return true if the event was successfully created, false otherwise.

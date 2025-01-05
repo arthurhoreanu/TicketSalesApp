@@ -24,6 +24,13 @@ public class VenueService {
 
     // Seat
 
+    public void updateSeat(Seat seat) {
+        if (seat == null || findRowByID(seat.getRow().getID()) == null) {
+            throw new IllegalArgumentException("Seat or its associated row is invalid.");
+        }
+        seatRepository.update(seat);
+    }
+
     /**
      * Creates a new Seat and saves it to all repositories.
      *
@@ -120,10 +127,11 @@ public class VenueService {
     public void unreserveSeat(int seatId) {
         Seat seat = findSeatByID(seatId);
         if (seat == null || !seat.isReserved()) {
-            return; // Seat not found or not reserved
+            throw new IllegalArgumentException("Seat is not reserved.");
         }
+
         seat.setReserved(false);
-        seat.setTicket(null); // Remove the Ticket association
+        seat.setTicket(null);
         seatRepository.update(seat);
     }
 
@@ -374,6 +382,16 @@ public class VenueService {
      * Creates a new Venue and saves it to both repositories.
      */
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Venue name cannot be null or empty.");
+        }
+        if (location == null || location.trim().isEmpty()) {
+            throw new IllegalArgumentException("Venue location cannot be null or empty.");
+        }
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Venue capacity must be greater than 0.");
+        }
+
         Venue venue = new Venue();
         venue.setVenueName(name);
         venue.setLocation(location);
@@ -382,10 +400,7 @@ public class VenueService {
         venueRepository.create(venue);
 
         if (!hasSeats) {
-            Section defaultSection = new Section(0, "Default Section", capacity, venue);
-            sectionRepository.create(defaultSection);
-            venue.addSection(defaultSection);
-            venueRepository.update(venue);
+            addSectionToVenue(venue.getID(), 1, capacity, "Default Section");
         }
 
         return venue;
@@ -468,17 +483,15 @@ public class VenueService {
         for (int i = 0; i < numberOfSections; i++) {
             String sectionName = defaultSectionName + " " + (i + 1);
 
-            // Check for duplicate section names
             if (venue.getSections().stream().anyMatch(s -> s.getSectionName().equals(sectionName))) {
-                System.out.println("Duplicate section name detected: " + sectionName);
-                continue;
+                throw new IllegalArgumentException("Duplicate section name: " + sectionName);
             }
 
             Section section = createSection(venue, sectionCapacity, sectionName);
-            venue.addSection(section); // Add section to the venue
+            venue.addSection(section);
         }
 
-        venueRepository.update(venue); // Persist changes
+        venueRepository.update(venue);
     }
 
 
@@ -495,25 +508,15 @@ public class VenueService {
      */
     public List<Seat> getAvailableSeatsInVenue(int venueId, int eventId) {
         Venue venue = findVenueByID(venueId);
-        if (venue == null) {
-            return new ArrayList<>(); // Venue not found
+        if (venue == null || !venue.isHasSeats()) {
+            return new ArrayList<>();
         }
 
-        if (!venue.isHasSeats()) {
-            return new ArrayList<>(); // Venue does not have seats
-        }
-
-        List<Seat> availableSeats = new ArrayList<>();
-        for (Section section : venue.getSections()) {
-            for (Row row : section.getRows()) {
-                availableSeats.addAll(
-                        row.getSeats().stream()
-                                .filter(seat -> !seat.isReserved() && seat.getTicket() == null)
-                                .toList()
-                );
-            }
-        }
-        return availableSeats;
+        return venue.getSections().stream()
+                .flatMap(section -> section.getRows().stream())
+                .flatMap(row -> row.getSeats().stream())
+                .filter(seat -> !seat.isReserved() && seat.getTicket() == null)
+                .collect(Collectors.toList());
     }
 
 }

@@ -98,10 +98,16 @@ public class VenueController {
      * @param price      The price of the reservation.
      * @param ticketType The type of Ticket.
      */
-    public void reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
+    public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
         boolean reserved = venueService.reserveSeat(seatId, event, customer, price, ticketType);
-        System.out.println(reserved ? "Seat reserved successfully." : "Failed to reserve seat.");
+        if (reserved) {
+            System.out.println("Seat reserved successfully.");
+        } else {
+            System.out.println("Failed to reserve seat.");
+        }
+        return reserved;
     }
+
 
     /**
      * Unreserves a Seat.
@@ -459,13 +465,14 @@ public class VenueController {
      * Creates a new venue.
      */
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
-        Venue venue = venueService.createVenue(name, location, capacity, hasSeats);
-        if (venue != null) {
+        try {
+            Venue venue = venueService.createVenue(name, location, capacity, hasSeats);
             System.out.println("Venue created successfully: " + venue);
-        } else {
-            System.out.println("Failed to create venue.");
+            return venue;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error creating venue: " + e.getMessage());
+            return null;
         }
-        return venue;
     }
 
     /**
