@@ -27,7 +27,7 @@ public class Customer extends User {
     private String password;
 
     @Transient
-    private Set<FavouriteEntity> favourites;
+    private Set<FavouriteEntity> favourites = new HashSet<>();
 
     @Transient
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -48,15 +48,21 @@ public class Customer extends User {
      */
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-        this.favourites = new HashSet<>();
         this.cart = new Cart();
         this.preferredSections = new HashMap<>();
     }
 
+    public Set<FavouriteEntity> getFavourites() {
+        if (favourites == null) {
+            favourites = new HashSet<>();
+        }
+        return favourites;
+    }
+
     /**
      * Adds an item to the customer's list of favourite entities.
+     *
      * @param item the favourite entity to add
-     * @return true if the item was added to favourites, false if it was already in the list
      */
     public boolean addFavourite(FavouriteEntity item) {
         return favourites.add(item);
@@ -69,14 +75,6 @@ public class Customer extends User {
      */
     public boolean removeFavourite(FavouriteEntity item) {
         return favourites.remove(item);
-    }
-
-    /**
-     * Gets the set of the customer's favourite entities.
-     * @return a set of favourite entities
-     */
-    public Set<FavouriteEntity> getFavourites() {
-        return favourites;
     }
 
     /**

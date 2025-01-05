@@ -23,6 +23,7 @@ public class AdminVenueMenu {
             System.out.println("3. Add Section to Venue");
             System.out.println("4. Add Rows and Seats to Section");
             System.out.println("5. View Full Venue Structure");
+            System.out.println("6. Delete Venue");
             System.out.println("0. Back to Admin Menu");
             System.out.println("==========================");
 
@@ -44,6 +45,9 @@ public class AdminVenueMenu {
                     break;
                 case "5":
                     handleViewFullVenueStructure(scanner, controller);
+                    break;
+                case "6":
+                    handleDeleteVenue(scanner, controller);
                     break;
                 case "0":
                     inVenueMenu = false;
@@ -239,6 +243,43 @@ public class AdminVenueMenu {
 
                 System.out.println("      Seats: " + seats.size());
             }
+        }
+    }
+
+    /**
+     * Handles the deletion of a venue and all its associated components.
+     */
+    private static void handleDeleteVenue(Scanner scanner, Controller controller) {
+        System.out.println("=== Delete Venue ===");
+        handleViewVenues(controller);
+
+        System.out.print("Enter Venue ID to delete: ");
+        try {
+            int venueId = Integer.parseInt(scanner.nextLine());
+
+            Venue venue = controller.findVenueByID(venueId);
+            if (venue == null) {
+                System.out.println("Venue not found.");
+                return;
+            }
+
+            // Confirm deletion
+            System.out.print("Are you sure you want to delete venue '" + venue.getVenueName() +
+                    "' and all its sections, rows, and seats? (yes/no): ");
+            String confirmation = scanner.nextLine();
+
+            if (confirmation.equalsIgnoreCase("yes")) {
+                boolean deleted = controller.deleteVenue(venueId);
+                if (deleted) {
+                    System.out.println("Venue and all its components were successfully deleted.");
+                } else {
+                    System.out.println("Failed to delete venue.");
+                }
+            } else {
+                System.out.println("Deletion cancelled.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Venue ID must be a number.");
         }
     }
 }

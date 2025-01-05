@@ -107,6 +107,15 @@ public class TicketService {
     }
 
     public void reserveTicket(Ticket ticket, Customer customer) {
+        if (ticket.getTicketType() == TicketType.STANDARD) {
+            long earlyBirdAvailable = getTicketsByEvent(ticket.getEvent()).stream()
+                    .filter(t -> t.getTicketType() == TicketType.EARLY_BIRD && !t.isSold())
+                    .count();
+            if (earlyBirdAvailable > 0) {
+                throw new IllegalArgumentException("You cannot purchase standard tickets until early bird tickets are sold out.");
+            }
+        }
+
         if (ticket.getSeat() != null) {
             venueService.reserveSeat(
                     ticket.getSeat().getID(),
@@ -116,6 +125,7 @@ public class TicketService {
                     ticket.getTicketType()
             );
         }
+
         ticket.setSold(true);
         ticket.setCustomer(customer);
         ticket.setPurchaseDate(LocalDateTime.now());
@@ -151,6 +161,7 @@ public class TicketService {
     }
 
     private void updateTicket(Ticket ticket) {
+        ticket.setCustomer(ticket.getCustomer());
         ticketRepository.update(ticket);
     }
 
@@ -168,4 +179,51 @@ public class TicketService {
     public double calculateTotalPrice(List<Ticket> tickets) {
         return tickets.stream().mapToDouble(Ticket::getPrice).sum();
     }
+
+    public List<String> getTicketAvailabilityByType(Event event) {
+        List<Ticket> tickets = getTicketsByEvent(event);
+
+        long earlyBirdAvailable = tickets.stream()
+                .filter(ticket -> ticket.getTicketType() == TicketType.EARLY_BIRD && !ticket.isSold())
+                .count();
+
+        long vipAvailable = tickets.stream()
+                .filter(ticket -> ticket.getTicketType() == TicketType.VIP && !ticket.isSold())
+                .count();
+
+        long standardAvailable = tickets.stream()
+                .filter(ticket -> ticket.getTicketType() == TicketType.STANDARD && !ticket.isSold())
+                .count();
+
+        List<String> availability = new ArrayList<>();
+        availability.add(earlyBirdAvailable > 0
+                ? earlyBirdAvailable + " early bird tickets available"
+                : "early bird tickets sold out");
+
+        availability.add(vipAvailable > 0
+                ? vipAvailable + " VIP tickets available"
+                : "VIP tickets sold out");
+
+        availability.add(standardAvailable > 0
+                ? standardAvailable + " standard tickets available"
+                : "standard tickets sold out");
+
+        return availability;
+    }
+
+    public List<Ticket> getAvailableTicketsByType(Event event, TicketType ticketType) {
+        return getTicketsByEvent(event).stream()
+                .filter(ticket -> ticket.getTicketType() == ticketType && !ticket.isSold())
+                .collect(Collectors.toList());
+    }
+
+    public List<Ticket> getTicketsByCustomer(Customer customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer cannot be null.");
+        }
+        return ticketRepository.getAll().stream()
+                .filter(ticket -> customer.equals(ticket.getCustomer()))
+                .collect(Collectors.toList());
+    }
+
 }

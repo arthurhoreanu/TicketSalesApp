@@ -45,10 +45,6 @@ public class DBRepositoryFactory implements RepositoryFactory {
         return new DBRepository<>(Cart.class);
     }
 
-    @Override
-    public DBRepository<PurchaseHistory> createPurchaseHistoryRepository() {
-        return new DBRepository<>(PurchaseHistory.class);
-    }
 
     @Override
     public DBRepository<User> createUserRepository() {

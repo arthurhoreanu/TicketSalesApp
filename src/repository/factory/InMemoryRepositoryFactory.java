@@ -48,11 +48,6 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
     }
 
     @Override
-    public IRepository<PurchaseHistory> createPurchaseHistoryRepository() {
-        return new InMemoryRepository<>();
-    }
-
-    @Override
     public IRepository<User> createUserRepository() {
         return new InMemoryRepository<>();
     }

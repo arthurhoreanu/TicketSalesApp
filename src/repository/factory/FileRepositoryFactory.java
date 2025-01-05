@@ -46,11 +46,6 @@ public class FileRepositoryFactory implements RepositoryFactory {
     }
 
     @Override
-    public FileRepository<PurchaseHistory> createPurchaseHistoryRepository() {
-        return new FileRepository<>("src/repository/data/purchase_histories.csv", PurchaseHistory::fromCsv);
-    }
-
-    @Override
     public IRepository<User> createUserRepository() {
         CombinedRepository<User> combinedRepository = new CombinedRepository<>();
         combinedRepository.registerRepository(Admin.class, new FileRepository<>("src/repository/data/admins.csv", Admin::fromCsv));
