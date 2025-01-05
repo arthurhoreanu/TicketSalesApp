@@ -56,18 +56,21 @@ public class CustomerMenu {
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
         System.out.print("Enter the name of an artist or athlete: ");
         String name = scanner.nextLine();
+
         Artist artist = controller.findArtistByName(name);
         if (artist != null) {
             handleEventSelectionForPerformer(scanner, controller, artist);
+            return;
+        }
+
+        Athlete athlete = controller.findAthleteByName(name);
+        if (athlete != null) {
+            handleEventSelectionForPerformer(scanner, controller, athlete);
         } else {
-            Athlete athlete = controller.findAthleteByName(name);
-            if (athlete != null) {
-                handleEventSelectionForPerformer(scanner, controller, athlete);
-            } else {
-                System.out.println("No artist or athlete found with the name: " + name);
-            }
+            System.out.println("No artist or athlete found with the name: " + name);
         }
     }
+
 
     private static void handleSearchEventsByLocation(Scanner scanner, Controller controller) {
         System.out.print("Enter location or venue name: ");
@@ -96,16 +99,55 @@ public class CustomerMenu {
     }
 
     private static void handleViewAllEvents(Scanner scanner, Controller controller) {
-        List<Event> events = controller.getAllEvents();
-        handleEventSelectionFromList(scanner, controller, events);
+        List<Event> events = controller.getAllEvents(); // This will handle printing
+        if (events.isEmpty()) {
+            return; // No further action needed if no events are found
+        }
+        System.out.print("Enter Event ID to view sections and tickets: ");
+        try {
+            int eventId = Integer.parseInt(scanner.nextLine());
+            Event event = controller.findEventByID(eventId);
+            if (event != null) {
+                handleSectionAndTicketSelection(scanner, controller, event);
+            } else {
+                System.out.println("Invalid Event ID.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
     }
 
     private static void handleEventSelectionForPerformer(Scanner scanner, Controller controller, Object performer) {
-        List<Event> events = performer instanceof Artist artist
-                ? controller.getUpcomingEventsForArtist(artist.getID())
-                : controller.getUpcomingEventsForAthlete(((Athlete) performer).getID());
-        handleEventSelectionFromList(scanner, controller, events);
+        List<Event> events;
+
+        if (performer instanceof Artist artist) {
+            events = controller.getUpcomingEventsForArtist(artist.getID()); // Controller handles printing
+        } else if (performer instanceof Athlete athlete) {
+            events = controller.getUpcomingEventsForAthlete(athlete.getID()); // Controller handles printing
+        } else {
+            return;
+        }
+
+        // If no events are returned, stop further processing
+        if (events.isEmpty()) {
+            return;
+        }
+
+        // Prompt the user for an Event ID
+        System.out.print("Enter Event ID to view sections and tickets: ");
+        try {
+            int eventId = Integer.parseInt(scanner.nextLine());
+            Event event = controller.findEventByID(eventId);
+            if (event != null) {
+                handleSectionAndTicketSelection(scanner, controller, event);
+            } else {
+                System.out.println("Invalid Event ID.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
     }
+
 
     private static void handleEventSelectionFromList(Scanner scanner, Controller controller, List<Event> events) {
         if (events.isEmpty()) {
@@ -139,20 +181,6 @@ public class CustomerMenu {
         }
     }
 
-    private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {
-        System.out.print("Enter the number of tickets to purchase (max " + venue.getVenueCapacity() + "): ");
-        try {
-            int ticketCount = Integer.parseInt(scanner.nextLine());
-            if (ticketCount > venue.getVenueCapacity()) {
-                System.out.println("Invalid ticket count. Try again.");
-                return;
-            }
-            handleCheckout(scanner, controller, event, null, ticketCount);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input.");
-        }
-    }
-
     private static void handleSeatSelection(Scanner scanner, Controller controller, List<Section> sections, Event event) {
         System.out.println("Sections available:");
         sections.forEach(System.out::println);
@@ -177,41 +205,65 @@ public class CustomerMenu {
             }
 
             System.out.print("Do you want seat recommendations? (yes/no): ");
-            if (scanner.nextLine().equalsIgnoreCase("yes")) {
+            if (scanner.nextLine().equalsIgnoreCase("yes") && !selectedSeats.isEmpty()) {
                 Seat closestSeat = controller.recommendClosestSeat(sectionID, selectedSeats.get(0).getNumber());
                 if (closestSeat != null) selectedSeats.add(closestSeat);
             }
 
-            handleCheckout(scanner, controller, event, selectedSeats, selectedSeats.size());
+            // Convert selected seats into tickets
+            List<Ticket> selectedTickets = new ArrayList<>();
+            double basePrice = controller.getBasePriceForEvent(event.getID()); // Fetch base price
+            for (Seat seat : selectedSeats) {
+                selectedTickets.add(new Ticket(0, event, seat, null, basePrice, TicketType.STANDARD));
+            }
+
+            handleCheckout(scanner, controller, event, selectedTickets, selectedTickets.size());
         } catch (NumberFormatException e) {
             System.out.println("Invalid input.");
         }
     }
 
-    private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Seat> seats, int ticketCount) {
+
+    private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {
+        System.out.print("Enter the number of tickets to purchase (max " + venue.getVenueCapacity() + "): ");
+        try {
+            int ticketCount = Integer.parseInt(scanner.nextLine());
+            if (ticketCount > venue.getVenueCapacity() || ticketCount <= 0) {
+                System.out.println("Invalid ticket count. Try again.");
+                return;
+            }
+            List<Ticket> tickets = new ArrayList<>();
+            double basePrice = controller.getBasePriceForEvent(event.getID()); // Fetch base price
+            for (int i = 0; i < ticketCount; i++) {
+                tickets.add(new Ticket(0, event, null, null, basePrice, TicketType.STANDARD));
+            }
+            handleCheckout(scanner, controller, event, tickets, tickets.size());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
+    private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Ticket> tickets, int ticketCount) {
         System.out.println("Proceeding to checkout...");
 
         Customer customer = (Customer) controller.getCurrentUser();
         Cart cart = controller.createCart(customer, event);
 
-        if (seats != null) {
-            for (Seat seat : seats) {
-                Ticket ticket = new Ticket(0, event, seat, customer, getPriceForSeat(controller, seat, event), TicketType.STANDARD);
-                controller.addTicketToCart(cart, ticket);
-            }
-        } else {
-            for (int i = 0; i < ticketCount; i++) {
-                Ticket ticket = new Ticket(0, event, null, customer, getPriceForGeneralAdmission(controller, event), TicketType.STANDARD);
-                controller.addTicketToCart(cart, ticket);
+        if (tickets != null && !tickets.isEmpty()) {
+            for (Ticket ticket : tickets) {
+                controller.addTicketToCart(cart, ticket); // Add tickets to the cart
             }
         }
 
+        // Retrieve updated tickets and calculate the total price
         List<Ticket> ticketsInCart = controller.getTicketsInCart(cart);
-        double totalPrice = controller.calculateTotalPrice(ticketsInCart);
+        double totalPrice = controller.calculateTotalPrice(ticketsInCart); // Fetch updated total price
+        cart.setTotalPrice(totalPrice); // Update cart's total price
         System.out.println("Cart Summary:");
         ticketsInCart.forEach(System.out::println);
         System.out.println("Total Price: $" + totalPrice);
 
+        // Handle payment details
         System.out.println("Please provide payment details:");
         System.out.print("Card Number: ");
         String cardNumber = scanner.nextLine();
@@ -227,6 +279,7 @@ public class CustomerMenu {
         String currency = scanner.nextLine();
 
         try {
+            // Process the payment using the controller
             controller.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv, currency);
             controller.finalizeCart(cart);
             System.out.println("Payment successful! Order finalized.");
@@ -234,6 +287,8 @@ public class CustomerMenu {
             System.out.println("Payment failed: " + e.getMessage());
         }
     }
+
+
 
     private static double getPriceForGeneralAdmission(Controller controller, Event event) {
         return event.getBasePrice();

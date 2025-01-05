@@ -1,14 +1,12 @@
 package service;
 
-import controller.Controller;
 import model.*;
-import repository.FileRepository;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -28,10 +26,13 @@ public class TicketService {
     }
 
     /**
-     * Generates tickets for an event based on its available seats.
+     * Generates tickets for an event based on its available seats or venue capacity.
      *
-     * @param event     the event for which tickets are generated.
-     * @param basePrice the base price for EARLY_BIRD tickets.
+     * @param event        the event for which tickets are generated.
+     * @param basePrice    the base price for EARLY_BIRD tickets.
+     * @param earlyBirdCount the number of EARLY_BIRD tickets.
+     * @param vipCount     the number of VIP tickets.
+     * @param standardCount the number of STANDARD tickets.
      * @return the list of generated tickets.
      */
     public List<Ticket> generateTicketsForEvent(Event event, double basePrice, int earlyBirdCount, int vipCount, int standardCount) {
@@ -41,19 +42,18 @@ public class TicketService {
         }
 
         List<Ticket> allTickets = new ArrayList<>();
-
         if (venue.isHasSeats()) {
-            // Venue with seats
+            // Generate tickets for venues with seats
             List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(event.getVenueID(), event.getID());
             if (availableSeats.size() < (earlyBirdCount + vipCount + standardCount)) {
                 throw new IllegalArgumentException("Not enough available seats to generate tickets.");
             }
 
-            allTickets.addAll(generateEarlyBirdTickets(availableSeats.subList(0, earlyBirdCount), event, basePrice));
-            allTickets.addAll(generateVipTickets(availableSeats.subList(earlyBirdCount, earlyBirdCount + vipCount), event, basePrice));
-            allTickets.addAll(generateStandardTickets(availableSeats.subList(earlyBirdCount + vipCount, availableSeats.size()), event, basePrice));
+            allTickets.addAll(generateTicketsWithSeats(availableSeats.subList(0, earlyBirdCount), event, basePrice, TicketType.EARLY_BIRD));
+            allTickets.addAll(generateTicketsWithSeats(availableSeats.subList(earlyBirdCount, earlyBirdCount + vipCount), event, basePrice * 1.5, TicketType.VIP));
+            allTickets.addAll(generateTicketsWithSeats(availableSeats.subList(earlyBirdCount + vipCount, earlyBirdCount + vipCount + standardCount), event, calculateDynamicStandardPrice(basePrice, event.getStartDateTime()), TicketType.STANDARD));
         } else {
-            // Venue without seats
+            // Generate tickets for venues without seats
             int totalCapacity = venue.getVenueCapacity();
             if (totalCapacity < (earlyBirdCount + vipCount + standardCount)) {
                 throw new IllegalArgumentException("Not enough capacity in the venue to generate tickets.");
@@ -64,12 +64,23 @@ public class TicketService {
             allTickets.addAll(generateTicketsWithoutSeats(event, calculateDynamicStandardPrice(basePrice, event.getStartDateTime()), standardCount, TicketType.STANDARD));
         }
 
-        // Save all tickets
+        // Save tickets to repository
         for (Ticket ticket : allTickets) {
             ticketRepository.create(ticket);
         }
 
         return allTickets;
+    }
+
+    private List<Ticket> generateTicketsWithSeats(List<Seat> seats, Event event, double price, TicketType ticketType) {
+        return seats.stream()
+                .map(seat -> {
+                    Ticket ticket = new Ticket(0, event, seat, null, price, ticketType);
+                    seat.setTicket(ticket); // Associate ticket with seat
+                    venueService.updateSeat(seat); // Persist the seat update
+                    return ticket;
+                })
+                .collect(Collectors.toList());
     }
 
     private List<Ticket> generateTicketsWithoutSeats(Event event, double price, int count, TicketType ticketType) {
@@ -78,27 +89,6 @@ public class TicketService {
             tickets.add(new Ticket(0, event, null, null, price, ticketType));
         }
         return tickets;
-    }
-
-    private List<Ticket> generateEarlyBirdTickets(List<Seat> seats, Event event, double basePrice) {
-        return seats.stream()
-                .map(seat -> new Ticket(0, event, seat, null, basePrice, TicketType.EARLY_BIRD))
-                .collect(Collectors.toList());
-    }
-
-
-    private List<Ticket> generateVipTickets(List<Seat> seats, Event event, double basePrice) {
-        double vipPrice = basePrice * (1 + VIP_PERCENTAGE_INCREASE / 100);
-        return seats.stream()
-                .map(seat -> new Ticket(0, event, seat, null, vipPrice, TicketType.VIP))
-                .collect(Collectors.toList());
-    }
-
-    private List<Ticket> generateStandardTickets(List<Seat> seats, Event event, double basePrice) {
-        double dynamicPrice = calculateDynamicStandardPrice(basePrice, event.getStartDateTime());
-        return seats.stream()
-                .map(seat -> new Ticket(0, event, seat, null, dynamicPrice, TicketType.STANDARD))
-                .collect(Collectors.toList());
     }
 
     private double calculateDynamicStandardPrice(double basePrice, LocalDateTime eventDate) {
@@ -112,7 +102,7 @@ public class TicketService {
         } else if (daysToEvent <= 7 && daysToEvent > 1) {
             return basePrice * 1.5; // +50%
         } else {
-            return basePrice * (1 + LAST_MINUTE_DISCOUNT / 100); // -20%
+            return basePrice * 0.8; // -20% for last-minute
         }
     }
 

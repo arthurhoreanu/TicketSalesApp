@@ -183,6 +183,9 @@ public class Controller {
     public double calculateTotalPrice(List<Ticket> tickets) {
         return ticketController.calculateTotalPrice(tickets);}
 
+    public double getBasePriceForEvent(int eventId) {
+        return eventController.getBasePriceForEvent(eventId);
+    }
 
     // 5. Cart
     public Cart createCart(Customer customer, Event event) {

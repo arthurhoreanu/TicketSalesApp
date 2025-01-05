@@ -44,6 +44,7 @@ public class CartService {
     public boolean addTicketToCart(Cart cart, Ticket ticket) {
         try {
             cart.addTicket(ticket);
+            updateTotalPrice(cart); // Update total price after adding a ticket
             cartRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
@@ -80,6 +81,11 @@ public class CartService {
         cart.setTotalPrice(totalPrice);
         cartRepository.update(cart);
     }
+
+ /*   public double calculateTotalPrice(Cart cart) {
+        return cart.getTickets().stream().mapToDouble(Ticket::getPrice).sum();
+    }*/
+
 
     /**
      * Clears the cart by removing all tickets and resetting the total price.

@@ -158,13 +158,10 @@ public class AdminVenueMenu {
         }
 
         // Display sections for the selected venue
-        System.out.println("Sections in the venue:");
         List<Section> sections = controller.getSectionsByVenueID(venueId);
         if (sections.isEmpty()) {
-            System.out.println("No sections found for this venue.");
             return;
         }
-        sections.forEach(System.out::println);
 
         // Prompt for Section ID
         System.out.print("Enter Section ID: ");
