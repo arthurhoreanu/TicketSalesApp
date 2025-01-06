@@ -152,6 +152,7 @@ public class Ticket implements Identifiable {
         this.isSold = true;
         this.purchaseDate = LocalDateTime.now();
         this.customer = customer;
+        seat.setReserved(true);
     }
 
     public void adjustPrice(double percentage) {
