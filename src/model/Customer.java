@@ -48,7 +48,7 @@ public class Customer extends User {
      */
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
-        this.cart = new Cart();
+//        this.cart = new Cart();
         this.preferredSections = new HashMap<>();
     }
 

@@ -82,8 +82,8 @@ public class UserService {
         }
         Admin admin = new Admin();
         admin.setUsername(username);
-        admin.setPassword(password);
         admin.setEmail(email);
+        admin.setPassword(password);
         userRepository.create(admin);
         return true;
     }
