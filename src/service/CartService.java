@@ -46,7 +46,15 @@ public class CartService {
      */
     public boolean addTicketToCart(Cart cart, Ticket ticket) {
         try {
+            if (ticket.isSold()) {
+                throw new IllegalArgumentException("Ticket is already sold.");
+            }
+
+            // Mark the ticket as reserved
+            ticket.setSold(true);
+            ticket.setCart(cart);
             cart.addTicket(ticket);
+
             updateTotalPrice(cart); // Update total price after adding a ticket
             cartRepository.update(cart);
             return true;
@@ -55,6 +63,7 @@ public class CartService {
             return false;
         }
     }
+
 
     /**
      * Removes a ticket from the cart.
@@ -84,11 +93,6 @@ public class CartService {
         cart.setTotalPrice(totalPrice);
         cartRepository.update(cart);
     }
-
- /*   public double calculateTotalPrice(Cart cart) {
-        return cart.getTickets().stream().mapToDouble(Ticket::getPrice).sum();
-    }*/
-
 
     /**
      * Clears the cart by removing all tickets and resetting the total price.

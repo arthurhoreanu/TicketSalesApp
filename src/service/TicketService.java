@@ -107,13 +107,8 @@ public class TicketService {
     }
 
     public void reserveTicket(Ticket ticket, Customer customer) {
-        if (ticket.getTicketType() == TicketType.STANDARD) {
-            long earlyBirdAvailable = getTicketsByEvent(ticket.getEvent()).stream()
-                    .filter(t -> t.getTicketType() == TicketType.EARLY_BIRD && !t.isSold())
-                    .count();
-            if (earlyBirdAvailable > 0) {
-                throw new IllegalArgumentException("You cannot purchase standard tickets until early bird tickets are sold out.");
-            }
+        if (ticket.isSold()) {
+            throw new IllegalArgumentException("Ticket is already sold.");
         }
 
         if (ticket.getSeat() != null) {
@@ -131,6 +126,7 @@ public class TicketService {
         ticket.setPurchaseDate(LocalDateTime.now());
         updateTicket(ticket);
     }
+
 
     public void releaseTicket(Ticket ticket) {
         if (ticket.getSeat() != null) {
