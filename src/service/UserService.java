@@ -1,5 +1,7 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.ValidationException;
 import model.Admin;
 import model.Customer;
 import model.User;
@@ -61,7 +63,7 @@ public class UserService {
 
     public boolean createCustomer(String username, String email, String password) {
         if (takenUsername(username)) {
-            return false;
+            throw new BusinessLogicException("Username '" + username + "' is already taken.");
         }
         Customer customer = new Customer();
         customer.setUsername(username);
@@ -72,8 +74,11 @@ public class UserService {
     }
 
     public boolean createAdmin(String username, String email, String password) {
-        if (takenUsername(username) || !domainEmail(email)) {
-            return false;
+        if (takenUsername(username)) {
+            throw new BusinessLogicException("Username '" + username + "' is already taken.");
+        }
+        if (!domainEmail(email)) {
+            throw new BusinessLogicException("Admins must have domain email.");
         }
         Admin admin = new Admin();
         admin.setUsername(username);
@@ -136,14 +141,14 @@ public class UserService {
      */
     public boolean deleteAccount(int id) {
         if (currentUser == null || !(currentUser instanceof Admin)) {
-            return false;
+            throw new BusinessLogicException("Only admins can delete accounts.");
         }
         User userToDelete = userRepository.read(id);
-        if (userToDelete != null) {
-            userRepository.delete(id);
-            return true;
+        if (userToDelete == null) {
+            throw new ValidationException("User with ID " + id + " does not exist.");
         }
-        return false;
+        userRepository.delete(id);
+        return true;
     }
 
     public User findUserByID(int id) {

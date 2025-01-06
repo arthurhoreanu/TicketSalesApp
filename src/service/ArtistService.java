@@ -1,9 +1,10 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.ValidationException;
 import model.Artist;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class ArtistService {
      * @return true if the artist was successfully created and added to the repository, false otherwise.
      */
     public boolean createArtist(String artistName, String genre) {
+        if (findArtistByName(artistName) != null) {
+            throw new BusinessLogicException("Artist with name '" + artistName + "' already exists.");
+        }
         Artist artist = new Artist(0, artistName, genre);
         artistRepository.create(artist);
         return true;
@@ -35,14 +39,16 @@ public class ArtistService {
      */
     public boolean updateArtist(int artistId, String newName, String newGenre) {
         Artist artist = findArtistByID(artistId);
-        if (artist != null) {
-            artist.setArtistName(newName);
-            artist.setGenre(newGenre);
-            artistRepository.update(artist);
-            return true;
-        } else {
-            return false;
+        if(artist == null) {
+            throw new ValidationException("Artist with id '" + artistId + "' does not exist.");
         }
+        if (newName == null || newName.isBlank()) {
+            throw new BusinessLogicException("Artist name cannot be null or empty.");
+        }
+        artist.setArtistName(newName);
+        artist.setGenre(newGenre);
+        artistRepository.update(artist);
+        return true;
     }
 
     /**
@@ -52,12 +58,11 @@ public class ArtistService {
      */
     public boolean deleteArtist(int artistId) {
         Artist artist = findArtistByID(artistId);
-        if (artist != null) {
-            artistRepository.delete(artistId);
-            return true;
-        } else {
-            return false;
+        if(artist == null) {
+            throw new ValidationException("Artist with id '" + artistId + "' does not exist.");
         }
+        artistRepository.delete(artistId);
+        return true;
     }
 
     /**

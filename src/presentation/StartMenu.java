@@ -1,6 +1,7 @@
 package presentation;
-import repository.factory.*;
 
+import exception.ValidationException;
+import repository.factory.*;
 import java.util.Scanner;
 
 /**
@@ -9,26 +10,31 @@ import java.util.Scanner;
 public class StartMenu {
 
     public static RepositoryFactory select(Scanner scanner) {
-        System.out.println("==== Choose Data Representation ====");
-        System.out.println("1. InMemory");
-        System.out.println("2. File");
-        System.out.println("3. Database");
-        System.out.print("Your choice: ");
+        try {
+            System.out.println("==== Choose Data Representation ====");
+            System.out.println("1. InMemory");
+            System.out.println("2. File");
+            System.out.println("3. Database");
+            System.out.print("Your choice: ");
 
-        String choice = scanner.nextLine();
-        switch (choice) {
-            case "1":
-                System.out.println("You selected InMemory storage.");
-                return new InMemoryRepositoryFactory();
-            case "2":
-                System.out.println("You selected File storage.");
-                return new FileRepositoryFactory();
-            case "3":
-                System.out.println("You selected Database storage.");
-                return new DBRepositoryFactory();
-            default:
-                System.out.println("Invalid choice. Defaulting to InMemory storage.");
-                return new InMemoryRepositoryFactory();
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1":
+                    System.out.println("You selected InMemory storage.");
+                    return new InMemoryRepositoryFactory();
+                case "2":
+                    System.out.println("You selected File storage.");
+                    return new FileRepositoryFactory();
+                case "3":
+                    System.out.println("You selected Database storage.");
+                    return new DBRepositoryFactory();
+                default:
+                    throw new ValidationException("Invalid choice. Please select a valid option (1, 2, or 3).");
+            }
+        } catch (ValidationException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Defaulting to InMemory storage.");
+            return new InMemoryRepositoryFactory();
         }
     }
 }
