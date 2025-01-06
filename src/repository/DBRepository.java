@@ -1,7 +1,7 @@
 package repository;
 
+import exception.DatabaseException;
 import model.*;
-
 import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.sql.*;
@@ -30,19 +30,21 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
         if (!entityClass.isAnnotationPresent(Entity.class)) {
             throw new IllegalArgumentException("Class " + entityClass.getSimpleName() + " is not annotated with @Entity");
         }
-
         if (entityClass.isAnnotationPresent(Table.class)) {
             Table table = entityClass.getAnnotation(Table.class);
             if (!table.name().isEmpty()) {
                 return table.name();
             }
         }
-
         return entityClass.getSimpleName().toLowerCase();
     }
 
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    private Connection getConnection() {
+        try {
+            return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to establish a database connection: " + e.getMessage());
+        }
     }
 
     @Override
@@ -74,8 +76,10 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
                     }
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error inserting entity into database: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new DatabaseException("Unexpected error during entity creation: " + e.getMessage());
         }
     }
 
@@ -98,8 +102,10 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
                     }
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error reading entity with ID " + id + ": " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new DatabaseException("Unexpected error during entity retrieval: " + e.getMessage());
         }
         return null;
     }
@@ -121,8 +127,10 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
                     }
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error retrieving all entities: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new DatabaseException("Unexpected error during entity retrieval: " + e.getMessage());
         }
         return results;
     }
@@ -147,8 +155,10 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
 
                 stmt.executeUpdate();
             }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error updating entity: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new DatabaseException("Unexpected error during entity update: " + e.getMessage());
         }
     }
 
@@ -193,8 +203,10 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
                     stmt.executeUpdate();
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error deleting entity with ID " + id + ": " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new DatabaseException("Unexpected error during entity deletion: " + e.getMessage());
         }
     }
 
@@ -358,6 +370,5 @@ public class DBRepository<T extends Identifiable> implements IRepository<T> {
             }
         }
     }
-
 
 }

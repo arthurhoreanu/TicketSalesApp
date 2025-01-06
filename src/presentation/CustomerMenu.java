@@ -1,6 +1,8 @@
 package presentation;
 
 import controller.Controller;
+import exception.EntityNotFoundException;
+import exception.ValidationException;
 import model.*;
 
 import java.util.*;
@@ -9,74 +11,90 @@ public class CustomerMenu {
 
     public static boolean display(Scanner scanner, Controller controller) {
         while (true) {
-            System.out.println("==== Customer Menu ====");
-            System.out.println("1. Logout");
-            System.out.println("2. Search Events by Artists/Athletes");
-            System.out.println("3. Search Events by Location/Venue");
-            System.out.println("4. View Suggested Events");
-            System.out.println("5. View All Events");
-            System.out.println("6. View Orders History");
-            System.out.println("7. Manage Favourites");
-            System.out.println("0. Exit");
-            System.out.println("=======================");
-            System.out.print("Choose an option: ");
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1":
-                    controller.logout();
-                    System.out.println("Logged out successfully.");
-                    return true;
-                case "2":
-                    handleSearchArtistsAndAthletes(scanner, controller);
-                    break;
-                case "3":
-                    handleSearchEventsByLocation(scanner, controller);
-                    break;
-                case "4":
-                    handleViewSuggestedEvents(scanner, controller);
-                    break;
-                case "5":
-                    handleViewAllEvents(scanner, controller);
-                    break;
-                case "6":
-                    handleViewPreviousOrders(controller);
-                    break;
-                case "7":
-                    handleManageFavourites(scanner, controller);
-                    break;
-                case "0":
-                    System.out.println("Exiting the application. Goodbye!");
-                    return false;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+            try {
+                System.out.println("==== Customer Menu ====");
+                System.out.println("1. Logout");
+                System.out.println("2. Search Events by Artists/Athletes");
+                System.out.println("3. Search Events by Location/Venue");
+                System.out.println("4. View Suggested Events");
+                System.out.println("5. View All Events");
+                System.out.println("6. View Orders History");
+                System.out.println("7. Manage Favourites");
+                System.out.println("0. Exit");
+                System.out.println("=======================");
+                System.out.print("Choose an option: ");
+                String choice = scanner.nextLine();
+
+                switch (choice) {
+                    case "1":
+                        controller.logout();
+                        System.out.println("Logged out successfully.");
+                        return true;
+                    case "2":
+                        handleSearchArtistsAndAthletes(scanner, controller);
+                        break;
+                    case "3":
+                        handleSearchEventsByLocation(scanner, controller);
+                        break;
+                    case "4":
+                        handleViewSuggestedEvents(scanner, controller);
+                        break;
+                    case "5":
+                        handleViewAllEvents(scanner, controller);
+                        break;
+                    case "6":
+                        handleViewPreviousOrders(controller);
+                        break;
+                    case "7":
+                        handleManageFavourites(scanner, controller);
+                        break;
+                    case "0":
+                        System.out.println("Exiting the application. Goodbye!");
+                        return false;
+                    default:
+                        throw new ValidationException("Invalid option. Please select a valid menu number.");
+                }
+            } catch (ValidationException e) {
+                System.out.println("Error: " + e.getMessage());
             }
         }
     }
 
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
-        System.out.print("Enter the name of an artist or athlete: ");
-        String name = scanner.nextLine();
-
-        Artist artist = controller.findArtistByName(name);
-        if (artist != null) {
-            handleEventSelectionForPerformer(scanner, controller, artist);
-            return;
-        }
-
-        Athlete athlete = controller.findAthleteByName(name);
-        if (athlete != null) {
-            handleEventSelectionForPerformer(scanner, controller, athlete);
-        } else {
-            System.out.println("No artist or athlete found with the name: " + name);
+        try {
+            System.out.print("Enter the name of an artist or athlete: ");
+            String name = scanner.nextLine();
+            if(name.isEmpty()) {
+                throw new ValidationException("Artist name cannot be empty.");
+            }
+            Artist artist = controller.findArtistByName(name);
+            if (artist != null) {
+                handleEventSelectionForPerformer(scanner, controller, artist);
+                return;
+            }
+            Athlete athlete = controller.findAthleteByName(name);
+            if (athlete != null) {
+                handleEventSelectionForPerformer(scanner, controller, athlete);
+            } else {
+                throw new EntityNotFoundException("No artist or athlete found.");
+            }
+        } catch (ValidationException | EntityNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-
     private static void handleSearchEventsByLocation(Scanner scanner, Controller controller) {
-        System.out.print("Enter location or venue name: ");
-        String location = scanner.nextLine();
-        List<Event> events = controller.getEventsByLocation(location);
-        handleEventSelectionFromList(scanner, controller, events);
+        try {
+            System.out.print("Enter location or venue name: ");
+            String location = scanner.nextLine();
+            if(location.isEmpty()) {
+                throw new ValidationException("Venue name cannot be empty.");
+            }
+            List<Event> events = controller.getEventsByLocation(location);
+            handleEventSelectionFromList(scanner, controller, events);
+        } catch (ValidationException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
@@ -113,74 +131,75 @@ public class CustomerMenu {
                 System.out.println("Invalid Event ID.");
             }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid input.");
+            System.out.println("Error: Invalid input.");
         }
     }
 
     private static void handleEventSelectionForPerformer(Scanner scanner, Controller controller, Object performer) {
-        List<Event> events;
-
-        if (performer instanceof Artist artist) {
-            events = controller.getUpcomingEventsForArtist(artist.getID()); // Controller handles printing
-        } else if (performer instanceof Athlete athlete) {
-            events = controller.getUpcomingEventsForAthlete(athlete.getID()); // Controller handles printing
-        } else {
-            return;
-        }
-
-        // If no events are returned, stop further processing
-        if (events.isEmpty()) {
-            return;
-        }
-
-        // Prompt the user for an Event ID
-        System.out.print("Enter Event ID to view sections and tickets: ");
         try {
+            List<Event> events;
+            if (performer instanceof Artist artist) {
+                events = controller.getUpcomingEventsForArtist(artist.getID());
+            } else if (performer instanceof Athlete athlete) {
+                events = controller.getUpcomingEventsForAthlete(athlete.getID());
+            } else {
+                return;
+            }
+            if (events.isEmpty()) {
+                throw new EntityNotFoundException("No events found.");
+            }
+            System.out.print("Enter Event ID to view sections and tickets: ");
             int eventId = Integer.parseInt(scanner.nextLine());
             Event event = controller.findEventByID(eventId);
             if (event != null) {
                 handleSectionAndTicketSelection(scanner, controller, event);
             } else {
-                System.out.println("Invalid Event ID.");
+                throw new ValidationException("Invalid Event ID.");
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input.");
+        } catch (ValidationException | EntityNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     private static void handleEventSelectionFromList(Scanner scanner, Controller controller, List<Event> events) {
-        if (events.isEmpty()) {
-            System.out.println("No events found.");
-            return;
-        }
-
-        events.forEach(System.out::println);
-        System.out.print("Enter Event ID to view sections and tickets: ");
         try {
+            if (events.isEmpty()) {
+                throw new EntityNotFoundException("No events found.");
+            }
+            events.forEach(System.out::println);
+            System.out.print("Enter Event ID to view sections and tickets: ");
             int eventId = Integer.parseInt(scanner.nextLine());
             Event event = controller.findEventByID(eventId);
             if (event != null) {
                 handleSectionAndTicketSelection(scanner, controller, event);
             } else {
-                System.out.println("Invalid Event ID.");
+                throw new ValidationException("Invalid Event ID.");
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input.");
+        } catch (ValidationException | EntityNotFoundException e) {
+            System.out.println("Error " + e.getMessage());
         }
     }
 
     private static void handleSectionAndTicketSelection(Scanner scanner, Controller controller, Event event) {
-        List<String> ticketAvailability = controller.getTicketAvailabilityByType(event);
-        System.out.println("Ticket availability:");
-        ticketAvailability.forEach(System.out::println);
-
-        Venue venue = controller.findVenueByID(event.getVenueID());
-        List<Section> sections = controller.getSectionsByVenueID(venue.getID());
-
-        if (sections.isEmpty() || (sections.size() == 1 && !venue.isHasSeats())) {
-            handleSimpleTicketSelection(scanner, controller, event, venue);
-        } else {
-            handleSeatSelection(scanner, controller, sections, event);
+        try {
+            List<String> ticketAvailability = controller.getTicketAvailabilityByType(event);
+            if (ticketAvailability.isEmpty()) {
+                System.out.println("No tickets available for this event.");
+            }
+            System.out.println("Ticket availability:");
+            ticketAvailability.forEach(System.out::println);
+            Venue venue = controller.findVenueByID(event.getVenueID());
+            if (venue == null) {
+                throw new ValidationException("Venue not found.");
+            }
+            List<Section> sections = controller.getSectionsByVenueID(venue.getID());
+            if (sections.isEmpty() || (sections.size() == 1 && !venue.isHasSeats())) {
+                handleSimpleTicketSelection(scanner, controller, event, venue);
+            } else {
+                handleSeatSelection(scanner, controller, sections, event);
+            }
+        } catch (ValidationException | EntityNotFoundException e) {
+            System.out.println("Error " + e.getMessage());
         }
     }
 
@@ -222,7 +241,7 @@ public class CustomerMenu {
 
             handleCheckout(scanner, controller, event, selectedTickets, selectedTickets.size());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid input.");
+            System.out.println("Error: Invalid input.");
         }
     }
 
@@ -293,7 +312,7 @@ public class CustomerMenu {
                     selectedTickets.addAll(ticketsToBuy);
                     System.out.println(ticketCount + " " + selectedType + " tickets added to your selection.");
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid input.");
+                    System.out.println("Error: Invalid input.");
                 }
             }
         }
@@ -338,7 +357,7 @@ public class CustomerMenu {
             expiryMonth = Integer.parseInt(parts[0]);
             expiryYear = 2000 + Integer.parseInt(parts[1]); // Convert YY to YYYY
         } catch (Exception e) {
-            System.out.println("Invalid expiry date format. Must be MM/YY.");
+            System.out.println("Error: Invalid expiry date format. Must be MM/YY.");
             return;
         }
 
@@ -351,7 +370,7 @@ public class CustomerMenu {
             controller.clearCart(cart);
             System.out.println("Payment successful! Order finalized.");
         } catch (IllegalArgumentException e) {
-            System.out.println("Payment failed: " + e.getMessage());
+            System.out.println("Error: Payment failed: " + e.getMessage());
             controller.clearCart(cart);
         } catch (IllegalStateException e) {
             System.out.println("Error processing order: " + e.getMessage());
@@ -360,24 +379,28 @@ public class CustomerMenu {
     }
 
     private static void handleViewPreviousOrders(Controller controller) {
-        Customer currentCustomer = (Customer) controller.getCurrentUser();
-        List<Ticket> purchasedTickets = controller.getTicketsByCustomer(currentCustomer);
-        if (purchasedTickets.isEmpty()) {
-            System.out.println("No previous orders found.");
-        } else {
-            System.out.println("Previous Orders:");
-            purchasedTickets.forEach(ticket -> {
-                System.out.println("Ticket ID: " + ticket.getID());
-                System.out.println("Event: " + ticket.getEvent().getEventName());
-                System.out.println("Price: $" + ticket.getPrice());
-                System.out.println("Purchase Date: " + ticket.getPurchaseDate());
-                if (ticket.getSeat() != null) {
-                    System.out.println("Seat: " + ticket.getSeat().getNumber());
-                } else {
-                    System.out.println("General Admission");
-                }
-                System.out.println("-----------------------------");
-            });
+        try {
+            Customer currentCustomer = (Customer) controller.getCurrentUser();
+            List<Ticket> purchasedTickets = controller.getTicketsByCustomer(currentCustomer);
+            if (purchasedTickets.isEmpty()) {
+                throw new EntityNotFoundException("No previous orders found.");
+            } else {
+                System.out.println("Previous Orders:");
+                purchasedTickets.forEach(ticket -> {
+                    System.out.println("Ticket ID: " + ticket.getID());
+                    System.out.println("Event: " + ticket.getEvent().getEventName());
+                    System.out.println("Price: $" + ticket.getPrice());
+                    System.out.println("Purchase Date: " + ticket.getPurchaseDate());
+                    if (ticket.getSeat() != null) {
+                        System.out.println("Seat: " + ticket.getSeat().getNumber());
+                    } else {
+                        System.out.println("General Admission");
+                    }
+                    System.out.println("-----------------------------");
+                });
+            }
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            System.out.println("Error" + e.getMessage());
         }
     }
 

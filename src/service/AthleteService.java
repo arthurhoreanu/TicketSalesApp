@@ -1,18 +1,12 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.ValidationException;
 import model.Athlete;
-import model.Event;
-import model.SportsEvent;
-import repository.DBRepository;
-import repository.FileRepository;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AthleteService {
     private final IRepository<Athlete> athleteRepository;
@@ -28,6 +22,9 @@ public class AthleteService {
      * @return true if the athlete was successfully created and added to the repository, false otherwise.
      */
     public boolean createAthlete(String athleteName, String sport) {
+        if (findAthleteByName(athleteName) != null) {
+            throw new BusinessLogicException("Athlete with name '" + athleteName + "' already exists.");
+        }
         Athlete athlete = new Athlete(0, athleteName, sport);
         athleteRepository.create(athlete);
         return true;
@@ -35,21 +32,23 @@ public class AthleteService {
 
     /**
      * Updates an existing athlete's details.
-     * @param athelteID The ID of the athlete to be updated.
+     * @param athleteID The ID of the athlete to be updated.
      * @param newName The new name for the athlete.
      * @param newSport The new sport genre for the athlete.
      * @return true if the athlete was found and successfully updated, false if the athlete was not found.
      */
-    public boolean updateAthlete(int athelteID, String newName, String newSport) {
-        Athlete athlete = findAthleteByID(athelteID);
-        if (athlete != null) {
-            athlete.setAthleteName(newName);
-            athlete.setAthleteSport(newSport);
-            athleteRepository.update(athlete);
-            return true;
-        } else {
-            return false;
+    public boolean updateAthlete(int athleteID, String newName, String newSport) {
+        Athlete athlete = findAthleteByID(athleteID);
+        if (athlete == null) {
+            throw new ValidationException("Athlete with ID " + athleteID + " does not exist.");
         }
+        if (newName == null || newName.isBlank()) {
+            throw new ValidationException("Athlete name cannot be null or empty.");
+        }
+        athlete.setAthleteName(newName);
+        athlete.setAthleteSport(newSport);
+        athleteRepository.update(athlete);
+        return true;
     }
 
     /**
@@ -59,12 +58,11 @@ public class AthleteService {
      */
     public boolean deleteAthlete(int athleteID) {
         Athlete athlete = findAthleteByID(athleteID);
-        if (athlete != null) {
-            athleteRepository.delete(athleteID);
-            return true;
-        } else {
-            return false;
+        if (athlete == null) {
+            throw new ValidationException("Athlete with ID " + athleteID + " does not exist.");
         }
+        athleteRepository.delete(athleteID);
+        return true;
     }
 
     /**

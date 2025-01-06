@@ -1,5 +1,8 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.EntityNotFoundException;
+import exception.ValidationException;
 import model.*;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
@@ -16,9 +19,6 @@ public class TicketService {
 
     private final IRepository<Ticket> ticketRepository;
     private final VenueService venueService;
-
-    private static final double VIP_PERCENTAGE_INCREASE = 50.0; // +50% for VIP tickets
-    private static final double LAST_MINUTE_DISCOUNT = -20.0; // -20% for last-minute tickets
 
     public TicketService(RepositoryFactory repositoryFactory, VenueService venueService) {
         this.ticketRepository = repositoryFactory.createTicketRepository();
@@ -38,7 +38,7 @@ public class TicketService {
     public List<Ticket> generateTicketsForEvent(Event event, double basePrice, int earlyBirdCount, int vipCount, int standardCount) {
         Venue venue = venueService.findVenueByID(event.getVenueID());
         if (venue == null) {
-            throw new IllegalArgumentException("Venue not found for the event.");
+            throw new EntityNotFoundException("Venue not found for the event.");
         }
 
         List<Ticket> allTickets = new ArrayList<>();
@@ -46,7 +46,7 @@ public class TicketService {
             // Generate tickets for venues with seats
             List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(event.getVenueID(), event.getID());
             if (availableSeats.size() < (earlyBirdCount + vipCount + standardCount)) {
-                throw new IllegalArgumentException("Not enough available seats to generate tickets.");
+                throw new BusinessLogicException("Not enough available seats to generate tickets.");
             }
 
             allTickets.addAll(generateTicketsWithSeats(availableSeats.subList(0, earlyBirdCount), event, basePrice, TicketType.EARLY_BIRD));
@@ -56,7 +56,7 @@ public class TicketService {
             // Generate tickets for venues without seats
             int totalCapacity = venue.getVenueCapacity();
             if (totalCapacity < (earlyBirdCount + vipCount + standardCount)) {
-                throw new IllegalArgumentException("Not enough capacity in the venue to generate tickets.");
+                throw new BusinessLogicException("Not enough capacity in the venue to generate tickets.");
             }
 
             allTickets.addAll(generateTicketsWithoutSeats(event, basePrice, earlyBirdCount, TicketType.EARLY_BIRD));
@@ -112,7 +112,7 @@ public class TicketService {
                     .filter(t -> t.getTicketType() == TicketType.EARLY_BIRD && !t.isSold())
                     .count();
             if (earlyBirdAvailable > 0) {
-                throw new IllegalArgumentException("You cannot purchase standard tickets until early bird tickets are sold out.");
+                throw new BusinessLogicException("You cannot purchase standard tickets until early bird tickets are sold out.");
             }
         }
 
@@ -219,7 +219,7 @@ public class TicketService {
 
     public List<Ticket> getTicketsByCustomer(Customer customer) {
         if (customer == null) {
-            throw new IllegalArgumentException("Customer cannot be null.");
+            throw new ValidationException("Customer cannot be null.");
         }
         return ticketRepository.getAll().stream()
                 .filter(ticket -> customer.equals(ticket.getCustomer()))

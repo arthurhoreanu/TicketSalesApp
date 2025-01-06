@@ -1,5 +1,7 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.ValidationException;
 import model.Cart;
 import model.Customer;
 import model.Event;
@@ -32,6 +34,12 @@ public class CartService {
      * @return The newly created Cart object.
      */
     public Cart createCart(Customer customer, Event event) {
+        if (customer == null) {
+            throw new ValidationException("Customer cannot be null.");
+        }
+        if (event == null) {
+            throw new ValidationException("Event cannot be null.");
+        }
         Cart cart = new Cart(customer, event);
         cartRepository.create(cart);
         return cart;
@@ -45,6 +53,12 @@ public class CartService {
      * @return true if the ticket was successfully added, false otherwise.
      */
     public boolean addTicketToCart(Cart cart, Ticket ticket) {
+        if (cart == null) {
+            throw new ValidationException("Cart cannot be null.");
+        }
+        if (ticket == null) {
+            throw new ValidationException("Ticket cannot be null.");
+        }
         try {
             cart.addTicket(ticket);
             updateTotalPrice(cart); // Update total price after adding a ticket
@@ -64,6 +78,12 @@ public class CartService {
      * @return true if the ticket was successfully removed, false otherwise.
      */
     public boolean removeTicketFromCart(Cart cart, Ticket ticket) {
+        if (cart == null) {
+            throw new ValidationException("Cart cannot be null.");
+        }
+        if (ticket == null) {
+            throw new ValidationException("Ticket cannot be null.");
+        }
         try {
             cart.removeTicket(ticket);
             cartRepository.update(cart);
@@ -80,15 +100,13 @@ public class CartService {
      * @param cart The cart to update.
      */
     private void updateTotalPrice(Cart cart) {
+        if (cart == null) {
+            throw new ValidationException("Cart cannot be null.");
+        }
         double totalPrice = cart.calculateTotalPrice();
         cart.setTotalPrice(totalPrice);
         cartRepository.update(cart);
     }
-
- /*   public double calculateTotalPrice(Cart cart) {
-        return cart.getTickets().stream().mapToDouble(Ticket::getPrice).sum();
-    }*/
-
 
     /**
      * Clears the cart by removing all tickets and resetting the total price.
@@ -96,6 +114,9 @@ public class CartService {
      * @param cart The cart to clear.
      */
     public void clearCart(Cart cart) {
+        if (cart == null) {
+            throw new ValidationException("Cart cannot be null.");
+        }
         cart.clearCart();
         cart.setTotalPrice(0.0);
         cartRepository.update(cart);
@@ -109,10 +130,8 @@ public class CartService {
      */
     public void finalizeCart(Cart cart) {
         if (cart.isPaymentProcessed()) {
-            throw new IllegalStateException("Payment has already been processed for this cart.");
+            throw new BusinessLogicException("Payment has already been processed for this cart.");
         }
-        // Placeholder for PurchaseHistoryService interaction
-        // PurchaseHistoryService.createPurchaseHistory(cart);
         cart.setPaymentProcessed(true);
         clearCart(cart);
     }
@@ -156,7 +175,7 @@ public class CartService {
         double paymentAmount = cart.calculateTotalPrice();
 
         if (paymentAmount <= 0) {
-            throw new IllegalArgumentException("Cannot process payment. Total amount is invalid.");
+            throw new BusinessLogicException("Cannot process payment. Total amount is invalid.");
         }
 
         for (Ticket ticket : cart.getTickets()) {
@@ -180,21 +199,21 @@ public class CartService {
     private void validateCardDetails(String cardNumber, String cardholderName,
                                      int expiryMonth, int expiryYear, String cvv) {
         if (cardNumber == null || cardNumber.length() != 16 || !cardNumber.matches("\\d{16}")) {
-            throw new IllegalArgumentException("Invalid card number. Must be 16 digits.");
+            throw new ValidationException("Invalid card number. Must be 16 digits.");
         }
         if (cardholderName == null || cardholderName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Cardholder name cannot be empty.");
+            throw new ValidationException("Cardholder name cannot be empty.");
         }
         if (expiryMonth < 1 || expiryMonth > 12) {
-            throw new IllegalArgumentException("Invalid expiry month. Must be between 1 and 12.");
+            throw new ValidationException("Invalid expiry month. Must be between 1 and 12.");
         }
         YearMonth currentYearMonth = YearMonth.now();
         YearMonth cardExpiry = YearMonth.of(expiryYear, expiryMonth);
         if (cardExpiry.isBefore(currentYearMonth)) {
-            throw new IllegalArgumentException("Card has expired.");
+            throw new ValidationException("Card has expired.");
         }
         if (cvv == null || !cvv.matches("\\d{3,4}")) {
-            throw new IllegalArgumentException("Invalid CVV. Must be 3 or 4 digits.");
+            throw new ValidationException("Invalid CVV. Must be 3 or 4 digits.");
         }
     }
 

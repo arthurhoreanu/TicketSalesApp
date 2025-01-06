@@ -1,5 +1,8 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.EntityNotFoundException;
+import exception.ValidationException;
 import model.*;
 import repository.IRepository;
 import repository.factory.RepositoryFactory;
@@ -25,8 +28,11 @@ public class VenueService {
     // Seat
 
     public void updateSeat(Seat seat) {
-        if (seat == null || findRowByID(seat.getRow().getID()) == null) {
-            throw new IllegalArgumentException("Seat or its associated row is invalid.");
+        if (seat == null) {
+            throw new ValidationException("Seat cannot be null.");
+        }
+        if (findRowByID(seat.getRow().getID()) == null) {
+            throw new BusinessLogicException("Row associated with the seat does not exist.");
         }
         seatRepository.update(seat);
     }
@@ -41,16 +47,13 @@ public class VenueService {
     public Seat createSeat(int rowId, int seatNumber) {
         Row row = findRowByID(rowId);
         if (row == null) {
-            throw new IllegalArgumentException("Row not found");
+            throw new EntityNotFoundException("Row not found");
         }
-
-        Seat seat = new Seat(0, seatNumber, false, row); // Create the Seat
-        row.addSeat(seat); // Add the Seat to the Row's seats list
-        seatRepository.create(seat); // Persist the Seat in the repository
-
+        Seat seat = new Seat(0, seatNumber, false, row);
+        row.addSeat(seat);
+        seatRepository.create(seat);
         return seat;
     }
-
 
     public void deleteSeatsByRow(int rowId) {
         List<Seat> seats = seatRepository.getAll().stream()
@@ -70,11 +73,11 @@ public class VenueService {
     public boolean deleteSeat(int seatID) {
         Seat seat = findSeatByID(seatID);
         if (seat == null) {
-            return false; // Seat not found
+            throw new EntityNotFoundException("Seat not found");
         }
         Row row = seat.getRow();
         if (row != null) {
-            row.removeSeat(seat); // Update the Row to remove the Seat
+            row.removeSeat(seat);
         }
         seatRepository.delete(seatID);
         return true;
@@ -107,8 +110,14 @@ public class VenueService {
      */
     public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
         Seat seat = findSeatByID(seatId);
-        if (seat == null || seat.isReserved() || event == null || customer == null) {
-            return false; // Seat not found, already reserved, or invalid input
+        if (seat.isReserved()) {
+            throw new ValidationException("Seat with ID " + seatId + " is already reserved.");
+        }
+        if (event == null) {
+            throw new ValidationException("Event cannot be null.");
+        }
+        if (customer == null) {
+            throw new ValidationException("Customer cannot be null.");
         }
         // Create a Ticket object and associate it with the Seat
         Ticket ticket = new Ticket(0, event, seat, customer, price, ticketType);
@@ -127,9 +136,8 @@ public class VenueService {
     public void unreserveSeat(int seatId) {
         Seat seat = findSeatByID(seatId);
         if (seat == null || !seat.isReserved()) {
-            throw new IllegalArgumentException("Seat is not reserved.");
+            throw new ValidationException("Seat is not reserved.");
         }
-
         seat.setReserved(false);
         seat.setTicket(null);
         seatRepository.update(seat);
@@ -157,7 +165,7 @@ public class VenueService {
 
     public Row createRow(Section section, int rowCapacity) {
         if (section == null) {
-            throw new IllegalArgumentException("Section cannot be null");
+            throw new BusinessLogicException("Section cannot be null.");
         }
         Row row = new Row(0, rowCapacity, section);
         rowRepository.create(row);
@@ -168,7 +176,7 @@ public class VenueService {
     public Row updateRow(int rowId, int rowCapacity) {
         Row row = findRowByID(rowId);
         if (row == null) {
-            return null;
+            throw new EntityNotFoundException("Row not found with ID: " + rowId);
         }
         row.setRowCapacity(rowCapacity);
         rowRepository.update(row);
@@ -188,7 +196,7 @@ public class VenueService {
     public void deleteRow(int rowID) {
         Row row = findRowByID(rowID);
         if (row == null) {
-            throw new IllegalArgumentException("Row not found");
+            throw new EntityNotFoundException("Row not found with ID: " + rowID);
         }
         deleteSeatsByRow(rowID);
         rowRepository.delete(rowID);
@@ -205,9 +213,8 @@ public class VenueService {
     public void addSeatsToRow(int rowId, int numberOfSeats) {
         Row row = findRowByID(rowId);
         if (row == null) {
-            throw new IllegalArgumentException("Row not found");
+            throw new EntityNotFoundException("Row not found");
         }
-
         for (int i = 1; i <= numberOfSeats; i++) {
             Seat seat = new Seat(0, i, false, row); // Create the Seat object
             row.addSeat(seat); // Add the Seat to the Row's seats list
@@ -256,15 +263,15 @@ public class VenueService {
 
     public Section createSection(Venue venue, int sectionCapacity, String sectionName) {
         if (venue == null) {
-            throw new IllegalArgumentException("Venue cannot be null");
+            throw new BusinessLogicException("Venue cannot be null.");
         }
-
+        if (venue.getSections().stream().anyMatch(s -> s.getSectionName().equalsIgnoreCase(sectionName))) {
+            throw new BusinessLogicException("Section with name '" + sectionName + "' already exists in the venue.");
+        }
         Section section = new Section(0, sectionName, sectionCapacity, venue); // ID will be auto-assigned
         sectionRepository.create(section); // Persist the new section
         return section;
     }
-
-
 
     /**
      * Updates an existing Section.
@@ -304,7 +311,7 @@ public class VenueService {
     public void deleteSection(int sectionID) {
         Section section = sectionRepository.read(sectionID);
         if (section == null) {
-            throw new IllegalArgumentException("Section not found");
+            throw new EntityNotFoundException("Section not found with ID: " + sectionID);
         }
         deleteRowsBySection(sectionID);
         sectionRepository.delete(sectionID);
@@ -332,7 +339,7 @@ public class VenueService {
     public void addRowsToSection(int sectionID, int numberOfRows, int rowCapacity) {
         Section section = sectionRepository.read(sectionID);
         if (section == null) {
-            throw new IllegalArgumentException("Section not found");
+            throw new EntityNotFoundException("Section not found");
         }
         for (int i = 0; i < numberOfRows; i++) {
             createRow(section, rowCapacity);
@@ -376,33 +383,30 @@ public class VenueService {
         return availableSeats;
     }
 
-    //
+    // Venue
 
     /**
      * Creates a new Venue and saves it to both repositories.
      */
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Venue name cannot be null or empty.");
+            throw new BusinessLogicException("Venue name cannot be null or empty.");
         }
         if (location == null || location.trim().isEmpty()) {
-            throw new IllegalArgumentException("Venue location cannot be null or empty.");
+            throw new BusinessLogicException("Venue location cannot be null or empty.");
         }
         if (capacity <= 0) {
-            throw new IllegalArgumentException("Venue capacity must be greater than 0.");
+            throw new ValidationException("Venue capacity must be greater than zero.");
         }
-
         Venue venue = new Venue();
         venue.setVenueName(name);
         venue.setLocation(location);
         venue.setVenueCapacity(capacity);
         venue.setHasSeats(hasSeats);
         venueRepository.create(venue);
-
         if (!hasSeats) {
             addSectionToVenue(venue.getID(), 1, capacity, "Default Section");
         }
-
         return venue;
     }
 
@@ -477,23 +481,18 @@ public class VenueService {
     public void addSectionToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
         Venue venue = venueRepository.read(venueId);
         if (venue == null) {
-            throw new IllegalArgumentException("Venue not found");
+            throw new EntityNotFoundException("Venue not found");
         }
-
         for (int i = 0; i < numberOfSections; i++) {
             String sectionName = defaultSectionName + " " + (i + 1);
-
             if (venue.getSections().stream().anyMatch(s -> s.getSectionName().equals(sectionName))) {
-                throw new IllegalArgumentException("Duplicate section name: " + sectionName);
+                throw new ValidationException("Duplicate section name: " + sectionName);
             }
-
             Section section = createSection(venue, sectionCapacity, sectionName);
             venue.addSection(section);
         }
-
         venueRepository.update(venue);
     }
-
 
     /**
      * Retrieves all Sections associated with a specific Venue.

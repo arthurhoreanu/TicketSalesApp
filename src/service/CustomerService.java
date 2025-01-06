@@ -1,5 +1,7 @@
 package service;
 
+import exception.BusinessLogicException;
+import exception.ValidationException;
 import model.Customer;
 import model.FavouriteEntity;
 
@@ -33,6 +35,12 @@ public class CustomerService {
      * @return true if the item was successfully added to the favourites.
      */
     public boolean addFavourite(FavouriteEntity item) {
+        if (item == null) {
+            throw new ValidationException("Cannot add a null item to favourites.");
+        }
+        if (currentCustomer.getFavourites().contains(item)) {
+            throw new BusinessLogicException("Item is already in the favourites.");
+        }
         currentCustomer.addFavourite(item);
         return true;
     }
@@ -43,6 +51,12 @@ public class CustomerService {
      * @return true if the item was successfully removed from the favourites.
      */
     public boolean removeFavourite(FavouriteEntity item) {
+        if (item == null) {
+            throw new ValidationException("Cannot remove a null item from favourites.");
+        }
+        if (!currentCustomer.getFavourites().contains(item)) {
+            throw new ValidationException("Item is not in the favourites.");
+        }
         currentCustomer.removeFavourite(item);
         return true;
     }

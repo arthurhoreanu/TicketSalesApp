@@ -1,6 +1,7 @@
 package presentation;
 
 import controller.Controller;
+import exception.ValidationException;
 import java.util.Scanner;
 
 /**
@@ -25,20 +26,20 @@ public class MainMenu {
         System.out.print("Choose an option: ");
         String choice = scanner.nextLine();
 
-        // Processes the user's choice
-        switch (choice) {
-            case "1":
-                // Calls the account creation action
-                AccountAction.handleCreateAccount(scanner, controller);
-                break;
-            case "0":
-                // Exits the application
-                System.out.println("Exiting the application. Goodbye!");
-                return false; // Return false to indicate the application should end
-            default:
-                // Handles invalid input
-                System.out.println("Invalid option. Please try again.");
+        try {
+            switch (choice) {
+                case "1":
+                    AccountAction.handleCreateAccount(scanner, controller);
+                    break;
+                case "0":
+                    System.out.println("Exiting the application. Goodbye!");
+                    return false;
+                default:
+                    throw new ValidationException("Invalid option. Please select 1 or 0.");
+            }
+        } catch (ValidationException e) {
+            System.out.println(e.getMessage());
         }
-        return true; // Return true to continue the application
+        return true;
     }
 }
