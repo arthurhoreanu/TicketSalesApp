@@ -107,8 +107,6 @@ public class TicketService {
     }
 
     public void reserveTicket(Ticket ticket, Customer customer) {
-        }
-
         if (ticket.getSeat() != null) {
             venueService.reserveSeat(
                     ticket.getSeat().getID(),
