@@ -151,10 +151,9 @@ public class Cart implements Identifiable {
      * @return The total price of all tickets in the cart.
      */
     public double calculateTotalPrice() {
-        return tickets.stream()
-                .mapToDouble(Ticket::getPrice)
-                .sum();
+        return tickets.stream().mapToDouble(Ticket::getPrice).sum();
     }
+
 
 
     public String toCsv() {

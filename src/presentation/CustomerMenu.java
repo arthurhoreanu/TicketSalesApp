@@ -220,23 +220,33 @@ public class CustomerMenu {
 
             System.out.print("Enter Seat IDs to select (comma-separated): ");
             String[] seatIds = scanner.nextLine().split(",");
-            List<Seat> selectedSeats = new ArrayList<>();
+            List<Ticket> selectedTickets = new ArrayList<>();
+
             for (String seatId : seatIds) {
                 Seat seat = controller.findSeatByID(Integer.parseInt(seatId.trim()));
-                if (seat != null) selectedSeats.add(seat);
+                if (seat != null) {
+                    // Fetch the ticket associated with the seat
+                    Ticket ticket = seat.getTicket();
+                    if (ticket != null && !ticket.isSold()) {
+                        selectedTickets.add(ticket);
+                    } else {
+                        System.out.println("Selected seat does not have an available ticket or is already sold.");
+                    }
+                }
+            }
+
+            if (selectedTickets.isEmpty()) {
+                System.out.println("No valid tickets selected.");
+                return;
             }
 
             System.out.print("Do you want seat recommendations? (yes/no): ");
-            if (scanner.nextLine().equalsIgnoreCase("yes") && !selectedSeats.isEmpty()) {
-                Seat closestSeat = controller.recommendClosestSeat(sectionID, selectedSeats.get(0).getNumber());
-                if (closestSeat != null) selectedSeats.add(closestSeat);
-            }
-
-            // Convert selected seats into tickets
-            List<Ticket> selectedTickets = new ArrayList<>();
-            double basePrice = controller.getBasePriceForEvent(event.getID()); // Fetch base price
-            for (Seat seat : selectedSeats) {
-                selectedTickets.add(new Ticket(0, event, seat, null, basePrice, TicketType.STANDARD));
+            if (scanner.nextLine().equalsIgnoreCase("yes") && !selectedTickets.isEmpty()) {
+                Seat closestSeat = controller.recommendClosestSeat(sectionID, selectedTickets.get(0).getSeat().getNumber());
+                if (closestSeat != null && closestSeat.getTicket() != null && !closestSeat.getTicket().isSold()) {
+                    selectedTickets.add(closestSeat.getTicket());
+                    System.out.println("Recommended seat added: " + closestSeat.getTicket());
+                }
             }
 
             handleCheckout(scanner, controller, event, selectedTickets, selectedTickets.size());
@@ -244,6 +254,7 @@ public class CustomerMenu {
             System.out.println("Error: Invalid input.");
         }
     }
+
 
     private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {
         List<Ticket> selectedTickets = new ArrayList<>();

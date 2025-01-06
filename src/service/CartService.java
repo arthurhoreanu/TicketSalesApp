@@ -60,7 +60,15 @@ public class CartService {
             throw new ValidationException("Ticket cannot be null.");
         }
         try {
+            if (ticket.isSold()) {
+                throw new IllegalArgumentException("Ticket is already sold.");
+            }
+
+            // Mark the ticket as reserved
+            ticket.setSold(true);
+            ticket.setCart(cart);
             cart.addTicket(ticket);
+
             updateTotalPrice(cart); // Update total price after adding a ticket
             cartRepository.update(cart);
             return true;
@@ -69,6 +77,7 @@ public class CartService {
             return false;
         }
     }
+
 
     /**
      * Removes a ticket from the cart.
