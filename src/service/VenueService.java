@@ -241,47 +241,51 @@ public class VenueService {
     }
 
     public Seat recommendClosestSeat(int sectionId, int rowId, List<Integer> selectedSeatNumbers) {
-        // Find the section by its ID
+        // Găsește secțiunea pe baza ID-ului
         Section section = findSectionByID(sectionId);
         if (section == null) {
-            return null; // Return null if the section doesn't exist
+            return null; // Returnează null dacă secțiunea nu există
         }
 
-        // Find the row in the section by its ID
+        // Găsește rândul din secțiune pe baza ID-ului
         Row row = section.getRows().stream()
-                .filter(r -> r.getID() == rowId) // Use getID() to compare row IDs
+                .filter(r -> r.getID() == rowId) // Compară ID-urile rândurilor
                 .findFirst()
                 .orElse(null);
         if (row == null) {
-            return null; // Return null if the row doesn't exist in the section
+            return null; // Returnează null dacă rândul nu există în secțiune
         }
 
-        // Get the list of available (not reserved) seats in the same section and row
+        // Obține lista locurilor disponibile (ne-rezervate) din același rând
         List<Seat> availableSeats = row.getSeats().stream()
-                .filter(seat -> !seat.isReserved()) // Only consider not reserved seats
-                .filter(seat -> !selectedSeatNumbers.contains(seat.getNumber())) // Exclude already selected seats
+                .filter(seat -> !seat.isReserved()) // Ia în considerare doar locurile ne-rezervate
+                .filter(seat -> !selectedSeatNumbers.contains(seat.getNumber())) // Exclude locurile deja selectate
                 .toList();
 
         if (availableSeats.isEmpty()) {
-            return null; // Return null if no available seats
+            return null; // Returnează null dacă nu există locuri disponibile
         }
 
-        // Find the closest seat to the selected seats within the same section and row
-        return availableSeats.stream()
-                .min((seat1, seat2) -> {
-                    // Calculate the minimum distance to each selected seat number
+        // Sortează locurile disponibile pe baza distanței față de locurile selectate
+        List<Seat> sortedSeats = availableSeats.stream()
+                .sorted((seat1, seat2) -> {
+                    // Calcul distanță minimă pentru seat1
                     int minDistanceToSeat1 = selectedSeatNumbers.stream()
                             .mapToInt(selectedSeat -> Math.abs(seat1.getNumber() - selectedSeat))
                             .min().orElse(Integer.MAX_VALUE);
 
+                    // Calcul distanță minimă pentru seat2
                     int minDistanceToSeat2 = selectedSeatNumbers.stream()
                             .mapToInt(selectedSeat -> Math.abs(seat2.getNumber() - selectedSeat))
                             .min().orElse(Integer.MAX_VALUE);
 
-                    // Compare distances and return the closest seat
+                    // Compară distanțele și returnează cea mai apropiată
                     return Integer.compare(minDistanceToSeat1, minDistanceToSeat2);
                 })
-                .orElse(null); // Return null if no seats are available
+                .toList();
+
+        // Returnează primul loc din lista sortată (cel mai apropiat loc)
+        return sortedSeats.get(0);
     }
 
     public List<Seat> getSeatsByRow(int rowId) {
