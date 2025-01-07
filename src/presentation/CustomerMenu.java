@@ -1,6 +1,7 @@
 package presentation;
 
 import controller.Controller;
+import exception.BusinessLogicException;
 import exception.EntityNotFoundException;
 import exception.ValidationException;
 import model.*;
@@ -98,21 +99,45 @@ public class CustomerMenu {
     }
 
     private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
+        System.out.println("==== Suggested Events ====");
         Set<FavouriteEntity> favourites = controller.getFavourites();
         if (favourites.isEmpty()) {
             System.out.println("No favourites to generate suggestions from.");
             return;
         }
-
         List<Event> suggestedEvents = new ArrayList<>();
         for (FavouriteEntity favourite : favourites) {
             if (favourite instanceof Artist artist) {
+                // Add upcoming events for the favourite artist
                 suggestedEvents.addAll(controller.getUpcomingEventsForArtist(artist.getID()));
+                // Add upcoming events for related artists (same genre)
+                List<Artist> relatedArtists = controller.findArtistsByGenre(artist.getGenre());
+                for (Artist relatedArtist : relatedArtists) {
+                    if (!relatedArtist.equals(artist)) {
+                        suggestedEvents.addAll(controller.getUpcomingEventsForArtist(relatedArtist.getID()));
+                    }
+                }
             } else if (favourite instanceof Athlete athlete) {
+                // Add upcoming events for the favourite athlete
                 suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(athlete.getID()));
+
+                // Add upcoming events for related athletes (same sport)
+                List<Athlete> relatedAthletes = controller.findAthletesBySport(athlete.getAthleteSport());
+                for (Athlete relatedAthlete : relatedAthletes) {
+                    if (!relatedAthlete.equals(athlete)) {
+                        suggestedEvents.addAll(controller.getUpcomingEventsForAthlete(relatedAthlete.getID()));
+                    }
+                }
             }
         }
-
+        if (suggestedEvents.isEmpty()) {
+            if (favourites.isEmpty()) {
+                throw new BusinessLogicException("Cannot generate suggestions: no favourites available.");
+            }
+        } else {
+            System.out.println("Here are some events you might be interested in:");
+            suggestedEvents.forEach(event -> System.out.println(event.getEventName() + " - " + event.getStartDateTime()));
+        }
         handleEventSelectionFromList(scanner, controller, suggestedEvents);
     }
 
