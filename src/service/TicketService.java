@@ -152,7 +152,7 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    private void updateTicket(Ticket ticket) {
+    public void updateTicket(Ticket ticket) {
         ticket.setCustomer(ticket.getCustomer());
         ticketRepository.update(ticket);
     }
