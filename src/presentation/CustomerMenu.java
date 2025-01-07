@@ -191,7 +191,7 @@ public class CustomerMenu {
             if (events.isEmpty()) {
                 throw new EntityNotFoundException("No events found.");
             }
-            events.forEach(System.out::println);
+            // Events are already printed by the Controller, so no need to print here
             System.out.print("Enter Event ID to view sections and tickets: ");
             int eventId = Integer.parseInt(scanner.nextLine());
             Event event = controller.findEventByID(eventId);
@@ -201,9 +201,10 @@ public class CustomerMenu {
                 throw new ValidationException("Invalid Event ID.");
             }
         } catch (ValidationException | EntityNotFoundException e) {
-            System.out.println("Error " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     private static void handleSectionAndTicketSelection(Scanner scanner, Controller controller, Event event) {
         try {
@@ -246,6 +247,8 @@ public class CustomerMenu {
             System.out.print("Enter Seat IDs to select (comma-separated): ");
             String[] seatIds = scanner.nextLine().split(",");
             List<Ticket> selectedTickets = new ArrayList<>();
+            List<Integer> selectedSeatNumbers = new ArrayList<>();
+            List<Integer> selectedRowIDs = new ArrayList<>(); // To track rows of selected seats
 
             for (String seatId : seatIds) {
                 Seat seat = controller.findSeatByID(Integer.parseInt(seatId.trim()));
@@ -254,6 +257,10 @@ public class CustomerMenu {
                     Ticket ticket = seat.getTicket();
                     if (ticket != null && !ticket.isSold()) {
                         selectedTickets.add(ticket);
+                        selectedSeatNumbers.add(seat.getNumber());
+                        if (!selectedRowIDs.contains(seat.getRow().getID())) {
+                            selectedRowIDs.add(seat.getRow().getID()); // Track the row ID of the seat
+                        }
                     } else {
                         System.out.println("Selected seat does not have an available ticket or is already sold.");
                     }
@@ -266,11 +273,31 @@ public class CustomerMenu {
             }
 
             System.out.print("Do you want seat recommendations? (yes/no): ");
-            if (scanner.nextLine().equalsIgnoreCase("yes") && !selectedTickets.isEmpty()) {
-                Seat closestSeat = controller.recommendClosestSeat(sectionID, selectedTickets.get(0).getSeat().getNumber());
+            if (scanner.nextLine().equalsIgnoreCase("yes") && !selectedSeatNumbers.isEmpty() && !selectedRowIDs.isEmpty()) {
+                Seat closestSeat = null;
+
+                // Find the closest seat from any of the selected rows
+                for (int rowID : selectedRowIDs) {
+                    Seat recommendedSeat = controller.recommendClosestSeat(sectionID, rowID, selectedSeatNumbers);
+                    if (recommendedSeat != null) {
+                        // Update closestSeat if it's closer than the previous recommendation
+                        if (closestSeat == null || Math.abs(recommendedSeat.getNumber() - selectedSeatNumbers.get(0)) <
+                                Math.abs(closestSeat.getNumber() - selectedSeatNumbers.get(0))) {
+                            closestSeat = recommendedSeat;
+                        }
+                    }
+                }
+
                 if (closestSeat != null && closestSeat.getTicket() != null && !closestSeat.getTicket().isSold()) {
-                    selectedTickets.add(closestSeat.getTicket());
-                    System.out.println("Recommended seat added: " + closestSeat.getTicket());
+                    System.out.print("Recommended seat found: " + closestSeat + ". Do you want to add it to your cart? (yes/no): ");
+                    if (scanner.nextLine().equalsIgnoreCase("yes")) {
+                        selectedTickets.add(closestSeat.getTicket());
+                        System.out.println("Recommended seat added: " + closestSeat.getTicket());
+                    } else {
+                        System.out.println("Recommended seat not added.");
+                    }
+                } else {
+                    System.out.println("No suitable recommended seat found.");
                 }
             }
 
@@ -279,6 +306,8 @@ public class CustomerMenu {
             System.out.println("Error: Invalid input.");
         }
     }
+
+
 
 
     private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {

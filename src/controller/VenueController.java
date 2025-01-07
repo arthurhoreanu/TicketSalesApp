@@ -300,18 +300,27 @@ public class VenueController {
      * Recommends the closest available Seat in a Row.
      *
      * @param rowId      The ID of the row.
-     * @param seatNumber The desired seat number.
      * @return The recommended Seat.
      */
-    public Seat recommendClosestSeat(int rowId, int seatNumber) {
-        Seat recommendedSeat = venueService.recommendClosestSeat(rowId, seatNumber);
+    public Seat recommendClosestSeat(int sectionId, int rowId, List<Integer> selectedSeatNumbers) {
+        // Call the updated venueService method with sectionId, rowId, and the list of selected seat numbers
+        Seat recommendedSeat = venueService.recommendClosestSeat(sectionId, rowId, selectedSeatNumbers);
+
+        // Display appropriate message based on the recommendation result
         if (recommendedSeat != null) {
             System.out.println("Recommended seat: " + recommendedSeat);
         } else {
-            System.out.println("No suitable seat found in Row ID " + rowId + ".");
+            System.out.println("No suitable seat found in Section ID " + sectionId + ", Row ID " + rowId + ".");
         }
+
         return recommendedSeat;
     }
+
+
+
+
+
+
 
     // Section
 
