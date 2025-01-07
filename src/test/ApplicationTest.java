@@ -585,7 +585,6 @@ public class ApplicationTest {
         assertEquals(8, recommendedSeat.getNumber(),
                 "When selecting a single seat and the smaller seat is reserved, the recommended seat should be the next smaller one.");
 
-
     }
 
     @Order(10)
