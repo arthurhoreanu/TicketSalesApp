@@ -240,19 +240,56 @@ public class VenueService {
                 .collect(Collectors.toList());
     }
 
-    public Seat recommendClosestSeat(int rowId, int seatNumber) {
-        Row row = findRowByID(rowId);
-        if (row == null) {
-            return null;
+    public Seat recommendClosestSeat(int sectionId, int rowId, List<Integer> selectedSeatNumbers) {
+        // Find the section by its ID
+        Section section = findSectionByID(sectionId);
+        if (section == null) {
+            return null; // Return null if the section doesn't exist
         }
-        return row.getSeats().stream()
-                .filter(seat -> !seat.isReserved())
-                .min((seat1, seat2) -> Integer.compare(
-                        Math.abs(seat1.getNumber() - seatNumber),
-                        Math.abs(seat2.getNumber() - seatNumber)
-                ))
+
+        // Find the row in the section by its ID
+        Row row = section.getRows().stream()
+                .filter(r -> r.getID() == rowId) // Use getID() to compare row IDs
+                .findFirst()
                 .orElse(null);
+        if (row == null) {
+            return null; // Return null if the row doesn't exist in the section
+        }
+
+        // Get the list of available (not reserved) seats in the same section and row
+        List<Seat> availableSeats = row.getSeats().stream()
+                .filter(seat -> !seat.isReserved()) // Only consider not reserved seats
+                .filter(seat -> !selectedSeatNumbers.contains(seat.getNumber())) // Exclude already selected seats
+                .toList();
+
+        if (availableSeats.isEmpty()) {
+            return null; // Return null if no available seats
+        }
+
+        // Find the closest seat to the selected seats within the same section and row
+        return availableSeats.stream()
+                .min((seat1, seat2) -> {
+                    // Calculate the minimum distance to each selected seat number
+                    int minDistanceToSeat1 = selectedSeatNumbers.stream()
+                            .mapToInt(selectedSeat -> Math.abs(seat1.getNumber() - selectedSeat))
+                            .min().orElse(Integer.MAX_VALUE);
+
+                    int minDistanceToSeat2 = selectedSeatNumbers.stream()
+                            .mapToInt(selectedSeat -> Math.abs(seat2.getNumber() - selectedSeat))
+                            .min().orElse(Integer.MAX_VALUE);
+
+                    // Compare distances and return the closest seat
+                    return Integer.compare(minDistanceToSeat1, minDistanceToSeat2);
+                })
+                .orElse(null); // Return null if no seats are available
     }
+
+
+
+
+
+
+
 
     public List<Seat> getSeatsByRow(int rowId) {
         Row row = findRowByID(rowId);

@@ -115,8 +115,8 @@ public class Controller {
         return venueController.findRowsBySection(sectionId);}
     public List<Seat> getAvailableSeatsInRow(int rowId, int eventId) {
         return venueController.getAvailableSeatsInRow(rowId, eventId);}
-    public Seat recommendClosestSeat(int rowId, int seatNumber) {
-        return venueController.recommendClosestSeat(rowId, seatNumber);}
+    public Seat recommendClosestSeat(int sectionId, int rowId, List<Integer> selectedSeatNumbers) {
+        return venueController.recommendClosestSeat(sectionId, rowId, selectedSeatNumbers);}
 
     /// Section
     public Section createSection(Venue venue, int sectionCapacity, String sectionName) {
