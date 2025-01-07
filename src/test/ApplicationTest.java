@@ -520,5 +520,113 @@ public class ApplicationTest {
     }
 
     // TODO Test Recommended Seat (Success and Failure)
+    @Order(9)
+    @DisplayName("Complex Method: Recommended Seat (Success with Exception)")
+    @Test
+    public void testRecommendClosestSeatSuccess() {
+        // 1. Create Venue, Section, Row, and Seats
+        Venue venue = venueService.createVenue("Concert Hall", "New York", 1000, true);
+        venueService.addSectionToVenue(venue.getID(), 1, 1000, "Main Section");
+        Section section = venueService.getSectionsByVenueID(venue.getID()).get(0);
+        venueService.addRowsToSection(section.getID(), 1, 50); // Add one row with 50 seats
+        Row row = venueService.findRowsBySection(section.getID()).get(0);
+        venueService.addSeatsToRow(row.getID(), 10); // Add 10 seats to the row
+
+        // 2. Get the seats in the row
+        List<Seat> seats = venueService.getSeatsByRow(row.getID());
+
+        // 3. Reserve some seats
+        seats.get(3).setReserved(true); // Reserve seat 4
+        seats.get(5).setReserved(true); // Reserve seat 6
+
+        // Case 1: Closest seat to a single selected seat
+        List<Integer> selectedSeatNumbers = List.of(4); // Select seat 4
+        Seat recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNotNull(recommendedSeat, "Recommended seat should not be null.");
+        assertEquals(3, recommendedSeat.getNumber(), "Closest seat to 4 should be seat 3.");
+
+        // Case 2: Closest seat to multiple selected seats
+        selectedSeatNumbers = List.of(4, 6); // Select seat 4 and 6
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNotNull(recommendedSeat, "Recommended seat should not be null.");
+        assertEquals(3, recommendedSeat.getNumber(), "Closest seat to 4 and 6 should be seat 3.");
+
+        // Case 3: Smaller seat reserved, recommend larger seat
+        selectedSeatNumbers = List.of(4); // Select seat 4
+        seats.get(2).setReserved(true); // Reserve seat 3 (smaller seat)
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNotNull(recommendedSeat, "Recommended seat should not be null.");
+        assertEquals(5, recommendedSeat.getNumber(),
+                "When the smaller seat is reserved, the recommended seat should be the larger one.");
+
+        // Case 4: Selected seat reserved, recommend the next available larger seat
+        selectedSeatNumbers = List.of(5); // Select seat 5
+        seats.get(3).setReserved(true); // Reserve seat 4 (smaller seat)
+        seats.get(5).setReserved(true); // Reserve seat 6 (larger seat)
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNotNull(recommendedSeat, "Recommended seat should not be null.");
+        assertEquals(7, recommendedSeat.getNumber(),
+                "When the selected seat is reserved, and the next smaller and larger seats are reserved, the recommended seat should be the next available larger one.");
+
+
+        // Case 5: Selecting multiple seats, smaller seat reserved, recommend the next larger seat
+        selectedSeatNumbers = List.of(5, 6); // Select seats 5 and 6
+        seats.get(3).setReserved(true); // Reserve seat 4 (smaller seat)
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNotNull(recommendedSeat, "Recommended seat should not be null.");
+        assertEquals(7, recommendedSeat.getNumber(),
+                "When selecting multiple seats and the smaller seat is reserved, the recommended seat should be the next larger one.");
+
+        /// Case 6: Selecting a single seat, smaller seat reserved, recommend the next smaller seat
+        selectedSeatNumbers = List.of(10); // Select seat 10
+        seats.get(8).setReserved(true); // Reserve seat 9 (smaller seat)
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNotNull(recommendedSeat, "Recommended seat should not be null.");
+        assertEquals(8, recommendedSeat.getNumber(),
+                "When selecting a single seat and the smaller seat is reserved, the recommended seat should be the next smaller one.");
+
+
+    }
+
+    @Order(10)
+    @DisplayName("Complex Method: Recommended Seat (Failure Cases)")
+    @Test
+    public void testRecommendClosestSeatFailure() {
+        // 1. Create Venue, Section, Row, and Seats
+        Venue venue = venueService.createVenue("Concert Hall", "New York", 1000, true);
+        venueService.addSectionToVenue(venue.getID(), 1, 1000, "Main Section");
+        Section section = venueService.getSectionsByVenueID(venue.getID()).get(0);
+        venueService.addRowsToSection(section.getID(), 1, 50); // Add one row with 50 seats
+        Row row = venueService.findRowsBySection(section.getID()).get(0);
+        venueService.addSeatsToRow(row.getID(), 10); // Add 10 seats to the row
+
+        // 2. Get the seats in the row
+        List<Seat> seats = venueService.getSeatsByRow(row.getID());
+
+        // 3. Reserve all seats to simulate no available seats
+        seats.forEach(seat -> seat.setReserved(true));
+
+        // Case 1: All seats reserved
+        List<Integer> selectedSeatNumbers = List.of(5); // Select seat 5
+        Seat recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNull(recommendedSeat, "When all seats are reserved, no seat should be recommended.");
+
+        // 4. Unreserve one seat and select it to simulate selecting a reserved seat
+        seats.get(4).setReserved(false); // Unreserve seat 5
+        selectedSeatNumbers = List.of(5); // Select seat 5 again
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), row.getID(), selectedSeatNumbers);
+        assertNull(recommendedSeat, "When the selected seat is reserved, no recommendation should be made.");
+
+        // 5. Select a seat in a non-existent section
+        int nonExistentSectionId = 999;
+        recommendedSeat = venueService.recommendClosestSeat(nonExistentSectionId, row.getID(), selectedSeatNumbers);
+        assertNull(recommendedSeat, "When the section does not exist, no seat should be recommended.");
+
+        // 6. Select a seat in a non-existent row
+        int nonExistentRowId = 999;
+        recommendedSeat = venueService.recommendClosestSeat(section.getID(), nonExistentRowId, selectedSeatNumbers);
+        assertNull(recommendedSeat, "When the row does not exist, no seat should be recommended.");
+    }
+
 
 }
