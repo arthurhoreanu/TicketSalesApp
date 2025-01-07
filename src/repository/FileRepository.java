@@ -56,11 +56,7 @@ public class FileRepository<T extends Identifiable> implements IRepository<T> {
         lock.lock();
         try {
             if (obj.getID() == 0) {
-                List<T> allItems = getAll();
-                int newId = allItems.stream()
-                        .map(Identifiable::getID)
-                        .max(Integer::compareTo)
-                        .orElse(0) + 1;
+                int newId = GlobalIdGenerator.getNextId();
                 obj.setID(newId);
             }
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {

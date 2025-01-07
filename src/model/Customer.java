@@ -136,7 +136,12 @@ public class Customer extends User {
         String username = fields[1].trim();
         String email = fields[2].trim();
         String password = fields[3].trim();
-        return new Customer(id, username, email, password);
+        Customer customer = new Customer();
+        customer.setID(id);
+        customer.setUsername(username);
+        customer.setEmail(email);
+        customer.setPassword(password);
+        return customer;
     }
 
     // Getters and setters

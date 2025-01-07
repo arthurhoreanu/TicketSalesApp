@@ -71,7 +71,12 @@ public class Admin extends User {
         String username = fields[1].trim();
         String email = fields[2].trim();
         String password = fields[3].trim();
-        return new Admin(id, username, email, password);
+        Admin admin = new Admin();
+        admin.setID(id);
+        admin.setUsername(username);
+        admin.setEmail(email);
+        admin.setPassword(password);
+        return admin;
     }
 
     // Getters and setters
