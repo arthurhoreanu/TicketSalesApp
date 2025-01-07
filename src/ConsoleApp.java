@@ -1,13 +1,12 @@
 import model.*;
 import presentation.admin.AdminMenu;
-import presentation.CustomerMenu;
-import presentation.LoginMenu;
-import presentation.StartMenu;
-import presentation.MainMenu;
+import presentation.*;
 import repository.factory.RepositoryFactory;
+import repository.*;
 import service.*;
 import controller.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleApp {
@@ -19,6 +18,15 @@ public class ConsoleApp {
 
         // Initialize ControllerProvider
         ControllerProvider.initializeController(controller);
+
+        List<String> csvFiles = List.of(
+                "src/repository/data/artists.csv", "src/repository/data/athletes.csv", "src/repository/data/seats.csv",
+                "src/repository/data/rows.csv", "src/repository/data/sections.csv", "src/repository/data/venues.csv",
+                "src/repository/data/tickets.csv", "src/repository/data/carts.csv", "src/repository/data/admins.csv",
+                "src/repository/data/customers.csv", "src/repository/data/concerts.csv", "src/repository/data/sports_events.csv",
+                "src/repository/data/concert_line_ups.csv", "src/repository/data/sports_event_line_ups.csv"
+        );
+        IdInitializer.initializeGlobalId(csvFiles);
 
         boolean running = true;
 
@@ -63,4 +71,5 @@ public class ConsoleApp {
         return new Controller(artistController, athleteController, venueController, ticketController,
                 cartController, customerController, eventController, userController);
     }
+
 }

@@ -284,13 +284,6 @@ public class VenueService {
                 .orElse(null); // Return null if no seats are available
     }
 
-
-
-
-
-
-
-
     public List<Seat> getSeatsByRow(int rowId) {
         Row row = findRowByID(rowId);
         return (row != null) ? row.getSeats() : new ArrayList<>();
@@ -305,7 +298,10 @@ public class VenueService {
         if (venue.getSections().stream().anyMatch(s -> s.getSectionName().equalsIgnoreCase(sectionName))) {
             throw new BusinessLogicException("Section with name '" + sectionName + "' already exists in the venue.");
         }
-        Section section = new Section(0, sectionName, sectionCapacity, venue); // ID will be auto-assigned
+        Section section = new Section();// ID will be auto-assigned
+        section.setSectionName(sectionName);
+        section.setVenue(venue);
+        section.setSectionCapacity(sectionCapacity);
         sectionRepository.create(section); // Persist the new section
         return section;
     }
