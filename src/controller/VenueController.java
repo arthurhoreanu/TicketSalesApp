@@ -604,4 +604,14 @@ public class VenueController {
         }
         return availableSeats;
     }
+
+    /**
+     * Loads the sections for a specific venue and populates the venue object with its sections.
+     *
+     * @param venue The venue for which to load sections.
+     */
+    public void loadSectionsForVenue(Venue venue) {
+        venueService.loadSectionsForVenue(venue);
+        System.out.println("Sections loaded for Venue ID " + venue.getID() + ".");
+    }
 }
