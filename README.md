@@ -37,4 +37,5 @@ Order: Stores information about the customer's purchase, including ticket detail
 PaymentProcessor: Handles payment validation (validatePaymentDetails) and processes transactions (processPayment). After payment is confirmed, the customer receives a summary of their processed order (showProcessedOrder).
 
 ## UML
-![TicketSalesCompany-2024-10-30-065610](https://github.com/user-attachments/assets/db568905-66f4-49e5-95e4-0e6d871c96ca)
+![TicketSalesCompany](https://github.com/user-attachments/assets/4cd99ddd-c14a-4168-ad74-998a19f9391f)
+
