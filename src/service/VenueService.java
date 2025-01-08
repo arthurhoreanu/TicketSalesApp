@@ -526,18 +526,28 @@ public class VenueService {
                 throw new ValidationException("Duplicate section name: " + sectionName);
             }
             Section section = createSection(venue, sectionCapacity, sectionName);
-            venue.addSection(section);
+            sectionRepository.create(section); // Persist the section in the repository
         }
-        venueRepository.update(venue);
+        // Reload the sections for the venue
+        loadSectionsForVenue(venue);
+        venueRepository.update(venue); // Persist the updated venue
     }
+
 
     /**
      * Retrieves all Sections associated with a specific Venue.
      */
     public List<Section> getSectionsByVenueID(int venueId) {
-        Venue venue = venueRepository.read(venueId);
-        return (venue != null) ? venue.getSections() : new ArrayList<>();
+        return sectionRepository.getAll().stream()
+                .filter(section -> section.getVenue().getID() == venueId)
+                .collect(Collectors.toList());
     }
+
+    public void loadSectionsForVenue(Venue venue) {
+        List<Section> sections = getSectionsByVenueID(venue.getID());
+        venue.setSections(sections); // Populate the sections list
+    }
+
 
     /**
      * Retrieves all available Seats in a Venue for a specific Event.
