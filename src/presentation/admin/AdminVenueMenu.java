@@ -202,28 +202,59 @@ public class AdminVenueMenu {
     private static void handleViewFullVenueStructure(Scanner scanner, Controller controller) {
         try {
             System.out.println("=== View Full Venue Structure ===");
+            // Display all venues
             handleViewVenues(controller);
+
+            // Prompt user to select a venue by ID
             System.out.print("Enter Venue ID: ");
             int venueId = Integer.parseInt(scanner.nextLine());
+
+            // Find the selected venue
             Venue venue = controller.findVenueByID(venueId);
             if (venue == null) {
                 throw new EntityNotFoundException("Venue not found.");
             }
-            System.out.println("Venue: " + venue.getVenueName());
-            List<Section> sections = controller.getSectionsByVenueID(venueId);
-            for (Section section : sections) {
-                System.out.println("  Section: " + section.getSectionName());
+
+            // Load sections for the venue to ensure proper relationship
+            controller.loadSectionsForVenue(venue);
+
+            // Display the venue details
+            System.out.println("Venue: " + venue.getVenueName() + " (Location: " + venue.getLocation() + ")");
+            if (venue.getSections().isEmpty()) {
+                System.out.println("No sections found for this venue.");
+                return;
+            }
+
+            // Display sections, rows, and seats
+            for (Section section : venue.getSections()) {
+                System.out.println("  Section: " + section.getSectionName() + " (Capacity: " + section.getSectionCapacity() + ")");
+
+                // Fetch rows dynamically for the section
                 List<Row> rows = controller.findRowsBySection(section.getID());
+                if (rows.isEmpty()) {
+                    System.out.println("    No rows found in this section.");
+                    continue;
+                }
+
                 for (Row row : rows) {
-                    System.out.println("    Row: " + row.getID());
+                    System.out.println("    Row: " + row.getID() + " (Seats: " + row.getSeats().size() + ")");
+
+                    // Fetch seats dynamically for the row
                     List<Seat> seats = controller.getSeatsByRow(row.getID());
-                    System.out.println("      Seats: " + seats.size());
+                    if (seats.isEmpty()) {
+                        System.out.println("      No seats found in this row.");
+                    } else {
+                        System.out.println("      Seats: " + seats.size() + " available");
+                    }
                 }
             }
         } catch (EntityNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid input. Please enter a valid number.");
         }
     }
+
 
     /**
      * Handles the deletion of a venue and all its associated components.

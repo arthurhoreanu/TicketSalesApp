@@ -133,6 +133,8 @@ public class Controller {
         return venueController.findSectionsByName(name);}
     public List<Seat> getAvailableSeatsInSection(int sectionId, int eventId) {
         return venueController.getAvailableSeatsInSection(sectionId, eventId);}
+    public void loadSectionsForVenue(Venue venue){
+        venueController.loadSectionsForVenue(venue);}
 
     /// Venue
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
