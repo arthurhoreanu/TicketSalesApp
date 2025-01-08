@@ -252,9 +252,6 @@ public class Controller {
         return eventController.getArtistsByConcert(concertID);}
     public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
         return eventController.getAthletesBySportsEvent(sportsEventID);}
-    // TODO
-//    public boolean isEventSoldOut(Event event) {
-//        return eventController.isEventSoldOut(event);}
 
     // 8. User
     public Customer findCustomerByID(int customerID) {

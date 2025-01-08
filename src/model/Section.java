@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "section")
 public class Section implements Identifiable {
-//todo think about this!!! the static shit :)
+
     private static int idCounter = 1; // Static counter for unique IDs
 
     @Id

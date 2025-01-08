@@ -497,17 +497,14 @@ public class CustomerMenu {
                     System.out.print("Enter the name of the artist or athlete to add: ");
                     String nameToAdd = scanner.nextLine();
 
-                    // Caută separat artistul și atletul
                     Artist foundArtist = controller.findArtistByName(nameToAdd);
                     Athlete foundAthlete = controller.findAthleteByName(nameToAdd);
 
-                    // Dacă nu s-a găsit niciun rezultat
                     if (foundArtist == null && foundAthlete == null) {
                         System.out.println("No artist or athlete found with the name: " + nameToAdd);
                         break;
                     }
 
-                    // Creează o listă pentru selecție
                     Map<Integer, FavouriteEntity> selectionMap = new HashMap<>();
                     int index = 1;
 
@@ -523,7 +520,6 @@ public class CustomerMenu {
                         index++;
                     }
 
-                    // Solicită utilizatorului să selecteze un favorit
                     System.out.print("Enter the number of the favourite to add (or 0 to cancel): ");
                     try {
                         int selectedOption = Integer.parseInt(scanner.nextLine());
