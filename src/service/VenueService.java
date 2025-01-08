@@ -40,8 +40,8 @@ public class VenueService {
     /**
      * Creates a new Seat and saves it to all repositories.
      *
-     * @param rowId       the ID of the Row to which the Seat belongs.
-     * @param seatNumber  the number of the Seat.
+     * @param rowId      the ID of the Row to which the Seat belongs.
+     * @param seatNumber the number of the Seat.
      * @return the created Seat object.
      */
     public Seat createSeat(int rowId, int seatNumber) {
@@ -105,7 +105,7 @@ public class VenueService {
     /**
      * Reserves a Seat by associating it with a Ticket.
      *
-     * @param seatId     the ID of the Seat to reserve.
+     * @param seatId the ID of the Seat to reserve.
      * @return true if the Seat was successfully reserved, false otherwise.
      */
     public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
@@ -185,7 +185,7 @@ public class VenueService {
 
     public void deleteRowsBySection(int sectionID) {
         List<Row> rows = rowRepository.getAll().stream().
-                filter(row -> row.getSection().getID()==sectionID)
+                filter(row -> row.getSection().getID() == sectionID)
                 .toList();
         for (Row row : rows) {
             deleteSeatsByRow(row.getID());
@@ -210,6 +210,13 @@ public class VenueService {
         return rowRepository.getAll();
     }
 
+    /**
+     * Adds a specified number of seats to a row.
+     *
+     * @param rowId         the ID of the row to which seats will be added
+     * @param numberOfSeats the number of seats to add
+     * @throws EntityNotFoundException if the row with the specified ID is not found
+     */
     public void addSeatsToRow(int rowId, int numberOfSeats) {
         Row row = findRowByID(rowId);
         if (row == null) {
@@ -224,12 +231,24 @@ public class VenueService {
         rowRepository.update(row); // Persist the updated Row with its seats
     }
 
-
+    /**
+     * Finds rows within a specified section.
+     *
+     * @param sectionId the ID of the section
+     * @return a list of rows in the specified section, or an empty list if the section is not found
+     */
     public List<Row> findRowsBySection(int sectionId) {
         Section section = findSectionByID(sectionId);
         return section != null ? section.getRows() : new ArrayList<>();
     }
 
+    /**
+     * Retrieves the available (non-reserved) seats in a specific row for a given event.
+     *
+     * @param rowId   the ID of the row
+     * @param eventId the ID of the event
+     * @return a list of available seats in the specified row and event, or an empty list if the row is not found
+     */
     public List<Seat> getAvailableSeatsInRow(int rowId, int eventId) {
         Row row = findRowByID(rowId);
         if (row == null) {
@@ -240,6 +259,14 @@ public class VenueService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Recommends the closest available seat to the selected seats in a specific row and section.
+     *
+     * @param sectionId           the ID of the section
+     * @param rowId               the ID of the row
+     * @param selectedSeatNumbers a list of seat numbers that have already been selected
+     * @return the closest available seat, or null if no suitable seat is found
+     */
     public Seat recommendClosestSeat(int sectionId, int rowId, List<Integer> selectedSeatNumbers) {
         // Găsește secțiunea pe baza ID-ului
         Section section = findSectionByID(sectionId);
