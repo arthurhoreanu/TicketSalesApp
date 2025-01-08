@@ -39,6 +39,10 @@ public class ApplicationTest {
     private static UserController userController;
     private static Controller controller;
 
+    /**
+     * Sets up dependencies before each test.
+     * Initializes services and controllers using {@link InMemoryRepositoryFactory}.
+     */
     @BeforeEach
     public void setUp() {
         InMemoryRepositoryFactory repositoryFactory = new InMemoryRepositoryFactory();
@@ -68,6 +72,9 @@ public class ApplicationTest {
         ControllerProvider.initializeController(mockController);
     }
 
+    /**
+     * Tests CRUD operations for user accounts.
+     */
     @Order(1)
     @DisplayName("Simulate Full CRUD Operations for Admins and Customers")
     @Test
@@ -95,6 +102,9 @@ public class ApplicationTest {
         assertEquals(1, userService.getAllUsers().size(), "Only Admin should remain.");
     }
 
+    /**
+     * Tests CRUD operations for artists and athletes.
+     */
     @Order(2)
     @DisplayName("Simulate Full CRUD Operations for Artists and Athletes")
     @Test
@@ -139,6 +149,9 @@ public class ApplicationTest {
         assertEquals(1, athleteService.getAllAthletes().size(), "Only one athlete should remain.");
     }
 
+    /**
+     * Tests CRUD operations for venues.
+     */
     @Order(3)
     @DisplayName("Simulate Full CRUD Operations for Venue")
     @Test
@@ -190,6 +203,9 @@ public class ApplicationTest {
         assertEquals(1, venueService.getAllVenues().size(), "Only one venue should remain after deletion.");
     }
 
+    /**
+     * Tests CRUD operations for events.
+     */
     @Order(4)
     @DisplayName("Simulate Full CRUD Operations for Events")
     @Test
@@ -254,6 +270,9 @@ public class ApplicationTest {
         assertEquals(0, eventService.getAllEvents().size(), "No events should remain after deletion.");
     }
 
+    /**
+     * Tests CRUD operations for tickets.
+     */
     @Order(5)
     @DisplayName("Simulate Full CRUD Operations for Tickets")
     @Test
@@ -326,6 +345,9 @@ public class ApplicationTest {
         assertTrue(ticketAvailability.contains("10 standard tickets available"), "Standard ticket availability should match.");
     }
 
+    /**
+     * Tests CRUD operations for shopping carts.
+     */
     @Order(6)
     @DisplayName("Simulate Full CRUD Operations for Cart")
     @Test
@@ -404,6 +426,9 @@ public class ApplicationTest {
 
     }
 
+    /**
+     * Tests the event suggestion feature for customers with favorites.
+     */
     @Order(7)
     @DisplayName("Complex Method: Event Suggestions (Success)")
     @Test
@@ -485,6 +510,10 @@ public class ApplicationTest {
         assertTrue(suggestedEvents.contains(sportsEvent2), "Soccer Match should be in suggested events.");
     }
 
+    /**
+     * Tests the event suggestion feature for customers without favorites.
+     * Expects a {@link BusinessLogicException}.
+     */
     @Order(8)
     @DisplayName("Complex Method: Event Suggestions (Fail with Exception)")
     @Test
@@ -519,7 +548,9 @@ public class ApplicationTest {
         assertEquals("Cannot generate suggestions: no favourites available.", exception.getMessage());
     }
 
-    // TODO Test Recommended Seat (Success and Failure)
+    /**
+     * Tests the recommended seat selection feature for available seats.
+     */
     @Order(9)
     @DisplayName("Complex Method: Recommended Seat (Success with Exception)")
     @Test
@@ -587,6 +618,9 @@ public class ApplicationTest {
 
     }
 
+    /**
+     * Tests failure cases for the recommended seat selection feature.
+     */
     @Order(10)
     @DisplayName("Complex Method: Recommended Seat (Failure Cases)")
     @Test

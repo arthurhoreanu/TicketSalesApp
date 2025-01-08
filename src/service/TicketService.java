@@ -72,6 +72,15 @@ public class TicketService {
         return allTickets;
     }
 
+    /**
+     * Generates tickets with specific seats for an event.
+     *
+     * @param seats     the list of seats to associate with the tickets.
+     * @param event     the event for which tickets are generated.
+     * @param price     the price of the tickets.
+     * @param ticketType the type of the tickets (e.g., EARLY_BIRD, VIP, STANDARD).
+     * @return the list of generated tickets.
+     */
     private List<Ticket> generateTicketsWithSeats(List<Seat> seats, Event event, double price, TicketType ticketType) {
         return seats.stream()
                 .map(seat -> {
@@ -83,6 +92,15 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Generates tickets without specific seats for an event.
+     *
+     * @param event     the event for which tickets are generated.
+     * @param price     the price of the tickets.
+     * @param count     the number of tickets to generate.
+     * @param ticketType the type of the tickets (e.g., EARLY_BIRD, VIP, STANDARD).
+     * @return the list of generated tickets.
+     */
     private List<Ticket> generateTicketsWithoutSeats(Event event, double price, int count, TicketType ticketType) {
         List<Ticket> tickets = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -91,6 +109,13 @@ public class TicketService {
         return tickets;
     }
 
+    /**
+     * Calculates the dynamic price for STANDARD tickets based on the event date.
+     *
+     * @param basePrice the base price of the ticket.
+     * @param eventDate the date of the event.
+     * @return the dynamically calculated price.
+     */
     private double calculateDynamicStandardPrice(double basePrice, LocalDateTime eventDate) {
         LocalDateTime now = LocalDateTime.now();
         long daysToEvent = java.time.Duration.between(now, eventDate).toDays();
@@ -106,6 +131,12 @@ public class TicketService {
         }
     }
 
+    /**
+     * Reserves a ticket for a customer.
+     *
+     * @param ticket   the ticket to be reserved.
+     * @param customer the customer reserving the ticket.
+     */
     public void reserveTicket(Ticket ticket, Customer customer) {
         if (ticket.getSeat() != null) {
             venueService.reserveSeat(
@@ -123,7 +154,11 @@ public class TicketService {
         updateTicket(ticket);
     }
 
-
+    /**
+     * Releases a reserved ticket.
+     *
+     * @param ticket the ticket to be released.
+     */
     public void releaseTicket(Ticket ticket) {
         if (ticket.getSeat() != null) {
             venueService.unreserveSeat(ticket.getSeat().getID());
@@ -134,33 +169,67 @@ public class TicketService {
         updateTicket(ticket);
     }
 
+    /**
+     * Retrieves tickets associated with a specific event.
+     *
+     * @param event the event for which tickets are retrieved.
+     * @return a list of tickets for the specified event.
+     */
     public List<Ticket> getTicketsByEvent(Event event) {
         return ticketRepository.getAll().stream()
                 .filter(ticket -> ticket.getEvent().equals(event))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves available (unsold) tickets for a specific event.
+     *
+     * @param event the event for which available tickets are retrieved.
+     * @return a list of available tickets for the specified event.
+     */
     public List<Ticket> getAvailableTicketsForEvent(Event event) {
         return getTicketsByEvent(event).stream()
                 .filter(ticket -> !ticket.isSold())
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Finds tickets associated with a specific cart ID.
+     *
+     * @param cartID the ID of the cart.
+     * @return a list of tickets associated with the specified cart ID.
+     */
     public List<Ticket> findTicketsByCartID(int cartID) {
         return ticketRepository.getAll().stream()
                 .filter(ticket -> ticket.getCart() != null && ticket.getCart().getID() == cartID)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates a ticket in the repository.
+     *
+     * @param ticket the ticket to update.
+     */
     public void updateTicket(Ticket ticket) {
         ticket.setCustomer(ticket.getCustomer());
         ticketRepository.update(ticket);
     }
 
+    /**
+     * Finds a ticket by its ID.
+     *
+     * @param ticketID the ID of the ticket to find.
+     * @return the ticket with the specified ID, or null if not found.
+     */
     public Ticket findTicketByID(int ticketID) {
         return ticketRepository.read(ticketID);
     }
 
+    /**
+     * Deletes a ticket by its ID.
+     *
+     * @param ticketID the ID of the ticket to delete.
+     */
     public void deleteTicket(int ticketID) {
         Ticket ticket = findTicketByID(ticketID);
         if (ticket != null) {
@@ -168,10 +237,22 @@ public class TicketService {
         }
     }
 
+    /**
+     * Calculates the total price of a list of tickets.
+     *
+     * @param tickets the list of tickets.
+     * @return the total price of the tickets.
+     */
     public double calculateTotalPrice(List<Ticket> tickets) {
         return tickets.stream().mapToDouble(Ticket::getPrice).sum();
     }
 
+    /**
+     * Retrieves ticket availability information by type for a specific event.
+     *
+     * @param event the event for which ticket availability is retrieved.
+     * @return a list of strings describing the availability of each ticket type.
+     */
     public List<String> getTicketAvailabilityByType(Event event) {
         List<Ticket> tickets = getTicketsByEvent(event);
 
@@ -203,12 +284,26 @@ public class TicketService {
         return availability;
     }
 
+    /**
+     * Retrieves available tickets of a specific type for an event.
+     *
+     * @param event      the event for which tickets are retrieved.
+     * @param ticketType the type of tickets to retrieve.
+     * @return a list of available tickets of the specified type for the event.
+     */
     public List<Ticket> getAvailableTicketsByType(Event event, TicketType ticketType) {
         return getTicketsByEvent(event).stream()
                 .filter(ticket -> ticket.getTicketType() == ticketType && !ticket.isSold())
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves tickets associated with a specific customer.
+     *
+     * @param customer the customer whose tickets are retrieved.
+     * @return a list of tickets associated with the customer.
+     * @throws ValidationException if the customer is null.
+     */
     public List<Ticket> getTicketsByCustomer(Customer customer) {
         if (customer == null) {
             throw new ValidationException("Customer cannot be null.");

@@ -9,6 +9,9 @@ import repository.factory.RepositoryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Service class for managing event-related operations including concerts and sports events.
+ */
 public class EventService {
     private final IRepository<Event> eventRepository;
     private final IRepository<ConcertLineUp> concertLineUpRepository;
@@ -17,6 +20,16 @@ public class EventService {
     private final ArtistService artistService;
     private final AthleteService athleteService;
 
+    /**
+     * Constructs an EventService with the specified repository factories and services.
+     *
+     * @param eventRepository             the repository factory for event management.
+     * @param concertLineUpRepository     the repository factory for concert lineups.
+     * @param sportsEventLineUpRepository the repository factory for sports event lineups.
+     * @param venueService                the service for managing venues.
+     * @param artistService               the service for managing artists.
+     * @param athleteService              the service for managing athletes.
+     */
     public EventService(RepositoryFactory eventRepository, RepositoryFactory concertLineUpRepository,
                         RepositoryFactory sportsEventLineUpRepository, VenueService venueService,
                         ArtistService artistService, AthleteService athleteService) {
@@ -29,6 +42,19 @@ public class EventService {
     }
 
     // --- Concert Methods ---
+    /**
+     * Creates a new concert.
+     *
+     * @param eventName       the name of the concert.
+     * @param eventDescription the description of the concert.
+     * @param startDateTime    the start date and time of the concert.
+     * @param endDateTime      the end date and time of the concert.
+     * @param venueID          the ID of the venue where the concert will be held.
+     * @param eventStatus      the status of the concert.
+     * @return the created Concert object.
+     * @throws ValidationException   if the concert name or times are invalid.
+     * @throws EntityNotFoundException if the venue is not found.
+     */
     public Concert createConcert(String eventName, String eventDescription, LocalDateTime startDateTime,
                                  LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         if (eventName == null || eventName.isEmpty()) {
@@ -46,6 +72,13 @@ public class EventService {
         return concert;
     }
 
+    /**
+     * Adds an artist to a concert.
+     *
+     * @param eventID  the ID of the concert.
+     * @param artistID the ID of the artist to add.
+     * @return true if the artist is successfully added, false otherwise.
+     */
     public boolean addArtistToConcert(int eventID, int artistID) {
         Concert concert = (Concert) findEventByID(eventID);
         if (concert != null) {
@@ -61,6 +94,13 @@ public class EventService {
         return false;
     }
 
+    /**
+     * Removes an artist from a concert.
+     *
+     * @param eventID  the ID of the concert.
+     * @param artistID the ID of the artist to remove.
+     * @return true if the artist is successfully removed, false otherwise.
+     */
     public boolean removeArtistFromConcert(int eventID, int artistID) {
         ConcertLineUp lineUp = concertLineUpRepository.getAll().stream()
                 .filter(lineUpEntry -> lineUpEntry.getConcert().getID() == eventID &&
@@ -74,6 +114,12 @@ public class EventService {
         return false;
     }
 
+    /**
+     * Finds a concert by its ID.
+     *
+     * @param concertID the ID of the concert.
+     * @return the Concert object, or null if not found.
+     */
     public Concert findConcertByID(int concertID) {
         return eventRepository.getAll().stream()
                 .filter(event -> event instanceof Concert && event.getID() == concertID)
@@ -82,6 +128,12 @@ public class EventService {
                 .orElse(null);
     }
 
+    /**
+     * Retrieves the list of artists associated with a specific concert.
+     *
+     * @param concertID the ID of the concert.
+     * @return a list of Artist objects.
+     */
     public List<Artist> getArtistsByConcert(int concertID) {
         return concertLineUpRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getConcert().getID() == concertID)
@@ -91,6 +143,20 @@ public class EventService {
     }
 
     // --- Sports Event Methods ---
+
+    /**
+     * Creates a new sports event.
+     *
+     * @param eventName       the name of the sports event.
+     * @param eventDescription the description of the sports event.
+     * @param startDateTime    the start date and time of the sports event.
+     * @param endDateTime      the end date and time of the sports event.
+     * @param venueID          the ID of the venue where the sports event will be held.
+     * @param eventStatus      the status of the sports event.
+     * @return the created SportsEvent object.
+     * @throws ValidationException   if the sports event name or times are invalid.
+     * @throws EntityNotFoundException if the venue is not found.
+     */
     public SportsEvent createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime,
                                          LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         if (eventName == null || eventName.isEmpty()) {
@@ -108,6 +174,13 @@ public class EventService {
         return sportsEvent;
     }
 
+    /**
+     * Adds an athlete to a sports event.
+     *
+     * @param eventID   the ID of the sports event.
+     * @param athleteID the ID of the athlete to add.
+     * @return true if the athlete is successfully added, false otherwise.
+     */
     public boolean addAthleteToSportsEvent(int eventID, int athleteID) {
         SportsEvent sportsEvent = (SportsEvent) findEventByID(eventID);
         if (sportsEvent != null) {
@@ -123,6 +196,13 @@ public class EventService {
         return false;
     }
 
+    /**
+     * Removes an athlete from a sports event.
+     *
+     * @param eventID   the ID of the sports event.
+     * @param athleteID the ID of the athlete to remove.
+     * @return true if the athlete is successfully removed, false otherwise.
+     */
     public boolean removeAthleteFromSportsEvent(int eventID, int athleteID) {
         SportsEventLineUp lineUp = sportsEventLineUpRepository.getAll().stream()
                 .filter(lineUpEntry -> lineUpEntry.getSportsEvent().getID() == eventID &&
@@ -137,6 +217,12 @@ public class EventService {
         return false;
     }
 
+    /**
+     * Finds a sports event by its ID.
+     *
+     * @param sportsEventID the ID of the sports event.
+     * @return the SportsEvent object, or null if not found.
+     */
     public SportsEvent findSportsEventByID(int sportsEventID) {
         return eventRepository.getAll().stream()
                 .filter(event -> event instanceof SportsEvent && event.getID() == sportsEventID)
@@ -145,6 +231,12 @@ public class EventService {
                 .orElse(null);
     }
 
+    /**
+     * Retrieves the list of athletes associated with a specific sports event.
+     *
+     * @param sportsEventID the ID of the sports event.
+     * @return a list of Athlete objects.
+     */
     public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
         return sportsEventLineUpRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getSportsEvent().getID() == sportsEventID)
@@ -154,6 +246,18 @@ public class EventService {
     }
 
     // --- Common Event Methods ---
+    /**
+     * Updates an existing event with new details.
+     *
+     * @param eventId          the ID of the event to update.
+     * @param newName          the new name of the event.
+     * @param newDescription   the new description of the event.
+     * @param newStartDateTime the new start date and time of the event.
+     * @param newEndDateTime   the new end date and time of the event.
+     * @param newStatus        the new status of the event.
+     * @return true if the event is successfully updated, false otherwise.
+     * @throws EntityNotFoundException if the event is not found.
+     */
     public boolean updateEvent(int eventId, String newName, String newDescription,
                                LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
         Event event = findEventByID(eventId);
@@ -169,6 +273,13 @@ public class EventService {
         return true;
     }
 
+    /**
+     * Deletes an event by its ID.
+     *
+     * @param eventId the ID of the event to delete.
+     * @return true if the event is successfully deleted, false otherwise.
+     * @throws EntityNotFoundException if the event is not found.
+     */
     public boolean deleteEvent(int eventId) {
         Event event = findEventByID(eventId);
         if (event == null) {
@@ -188,6 +299,12 @@ public class EventService {
         return true;
     }
 
+    /**
+     * Finds an event by its ID.
+     *
+     * @param eventId the ID of the event to find.
+     * @return the Event object, or null if not found.
+     */
     public Event findEventByID(int eventId) {
         return eventRepository.getAll().stream()
                 .filter(event -> event.getID() == eventId)
@@ -195,16 +312,32 @@ public class EventService {
                 .orElse(null);
     }
 
+    /**
+     * Retrieves all events.
+     *
+     * @return a list of all Event objects.
+     */
     public List<Event> getAllEvents() {
         return eventRepository.getAll();
     }
 
+    /**
+     * Retrieves events associated with a specific venue.
+     *
+     * @param venueID the ID of the venue.
+     * @return a list of Event objects.
+     */
     public List<Event> getEventsByVenue(int venueID) {
         return eventRepository.getAll().stream()
                 .filter(event -> event.getVenueID() == venueID)
                 .toList();
     }
-
+    /**
+     * Retrieves events by location or venue name.
+     *
+     * @param locationOrVenueName the location or venue name to filter events.
+     * @return a list of Event objects.
+     */
     public List<Event> getEventsByLocation(String locationOrVenueName) {
         List<Venue> venues = venueService.findVenuesByLocationOrName(locationOrVenueName);
         return venues.stream()
@@ -212,6 +345,12 @@ public class EventService {
                 .toList();
     }
 
+    /**
+     * Retrieves upcoming events for a specific artist.
+     *
+     * @param artistID the ID of the artist.
+     * @return a list of upcoming Event objects.
+     */
     public List<Event> getUpcomingEventsForArtist(int artistID) {
         return concertLineUpRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getArtist().getID() == artistID &&
@@ -222,6 +361,12 @@ public class EventService {
                 .toList();
     }
 
+    /**
+     * Retrieves upcoming events for a specific athlete.
+     *
+     * @param athleteID the ID of the athlete.
+     * @return a list of upcoming Event objects.
+     */
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
         return sportsEventLineUpRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getAthlete().getID() == athleteID &&

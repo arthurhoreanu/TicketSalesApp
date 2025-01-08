@@ -9,7 +9,13 @@ import model.*;
 import java.util.*;
 
 public class CustomerMenu {
-
+    /**
+     * Displays the customer menu and handles user input for various customer operations.
+     *
+     * @param scanner    the scanner for reading user input.
+     * @param controller the controller for accessing application functionality.
+     * @return true if the user chooses to log out, false if the user exits the application.
+     */
     public static boolean display(Scanner scanner, Controller controller) {
         while (true) {
             try {
@@ -60,7 +66,12 @@ public class CustomerMenu {
             }
         }
     }
-
+    /**
+     * Handles the search for events by artists or athletes.
+     *
+     * @param scanner    the scanner for reading user input.
+     * @param controller the controller for accessing application functionality.
+     */
     private static void handleSearchArtistsAndAthletes(Scanner scanner, Controller controller) {
         try {
             System.out.print("Enter the name of an artist or athlete: ");
@@ -83,7 +94,12 @@ public class CustomerMenu {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    /**
+     * Handles the search for events by location or venue.
+     *
+     * @param scanner    the scanner for reading user input.
+     * @param controller the controller for accessing application functionality.
+     */
     private static void handleSearchEventsByLocation(Scanner scanner, Controller controller) {
         try {
             System.out.print("Enter location or venue name: ");
@@ -97,7 +113,12 @@ public class CustomerMenu {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    /**
+     * Handles the viewing of suggested events based on the user's favourites.
+     *
+     * @param scanner    the scanner for reading user input.
+     * @param controller the controller for accessing application functionality.
+     */
     private static void handleViewSuggestedEvents(Scanner scanner, Controller controller) {
         System.out.println("==== Suggested Events ====");
         Set<FavouriteEntity> favourites = controller.getFavourites();
@@ -141,6 +162,12 @@ public class CustomerMenu {
         handleEventSelectionFromList(scanner, controller, suggestedEvents);
     }
 
+    /**
+     * Handles the viewing of all events and allows the user to select an event.
+     *
+     * @param scanner    the scanner for reading user input.
+     * @param controller the controller for accessing application functionality.
+     */
     private static void handleViewAllEvents(Scanner scanner, Controller controller) {
         List<Event> events = controller.getAllEvents();
         if (events.isEmpty()) {
@@ -160,6 +187,12 @@ public class CustomerMenu {
         }
     }
 
+    /**
+     * Handles the management of favourites, including viewing, adding, and removing favourites.
+     *
+     * @param scanner    the scanner for reading user input.
+     * @param controller the controller for accessing application functionality.
+     */
     private static void handleEventSelectionForPerformer(Scanner scanner, Controller controller, Object performer) {
         try {
             List<Event> events;
@@ -185,7 +218,13 @@ public class CustomerMenu {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    /**
+     * Handles the selection of events from a given list and allows users to choose an event to view its sections and tickets.
+     *
+     * @param scanner    the Scanner for reading user input.
+     * @param controller the Controller for accessing application functionality.
+     * @param events     the list of events to select from.
+     */
     private static void handleEventSelectionFromList(Scanner scanner, Controller controller, List<Event> events) {
         try {
             if (events.isEmpty()) {
@@ -205,7 +244,13 @@ public class CustomerMenu {
         }
     }
 
-
+    /**
+     * Handles the selection of sections and tickets for a given event.
+     *
+     * @param scanner    the Scanner for reading user input.
+     * @param controller the Controller for accessing application functionality.
+     * @param event      the event for which sections and tickets are being selected.
+     */
     private static void handleSectionAndTicketSelection(Scanner scanner, Controller controller, Event event) {
         try {
             List<String> ticketAvailability = controller.getTicketAvailabilityByType(event);
@@ -229,6 +274,14 @@ public class CustomerMenu {
         }
     }
 
+    /**
+     * Handles the selection of seats for a given event and allows users to select tickets or get seat recommendations.
+     *
+     * @param scanner    the Scanner for reading user input.
+     * @param controller the Controller for accessing application functionality.
+     * @param sections   the list of sections available for the event.
+     * @param event      the event for which seats are being selected.
+     */
     private static void handleSeatSelection(Scanner scanner, Controller controller, List<Section> sections, Event event) {
         System.out.println("Sections available:");
         sections.forEach(System.out::println);
@@ -309,7 +362,14 @@ public class CustomerMenu {
 
 
 
-
+    /**
+     * Handles the selection of tickets without specific seats for a given event.
+     *
+     * @param scanner    the Scanner for reading user input.
+     * @param controller the Controller for accessing application functionality.
+     * @param event      the event for which tickets are being selected.
+     * @param venue      the venue where the event is taking place.
+     */
     private static void handleSimpleTicketSelection(Scanner scanner, Controller controller, Event event, Venue venue) {
         List<Ticket> selectedTickets = new ArrayList<>();
 
@@ -383,6 +443,15 @@ public class CustomerMenu {
         }
     }
 
+    /**
+     * Handles the checkout process for the selected tickets and processes payment details.
+     *
+     * @param scanner     the Scanner for reading user input.
+     * @param controller  the Controller for accessing application functionality.
+     * @param event       the event for which tickets are being purchased.
+     * @param tickets     the list of selected tickets.
+     * @param ticketCount the number of tickets being purchased.
+     */
     private static void handleCheckout(Scanner scanner, Controller controller, Event event, List<Ticket> tickets, int ticketCount) {
         System.out.println("Proceeding to checkout...");
 
@@ -443,6 +512,13 @@ public class CustomerMenu {
         }
     }
 
+    /**
+     * Handles the display of the current customer's previous orders, including ticket details such as ID,
+     * event name, price, purchase date, and seat information. If no orders are found, an appropriate
+     * message is displayed.
+     *
+     * @param controller the Controller instance used to access the customer's data and previous orders.
+     */
     private static void handleViewPreviousOrders(Controller controller) {
         try {
             Customer currentCustomer = (Customer) controller.getCurrentUser();
