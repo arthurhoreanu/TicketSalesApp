@@ -1,11 +1,20 @@
 package test;
 
-import controller.*;
-import exception.BusinessLogicException;
-import model.*;
+import main.java.com.ticketsalesapp.controller.*;
+import main.java.com.ticketsalesapp.exception.BusinessLogicException;
+import main.java.com.ticketsalesapp.model.*;
+import main.java.com.ticketsalesapp.model.event.*;
+import main.java.com.ticketsalesapp.model.ticket.Cart;
+import main.java.com.ticketsalesapp.model.ticket.Ticket;
+import main.java.com.ticketsalesapp.model.user.Customer;
+import main.java.com.ticketsalesapp.model.user.User;
+import main.java.com.ticketsalesapp.model.venue.Row;
+import main.java.com.ticketsalesapp.model.venue.Seat;
+import main.java.com.ticketsalesapp.model.venue.Section;
+import main.java.com.ticketsalesapp.model.venue.Venue;
 import org.junit.jupiter.api.*;
-import repository.factory.*;
-import service.*;
+import main.java.com.ticketsalesapp.repository.factory.*;
+import main.java.com.ticketsalesapp.service.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
