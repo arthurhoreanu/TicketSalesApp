@@ -1,4 +1,4 @@
-# TicketSalesCompany
+# TicketSalesApp
 
 ## Introduction
 The TicketSalesCompany application is your ultimate platform for managing and purchasing event tickets. Whether you're a music enthusiast or a sports fan, our app ensures a seamless and personalized experience, offering features for both admins and customers. From creating events to purchasing tickets, the app covers all aspects of event management.
@@ -138,4 +138,4 @@ Customers can search for events by:
 ---
 
 ## UML
-![TicketSalesCompany](https://github.com/user-attachments/assets/4cd99ddd-c14a-4168-ad74-998a19f9391f)
+![TicketSalesApp](https://github.com/user-attachments/assets/4cd99ddd-c14a-4168-ad74-998a19f9391f)
