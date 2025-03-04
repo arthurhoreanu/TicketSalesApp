@@ -1,3 +1,5 @@
+package main.java.com.example.ticketsalesapp;
+
 import model.*;
 import presentation.admin.AdminMenu;
 import presentation.*;
@@ -5,12 +7,13 @@ import repository.factory.RepositoryFactory;
 import repository.*;
 import service.*;
 import controller.*;
-
+import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Scanner;
 
+@Component
 public class ConsoleApp {
-    public static void main(String[] args) {
+    public static void run() {
         Scanner scanner = new Scanner(System.in);
 
         RepositoryFactory repositoryFactory = StartMenu.select(scanner);
