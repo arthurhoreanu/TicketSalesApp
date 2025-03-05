@@ -25,11 +25,11 @@ public class ConsoleApp {
         ControllerProvider.initializeController(controller);
 
         List<String> csvFiles = List.of(
-                "src/repository/data/artists.csv", "src/repository/data/athletes.csv", "src/repository/data/seats.csv",
-                "src/repository/data/rows.csv", "src/repository/data/sections.csv", "src/repository/data/venues.csv",
-                "src/repository/data/tickets.csv", "src/repository/data/carts.csv", "src/repository/data/admins.csv",
-                "src/repository/data/customers.csv", "src/repository/data/concerts.csv", "src/repository/data/sports_events.csv",
-                "src/repository/data/concert_line_ups.csv", "src/repository/data/sports_event_line_ups.csv"
+                "src/main/java/com/ticketsalesapp/repository/data/artists.csv", "src/main/java/com/ticketsalesapp/repository/data/athletes.csv", "src/main/java/com/ticketsalesapp/repository/data/seats.csv",
+                "src/main/java/com/ticketsalesapp/repository/data/rows.csv", "src/main/java/com/ticketsalesapp/repository/data/sections.csv", "src/main/java/com/ticketsalesapp/repository/data/venues.csv",
+                "src/main/java/com/ticketsalesapp/repository/data/tickets.csv", "src/main/java/com/ticketsalesapp/repository/data/carts.csv", "src/main/java/com/ticketsalesapp/repository/data/admins.csv",
+                "src/main/java/com/ticketsalesapp/repository/data/customers.csv", "src/main/java/com/ticketsalesapp/repository/data/concerts.csv", "src/main/java/com/ticketsalesapp/repository/data/sports_events.csv",
+                "src/main/java/com/ticketsalesapp/repository/data/concert_line_ups.csv", "src/main/java/com/ticketsalesapp/repository/data/sports_event_line_ups.csv"
         );
         IdInitializer.initializeGlobalId(csvFiles);
 
