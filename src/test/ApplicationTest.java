@@ -35,7 +35,7 @@ public class ApplicationTest {
     private static TicketService ticketService;
     private static CartService cartService;
     private static CustomerService customerService;
-    private static UserService userService;
+    private static AdminService adminService;
 
     // Controller
     private static ArtistController artistController;
@@ -65,7 +65,7 @@ public class ApplicationTest {
         ticketService = new TicketService(repositoryFactory, venueService);
         cartService = new CartService(repositoryFactory);
         customerService = new CustomerService();
-        userService = new UserService(repositoryFactory, customerService);
+        adminService = new AdminService(repositoryFactory, customerService);
 
         // Controller
         artistController = new ArtistController(artistService);
@@ -75,7 +75,7 @@ public class ApplicationTest {
         ticketController = new TicketController(ticketService);
         cartController = new CartController(cartService);
         customerController = new CustomerController(customerService);
-        userController = new UserController(userService);
+        userController = new UserController(adminService);
         Controller mockController = new Controller(artistController, athleteController, venueController, ticketController,
                 cartController, customerController, eventController, userController);
         ControllerProvider.initializeController(mockController);
@@ -89,13 +89,13 @@ public class ApplicationTest {
     @Test
     public void userCRUD() {
         // 1. CREATE
-        userService.createAccount("Admin", "admin", "admin@tsc.com", "password");
-        userService.createAccount("Customer", "customer", "customer@example.com", "password");
-        assertEquals(2, userService.getAllUsers().size(), "Two users should be created.");
+        adminService.createAccount("Admin", "admin", "admin@tsc.com", "password");
+        adminService.createAccount("Customer", "customer", "customer@example.com", "password");
+        assertEquals(2, adminService.getAllUsers().size(), "Two users should be created.");
 
         // 2. READ
-        User retrievedAdmin = userService.findUserByID(1);
-        User retrievedCustomer = userService.findUserByID(2);
+        User retrievedAdmin = adminService.findUserByID(1);
+        User retrievedCustomer = adminService.findUserByID(2);
 
         assertNotNull(retrievedAdmin, "Admin should be retrievable.");
         assertNotNull(retrievedCustomer, "Customer should be retrievable.");
@@ -103,12 +103,12 @@ public class ApplicationTest {
         assertEquals("customer", retrievedCustomer.getUsername(), "Retrieved Customer username should match.");
 
         // 3. DELETE
-        userService.login("admin", "password"); // Admin trebuie să fie logat pentru a șterge
-        userService.deleteAccount(2); // Șterge Customer
-        userService.logout();
+        adminService.login("admin", "password"); // Admin trebuie să fie logat pentru a șterge
+        adminService.deleteAccount(2); // Șterge Customer
+        adminService.logout();
 
-        assertNull(userService.findUserByID(2), "Customer should be deleted.");
-        assertEquals(1, userService.getAllUsers().size(), "Only Admin should remain.");
+        assertNull(adminService.findUserByID(2), "Customer should be deleted.");
+        assertEquals(1, adminService.getAllUsers().size(), "Only Admin should remain.");
     }
 
     /**
@@ -443,8 +443,8 @@ public class ApplicationTest {
     @Test
     public void SuccessfulEventSuggestion() {
         // 1. CREATE CUSTOMER AND SET AS CURRENT
-        userService.createAccount("Customer", "customer", "customer@gmail.com", "password");
-        User customer = userService.findUserByID(1);
+        adminService.createAccount("Customer", "customer", "customer@gmail.com", "password");
+        User customer = adminService.findUserByID(1);
         customerService.setCurrentCustomer((Customer) customer);
 
         // 2. CREATE ARTISTS, ATHLETES, AND RELATED ENTITIES
@@ -528,8 +528,8 @@ public class ApplicationTest {
     @Test
     public void failEventSuggestion() {
         // 1. CREATE CUSTOMER WITH NO FAVORITES
-        userService.createAccount("Customer", "customer", "customer@gmail.com", "password");
-        User customer = userService.findUserByID(1);
+        adminService.createAccount("Customer", "customer", "customer@gmail.com", "password");
+        User customer = adminService.findUserByID(1);
         customerService.setCurrentCustomer((Customer) customer);
 
         // 2. VERIFY FAVORITES IS EMPTY

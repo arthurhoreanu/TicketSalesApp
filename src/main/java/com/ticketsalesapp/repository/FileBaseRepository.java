@@ -15,7 +15,7 @@ import java.util.function.Function;
  *
  * @param <T> Type of objects managed by the repository, which must implement {@link Identifiable}.
  */
-public class FileRepository<T extends Identifiable> implements Repository<T> {
+public class FileBaseRepository<T extends Identifiable> implements BaseRepository<T> {
     private final String filePath;
     private final Function<String, T> fromCsv;
     private final Lock lock = new ReentrantLock();
@@ -26,7 +26,7 @@ public class FileRepository<T extends Identifiable> implements Repository<T> {
      * @param filePath      The path to the CSV file where data will be stored.
      * @param fromCsv Function to convert a CSV line to an object of type T.
      */
-    public FileRepository(String filePath, Function<String, T> fromCsv) {
+    public FileBaseRepository(String filePath, Function<String, T> fromCsv) {
         this.filePath = filePath;
         this.fromCsv = fromCsv;
         initializeFile();

@@ -15,7 +15,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBRepository<T extends Identifiable> implements Repository<T> {
+public class DBBaseRepository<T extends Identifiable> implements BaseRepository<T> {
 
     private final Class<T> type;
     private final String tableName;
@@ -24,7 +24,7 @@ public class DBRepository<T extends Identifiable> implements Repository<T> {
     private static final String DB_USER = "map";
     private static final String DB_PASSWORD = "map";
 
-    public DBRepository(Class<T> type) {
+    public DBBaseRepository(Class<T> type) {
         this.type = type;
         this.tableName = isAbstract(type) ? null : getTableNameFromHibernate(type);
     }

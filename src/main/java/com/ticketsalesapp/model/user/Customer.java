@@ -1,5 +1,8 @@
 package main.java.com.ticketsalesapp.model.user;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.model.ticket.Cart;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
 
@@ -12,35 +15,52 @@ import java.util.Set;
 /**
  * Represents a customer user with specific preferences, favourites, and a shopping cart.
  */
+@Getter
 @Entity
 @Table(name = "customer")
+@NoArgsConstructor
 public class Customer extends User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
     private int userID;
 
+    @Setter
     @Column(name = "username", nullable = false)
     private String username;
 
+    @Setter
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Setter
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Setter
     @Transient
     private Set<FavouriteEntity> favourites = new HashSet<>();
 
+    /**
+     * -- GETTER --
+     *  Gets the customer's shopping cart.
+     *
+     */
+    @Setter
     @Transient
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "cart_id", nullable = true)
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    /**
+     * -- GETTER --
+     *  Gets the customer's preferred sections with preference counts.
+     *
+     */
+    @Setter
     @Transient
     private Map<Integer, Integer> preferredSections; // Tracks section preferences with section ID as key and preference count as value
-
-    public Customer() {}
 
     /**
      * Constructs a Customer with the specified user details and initializes default values.
@@ -60,44 +80,6 @@ public class Customer extends User {
             favourites = new HashSet<>();
         }
         return favourites;
-    }
-
-    /**
-     * Adds an item to the customer's list of favourite entities.
-     *
-     * @param item the favourite entity to add
-     */
-    public boolean addFavourite(FavouriteEntity item) {
-        return favourites.add(item);
-    }
-
-    /**
-     * Removes an item from the customer's list of favourite entities.
-     * @param item the favourite entity to remove
-     * @return true if the item was removed from favourites, false if it was not found
-     */
-    public boolean removeFavourite(FavouriteEntity item) {
-        return favourites.remove(item);
-    }
-
-    /**
-     * Gets the customer's shopping cart.
-     * @return the customer's shopping cart
-     */
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
-    /**
-     * Gets the customer's preferred sections with preference counts.
-     * @return a map where the keys are section IDs and values are preference counts
-     */
-    public Map<Integer, Integer> getPreferredSections() {
-        return preferredSections;
     }
 
     /**
@@ -147,48 +129,21 @@ public class Customer extends User {
         return customer;
     }
 
-    // Getters and setters
-
-    public int getUserID() {
-        return userID;
+    /**
+     * Adds an item to the customer's list of favourite entities.
+     *
+     * @param item the favourite entity to add
+     */
+    public void addFavourite(FavouriteEntity item) {
+        favourites.add(item);
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setFavourites(Set<FavouriteEntity> favourites) {
-        this.favourites = favourites;
-    }
-
-    public void setPreferredSections(Map<Integer, Integer> preferredSections) {
-        this.preferredSections = preferredSections;
+    /**
+     * Removes an item from the customer's list of favourite entities.
+     *
+     * @param item the favourite entity to remove
+     */
+    public void removeFavourite(FavouriteEntity item) {
+        favourites.remove(item);
     }
 }

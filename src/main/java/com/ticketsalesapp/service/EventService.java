@@ -4,7 +4,7 @@ import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.*;
 import main.java.com.ticketsalesapp.model.venue.Venue;
-import main.java.com.ticketsalesapp.repository.Repository;
+import main.java.com.ticketsalesapp.repository.BaseRepository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 
 import java.time.LocalDateTime;
@@ -14,9 +14,9 @@ import java.util.List;
  * Service class for managing event-related operations including concerts and sports events.
  */
 public class EventService {
-    private final Repository<Event> eventRepository;
-    private final Repository<ConcertLineUp> concertLineUpRepository;
-    private final Repository<SportsEventLineUp> sportsEventLineUpRepository;
+    private final BaseRepository<Event> eventBaseRepository;
+    private final BaseRepository<ConcertLineUp> concertLineUpBaseRepository;
+    private final BaseRepository<SportsEventLineUp> sportsEventLineUpBaseRepository;
     private final VenueService venueService;
     private final ArtistService artistService;
     private final AthleteService athleteService;
@@ -34,9 +34,9 @@ public class EventService {
     public EventService(RepositoryFactory eventRepository, RepositoryFactory concertLineUpRepository,
                         RepositoryFactory sportsEventLineUpRepository, VenueService venueService,
                         ArtistService artistService, AthleteService athleteService) {
-        this.eventRepository = eventRepository.createEventRepository();
-        this.concertLineUpRepository = concertLineUpRepository.createConcertLineUpRepository();
-        this.sportsEventLineUpRepository = sportsEventLineUpRepository.createSportsEventLineUpRepository();
+        this.eventBaseRepository = eventRepository.createEventRepository();
+        this.concertLineUpBaseRepository = concertLineUpRepository.createConcertLineUpRepository();
+        this.sportsEventLineUpBaseRepository = sportsEventLineUpRepository.createSportsEventLineUpRepository();
         this.venueService = venueService;
         this.artistService = artistService;
         this.athleteService = athleteService;
@@ -69,7 +69,7 @@ public class EventService {
             throw new EntityNotFoundException("Venue not found with ID: " + venueID);
         }
         Concert concert = new Concert(0, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-        eventRepository.create(concert);
+        eventBaseRepository.create(concert);
         return concert;
     }
 
@@ -89,7 +89,7 @@ public class EventService {
                 return false;
             }
             ConcertLineUp concertLineUp = new ConcertLineUp(concert, artist);
-            concertLineUpRepository.create(concertLineUp);
+            concertLineUpBaseRepository.create(concertLineUp);
             return true;
         }
         return false;
@@ -103,13 +103,13 @@ public class EventService {
      * @return true if the artist is successfully removed, false otherwise.
      */
     public boolean removeArtistFromConcert(int eventID, int artistID) {
-        ConcertLineUp lineUp = concertLineUpRepository.getAll().stream()
+        ConcertLineUp lineUp = concertLineUpBaseRepository.getAll().stream()
                 .filter(lineUpEntry -> lineUpEntry.getConcert().getID() == eventID &&
                         lineUpEntry.getArtist().getID() == artistID)
                 .findFirst()
                 .orElse(null);
         if (lineUp != null) {
-            concertLineUpRepository.delete(lineUp.getID());
+            concertLineUpBaseRepository.delete(lineUp.getID());
             return true;
         }
         return false;
@@ -122,7 +122,7 @@ public class EventService {
      * @return the Concert object, or null if not found.
      */
     public Concert findConcertByID(int concertID) {
-        return eventRepository.getAll().stream()
+        return eventBaseRepository.getAll().stream()
                 .filter(event -> event instanceof Concert && event.getID() == concertID)
                 .map(event -> (Concert) event)
                 .findFirst()
@@ -136,7 +136,7 @@ public class EventService {
      * @return a list of Artist objects.
      */
     public List<Artist> getArtistsByConcert(int concertID) {
-        return concertLineUpRepository.getAll().stream()
+        return concertLineUpBaseRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getConcert().getID() == concertID)
                 .map(ConcertLineUp::getArtist)
                 .distinct()
@@ -171,7 +171,7 @@ public class EventService {
             throw new EntityNotFoundException("Venue not found with ID: " + venueID);
         }
         SportsEvent sportsEvent = new SportsEvent(0, eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);
-        eventRepository.create(sportsEvent);
+        eventBaseRepository.create(sportsEvent);
         return sportsEvent;
     }
 
@@ -191,7 +191,7 @@ public class EventService {
                 return false;
             }
             SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(sportsEvent, athlete);
-            sportsEventLineUpRepository.create(sportsEventLineUp);
+            sportsEventLineUpBaseRepository.create(sportsEventLineUp);
             return true;
         }
         return false;
@@ -205,14 +205,14 @@ public class EventService {
      * @return true if the athlete is successfully removed, false otherwise.
      */
     public boolean removeAthleteFromSportsEvent(int eventID, int athleteID) {
-        SportsEventLineUp lineUp = sportsEventLineUpRepository.getAll().stream()
+        SportsEventLineUp lineUp = sportsEventLineUpBaseRepository.getAll().stream()
                 .filter(lineUpEntry -> lineUpEntry.getSportsEvent().getID() == eventID &&
                         lineUpEntry.getAthlete().getID() == athleteID)
                 .findFirst()
                 .orElse(null);
 
         if (lineUp != null) {
-            sportsEventLineUpRepository.delete(lineUp.getID());
+            sportsEventLineUpBaseRepository.delete(lineUp.getID());
             return true;
         }
         return false;
@@ -225,7 +225,7 @@ public class EventService {
      * @return the SportsEvent object, or null if not found.
      */
     public SportsEvent findSportsEventByID(int sportsEventID) {
-        return eventRepository.getAll().stream()
+        return eventBaseRepository.getAll().stream()
                 .filter(event -> event instanceof SportsEvent && event.getID() == sportsEventID)
                 .map(event -> (SportsEvent) event)
                 .findFirst()
@@ -239,7 +239,7 @@ public class EventService {
      * @return a list of Athlete objects.
      */
     public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
-        return sportsEventLineUpRepository.getAll().stream()
+        return sportsEventLineUpBaseRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getSportsEvent().getID() == sportsEventID)
                 .map(SportsEventLineUp::getAthlete)
                 .distinct() // Evită duplicarea atleților
@@ -270,7 +270,7 @@ public class EventService {
         event.setStartDateTime(newStartDateTime);
         event.setEndDateTime(newEndDateTime);
         event.setEventStatus(newStatus);
-        eventRepository.update(event);
+        eventBaseRepository.update(event);
         return true;
     }
 
@@ -288,15 +288,15 @@ public class EventService {
         }
 
         if (event instanceof Concert) {
-            concertLineUpRepository.getAll().stream()
+            concertLineUpBaseRepository.getAll().stream()
                     .filter(lineUp -> lineUp.getConcert().getID() == eventId)
-                    .forEach(lineUp -> concertLineUpRepository.delete(lineUp.hashCode()));
+                    .forEach(lineUp -> concertLineUpBaseRepository.delete(lineUp.hashCode()));
         } else if (event instanceof SportsEvent) {
-            sportsEventLineUpRepository.getAll().stream()
+            sportsEventLineUpBaseRepository.getAll().stream()
                     .filter(lineUp -> lineUp.getSportsEvent().getID() == eventId)
-                    .forEach(lineUp -> sportsEventLineUpRepository.delete(lineUp.hashCode()));
+                    .forEach(lineUp -> sportsEventLineUpBaseRepository.delete(lineUp.hashCode()));
         }
-        eventRepository.delete(eventId);
+        eventBaseRepository.delete(eventId);
         return true;
     }
 
@@ -307,7 +307,7 @@ public class EventService {
      * @return the Event object, or null if not found.
      */
     public Event findEventByID(int eventId) {
-        return eventRepository.getAll().stream()
+        return eventBaseRepository.getAll().stream()
                 .filter(event -> event.getID() == eventId)
                 .findFirst()
                 .orElse(null);
@@ -319,7 +319,7 @@ public class EventService {
      * @return a list of all Event objects.
      */
     public List<Event> getAllEvents() {
-        return eventRepository.getAll();
+        return eventBaseRepository.getAll();
     }
 
     /**
@@ -329,7 +329,7 @@ public class EventService {
      * @return a list of Event objects.
      */
     public List<Event> getEventsByVenue(int venueID) {
-        return eventRepository.getAll().stream()
+        return eventBaseRepository.getAll().stream()
                 .filter(event -> event.getVenueID() == venueID)
                 .toList();
     }
@@ -353,7 +353,7 @@ public class EventService {
      * @return a list of upcoming Event objects.
      */
     public List<Event> getUpcomingEventsForArtist(int artistID) {
-        return concertLineUpRepository.getAll().stream()
+        return concertLineUpBaseRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getArtist().getID() == artistID &&
                         lineUp.getConcert().getStartDateTime().isAfter(LocalDateTime.now()))
                 .map(ConcertLineUp::getConcert)
@@ -369,7 +369,7 @@ public class EventService {
      * @return a list of upcoming Event objects.
      */
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
-        return sportsEventLineUpRepository.getAll().stream()
+        return sportsEventLineUpBaseRepository.getAll().stream()
                 .filter(lineUp -> lineUp.getAthlete().getID() == athleteID &&
                         lineUp.getSportsEvent().getStartDateTime().isAfter(LocalDateTime.now()))
                 .map(SportsEventLineUp::getSportsEvent)

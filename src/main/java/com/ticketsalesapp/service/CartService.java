@@ -6,7 +6,7 @@ import main.java.com.ticketsalesapp.model.ticket.Cart;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.event.Event;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
-import main.java.com.ticketsalesapp.repository.Repository;
+import main.java.com.ticketsalesapp.repository.BaseRepository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 
 import java.time.YearMonth;
@@ -17,10 +17,10 @@ import java.util.List;
  */
 public class CartService {
 
-    private final Repository<Cart> cartRepository;
+    private final BaseRepository<Cart> cartBaseRepository;
 
     public CartService(RepositoryFactory repositoryFactory) {
-        this.cartRepository = repositoryFactory.createCartRepository();
+        this.cartBaseRepository = repositoryFactory.createCartRepository();
     }
 
     /**
@@ -38,7 +38,7 @@ public class CartService {
             throw new ValidationException("Event cannot be null.");
         }
         Cart cart = new Cart(customer, event);
-        cartRepository.create(cart);
+        cartBaseRepository.create(cart);
         return cart;
     }
 
@@ -67,7 +67,7 @@ public class CartService {
             cart.addTicket(ticket);
 
             updateTotalPrice(cart); // Update total price after adding a ticket
-            cartRepository.update(cart);
+            cartBaseRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -92,7 +92,7 @@ public class CartService {
         }
         try {
             cart.removeTicket(ticket);
-            cartRepository.update(cart);
+            cartBaseRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -111,7 +111,7 @@ public class CartService {
         }
         double totalPrice = cart.calculateTotalPrice();
         cart.setTotalPrice(totalPrice);
-        cartRepository.update(cart);
+        cartBaseRepository.update(cart);
     }
 
     /**
@@ -125,7 +125,7 @@ public class CartService {
         }
         cart.clearCart();
         cart.setTotalPrice(0.0);
-        cartRepository.update(cart);
+        cartBaseRepository.update(cart);
     }
 
     /**
@@ -149,7 +149,7 @@ public class CartService {
      * @return The cart if found, or null otherwise.
      */
     public Cart findCartByID(int cartID) {
-        return cartRepository.read(cartID);
+        return cartBaseRepository.read(cartID);
     }
 
     /**

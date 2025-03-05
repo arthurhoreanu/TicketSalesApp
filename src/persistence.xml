@@ -4,7 +4,7 @@
         <class>main.java.com.ticketsalesapp.model.user.User</class>
         <class>main.java.com.ticketsalesapp.model.user.Admin</class>
         <class>main.java.com.ticketsalesapp.model.user.Customer</class>
-        <class>main.java.com.ticketsalesapp.service.UserService</class>
+        <class>main.java.com.ticketsalesapp.service.AdminService</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>

@@ -3,16 +3,16 @@ package main.java.com.ticketsalesapp.service;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Artist;
-import main.java.com.ticketsalesapp.repository.Repository;
+import main.java.com.ticketsalesapp.repository.BaseRepository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistService {
-    private final Repository<Artist> artistRepository;
+    private final BaseRepository<Artist> artistBaseRepository;
 
     public ArtistService(RepositoryFactory repositoryFactory) {
-        this.artistRepository = repositoryFactory.createArtistRepository();
+        this.artistBaseRepository = repositoryFactory.createArtistRepository();
     }
 
     /**
@@ -26,7 +26,7 @@ public class ArtistService {
             throw new BusinessLogicException("Artist with name '" + artistName + "' already exists.");
         }
         Artist artist = new Artist(0, artistName, genre);
-        artistRepository.create(artist);
+        artistBaseRepository.create(artist);
         return true;
     }
 
@@ -47,7 +47,7 @@ public class ArtistService {
         }
         artist.setArtistName(newName);
         artist.setGenre(newGenre);
-        artistRepository.update(artist);
+        artistBaseRepository.update(artist);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class ArtistService {
         if(artist == null) {
             throw new ValidationException("Artist with id '" + artistId + "' does not exist.");
         }
-        artistRepository.delete(artistId);
+        artistBaseRepository.delete(artistId);
         return true;
     }
 
@@ -70,7 +70,7 @@ public class ArtistService {
      * @return A list of all artists in the repository.
      */
     public List<Artist> getAllArtists() {
-        return artistRepository.getAll();
+        return artistBaseRepository.getAll();
     }
 
     /**
@@ -79,7 +79,7 @@ public class ArtistService {
      * @return The artist with the specified ID, or null if no artist was found.
      */
     public Artist findArtistByID(int artistID) {
-        return artistRepository.getAll().stream().filter(artist -> artist.getID() == artistID).findFirst().orElse(null);
+        return artistBaseRepository.getAll().stream().filter(artist -> artist.getID() == artistID).findFirst().orElse(null);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ArtistService {
      * @return The artist with the specified name, or null if no artist was found.
      */
     public Artist findArtistByName(String artistName) {
-        return artistRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
+        return artistBaseRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ArtistService {
      */
     public List<Artist> findArtistsByGenre(String genre) {
         List<Artist> artistsInGenre = new ArrayList<>();
-        for (Artist artist : artistRepository.getAll()) {
+        for (Artist artist : artistBaseRepository.getAll()) {
             if (artist.getGenre().equalsIgnoreCase(genre)) {
                 artistsInGenre.add(artist);
             }

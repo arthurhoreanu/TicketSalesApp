@@ -3,6 +3,8 @@ package main.java.com.ticketsalesapp.repository.factory;
 import main.java.com.ticketsalesapp.model.event.*;
 import main.java.com.ticketsalesapp.model.ticket.Cart;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
+import main.java.com.ticketsalesapp.model.user.Admin;
+import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.user.User;
 import main.java.com.ticketsalesapp.model.venue.Row;
 import main.java.com.ticketsalesapp.model.venue.Seat;
@@ -13,64 +15,73 @@ import main.java.com.ticketsalesapp.repository.*;
 public class DBRepositoryFactory implements RepositoryFactory {
 
     @Override
-    public DBRepository<Artist> createArtistRepository() {
-        return new DBRepository<>(Artist.class);
+    public DBBaseRepository<Artist> createArtistRepository() {
+        return new DBBaseRepository<>(Artist.class);
     }
 
     @Override
-    public DBRepository<Athlete> createAthleteRepository() {
-        return new DBRepository<>(Athlete.class);
+    public DBBaseRepository<Athlete> createAthleteRepository() {
+        return new DBBaseRepository<>(Athlete.class);
     }
 
     @Override
-    public DBRepository<Seat> createSeatRepository() {
-        return new DBRepository<>(Seat.class);
+    public DBBaseRepository<Seat> createSeatRepository() {
+        return new DBBaseRepository<>(Seat.class);
     }
 
     @Override
-    public DBRepository<Row> createRowRepository() {
-        return new DBRepository<>(Row.class);
+    public DBBaseRepository<Row> createRowRepository() {
+        return new DBBaseRepository<>(Row.class);
     }
 
     @Override
-    public DBRepository<Section> createSectionRepository() {
-        return new DBRepository<>(Section.class);
+    public DBBaseRepository<Section> createSectionRepository() {
+        return new DBBaseRepository<>(Section.class);
     }
 
     @Override
-    public DBRepository<Venue> createVenueRepository() {
-        return new DBRepository<>(Venue.class);
+    public DBBaseRepository<Venue> createVenueRepository() {
+        return new DBBaseRepository<>(Venue.class);
     }
 
     @Override
-    public DBRepository<Ticket> createTicketRepository() {
-        return new DBRepository<>(Ticket.class);
+    public DBBaseRepository<Ticket> createTicketRepository() {
+        return new DBBaseRepository<>(Ticket.class);
     }
 
     @Override
-    public DBRepository<Cart> createCartRepository() {
-        return new DBRepository<>(Cart.class);
-    }
-
-
-    @Override
-    public DBRepository<User> createUserRepository() {
-        return new DBRepository<>(User.class);
+    public DBBaseRepository<Cart> createCartRepository() {
+        return new DBBaseRepository<>(Cart.class);
     }
 
     @Override
-    public DBRepository<Event> createEventRepository() {
-        return new DBRepository<>(Event.class);
+    public DBBaseRepository<Admin> createAdminRepository() {
+        return new DBBaseRepository<>(Admin.class);
     }
 
     @Override
-    public DBRepository<ConcertLineUp> createConcertLineUpRepository() {
-        return new DBRepository<>(ConcertLineUp.class);
+    public DBBaseRepository<Customer> createCustomerRepository() {
+        return new DBBaseRepository<>(Customer.class);
     }
 
     @Override
-    public DBRepository<SportsEventLineUp> createSportsEventLineUpRepository() {
-        return new DBRepository<>(SportsEventLineUp.class);
+    public DBBaseRepository<Concert> createConcertRepository() {
+        return new DBBaseRepository<>(Concert.class);
+    }
+
+    @Override
+    public DBBaseRepository<SportsEvent> createSportsEventRepository() {
+        return new DBBaseRepository<>(SportsEvent.class);
+    }
+
+    @Override
+    public DBBaseRepository<ConcertLineUp> createConcertLineUpRepository() {
+        return new DBBaseRepository<>(ConcertLineUp.class);
+    }
+
+    @Override
+    public DBBaseRepository<SportsEventLineUp> createSportsEventLineUpRepository() {
+        return new DBBaseRepository<>(SportsEventLineUp.class);
     }
 
 }

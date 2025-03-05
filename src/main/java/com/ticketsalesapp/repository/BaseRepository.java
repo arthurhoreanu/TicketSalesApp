@@ -3,8 +3,9 @@ package main.java.com.ticketsalesapp.repository;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface Repository<T extends Identifiable> {
+public interface BaseRepository<T extends Identifiable> {
 
     /**
      * Creates and adds an object to the repository.
@@ -16,7 +17,7 @@ public interface Repository<T extends Identifiable> {
      * Retrieves an object from the repository by its ID.
      * @param id The ID of the object to be retrieved.
      */
-    T read(Integer id);
+    Optional<T> read(Integer id);
 
     /**
      * Updates an existing object in the repository.
