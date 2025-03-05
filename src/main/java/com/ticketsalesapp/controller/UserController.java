@@ -2,19 +2,19 @@ package main.java.com.ticketsalesapp.controller;
 
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.user.User;
-import main.java.com.ticketsalesapp.service.UserService;
+import main.java.com.ticketsalesapp.service.AdminService;
 
 import java.util.List;
 
 public class UserController {
-    private final UserService userService;
+    private final AdminService adminService;
 
     /**
      * Constructor for UserController.
-     * @param userService The instance of UserService used to perform account operations.
+     * @param adminService The instance of UserService used to perform account operations.
      */
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     /**
@@ -22,7 +22,7 @@ public class UserController {
      * @return The current user, or null if no user is logged in.
      */
     public User getCurrentUser() {
-        return userService.getCurrentUser();
+        return adminService.getCurrentUser();
     }
 
     /**
@@ -30,7 +30,7 @@ public class UserController {
      * @return A list containing all users in the system.
      */
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        return adminService.getAllUsers();
     }
 
     /**
@@ -39,7 +39,7 @@ public class UserController {
      * @return true if the username is taken; false if it's available.
      */
     public boolean isUsernameTaken(String username) {
-        boolean isTaken = userService.takenUsername(username);
+        boolean isTaken = adminService.takenUsername(username);
         if (isTaken) {
             System.out.println("The username '" + username + "' is already taken.");
         } else {
@@ -54,7 +54,7 @@ public class UserController {
      * @return true if the email ends with the required domain suffix; false otherwise.
      */
     public boolean domainEmail(String email) {
-        boolean isValid = userService.domainEmail(email);
+        boolean isValid = adminService.domainEmail(email);
         if (isValid) {
             System.out.println("The email '" + email + "' is valid for the required domain.");
         } else {
@@ -77,7 +77,7 @@ public class UserController {
             System.out.println("All fields are required for account creation.");
             return false;
         }
-        boolean success = userService.createAccount(role, username, email, password);
+        boolean success = adminService.createAccount(role, username, email, password);
         if (success) {
             System.out.println("Account created successfully for role '" + role + "'.");
         } else {
@@ -98,7 +98,7 @@ public class UserController {
             System.out.println("Username and password are required for login.");
             return false;
         }
-        boolean success = userService.login(username, password);
+        boolean success = adminService.login(username, password);
         if (success) {
             System.out.println("Login successful. Welcome, " + username + "!");
         } else {
@@ -113,7 +113,7 @@ public class UserController {
      * @return true if logout is successful, false otherwise.
      */
     public boolean logout() {
-        boolean success = userService.logout();
+        boolean success = adminService.logout();
         if (success) {
             System.out.println("Logout successful.");
         } else {
@@ -129,7 +129,7 @@ public class UserController {
      * @return true if the account was successfully deleted, false otherwise.
      */
     public boolean deleteAccount(int id) {
-        boolean success = userService.deleteAccount(id);
+        boolean success = adminService.deleteAccount(id);
         if (success) {
             System.out.println("Account with ID " + id + " has been deleted.");
         } else {
@@ -144,7 +144,7 @@ public class UserController {
      * @return The User object, or null if no user with the given ID exists.
      */
     public User findUserByID(int id) {
-        User user = userService.findUserByID(id);
+        User user = adminService.findUserByID(id);
         if (user != null) {
             System.out.println("User found: " + user.getUsername());
         } else {
@@ -159,7 +159,7 @@ public class UserController {
      * @return The Customer object, or null if no customer with the given ID exists.
      */
     public Customer findCustomerByID(int customerID) {
-        Customer customer = userService.findCustomerByID(customerID);
+        Customer customer = adminService.findCustomerByID(customerID);
         if (customer != null) {
             System.out.println("Customer found: " + customer.getUsername());
         } else {

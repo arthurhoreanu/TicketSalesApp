@@ -3,7 +3,8 @@ package main.java.com.ticketsalesapp.repository.factory;
 import main.java.com.ticketsalesapp.model.event.*;
 import main.java.com.ticketsalesapp.model.ticket.Cart;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
-import main.java.com.ticketsalesapp.model.user.User;
+import main.java.com.ticketsalesapp.model.user.Admin;
+import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.venue.Row;
 import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Section;
@@ -13,63 +14,73 @@ import main.java.com.ticketsalesapp.repository.*;
 public class InMemoryRepositoryFactory implements RepositoryFactory {
 
     @Override
-    public Repository<Artist> createArtistRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Artist> createArtistRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Athlete> createAthleteRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Athlete> createAthleteRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Seat> createSeatRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Seat> createSeatRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Row> createRowRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Row> createRowRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Section> createSectionRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Section> createSectionRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Venue> createVenueRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Venue> createVenueRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Ticket> createTicketRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Ticket> createTicketRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Cart> createCartRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Cart> createCartRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<User> createUserRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Admin> createAdminRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<Event> createEventRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Customer> createCustomerRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<ConcertLineUp> createConcertLineUpRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<Concert> createConcertRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
     @Override
-    public Repository<SportsEventLineUp> createSportsEventLineUpRepository() {
-        return new InMemoryRepository<>();
+    public BaseRepository<SportsEvent> createSportsEventRepository() {
+        return new InMemoryBaseRepository<>();
+    }
+
+    @Override
+    public BaseRepository<ConcertLineUp> createConcertLineUpRepository() {
+        return new InMemoryBaseRepository<>();
+    }
+
+    @Override
+    public BaseRepository<SportsEventLineUp> createSportsEventLineUpRepository() {
+        return new InMemoryBaseRepository<>();
     }
 
 }

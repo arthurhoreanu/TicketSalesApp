@@ -1,39 +1,66 @@
 package main.java.com.ticketsalesapp.service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
+import main.java.com.ticketsalesapp.repository.BaseRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
+@Service
+@RequiredArgsConstructor
 public class CustomerService {
+    private final BaseRepository<Customer> customerRepository;
 
+    @Getter
     private Customer currentCustomer;
 
-    public CustomerService() {}
+    public boolean login(String username, String password) {
+        var customer = customerRepository.getAll().stream()
+                .filter(c -> c.getUsername().equals(username) && c.getPassword().equals(password))
+                .findFirst();
 
-    /**
-     * Sets the current customer for the service.
-     * @param customer The customer to be set as the current customer.
-     */
-    public void setCurrentCustomer(Customer customer) {
-        this.currentCustomer = customer;
+        if (customer.isPresent()) {
+            currentCustomer = customer.get();
+            return true;
+        }
+        return false;
     }
 
-    /**
-     * Retrieves the current customer.
-     * @return The current customer, or null if no customer is set.
-     */
-    public Customer getCurrentCustomer() {
-        return currentCustomer;
+    public boolean logout() {
+        if (currentCustomer == null) {
+            return false;
+        }
+        currentCustomer = null;
+        return true;
     }
 
-    /**
-     * Adds an item to the current customer's list of favourites.
-     * @param item The favourite entity to be added.
-     * @return true if the item was successfully added to the favourites.
-     */
+    public boolean createCustomer(String username, String email, String password) {
+        if (takenUsername(username)) {
+            throw new ValidationException("Username already taken");
+        }
+        Customer customer = new Customer();
+        customer.setUsername(username);
+        customer.setEmail(email);
+        customer.setPassword(password);
+        customerRepository.create(customer);
+        return true;
+    }
+
+    private boolean takenUsername(String username) {
+        return customerRepository.getAll().stream()
+                .anyMatch(customer -> customer.getUsername().equals(username));
+    }
+
+    public Customer findCustomerById(int id) {
+        return customerRepository.read(id)
+                .orElseThrow(() -> new BusinessLogicException("Customer not found"));
+    }
+
     public boolean addFavourite(FavouriteEntity item) {
         if (item == null) {
             throw new ValidationException("Cannot add a null item to favourites.");
@@ -42,14 +69,10 @@ public class CustomerService {
             throw new BusinessLogicException("Item is already in the favourites.");
         }
         currentCustomer.addFavourite(item);
+        customerRepository.create(currentCustomer);
         return true;
     }
 
-    /**
-     * Removes an item from the current customer's list of favourites.
-     * @param item The favourite entity to be removed.
-     * @return true if the item was successfully removed from the favourites.
-     */
     public boolean removeFavourite(FavouriteEntity item) {
         if (item == null) {
             throw new ValidationException("Cannot remove a null item from favourites.");
@@ -58,15 +81,11 @@ public class CustomerService {
             throw new ValidationException("Item is not in the favourites.");
         }
         currentCustomer.removeFavourite(item);
+        customerRepository.create(currentCustomer);
         return true;
     }
 
-    /**
-     * Retrieves the current customer's list of favourite items.
-     * @return A set of favourite items belonging to the current customer.
-     */
     public Set<FavouriteEntity> getFavourites() {
         return currentCustomer.getFavourites();
     }
-
 }

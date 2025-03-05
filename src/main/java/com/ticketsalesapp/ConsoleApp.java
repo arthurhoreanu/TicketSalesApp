@@ -60,7 +60,7 @@ public class ConsoleApp {
         TicketService ticketService = new TicketService(repositoryFactory, venueService);
         CartService cartService = new CartService(repositoryFactory);
         CustomerService customerService = new CustomerService();
-        UserService userService = new UserService(repositoryFactory, customerService);
+        AdminService adminService = new AdminService(repositoryFactory, customerService);
 
         // Controller
         ArtistController artistController = new ArtistController(artistService);
@@ -70,7 +70,7 @@ public class ConsoleApp {
         CartController cartController = new CartController(cartService);
         CustomerController customerController = new CustomerController(customerService);
         EventController eventController = new EventController(eventService);
-        UserController userController = new UserController(userService);
+        UserController userController = new UserController(adminService);
 
         // Main Controller
         return new Controller(artistController, athleteController, venueController, ticketController,

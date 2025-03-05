@@ -3,16 +3,16 @@ package main.java.com.ticketsalesapp.service;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
-import main.java.com.ticketsalesapp.repository.Repository;
+import main.java.com.ticketsalesapp.repository.BaseRepository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AthleteService {
-    private final Repository<Athlete> athleteRepository;
+    private final BaseRepository<Athlete> athleteBaseRepository;
 
     public AthleteService(RepositoryFactory repositoryFactory) {
-        this.athleteRepository = repositoryFactory.createAthleteRepository();
+        this.athleteBaseRepository = repositoryFactory.createAthleteRepository();
     }
 
     /**
@@ -26,7 +26,7 @@ public class AthleteService {
             throw new BusinessLogicException("Athlete with name '" + athleteName + "' already exists.");
         }
         Athlete athlete = new Athlete(0, athleteName, sport);
-        athleteRepository.create(athlete);
+        athleteBaseRepository.create(athlete);
         return true;
     }
 
@@ -47,7 +47,7 @@ public class AthleteService {
         }
         athlete.setAthleteName(newName);
         athlete.setAthleteSport(newSport);
-        athleteRepository.update(athlete);
+        athleteBaseRepository.update(athlete);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class AthleteService {
         if (athlete == null) {
             throw new ValidationException("Athlete with ID " + athleteID + " does not exist.");
         }
-        athleteRepository.delete(athleteID);
+        athleteBaseRepository.delete(athleteID);
         return true;
     }
 
@@ -70,7 +70,7 @@ public class AthleteService {
      * @return A list of all athletes in the repository.
      */
     public List<Athlete> getAllAthletes() {
-        return athleteRepository.getAll();
+        return athleteBaseRepository.getAll();
     }
 
     /**
@@ -79,7 +79,7 @@ public class AthleteService {
      * @return The athlete with the specified ID, or null if no athlete was found.
      */
     public Athlete findAthleteByID(int athleteID) {
-        return athleteRepository.getAll().stream().filter(athlete -> athlete.getID() == athleteID).findFirst().orElse(null);
+        return athleteBaseRepository.getAll().stream().filter(athlete -> athlete.getID() == athleteID).findFirst().orElse(null);
     }
 
     /**
@@ -88,7 +88,7 @@ public class AthleteService {
      * @return The athlete with the specified name, or null if no athlete was found.
      */
     public Athlete findAthleteByName(String athleteName) {
-        return athleteRepository.getAll().stream().filter(athlete -> athlete.getAthleteName().equalsIgnoreCase(athleteName)).findFirst().orElse(null);
+        return athleteBaseRepository.getAll().stream().filter(athlete -> athlete.getAthleteName().equalsIgnoreCase(athleteName)).findFirst().orElse(null);
     }
 
 
@@ -99,7 +99,7 @@ public class AthleteService {
      */
     public List<Athlete> findAthletesBySport(String sport) {
         List<Athlete> athletesInSport = new ArrayList<>();
-        for (Athlete athlete : athleteRepository.getAll()) {
+        for (Athlete athlete : athleteBaseRepository.getAll()) {
             if (athlete.getAthleteSport().equalsIgnoreCase(sport)) {
                 athletesInSport.add(athlete);
             }

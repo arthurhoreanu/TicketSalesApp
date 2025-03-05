@@ -1,5 +1,9 @@
 package main.java.com.ticketsalesapp.model.user;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 /**
@@ -7,22 +11,29 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "admin")
+@NoArgsConstructor
 public class Admin extends User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
+    @Getter
     private int userID;
 
+    @Getter
+    @Setter
     @Column(name = "username", nullable = false)
     private String username;
 
+    @Getter
+    @Setter
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Getter
+    @Setter
     @Column(name = "password", nullable = false)
     private String password;
-
-    public Admin() {}
 
     /**
      * Constructs an Admin with the specified user details.
@@ -77,42 +88,5 @@ public class Admin extends User {
         admin.setEmail(email);
         admin.setPassword(password);
         return admin;
-    }
-
-    // Getters and setters
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
