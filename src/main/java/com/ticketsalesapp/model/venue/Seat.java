@@ -8,6 +8,7 @@ import main.java.com.ticketsalesapp.model.Identifiable;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 /**
  * Represents a seat in a venue section, with details such as its ID, parent row, reservation status,
@@ -28,6 +29,8 @@ public class Seat implements Identifiable {
     private int number; // The seat number within the row
 
     @Column(name = "is_reserved", nullable = false)
+    @Getter
+    @Setter
     private boolean isReserved = false; // Indicates if the seat is reserved (default is false)
 
     @Setter
@@ -70,14 +73,6 @@ public class Seat implements Identifiable {
     @Override
     public void setID(int seatID) {
         this.seatID = seatID;
-    }
-
-    public boolean isReserved() {
-        return isReserved;
-    }
-
-    public void setReserved(boolean reserved) {
-        isReserved = reserved;
     }
 
     public void setTicket(Ticket ticket) {
@@ -141,6 +136,6 @@ public class Seat implements Identifiable {
         boolean isReserved = Boolean.parseBoolean(fields[2].trim());
         int rowID = Integer.parseInt(fields[3].trim());
 
-        Row row = applicationController.findRowByID(rowID);
-        return new Seat(seatID, number, isReserved, row);    }
+        Optional<Row> row = applicationController.findRowByID(rowID);
+        return new Seat(seatID, number, isReserved, row.get());    }
 }

@@ -8,6 +8,7 @@ import main.java.com.ticketsalesapp.service.CartService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The CartController class provides methods to manage the cart of the current customer.
@@ -122,9 +123,9 @@ public class CartController {
      * @param cartID The ID of the cart to find.
      * @return The cart if found, or null otherwise.
      */
-    public Cart findCartByID(int cartID) {
-        Cart cart = cartService.findCartByID(cartID);
-        if (cart != null) {
+    public Optional<Cart> findCartByID(int cartID) {
+        Optional<Cart> cart = cartService.findCartByID(cartID);
+        if (cart.isPresent()) {
             System.out.println("Cart found: " + cart);
         } else {
             System.out.println("Cart with ID " + cartID + " not found.");

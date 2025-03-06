@@ -48,12 +48,14 @@ public class VenueService {
      * @return the created Seat object.
      */
     public Seat createSeat(int rowId, int seatNumber) {
-        Row row = findRowByID(rowId);
+        Optional<Row> row = findRowByID(rowId);
         if (row == null) {
             throw new EntityNotFoundException("Row not found");
         }
-        Seat seat = new Seat(0, seatNumber, false, row);
-        row.addSeat(seat);
+        Seat seat = new Seat();
+        seat.setNumber(seatNumber);
+        seat.setRow(row.get());
+        row.get().addSeat(seat);
         seatBaseRepository.create(seat);
         return seat;
     }
@@ -112,8 +114,12 @@ public class VenueService {
      * @return true if the Seat was successfully reserved, false otherwise.
      */
     public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
-        Optional<Seat> seat = findSeatByID(seatId);
-        if (seat.isPresent() && seat.get().isReserved()) {
+        Optional<Seat> seatOptional = findSeatByID(seatId);
+        if (seatOptional.isEmpty()) {
+            throw new EntityNotFoundException("Seat not found");
+        }
+        Seat seat = seatOptional.get();
+        if (seat.isReserved()) {
             throw new ValidationException("Seat with ID " + seatId + " is already reserved.");
         }
         if (event == null) {
@@ -122,16 +128,14 @@ public class VenueService {
         if (customer == null) {
             throw new ValidationException("Customer cannot be null.");
         }
-        // Create a Ticket object and associate it with the Seat
         Ticket ticket = new Ticket();
-        ticket.setSeat(seat.get());
+        ticket.setSeat(seat);
         ticket.setEvent(event);
         ticket.setCustomer(customer);
         ticket.setPrice(price);
         ticket.setTicketType(ticketType);
-        seat.se(true);
+        seat.setReserved(true);
         seat.setTicket(ticket);
-        // Update the seat in the repositories
         seatBaseRepository.update(seat);
         return true;
     }
@@ -142,8 +146,12 @@ public class VenueService {
      * @param seatId the ID of the Seat to unreserve.
      */
     public void unreserveSeat(int seatId) {
-        Seat seat = findSeatByID(seatId);
-        if (seat == null || !seat.isReserved()) {
+        Optional<Seat> seatOptional = findSeatByID(seatId);
+        if (seatOptional.isEmpty()) {
+            throw new EntityNotFoundException("Seat not found");
+        }
+        Seat seat = seatOptional.get();
+        if (!seat.isReserved()) {
             throw new ValidationException("Seat is not reserved.");
         }
         seat.setReserved(false);
@@ -159,8 +167,12 @@ public class VenueService {
      * @return true if the Seat is reserved for the Event, false otherwise.
      */
     public boolean isSeatReservedForEvent(int seatId, int eventId) {
-        Seat seat = findSeatByID(seatId);
-        return seat != null && seat.isReserved()
+        Optional<Seat> seatOptional = findSeatByID(seatId);
+        if (seatOptional.isEmpty()) {
+            return false;
+        }
+        Seat seat = seatOptional.get();
+        return seat.isReserved()
                 && seat.getTicket() != null
                 && seat.getTicket().getEvent().getID() == eventId;
     }
@@ -181,14 +193,15 @@ public class VenueService {
         return row;
     }
 
-    public Row updateRow(int rowId, int rowCapacity) {
-        Row row = findRowByID(rowId);
-        if (row == null) {
+    public Optional<Row> updateRow(int rowId, int rowCapacity) {
+        Optional<Row> rowOptional = findRowByID(rowId);
+        if (rowOptional.isEmpty()) {
             throw new EntityNotFoundException("Row not found with ID: " + rowId);
         }
+        Row row = rowOptional.get();
         row.setRowCapacity(rowCapacity);
         rowBaseRepository.update(row);
-        return row;
+        return Optional.of(row);
     }
 
     public void deleteRowsBySection(int sectionID) {
@@ -202,7 +215,7 @@ public class VenueService {
     }
 
     public void deleteRow(int rowID) {
-        Row row = findRowByID(rowID);
+        Optional<Row> row = findRowByID(rowID);
         if (row == null) {
             throw new EntityNotFoundException("Row not found with ID: " + rowID);
         }
@@ -210,7 +223,7 @@ public class VenueService {
         rowBaseRepository.delete(rowID);
     }
 
-    public Row findRowByID(int rowId) {
+    public Optional<Row> findRowByID(int rowId) {
         return rowBaseRepository.read(rowId);
     }
 
@@ -226,16 +239,16 @@ public class VenueService {
      * @throws EntityNotFoundException if the row with the specified ID is not found
      */
     public void addSeatsToRow(int rowId, int numberOfSeats) {
-        Row row = findRowByID(rowId);
-        if (row == null) {
+        Optional<Row> rowOptional = findRowByID(rowId);
+        if (rowOptional.isEmpty()) {
             throw new EntityNotFoundException("Row not found");
         }
+        Row row = rowOptional.get();
         for (int i = 1; i <= numberOfSeats; i++) {
             Seat seat = new Seat(0, i, false, row); // Create the Seat object
             row.addSeat(seat); // Add the Seat to the Row's seats list
             seatBaseRepository.create(seat); // Persist the Seat in the repository
         }
-
         rowBaseRepository.update(row); // Persist the updated Row with its seats
     }
 
@@ -246,8 +259,8 @@ public class VenueService {
      * @return a list of rows in the specified section, or an empty list if the section is not found
      */
     public List<Row> findRowsBySection(int sectionId) {
-        Section section = findSectionByID(sectionId);
-        return section != null ? section.getRows() : new ArrayList<>();
+        Optional<Section> section = findSectionByID(sectionId);
+        return section.isPresent() ? section.get().getRows() : new ArrayList<>();
     }
 
     /**
@@ -258,11 +271,11 @@ public class VenueService {
      * @return a list of available seats in the specified row and event, or an empty list if the row is not found
      */
     public List<Seat> getAvailableSeatsInRow(int rowId, int eventId) {
-        Row row = findRowByID(rowId);
+        Optional<Row> row = findRowByID(rowId);
         if (row == null) {
             return new ArrayList<>();
         }
-        return row.getSeats().stream()
+        return row.get().getSeats().stream()
                 .filter(seat -> !seat.isReserved() && isSeatForEvent(seat, eventId))
                 .collect(Collectors.toList());
     }
@@ -276,12 +289,12 @@ public class VenueService {
      * @return the closest available seat, or null if no suitable seat is found
      */
     public Seat recommendClosestSeat(int sectionId, int rowId, List<Integer> selectedSeatNumbers) {
-        Section section = findSectionByID(sectionId);
-        if (section == null) {
+        Optional<Section> section = findSectionByID(sectionId);
+        if (section.isEmpty()) {
             return null;
         }
 
-        Row row = section.getRows().stream()
+        Row row = section.get().getRows().stream()
                 .filter(r -> r.getID() == rowId)
                 .findFirst()
                 .orElse(null);
@@ -316,8 +329,8 @@ public class VenueService {
     }
 
     public List<Seat> getSeatsByRow(int rowId) {
-        Row row = findRowByID(rowId);
-        return (row != null) ? row.getSeats() : new ArrayList<>();
+        Optional<Row> row = findRowByID(rowId);
+        return (row != null) ? row.get().getSeats() : new ArrayList<>();
     }
 
     // Section
@@ -345,15 +358,15 @@ public class VenueService {
      * @param sectionCapacity the new capacity for the Section.
      * @return the updated Section object, or null if the Section does not exist.
      */
-    public Section updateSection(int sectionId, String sectionName, int sectionCapacity) {
-        Section section = sectionBaseRepository.read(sectionId);
-        if (section == null) {
-            return null; // Section not found
+    public Object updateSection(int sectionId, String sectionName, int sectionCapacity) {
+        Optional<Section> sectionOptional = sectionBaseRepository.read(sectionId);
+        if (sectionOptional.isEmpty()) {
+            return null;
         }
+        Section section = sectionOptional.get();
         section.setSectionName(sectionName);
         section.setSectionCapacity(sectionCapacity);
-        sectionBaseRepository.update(section);
-        return section;
+        return sectionBaseRepository.update(section);
     }
 
     public void deleteSectionByVenue(int venueID) {
@@ -373,8 +386,8 @@ public class VenueService {
      * @return true if the Section was successfully deleted, false otherwise.
      */
     public void deleteSection(int sectionID) {
-        Section section = sectionBaseRepository.read(sectionID);
-        if (section == null) {
+        Optional<Section> section = sectionBaseRepository.read(sectionID);
+        if (section.isEmpty()) {
             throw new EntityNotFoundException("Section not found with ID: " + sectionID);
         }
         deleteRowsBySection(sectionID);
@@ -387,7 +400,7 @@ public class VenueService {
      * @param sectionId the ID of the Section to retrieve.
      * @return the Section object if found, null otherwise.
      */
-    public Section findSectionByID(int sectionId) {
+    public Optional<Section> findSectionByID(int sectionId) {
         return sectionBaseRepository.read(sectionId);
     }
 
@@ -400,11 +413,12 @@ public class VenueService {
         return sectionBaseRepository.getAll();
     }
 
-    public void addRowsToSection(int sectionID, int numberOfRows, int rowCapacity) {
-        Section section = sectionBaseRepository.read(sectionID);
-        if (section == null) {
+    public void addRowsToSection(int sectionId, int numberOfRows, int rowCapacity) {
+        Optional<Section> sectionOptional = sectionBaseRepository.read(sectionId);
+        if (sectionOptional.isEmpty()) {
             throw new EntityNotFoundException("Section not found");
         }
+        Section section = sectionOptional.get();
         for (int i = 0; i < numberOfRows; i++) {
             createRow(section, rowCapacity);
         }
@@ -431,12 +445,12 @@ public class VenueService {
      * @return a list of available Seats in the Section.
      */
     public List<Seat> getAvailableSeatsInSection(int sectionId, int eventId) {
-        Section section = sectionBaseRepository.read(sectionId);
-        if (section == null) {
+        Optional<Section> section = sectionBaseRepository.read(sectionId);
+        if (section.isEmpty()) {
             return new ArrayList<>(); // Section not found
         }
         List<Seat> availableSeats = new ArrayList<>();
-        for (Row row : section.getRows()) {
+        for (Row row : section.get().getRows()) {
             availableSeats.addAll(
                     row.getSeats().stream()
                             .filter(seat -> !seat.isReserved() && seat.getTicket() != null
@@ -477,7 +491,7 @@ public class VenueService {
     /**
      * Retrieves a Venue by its ID.
      */
-    public Venue findVenueByID(int venueId) {
+    public Optional<Venue> findVenueByID(int venueId) {
         return venueBaseRepository.read(venueId);
     }
 
@@ -513,25 +527,25 @@ public class VenueService {
     /**
      * Updates an existing Venue.
      */
-    public Venue updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
-        Venue venue = venueBaseRepository.read(venueId);
-        if (venue == null) {
-            return null; // Venue not found
+    public Object updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
+        Optional<Venue> venueOptional = venueBaseRepository.read(venueId);
+        if (venueOptional.isEmpty()) {
+            return null;
         }
+        Venue venue = venueOptional.get();
         venue.setVenueName(name);
         venue.setLocation(location);
         venue.setVenueCapacity(capacity);
         venue.setHasSeats(hasSeats);
-        venueBaseRepository.update(venue);
-        return venue;
+        return venueBaseRepository.update(venue);
     }
 
     /**
      * Deletes a Venue and its associated Sections.
      */
     public boolean deleteVenue(int venueId) {
-        Venue venue = venueBaseRepository.read(venueId);
-        if (venue == null) {
+        Optional<Venue> venue = venueBaseRepository.read(venueId);
+        if (venue.isEmpty()) {
             return false;
         }
         deleteSectionByVenue(venueId);
@@ -543,23 +557,23 @@ public class VenueService {
      * Adds a Section to a Venue.
      */
     public void addSectionToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
-        Venue venue = venueBaseRepository.read(venueId);
-        if (venue == null) {
+        Optional<Venue> venueOptional = venueBaseRepository.read(venueId);
+        if (venueOptional.isEmpty()) {
             throw new EntityNotFoundException("Venue not found");
         }
+        Venue venue = venueOptional.get();
+
         for (int i = 0; i < numberOfSections; i++) {
             String sectionName = defaultSectionName + " " + (i + 1);
             if (venue.getSections().stream().anyMatch(s -> s.getSectionName().equals(sectionName))) {
                 throw new ValidationException("Duplicate section name: " + sectionName);
             }
             Section section = createSection(venue, sectionCapacity, sectionName);
-            sectionBaseRepository.create(section); // Persist the section in the repository
+            sectionBaseRepository.create(section);
         }
-        // Reload the sections for the venue
         loadSectionsForVenue(venue);
-        venueBaseRepository.update(venue); // Persist the updated venue
+        venueBaseRepository.update(venue);
     }
-
 
     /**
      * Retrieves all Sections associated with a specific Venue.
@@ -575,15 +589,15 @@ public class VenueService {
         venue.setSections(sections); // Populate the sections list
     }
 
-
     /**
      * Retrieves all available Seats in a Venue for a specific Event.
      */
     public List<Seat> getAvailableSeatsInVenue(int venueId, int eventId) {
-        Venue venue = findVenueByID(venueId);
-        if (venue == null || !venue.isHasSeats()) {
+        Optional<Venue> venueOptional = findVenueByID(venueId);
+        if (venueOptional.isEmpty() || !venueOptional.get().isHasSeats()) {
             return new ArrayList<>();
         }
+        Venue venue = venueOptional.get();
 
         return venue.getSections().stream()
                 .flatMap(section -> section.getRows().stream())

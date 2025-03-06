@@ -40,13 +40,13 @@ public class TicketService {
      * @return the list of generated tickets.
      */
     public List<Ticket> generateTicketsForEvent(Event event, double basePrice, int earlyBirdCount, int vipCount, int standardCount) {
-        Venue venue = venueService.findVenueByID(event.getVenueID());
-        if (venue == null) {
+        Optional<Venue> venue = venueService.findVenueByID(event.getVenueID());
+        if (venue.isEmpty()) {
             throw new EntityNotFoundException("Venue not found for the event.");
         }
 
         List<Ticket> allTickets = new ArrayList<>();
-        if (venue.isHasSeats()) {
+        if (venue.get().isHasSeats()) {
             // Generate tickets for venues with seats
             List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(event.getVenueID(), event.getID());
             if (availableSeats.size() < (earlyBirdCount + vipCount + standardCount)) {
@@ -58,7 +58,7 @@ public class TicketService {
             allTickets.addAll(generateTicketsWithSeats(availableSeats.subList(earlyBirdCount + vipCount, earlyBirdCount + vipCount + standardCount), event, calculateDynamicStandardPrice(basePrice, event.getStartDateTime()), TicketType.STANDARD));
         } else {
             // Generate tickets for venues without seats
-            int totalCapacity = venue.getVenueCapacity();
+            int totalCapacity = venue.get().getVenueCapacity();
             if (totalCapacity < (earlyBirdCount + vipCount + standardCount)) {
                 throw new BusinessLogicException("Not enough capacity in the venue to generate tickets.");
             }

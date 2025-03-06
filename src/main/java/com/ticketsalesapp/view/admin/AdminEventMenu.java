@@ -357,7 +357,7 @@ public class AdminEventMenu {
         } else if (event instanceof SportsEvent) {
             manageAthletesForSportsEvent(scanner, applicationController, (SportsEvent) event);
         }
-        applicationController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
+        applicationController.updateConcert(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
         System.out.println("Event updated successfully.");
     }
 

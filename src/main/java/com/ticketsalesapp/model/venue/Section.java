@@ -146,7 +146,7 @@ public class Section implements Identifiable {
         int venueID = Integer.parseInt(fields[3].trim());
 
         // Create the Section object with the Venue retrieved from the controller
-        Section section = new Section(sectionID, sectionName, sectionCapacity, applicationController.findVenueByID(venueID));
+        Section section = new Section(sectionID, sectionName, sectionCapacity, applicationController.findSectionByID(venueID));
 
         // No need to initialize rows; it's already initialized
         return section;

@@ -53,4 +53,13 @@ public class ConcertController {
     public boolean deleteConcert(int concertID) {
         return concertService.deleteConcert(concertID);
     }
+
+    public double getBasePriceForEvent(int eventId) {
+        Concert concert = concertService.findConcertByID(eventId);
+        if (concert != null) {
+            return concert.getBasePrice();
+        } else {
+            throw new IllegalArgumentException("Event not found for ID: " + eventId);
+        }
+    }
 }

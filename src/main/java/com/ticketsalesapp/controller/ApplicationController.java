@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -35,6 +36,7 @@ public class ApplicationController {
     private final CustomerController customerController;
     private final ConcertController concertController;
     private final AdminController adminController;
+    private final SportsEventController sportsEventController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -53,7 +55,7 @@ public class ApplicationController {
     public ApplicationController(ArtistController artistController, AthleteController athleteController,
                                  VenueController venueController, TicketController ticketController,
                                  CartController cartController, CustomerController customerController,
-                                 ConcertController concertController, AdminController adminController) {
+                                 ConcertController concertController, AdminController adminController, SportsEventController sportsEventController) {
         this.artistController = artistController;
         this.athleteController = athleteController;
         this.venueController = venueController;
@@ -62,6 +64,7 @@ public class ApplicationController {
         this.customerController = customerController;
         this.concertController = concertController;
         this.adminController = adminController;
+        this.sportsEventController = sportsEventController;
     }
 
     // 1. Artist
@@ -103,7 +106,7 @@ public class ApplicationController {
         return venueController.createSeat(rowId, seatNumber);}
     public void deleteSeat(int seatId) {
         venueController.deleteSeat(seatId);}
-    public Seat findSeatByID(int seatId) {
+    public Optional<Seat> findSeatByID(int seatId) {
         return venueController.findSeatByID(seatId);}
     public List<Seat> getAllSeats() {
         return venueController.getAllSeats();}
@@ -117,13 +120,13 @@ public class ApplicationController {
     /// Row
     public Row createRow(Section section, int rowCapacity) {
         return venueController.createRow(section, rowCapacity);}
-    public Row updateRow(int rowId, int rowCapacity) {
+    public Optional<Row> updateRow(int rowId, int rowCapacity) {
         return venueController.updateRow(rowId, rowCapacity);}
     public void deleteRow(int rowId) {
         venueController.deleteRow(rowId);}
     public void deleteRowsBySection(int sectionId) {
         venueController.deleteRowsBySection(sectionId);}
-    public Row findRowByID(int rowId) {
+    public Optional<Row> findRowByID(int rowId) {
         return venueController.findRowByID(rowId);}
     public List<Row> getAllRows() {
         return venueController.getAllRows();}
@@ -145,7 +148,7 @@ public class ApplicationController {
         return venueController.updateSection(sectionId, sectionName, sectionCapacity);}
     public void deleteSection(int sectionId) {
         venueController.deleteSection(sectionId);}
-    public Section findSectionByID(int sectionId) {
+    public Optional<Section> findSectionByID(int sectionId) {
         return venueController.findSectionByID(sectionId);}
     public List<Section> getAllSections() {
         return venueController.getAllSections();}
@@ -159,7 +162,7 @@ public class ApplicationController {
     /// Venue
     public Venue createVenue(String name, String location, int capacity, boolean hasSeats) {
         return venueController.createVenue(name, location, capacity, hasSeats);}
-    public Venue findVenueByID(int venueId) {
+    public Optional<Venue> findVenueByID(int venueId) {
         return venueController.findVenueByID(venueId);}
     public List<Venue> findVenuesByLocationOrName(String keyword) {
         return venueController.findVenuesByLocationOrName(keyword);}
@@ -194,7 +197,7 @@ public class ApplicationController {
         return ticketController.findTicketsByCartID(cartID);}
     public void deleteTicket(int ticketID) {
         ticketController.deleteTicket(ticketID);}
-    public Ticket findTicketByID(int ticketID) {
+    public Optional<Ticket> findTicketByID(int ticketID) {
         return ticketController.findTicketByID(ticketID);}
     public double calculateTotalPrice(List<Ticket> tickets) {
         return ticketController.calculateTotalPrice(tickets);}
@@ -220,7 +223,7 @@ public class ApplicationController {
         cartController.finalizeCart(cart);}
     public List<Ticket> getTicketsInCart(Cart cart) {
         return cartController.getTicketsInCart(cart);}
-    public Cart findCartByID(int cartID) {
+    public Optional<Cart> findCartByID(int cartID) {
         return cartController.findCartByID(cartID);}
     public void processPayment(Cart cart, String cardNumber, String cardholderName, int expiryMonth, int expiryYear, String cvv) {
         cartController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv);}
@@ -244,47 +247,44 @@ public class ApplicationController {
         return customerController.getFavourites();}
 
 
-    // 7. Event
+    // 7. Concert
     public boolean addArtistToConcert(int eventId, int artistId) {
         return concertController.addArtistToConcert(eventId, artistId);}
-    public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
-        return concertController.addAthleteToSportsEvent(eventId, athleteId);}
-    public Event findEventByID(int eventId) {
-        return concertController.findEventByID(eventId);}
-    public List<Event> getEventsByLocation(String locationOrVenueName) {
-        return concertController.getEventsByLocation(locationOrVenueName);}
-    public List<Event> getUpcomingEventsForArtist(int artistID) {
-        return concertController.getUpcomingEventsForArtist(artistID);}
-    public List<Event> getUpcomingEventsForAthlete(int athleteID) {
-        return concertController.getUpcomingEventsForAthlete(athleteID);}
+    public Concert findConcertByID(int eventId) {
+        return concertController.findConcertByID(eventId);}
+//    public List<Event> getEventsByLocation(String locationOrVenueName) {
+//        return concertController.getEventsByLocation(locationOrVenueName);}
+//    public List<Event> getUpcomingEventsForArtist(int artistID) {
+//        return concertController.getUpcomingEventsForArtist(artistID);}
+//    public List<Event> getUpcomingEventsForAthlete(int athleteID) {
+//        return concertController.getUpcomingEventsForAthlete(athleteID);}
     public Concert createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
         return concertController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
-    public SportsEvent createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        return concertController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
-    public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
-        concertController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
-    }
-    public void deleteEvent(int eventId) {
-        concertController.deleteEvent(eventId);
-    }
-    public List<Event> getAllEvents() {
-        return concertController.getAllEvents();}
-    public Concert findConcertByID(int concertID) {
-        return concertController.findConcertByID(concertID);}
-    public SportsEvent findSportsEventByID(int sportsEventID) {
-        return concertController.findSportsEventByID(sportsEventID);}
+    public void updateConcert(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
+        concertController.updateConcert(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);}
+    public void deleteConcert(int eventId) {
+        concertController.deleteConcert(eventId);}
+    public List<Concert> getAllConcerts() {
+        return concertController.getAllConcerts();}
     public void removeArtistFromConcert(int eventID, int artistID) {
-        concertController.removeArtistFromConcert(eventID, artistID);
-    }
-    public void removeAthleteFromSportsEvent(int eventID, int athleteID) {
-        concertController.removeAthleteFromSportsEvent(eventID, athleteID);
-    }
+        concertController.removeArtistFromConcert(eventID, artistID);}
     public List<Artist> getArtistsByConcert(int concertID) {
-        return concertController.getArtistsByConcert(concertID);}
-    public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
-        return concertController.getAthletesBySportsEvent(sportsEventID);}
+        return concertController.getArtistsForConcert(concertID);}
 
-    // 8. Admin
+    // 8. SportsEvent
+    public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
+        return sportsEventController.addAthleteToEvent(eventId, athleteId);}
+    public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
+        return sportsEventController.getAthletesForEvent(sportsEventID);}
+    public void removeAthleteFromSportsEvent(int eventID, int athleteID) {
+        sportsEventController.removeAthleteFromEvent(eventID, athleteID);}
+    public Optional<SportsEvent> findSportsEventByID(int sportsEventID) {
+        return sportsEventController.findSportsEventByID(sportsEventID);}
+    public boolean createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
+        return sportsEventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
+
+
+    // 9. Admin
     public boolean adminLogin(String username, String password) {
         return adminController.login(username, password);}
     public boolean adminLogout() {
