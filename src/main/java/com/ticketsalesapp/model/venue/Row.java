@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.venue;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
@@ -17,15 +19,21 @@ public class Row implements Identifiable {
 
     @Id
     @Column(name = "row_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int rowID;
 
+    @Getter
+    @Setter
     @Column(name = "row_capacity", nullable = false)
     private int rowCapacity;
 
+    @Getter
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false)
     private Section section;
 
+    @Getter
     @OneToMany(mappedBy = "row", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats = new ArrayList<>();
 
@@ -57,26 +65,6 @@ public class Row implements Identifiable {
         this.rowID = rowID;
     }
 
-    public int getRowCapacity() {
-        return rowCapacity;
-    }
-
-    public void setRowCapacity(int rowCapacity) {
-        this.rowCapacity = rowCapacity;
-    }
-
-    public Section getSection() {
-        return section;
-    }
-
-    public void setSection(Section section) {
-        this.section = section;
-    }
-
-    public List<Seat> getSeats() {
-        return seats;
-    }
-
     public void setSeats(List<Seat> seats) {
         this.seats.clear(); // Clear existing seats to avoid duplicates
         for (Seat seat : seats) {
@@ -103,8 +91,10 @@ public class Row implements Identifiable {
      * @param seat The Seat to remove.
      */
     public void removeSeat(Seat seat) {
-        seats.remove(seat);
-        seat.setRow(null); // Break bidirectional relationship
+        if (seat != null) {
+            seats.remove(seat);
+            seat.setRow(null); // Break bidirectional relationship
+        }
     }
 
     @Override

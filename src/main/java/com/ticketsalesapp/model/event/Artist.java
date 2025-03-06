@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
@@ -17,11 +19,30 @@ public class Artist implements Identifiable, FavouriteEntity {
 
     @Id
     @Column(name = "artist_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int artistID;
 
+    /**
+     * -- SETTER --
+     *  Sets a new name for the artist.
+     * -- GETTER --
+     *  Gets the artist's name.
+     *
+     */
+    @Getter
+    @Setter
     @Column(name = "artist_name", nullable = false)
     private String artistName;
 
+    /**
+     * -- SETTER --
+     *  Sets a new genre for the artist.
+     * -- GETTER --
+     *  Gets the genre associated with the artist.
+     *
+     */
+    @Getter
+    @Setter
     @Column(name = "genre", nullable = false)
     private String genre;
 
@@ -66,38 +87,6 @@ public class Artist implements Identifiable, FavouriteEntity {
     @Override
     public String getName() {
         return this.artistName;
-    }
-
-    /**
-     * Gets the artist's name.
-     * @return the artist's name
-     */
-    public String getArtistName() {
-        return artistName;
-    }
-
-    /**
-     * Sets a new name for the artist.
-     * @param artistName the new name of the artist
-     */
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
-    }
-
-    /**
-     * Gets the genre associated with the artist.
-     * @return the genre of the artist
-     */
-    public String getGenre() {
-        return genre;
-    }
-
-    /**
-     * Sets a new genre for the artist.
-     * @param genre the new genre of the artist
-     */
-    public void setGenre(String genre) {
-        this.genre = genre;
     }
 
     /**

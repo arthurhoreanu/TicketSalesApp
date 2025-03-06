@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.venue;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
@@ -17,18 +19,24 @@ public class Seat implements Identifiable {
 
     @Id
     @Column(name = "seat_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seatID;
 
+    @Getter
+    @Setter
     @Column(name = "seat_number", nullable = false)
     private int number; // The seat number within the row
 
     @Column(name = "is_reserved", nullable = false)
     private boolean isReserved = false; // Indicates if the seat is reserved (default is false)
 
+    @Setter
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "row_id", nullable = false)
     private Row row; // Many-to-One relationship with Row
 
+    @Getter
     @OneToOne(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Ticket ticket; // 1:1 relationship with Ticket
 
@@ -64,32 +72,12 @@ public class Seat implements Identifiable {
         this.seatID = seatID;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public boolean isReserved() {
         return isReserved;
     }
 
     public void setReserved(boolean reserved) {
         isReserved = reserved;
-    }
-
-    public Row getRow() {
-        return row;
-    }
-
-    public void setRow(Row row) {
-        this.row = row;
-    }
-
-    public Ticket getTicket() {
-        return ticket;
     }
 
     public void setTicket(Ticket ticket) {

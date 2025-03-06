@@ -1,5 +1,6 @@
 package main.java.com.ticketsalesapp.service;
 
+import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Artist;
@@ -11,12 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ArtistService {
     private final BaseRepository<Artist> artistBaseRepository;
-
-    public ArtistService(RepositoryFactory repositoryFactory) {
-        this.artistBaseRepository = repositoryFactory.createArtistRepository();
-    }
 
     /**
      * Creates a new artist and adds it to the repository.

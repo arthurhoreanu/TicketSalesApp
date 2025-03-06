@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.ticket;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
@@ -14,13 +16,18 @@ import java.util.List;
 @Table(name = "cart")
 public class Cart implements Identifiable {
 
+    @Setter
     @Id
     @Column(name = "cart_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cartID;
 
+    @Getter
     @OneToOne(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Customer customer;
 
+    @Getter
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
@@ -31,6 +38,8 @@ public class Cart implements Identifiable {
     @Transient
     private List<Ticket> tickets = new ArrayList<>();
 
+    @Getter
+    @Setter
     @Column(name = "total_price", nullable = false)
     private double totalPrice = 0.0;
 
@@ -56,14 +65,6 @@ public class Cart implements Identifiable {
         this.cartID = cartID;
     }
 
-    public void setCartID(int cartID) {
-        this.cartID = cartID;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
     public void setCustomer(Customer customer) {
         if (this.customer != null) {
             this.customer.setCart(null);
@@ -74,28 +75,12 @@ public class Cart implements Identifiable {
         }
     }
 
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
     public boolean isPaymentProcessed() {
         return isPaymentProcessed;
     }
 
     public void setPaymentProcessed(boolean paymentProcessed) {
         isPaymentProcessed = paymentProcessed;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public List<Ticket> getTickets() {
@@ -171,7 +156,7 @@ public class Cart implements Identifiable {
     public static Cart fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int cartID = Integer.parseInt(fields[0].trim());
-        Customer customer = applicationController.findCustomerByID(Integer.parseInt(fields[1].trim()));
+        Customer customer = applicationController.findCustomerById(Integer.parseInt(fields[1].trim()));
         Event event = applicationController.findEventByID(Integer.parseInt(fields[2].trim()));
         boolean isPaymentProcessed = Boolean.parseBoolean(fields[3].trim());
         double totalPrice = Double.parseDouble(fields[4].trim());

@@ -1,5 +1,6 @@
 package main.java.com.ticketsalesapp.service;
 
+import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
@@ -12,27 +13,20 @@ import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Section;
 import main.java.com.ticketsalesapp.model.venue.Venue;
 import main.java.com.ticketsalesapp.repository.BaseRepository;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class VenueService {
     private final BaseRepository<Venue> venueBaseRepository;
     private final BaseRepository<Section> sectionBaseRepository;
     private final BaseRepository<Row> rowBaseRepository;
     private final BaseRepository<Seat> seatBaseRepository;
-
-    public VenueService(RepositoryFactory venueFactory, RepositoryFactory sectionFactory,
-                        RepositoryFactory rowFactory, RepositoryFactory seatFactory) {
-        this.venueBaseRepository = venueFactory.createVenueRepository();
-        this.sectionBaseRepository = sectionFactory.createSectionRepository();
-        this.rowBaseRepository = rowFactory.createRowRepository();
-        this.seatBaseRepository = seatFactory.createSeatRepository();
-    }
 
     // Seat
 
@@ -80,11 +74,11 @@ public class VenueService {
      * @return true if the Seat was successfully deleted, false otherwise.
      */
     public boolean deleteSeat(int seatID) {
-        Seat seat = findSeatByID(seatID);
-        if (seat == null) {
+        Optional<Seat> seat = findSeatByID(seatID);
+        if (seat.isEmpty()) {
             throw new EntityNotFoundException("Seat not found");
         }
-        Row row = seat.getRow();
+        Row row = seat.get().getRow();
         if (row != null) {
             row.removeSeat(seat);
         }
@@ -98,7 +92,7 @@ public class VenueService {
      * @param seatId the ID of the Seat to retrieve.
      * @return the Seat object, or null if not found.
      */
-    public Seat findSeatByID(int seatId) {
+    public Optional<Seat> findSeatByID(int seatId) {
         return seatBaseRepository.read(seatId);
     }
 
@@ -118,8 +112,8 @@ public class VenueService {
      * @return true if the Seat was successfully reserved, false otherwise.
      */
     public boolean reserveSeat(int seatId, Event event, Customer customer, double price, TicketType ticketType) {
-        Seat seat = findSeatByID(seatId);
-        if (seat.isReserved()) {
+        Optional<Seat> seat = findSeatByID(seatId);
+        if (seat.isPresent() && seat.get().isReserved()) {
             throw new ValidationException("Seat with ID " + seatId + " is already reserved.");
         }
         if (event == null) {
@@ -129,8 +123,13 @@ public class VenueService {
             throw new ValidationException("Customer cannot be null.");
         }
         // Create a Ticket object and associate it with the Seat
-        Ticket ticket = new Ticket(0, event, seat, customer, price, ticketType);
-        seat.setReserved(true);
+        Ticket ticket = new Ticket();
+        ticket.setSeat(seat.get());
+        ticket.setEvent(event);
+        ticket.setCustomer(customer);
+        ticket.setPrice(price);
+        ticket.setTicketType(ticketType);
+        seat.se(true);
         seat.setTicket(ticket);
         // Update the seat in the repositories
         seatBaseRepository.update(seat);

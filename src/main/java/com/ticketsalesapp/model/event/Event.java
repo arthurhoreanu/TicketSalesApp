@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import java.time.LocalDateTime;
@@ -9,12 +11,26 @@ import java.time.LocalDateTime;
  */
 public abstract class Event implements Identifiable {
     private int eventID;
+    @Getter
+    @Setter
     private String eventName;
+    @Getter
+    @Setter
     private String eventDescription;
+    @Setter
+    @Getter
     private LocalDateTime startDateTime;
+    @Getter
+    @Setter
     private LocalDateTime endDateTime;
+    @Getter
+    @Setter
     private int venueID;
+    @Getter
+    @Setter
     private EventStatus eventStatus;
+    @Setter
+    @Getter
     private double basePrice;
 
     public Event() {}
@@ -38,62 +54,6 @@ public abstract class Event implements Identifiable {
     @Override
     public void setID(int eventID) {
         this.eventID = eventID;
-    }
-
-    public double getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(double basePrice) {
-        this.basePrice = basePrice;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
-
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
-    }
-
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startDateTime = startDateTime;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public int getVenueID() {
-        return venueID;
-    }
-
-    public void setVenueID(int venueID) {
-        this.venueID = venueID;
-    }
-
-    public EventStatus getEventStatus() {
-        return eventStatus;
-    }
-
-    public void setEventStatus(EventStatus eventStatus) {
-        this.eventStatus = eventStatus;
     }
 
     /**
