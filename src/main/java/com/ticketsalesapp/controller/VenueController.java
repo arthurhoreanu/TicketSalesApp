@@ -11,6 +11,7 @@ import main.java.com.ticketsalesapp.service.VenueService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for managing venue-related operations.
@@ -72,9 +73,9 @@ public class VenueController {
      * @param seatId The ID of the Seat.
      * @return The Seat object if found, null otherwise.
      */
-    public Seat findSeatByID(int seatId) {
-        Seat seat = venueService.findSeatByID(seatId);
-        if (seat != null) {
+    public Optional<Seat> findSeatByID(int seatId) {
+        Optional<Seat> seat = venueService.findSeatByID(seatId);
+        if (seat.isPresent()) {
             System.out.println("Seat found: " + seat);
         } else {
             System.out.println("Seat with ID " + seatId + " not found.");
@@ -167,9 +168,9 @@ public class VenueController {
      * @param rowCapacity The new capacity of the row.
      * @return The updated Row.
      */
-    public Row updateRow(int rowId, int rowCapacity) {
-        Row updatedRow = venueService.updateRow(rowId, rowCapacity);
-        if (updatedRow != null) {
+    public Optional<Row> updateRow(int rowId, int rowCapacity) {
+        Optional<Row> updatedRow = venueService.updateRow(rowId, rowCapacity);
+        if (updatedRow.isPresent()) {
             System.out.println("Row updated successfully: " + updatedRow);
         } else {
             System.out.println("Failed to update row. Row with ID " + rowId + " not found.");
@@ -211,9 +212,9 @@ public class VenueController {
      * @param rowId The ID of the row.
      * @return The Row object.
      */
-    public Row findRowByID(int rowId) {
-        Row row = venueService.findRowByID(rowId);
-        if (row != null) {
+    public Optional<Row> findRowByID(int rowId) {
+        Optional<Row> row = venueService.findRowByID(rowId);
+        if (row.isPresent()) {
             System.out.println("Row found: " + row);
         } else {
             System.out.println("Row with ID " + rowId + " not found.");
@@ -361,7 +362,7 @@ public class VenueController {
      * @return The updated Section.
      */
     public Section updateSection(int sectionId, String sectionName, int sectionCapacity) {
-        Section updatedSection = venueService.updateSection(sectionId, sectionName, sectionCapacity);
+        Section updatedSection = (Section) venueService.updateSection(sectionId, sectionName, sectionCapacity);
         if (updatedSection != null) {
             System.out.println("Section updated successfully: " + updatedSection);
         } else {
@@ -400,9 +401,9 @@ public class VenueController {
      * @param sectionId The ID of the section to retrieve.
      * @return The Section object if found, null otherwise.
      */
-    public Section findSectionByID(int sectionId) {
-        Section section = venueService.findSectionByID(sectionId);
-        if (section != null) {
+    public Optional<Section> findSectionByID(int sectionId) {
+        Optional<Section> section = venueService.findSectionByID(sectionId);
+        if (section.isPresent()) {
             System.out.println("Section found: " + section);
         } else {
             System.out.println("Section with ID " + sectionId + " not found.");
@@ -496,9 +497,9 @@ public class VenueController {
     /**
      * Retrieves a venue by its ID.
      */
-    public Venue findVenueByID(int venueId) {
-        Venue venue = venueService.findVenueByID(venueId);
-        if (venue != null) {
+    public Optional<Venue> findVenueByID(int venueId) {
+        Optional<Venue> venue = venueService.findVenueByID(venueId);
+        if (venue.isPresent()) {
             System.out.println("Venue found: " + venue);
         } else {
             System.out.println("Venue with ID " + venueId + " not found.");
@@ -551,7 +552,7 @@ public class VenueController {
      * Updates an existing venue.
      */
     public Venue updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
-        Venue updatedVenue = venueService.updateVenue(venueId, name, location, capacity, hasSeats);
+        Venue updatedVenue = (Venue) venueService.updateVenue(venueId, name, location, capacity, hasSeats);
         if (updatedVenue != null) {
             System.out.println("Venue updated successfully: " + updatedVenue);
         } else {

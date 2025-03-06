@@ -7,6 +7,7 @@ import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 /**
  * Represents the association between a SportsEvent and an Athlete.
@@ -68,9 +69,9 @@ public class SportsEventLineUp implements Identifiable {
         int id = Integer.parseInt(fields[0]);
         int sportsEventID = Integer.parseInt(fields[1]);
         int athleteID = Integer.parseInt(fields[2]);
-        SportsEvent sportsEvent = applicationController.findSportsEventByID(sportsEventID);
+        Optional<SportsEvent> sportsEvent = applicationController.findSportsEventByID(sportsEventID);
         Athlete athlete = applicationController.findAthleteByID(athleteID);
-        SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(sportsEvent, athlete);
+        SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(sportsEvent.get(), athlete);
         sportsEventLineUp.setID(id);
         return sportsEventLineUp;
     }

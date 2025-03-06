@@ -8,6 +8,7 @@ import main.java.com.ticketsalesapp.service.TicketService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for managing ticket-related operations.
@@ -138,13 +139,13 @@ public class TicketController {
      * @param ticketID the ID of the ticket to find.
      * @return the ticket if found, or null otherwise.
      */
-    public Ticket findTicketByID(int ticketID) {
+    public Optional<Ticket> findTicketByID(int ticketID) {
         if (ticketID <= 0) {
             System.out.println("Invalid ticket ID.");
             return null;
         }
-        Ticket ticket = ticketService.findTicketByID(ticketID);
-        if (ticket != null) {
+        Optional<Ticket> ticket = ticketService.findTicketByID(ticketID);
+        if (ticket.isPresent()) {
             System.out.println("Ticket found: " + ticket);
         } else {
             System.out.println("Ticket with ID " + ticketID + " not found.");

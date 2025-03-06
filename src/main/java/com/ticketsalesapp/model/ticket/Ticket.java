@@ -8,6 +8,7 @@ import main.java.com.ticketsalesapp.model.venue.Seat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Represents a ticket for an event, including details about the event, seat, price, purchaser, and sale status.
@@ -222,8 +223,8 @@ public class Ticket implements Identifiable {
         LocalDateTime purchaseDate = fields[7].trim().equals("null") ? null : LocalDateTime.parse(fields[7].trim());
 
         Event event = applicationController.findEventByID(eventID);
-        Seat seat = seatID != null ? applicationController.findSeatByID(seatID) : null;
-        Customer customer = applicationController.findCustomerByID(customerID);
+        Optional<Seat> seat = seatID != null ? applicationController.findSeatByID(seatID) : null;
+        Customer customer = applicationController.findCustomerById(customerID);
 
         Ticket ticket = new Ticket(ticketID, event, seat, customer, price, ticketType);
         ticket.setSold(isSold);

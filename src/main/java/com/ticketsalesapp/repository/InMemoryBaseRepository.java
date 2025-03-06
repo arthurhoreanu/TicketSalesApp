@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class InMemoryBaseRepository<T extends Identifiable> implements BaseRepository<T> {
@@ -29,11 +30,12 @@ public class InMemoryBaseRepository<T extends Identifiable> implements BaseRepos
 
     /**
      * Retrieves an object from the repository by its ID.
+     *
      * @param id The ID of the object to be retrieved.
      */
     @Override
-    public T read(Integer id) {
-        return data.get(id);
+    public Optional<T> read(Integer id) {
+        return Optional.ofNullable(data.get(id));
     }
 
     /**

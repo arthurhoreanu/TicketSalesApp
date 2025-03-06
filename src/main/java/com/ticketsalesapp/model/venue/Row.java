@@ -9,6 +9,7 @@ import main.java.com.ticketsalesapp.model.Identifiable;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a row within a section, containing details such as its ID, capacity, and associated section ID.
@@ -84,17 +85,16 @@ public class Row implements Identifiable {
         }
     }
 
-
     /**
      * Removes a Seat from the Row and maintains bidirectional relationship.
      *
      * @param seat The Seat to remove.
      */
-    public void removeSeat(Seat seat) {
-        if (seat != null) {
-            seats.remove(seat);
-            seat.setRow(null); // Break bidirectional relationship
-        }
+    public void removeSeat(Optional<Seat> seat) {
+        seat.ifPresent(s -> {
+            seats.remove(s);
+            s.setRow(null); // Break bidirectional relationship
+        });
     }
 
     @Override

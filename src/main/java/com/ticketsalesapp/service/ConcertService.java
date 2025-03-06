@@ -28,8 +28,8 @@ public class ConcertService {
                                  LocalDateTime startDateTime, LocalDateTime endDateTime,
                                  int venueID, EventStatus eventStatus) {
         validateEventData(eventName, startDateTime, endDateTime);
-        Venue venue = venueService.findVenueByID(venueID);
-        if (venue == null) {
+        Optional<Venue> venue = venueService.findVenueByID(venueID);
+        if (venue.isEmpty()) {
             throw new EntityNotFoundException("Venue not found");
         }
 
@@ -53,20 +53,19 @@ public class ConcertService {
         return concertLineUpBaseRepository.create(lineUp);
     }
 
-    public boolean removeArtistFromConcert(int concertID, int artistID) {
+    public void removeArtistFromConcert(int concertID, int artistID) {
         Optional<Concert> concertOpt = Optional.ofNullable(findConcertByID(concertID));
         Artist artist = artistService.findArtistByID(artistID);
         if (concertOpt.isEmpty() || artist == null) {
-            return false;
+            return;
         }
         ConcertLineUp lineUp = concertLineUpBaseRepository.getAll().stream()
                 .filter(lu -> lu.getConcert().getID() == concertID && lu.getArtist().getID() == artistID)
                 .findFirst()
                 .orElse(null);
         if (lineUp != null) {
-            return concertLineUpBaseRepository.delete(lineUp.getID());
+            concertLineUpBaseRepository.delete(lineUp.getID());
         }
-        return false;
     }
 
     public Concert findConcertByID(int concertID) {
