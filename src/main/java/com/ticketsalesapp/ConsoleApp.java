@@ -19,10 +19,10 @@ public class ConsoleApp {
         Scanner scanner = new Scanner(System.in);
 
         RepositoryFactory repositoryFactory = StartMenu.select(scanner);
-        Controller controller = initializeController(repositoryFactory);
+        ApplicationController applicationController = initializeController(repositoryFactory);
 
         // Initialize ControllerProvider
-        ControllerProvider.initializeController(controller);
+        ControllerProvider.initializeController(applicationController);
 
         List<String> csvFiles = List.of(
                 "src/main/java/com/ticketsalesapp/repository/data/artists.csv", "src/main/java/com/ticketsalesapp/repository/data/athletes.csv", "src/main/java/com/ticketsalesapp/repository/data/seats.csv",
@@ -36,26 +36,26 @@ public class ConsoleApp {
         boolean running = true;
 
         while (running) {
-            if (controller.getAllUsers().isEmpty()) {
-                running = MainMenu.display(scanner, controller);
-            } else if (controller.getCurrentUser() == null) {
-                running = LoginMenu.display(scanner, controller);
-            } else if (controller.getCurrentUser() instanceof Admin) {
-                running = AdminMenu.display(scanner, controller);
-            } else if (controller.getCurrentUser() instanceof Customer) {
-                running = CustomerMenu.display(scanner, controller);
+            if (applicationController.getAllUsers().isEmpty()) {
+                running = MainMenu.display(scanner, applicationController);
+            } else if (applicationController.getCurrentUser() == null) {
+                running = LoginMenu.display(scanner, applicationController);
+            } else if (applicationController.getCurrentUser() instanceof Admin) {
+                running = AdminMenu.display(scanner, applicationController);
+            } else if (applicationController.getCurrentUser() instanceof Customer) {
+                running = CustomerMenu.display(scanner, applicationController);
             }
         }
         scanner.close();
     }
 
-    private static Controller initializeController(RepositoryFactory repositoryFactory) {
+    private static ApplicationController initializeController(RepositoryFactory repositoryFactory) {
 
         // Service
         ArtistService artistService = new ArtistService(repositoryFactory);
         AthleteService athleteService = new AthleteService(repositoryFactory);
         VenueService venueService = new VenueService(repositoryFactory, repositoryFactory, repositoryFactory, repositoryFactory);
-        EventService eventService = new EventService(repositoryFactory, repositoryFactory, repositoryFactory, venueService,
+        ConcertService concertService = new ConcertService(repositoryFactory, repositoryFactory, repositoryFactory, venueService,
                 artistService, athleteService);
         TicketService ticketService = new TicketService(repositoryFactory, venueService);
         CartService cartService = new CartService(repositoryFactory);
@@ -69,12 +69,11 @@ public class ConsoleApp {
         TicketController ticketController = new TicketController(ticketService);
         CartController cartController = new CartController(cartService);
         CustomerController customerController = new CustomerController(customerService);
-        EventController eventController = new EventController(eventService);
-        UserController userController = new UserController(adminService);
+        ConcertController concertController = new ConcertController(concertService);
+        AdminController adminController = new AdminController(adminService);
 
         // Main Controller
-        return new Controller(artistController, athleteController, venueController, ticketController,
-                cartController, customerController, eventController, userController);
+        return new ApplicationController(artistController, athleteController, venueController, ticketController,
+                cartController, customerController, concertController, adminController);
     }
-
 }

@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
@@ -14,9 +14,9 @@ public class AdminAthleteMenu {
     /**
      * Displays the athlete management menu and processes the selected options.
      * @param scanner the scanner to read user input
-     * @param controller the controller to handle athlete management actions
+     * @param applicationController the controller to handle athlete management actions
      */
-    public static void display(Scanner scanner, Controller controller) {
+    public static void display(Scanner scanner, ApplicationController applicationController) {
         boolean inAthleteMenu = true;
         while (inAthleteMenu) {
             try {
@@ -33,16 +33,16 @@ public class AdminAthleteMenu {
 
                 switch (choice) {
                     case "1":
-                        handleCreateAthlete(scanner, controller);
+                        handleCreateAthlete(scanner, applicationController);
                         break;
                     case "2":
-                        handleViewAthletes(controller);
+                        handleViewAthletes(applicationController);
                         break;
                     case "3":
-                        handleUpdateAthlete(scanner, controller);
+                        handleUpdateAthlete(scanner, applicationController);
                         break;
                     case "4":
-                        handleDeleteAthlete(scanner, controller);
+                        handleDeleteAthlete(scanner, applicationController);
                         break;
                     case "0":
                         inAthleteMenu = false;
@@ -60,9 +60,9 @@ public class AdminAthleteMenu {
     /**
      * Handles the creation of a new athlete.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage athlete creation
+     * @param applicationController the controller to manage athlete creation
      */
-    public static void handleCreateAthlete(Scanner scanner, Controller controller) {
+    public static void handleCreateAthlete(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Create Athlete ===");
             System.out.print("Enter athlete name: ");
@@ -75,7 +75,7 @@ public class AdminAthleteMenu {
             if (athleteSport.isEmpty()) {
                 throw new ValidationException("Athlete sport cannot be empty.");
             }
-            controller.createAthlete(athleteName, athleteSport);
+            applicationController.createAthlete(athleteName, athleteSport);
             System.out.println("Athlete created successfully.");
         } catch (ValidationException e) {
             System.out.println(e.getMessage());
@@ -84,26 +84,26 @@ public class AdminAthleteMenu {
 
     /**
      * Displays a list of all athletes.
-     * @param controller the controller to retrieve athletes from
+     * @param applicationController the controller to retrieve athletes from
      */
-    public static void handleViewAthletes(Controller controller) {
+    public static void handleViewAthletes(ApplicationController applicationController) {
         System.out.println("=== View Athletes ===");
-        controller.getAllAthletes();
+        applicationController.getAllAthletes();
     }
 
     /**
      * Handles updating an existing athlete with new information.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage athlete updates
+     * @param applicationController the controller to manage athlete updates
      */
-    public static void handleUpdateAthlete(Scanner scanner, Controller controller) {
+    public static void handleUpdateAthlete(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Update Athlete ===");
-            controller.getAllAthletes();
+            applicationController.getAllAthletes();
             System.out.print("Enter athlete ID to update: ");
             int athleteID = Integer.parseInt(scanner.nextLine());
 
-            Athlete athlete = controller.findAthleteByID(athleteID);
+            Athlete athlete = applicationController.findAthleteByID(athleteID);
             if (athlete == null) {
                 throw new EntityNotFoundException("Athlete with ID " + athleteID + " not found.");
             }
@@ -117,7 +117,7 @@ public class AdminAthleteMenu {
             if (newSport.isEmpty()) {
                 newSport = athlete.getAthleteSport();
             }
-            controller.updateAthlete(athleteID, newName, newSport);
+            applicationController.updateAthlete(athleteID, newName, newSport);
         } catch (EntityNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -126,13 +126,13 @@ public class AdminAthleteMenu {
     /**
      * Handles deleting an athlete by their ID.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage athlete deletion
+     * @param applicationController the controller to manage athlete deletion
      */
-    public static void handleDeleteAthlete(Scanner scanner, Controller controller) {
+    public static void handleDeleteAthlete(Scanner scanner, ApplicationController applicationController) {
         System.out.println("=== Delete Athlete ===");
-        controller.getAllAthletes();
+        applicationController.getAllAthletes();
         System.out.print("Enter athlete ID to delete: ");
         int athleteID = Integer.parseInt(scanner.nextLine());
-        controller.deleteAthlete(athleteID);
+        applicationController.deleteAthlete(athleteID);
     }
 }

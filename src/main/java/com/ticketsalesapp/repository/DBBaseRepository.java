@@ -55,7 +55,7 @@ public class DBBaseRepository<T extends Identifiable> implements BaseRepository<
     }
 
     @Override
-    public void create(T obj) {
+    public boolean create(T obj) {
         try (Connection conn = getConnection()) {
             Class<?> actualType = resolveConcreteType(obj.getClass());
             String actualTable = getTableNameFromHibernate(actualType);
@@ -88,6 +88,7 @@ public class DBBaseRepository<T extends Identifiable> implements BaseRepository<
         } catch (Exception e) {
             throw new DatabaseException("Unexpected error during entity creation: " + e.getMessage());
         }
+        return false;
     }
 
     @Override
@@ -142,7 +143,7 @@ public class DBBaseRepository<T extends Identifiable> implements BaseRepository<
         return results;
     }
 
-    public void update(T obj) {
+    public boolean update(T obj) {
         try (Connection conn = getConnection()) {
             Class<?> actualType = resolveConcreteType(obj.getClass());
             String actualTable = getTableNameFromHibernate(actualType);
@@ -167,6 +168,7 @@ public class DBBaseRepository<T extends Identifiable> implements BaseRepository<
         } catch (Exception e) {
             throw new DatabaseException("Unexpected error during entity update: " + e.getMessage());
         }
+        return false;
     }
 
     private Field getPrimaryKeyField(Class<?> clazz) {
@@ -179,7 +181,7 @@ public class DBBaseRepository<T extends Identifiable> implements BaseRepository<
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         try (Connection conn = getConnection()) {
             if (type.equals(User.class)) {
                 for (Class<? extends User> subtype : getUserSubtypes()) {
@@ -215,6 +217,7 @@ public class DBBaseRepository<T extends Identifiable> implements BaseRepository<
         } catch (Exception e) {
             throw new DatabaseException("Unexpected error during entity deletion: " + e.getMessage());
         }
+        return false;
     }
 
     // Helper Methods

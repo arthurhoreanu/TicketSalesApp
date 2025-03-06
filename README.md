@@ -11,13 +11,13 @@ The TicketSalesCompany application is your ultimate platform for managing and pu
 - **Customer Accounts**: Default account type for non-corporate domains.
 - **Account Features**:
   - **Create Account**:
-    - **Method**: `handleCreateAccount(scanner, controller)`
+    - **Method**: `handleCreateAccount(scanner, applicationController)`
   - **Login/Logout**:
     - **Methods**: 
-      - `handleLogin(scanner, controller)`
+      - `handleLogin(scanner, applicationController)`
       - `logout()`
   - **Delete Account**:
-    - **Method**: `handleDeleteUserAccount(scanner, controller)`
+    - **Method**: `handleDeleteUserAccount(scanner, applicationController)`
 
 ---
 

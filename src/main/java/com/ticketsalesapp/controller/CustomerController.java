@@ -1,77 +1,70 @@
 package main.java.com.ticketsalesapp.controller;
 
+import main.java.com.ticketsalesapp.exception.BusinessLogicException;
+import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
 import main.java.com.ticketsalesapp.service.CustomerService;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+@Component
 public class CustomerController {
     private final CustomerService customerService;
 
-    /**
-     * Constructor for CustomerController.
-     * @param customerService The instance of CustomerService used for customer-related operations.
-     */
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
-    /**
-     * Sets the current customer in the service.
-     * @param customer The customer to be set as the current customer.
-     */
-    public void setCurrentCustomer(Customer customer) {
-        customerService.setCurrentCustomer(customer);
-        System.out.println("Current customer set to: " + customer.getUsername());
+    public void login(String username, String password) {
+        boolean success = customerService.login(username, password);
+        if (success) {
+            System.out.println("Customer logged in successfully");
+        } else {
+            System.out.println("Invalid credentials");
+        }
     }
 
-    /**
-     * Retrieves the current customer.
-     * Displays the username of the current customer or a message if no customer is set.
-     * @return The current customer, or null if no customer is set.
-     */
+    public void logout() {
+        boolean success = customerService.logout();
+        if (success) {
+            System.out.println("Customer logged out successfully");
+        } else {
+            System.out.println("No customer currently logged in");
+        }
+    }
+
+    public boolean createCustomer(String username, String email, String password) {
+        try {
+            return customerService.createCustomer(username, email, password);
+        } catch (ValidationException e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+    }
+
     public Customer getCurrentCustomer() {
         return customerService.getCurrentCustomer();
     }
 
-    /**
-     * Adds an entity to the current customer's favorites.
-     * Displays a success message if the entity is added to favorites, or a message indicating it is already a favorite.
-     * @param item The entity to be marked as favorite.
-     * @return true if the entity was successfully added to favorites, false otherwise.
-     */
-    public boolean addFavourite(FavouriteEntity item) {
-        boolean success = customerService.addFavourite(item);
-        if (success) {
-            System.out.println("Entity was marked as favourite.");
-        } else {
-            System.out.println("Entity is already in favourites.");
+    public Customer findCustomerById(int id) {
+        try {
+            return customerService.findCustomerById(id);
+        } catch (BusinessLogicException e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
         }
-        return success;
     }
 
-    /**
-     * Removes an entity from the current customer's favorites.
-     * Displays a success message if the entity is removed from favorites, or a message indicating it was not found in the favorites.
-     * @param item The entity to be removed from favorites.
-     * @return true if the entity was successfully removed from favorites, false otherwise.
-     */
-    public boolean removeFavourite(FavouriteEntity item) {
-        boolean success = customerService.removeFavourite(item);
-        if (success) {
-            System.out.println("Entity was removed from favourites.");
-        } else {
-            System.out.println("Entity not found in favourites.");
-        }
-        return success;
+    public void addFavourite(FavouriteEntity item) {
+        customerService.addFavourite(item);
     }
 
-    /**
-     * Retrieves the current customer's favorite entities.
-     * Displays the list of favorites or a message if no favorites are found.
-     * @return A set of entities that are marked as favorites by the current customer.
-     */
+    public void removeFavourite(FavouriteEntity item) {
+        customerService.removeFavourite(item);
+    }
+
     public Set<FavouriteEntity> getFavourites() {
         return customerService.getFavourites();
     }

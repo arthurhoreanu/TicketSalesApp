@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.model.event;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
@@ -26,7 +26,7 @@ public class ConcertLineUp implements Identifiable {
     @JoinColumn(name = "artist_id", nullable = false)
     private Artist artist;
 
-    static Controller controller = ControllerProvider.getController();
+    static ApplicationController applicationController = ControllerProvider.getController();
 
     public ConcertLineUp() {}
 
@@ -78,8 +78,8 @@ public class ConcertLineUp implements Identifiable {
         int id = Integer.parseInt(fields[0]);
         int concertID = Integer.parseInt(fields[1]);
         int artistID = Integer.parseInt(fields[2]);
-        Concert concert = controller.findConcertByID(concertID);
-        Artist artist = controller.findArtistByID(artistID);
+        Concert concert = applicationController.findConcertByID(concertID);
+        Artist artist = applicationController.findArtistByID(artistID);
         ConcertLineUp concertLineUp = new ConcertLineUp(concert, artist);
         concertLineUp.setID(id);
         return concertLineUp;

@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.view.AccountAction;
 import java.util.Scanner;
@@ -14,10 +14,10 @@ public class AdminMenu {
     /**
      * Displays the admin menu and processes the selected option.
      * @param scanner    the scanner to read user input
-     * @param controller the controller to handle administrative actions
+     * @param applicationController the controller to handle administrative actions
      * @return a boolean indicating if the application should continue running (false if exit is chosen)
      */
-    public static boolean display(Scanner scanner, Controller controller) {
+    public static boolean display(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("==== Admin Menu ====");
             System.out.println("1. Logout");
@@ -35,26 +35,26 @@ public class AdminMenu {
 
             switch (choice) {
                 case "1":
-                    controller.logout();
+                    applicationController.logout();
                     System.out.println("Logged out successfully.");
                     break;
                 case "2":
-                    AccountAction.handleDeleteUserAccount(scanner, controller);
+                    AccountAction.handleDeleteUserAccount(scanner, applicationController);
                     break;
                 case "3":
-                    AdminEventMenu.display(scanner, controller);
+                    AdminEventMenu.display(scanner, applicationController);
                     break;
                 case "4":
-                    AdminTicketMenu.display(scanner, controller);
+                    AdminTicketMenu.display(scanner, applicationController);
                     break;
                 case "5":
-                    AdminVenueMenu.display(scanner, controller);
+                    AdminVenueMenu.display(scanner, applicationController);
                     break;
                 case "6":
-                    AdminArtistMenu.display(scanner, controller);
+                    AdminArtistMenu.display(scanner, applicationController);
                     break;
                 case "7":
-                    AdminAthleteMenu.display(scanner, controller);
+                    AdminAthleteMenu.display(scanner, applicationController);
                     break;
                 case "0":
                     System.out.println("Exiting the application. Goodbye!");

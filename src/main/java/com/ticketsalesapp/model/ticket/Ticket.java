@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.model.ticket;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.*;
 import main.java.com.ticketsalesapp.model.event.Event;
 import main.java.com.ticketsalesapp.model.user.Customer;
@@ -49,7 +49,7 @@ public class Ticket implements Identifiable {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
-    static Controller controller = ControllerProvider.getController();
+    static ApplicationController applicationController = ControllerProvider.getController();
 
     /**
      * Default constructor for JPA and serialization.
@@ -220,9 +220,9 @@ public class Ticket implements Identifiable {
         boolean isSold = Boolean.parseBoolean(fields[6].trim());
         LocalDateTime purchaseDate = fields[7].trim().equals("null") ? null : LocalDateTime.parse(fields[7].trim());
 
-        Event event = controller.findEventByID(eventID);
-        Seat seat = seatID != null ? controller.findSeatByID(seatID) : null;
-        Customer customer = controller.findCustomerByID(customerID);
+        Event event = applicationController.findEventByID(eventID);
+        Seat seat = seatID != null ? applicationController.findSeatByID(seatID) : null;
+        Customer customer = applicationController.findCustomerByID(customerID);
 
         Ticket ticket = new Ticket(ticketID, event, seat, customer, price, ticketType);
         ticket.setSold(isSold);

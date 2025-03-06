@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.model.venue;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
@@ -36,7 +36,7 @@ public class Section implements Identifiable {
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Row> rows = new ArrayList<>();
 
-    static Controller controller = ControllerProvider.getController();
+    static ApplicationController applicationController = ControllerProvider.getController();
 
     // Default constructor for JPA
     public Section() {}
@@ -167,7 +167,7 @@ public class Section implements Identifiable {
         int venueID = Integer.parseInt(fields[3].trim());
 
         // Create the Section object with the Venue retrieved from the controller
-        Section section = new Section(sectionID, sectionName, sectionCapacity, controller.findVenueByID(venueID));
+        Section section = new Section(sectionID, sectionName, sectionCapacity, applicationController.findVenueByID(venueID));
 
         // No need to initialize rows; it's already initialized
         return section;

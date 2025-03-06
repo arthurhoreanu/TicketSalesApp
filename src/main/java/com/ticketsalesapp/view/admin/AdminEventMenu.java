@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.*;
@@ -19,9 +19,9 @@ public class AdminEventMenu {
     /**
      * Displays the event management menu and handles the selected options.
      * @param scanner the scanner to read user input
-     * @param controller the controller to handle event management actions
+     * @param applicationController the controller to handle event management actions
      */
-    public static void display(Scanner scanner, Controller controller) {
+    public static void display(Scanner scanner, ApplicationController applicationController) {
         boolean inEventMenu = true;
         while (inEventMenu) {
             try {
@@ -38,16 +38,16 @@ public class AdminEventMenu {
 
                 switch (choice) {
                     case "1":
-                        handleCreateEvent(scanner, controller);
+                        handleCreateEvent(scanner, applicationController);
                         break;
                     case "2":
-                        handleViewEvents(controller);
+                        handleViewEvents(applicationController);
                         break;
                     case "3":
-                        handleUpdateEvent(scanner, controller);
+                        handleUpdateEvent(scanner, applicationController);
                         break;
                     case "4":
-                        handleDeleteEvent(scanner, controller);
+                        handleDeleteEvent(scanner, applicationController);
                         break;
                     case "0":
                         inEventMenu = false;
@@ -65,9 +65,9 @@ public class AdminEventMenu {
     /**
      * Handles the creation of a new event, either a concert or sports event.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage event creation
+     * @param applicationController the controller to manage event creation
      */
-    public static void handleCreateEvent(Scanner scanner, Controller controller) {
+    public static void handleCreateEvent(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Create Event ===");
             System.out.print("Enter Event Type (Concert/Sports Event): ");
@@ -97,23 +97,23 @@ public class AdminEventMenu {
             }
             System.out.print("Enter venue name: ");
             String venueName = scanner.nextLine().trim();
-            Venue venue = controller.findVenueByName(venueName);
+            Venue venue = applicationController.findVenueByName(venueName);
             if (venue == null) {
                 throw new EntityNotFoundException("Venue with name " + venueName + " not found.");
             }
             if ("Concert".equalsIgnoreCase(eventType)) {
-                Concert concert = controller.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue.getID(), EventStatus.SCHEDULED);
-                manageArtistsForConcert(scanner, controller, concert);
+                Concert concert = applicationController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venue.getID(), EventStatus.SCHEDULED);
+                manageArtistsForConcert(scanner, applicationController, concert);
             } else {
-                SportsEvent sportsEvent = controller.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue.getID(), EventStatus.SCHEDULED);
-                manageAthletesForSportsEvent(scanner, controller, sportsEvent);
+                SportsEvent sportsEvent = applicationController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venue.getID(), EventStatus.SCHEDULED);
+                manageAthletesForSportsEvent(scanner, applicationController, sportsEvent);
             }
         } catch (ValidationException | EntityNotFoundException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    private static void manageArtistsForConcert(Scanner scanner, Controller controller, Concert concert) {
+    private static void manageArtistsForConcert(Scanner scanner, ApplicationController applicationController, Concert concert) {
         System.out.println("Manage Artists for Concert:");
         while (true) {
             System.out.println("1. Add Artist");
@@ -130,14 +130,14 @@ public class AdminEventMenu {
                         if(artistName.isEmpty()) {
                             throw new ValidationException("Artist name cannot be empty.");
                         }
-                        Artist artist = controller.findArtistByName(artistName);
+                        Artist artist = applicationController.findArtistByName(artistName);
                         if (artist == null) {
                             System.out.println("Artist not found. Creating new artist.");
-                            controller.createArtist(artistName, "No genre set.");
-                            artist = controller.findArtistByName(artistName);
+                            applicationController.createArtist(artistName, "No genre set.");
+                            artist = applicationController.findArtistByName(artistName);
                         }
                         if (artist != null) {
-                            boolean added = controller.addArtistToConcert(concert.getID(), artist.getID());
+                            boolean added = applicationController.addArtistToConcert(concert.getID(), artist.getID());
                             if (added) {
                                 System.out.println("Artist added to the concert.");
                             } else {
@@ -153,7 +153,7 @@ public class AdminEventMenu {
 
                 case "2":
                     try {
-                        List<Artist> artists = controller.getArtistsByConcert(concert.getID());
+                        List<Artist> artists = applicationController.getArtistsByConcert(concert.getID());
                         if (artists.isEmpty()) {
                             throw new EntityNotFoundException("No artist found for concert.");
                         }
@@ -163,9 +163,9 @@ public class AdminEventMenu {
                         }
                         System.out.print("Enter Artist Name to remove: ");
                         String removeArtistName = scanner.nextLine();
-                        Artist artistToRemove = controller.findArtistByName(removeArtistName);
+                        Artist artistToRemove = applicationController.findArtistByName(removeArtistName);
                         if (artistToRemove != null) {
-                            controller.removeArtistFromConcert(concert.getID(), artistToRemove.getID());
+                            applicationController.removeArtistFromConcert(concert.getID(), artistToRemove.getID());
                             System.out.println("Artist removed from the concert.");
                         } else {
                             throw new EntityNotFoundException("Artist not found in the concert.");
@@ -177,7 +177,7 @@ public class AdminEventMenu {
 
                 case "3":
                     try {
-                        List<Artist> currentArtists = controller.getArtistsByConcert(concert.getID());
+                        List<Artist> currentArtists = applicationController.getArtistsByConcert(concert.getID());
                         if (currentArtists.isEmpty()) {
                             throw new EntityNotFoundException("No artists associated with this concert.");
                         } else {
@@ -198,7 +198,7 @@ public class AdminEventMenu {
         }
     }
 
-    private static void manageAthletesForSportsEvent(Scanner scanner, Controller controller, SportsEvent sportsEvent) {
+    private static void manageAthletesForSportsEvent(Scanner scanner, ApplicationController applicationController, SportsEvent sportsEvent) {
         System.out.println("Manage Athletes for Sports Event:");
         while (true) {
             System.out.println("1. Add Athlete");
@@ -211,14 +211,14 @@ public class AdminEventMenu {
                 case "1":
                     System.out.print("Enter Athlete Name: ");
                     String athleteName = scanner.nextLine();
-                    Athlete athlete = controller.findAthleteByName(athleteName);
+                    Athlete athlete = applicationController.findAthleteByName(athleteName);
                     if (athlete == null) {
                         System.out.println("Athlete not found. Creating new athlete.");
-                        controller.createAthlete(athleteName, "No sport set.");
-                        athlete = controller.findAthleteByName(athleteName);
+                        applicationController.createAthlete(athleteName, "No sport set.");
+                        athlete = applicationController.findAthleteByName(athleteName);
                     }
                     if (athlete != null) {
-                        boolean added = controller.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID());
+                        boolean added = applicationController.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID());
                         if (added) {
                             System.out.println("Athlete added to the sports event.");
                         } else {
@@ -230,7 +230,7 @@ public class AdminEventMenu {
                     break;
                 case "2":
                     try {
-                        List<Athlete> athletes = controller.getAthletesBySportsEvent(sportsEvent.getID());
+                        List<Athlete> athletes = applicationController.getAthletesBySportsEvent(sportsEvent.getID());
                         if (athletes.isEmpty()) {
                             throw new EntityNotFoundException("No athletes associated with this sports event.");
                         }
@@ -240,9 +240,9 @@ public class AdminEventMenu {
                         }
                         System.out.print("Enter Athlete Name to remove: ");
                         String removeAthleteName = scanner.nextLine();
-                        Athlete athleteToRemove = controller.findAthleteByName(removeAthleteName);
+                        Athlete athleteToRemove = applicationController.findAthleteByName(removeAthleteName);
                         if (athleteToRemove != null) {
-                            controller.removeAthleteFromSportsEvent(sportsEvent.getID(), athleteToRemove.getID());
+                            applicationController.removeAthleteFromSportsEvent(sportsEvent.getID(), athleteToRemove.getID());
                             System.out.println("Athlete removed from the sports event.");
                         } else {
                             System.out.println("Athlete not found in the sports event.");
@@ -253,7 +253,7 @@ public class AdminEventMenu {
                     break;
                 case "3":
                     try {
-                        List<Athlete> currentAthletes = controller.getAthletesBySportsEvent(sportsEvent.getID());
+                        List<Athlete> currentAthletes = applicationController.getAthletesBySportsEvent(sportsEvent.getID());
                         if (currentAthletes.isEmpty()) {
                             throw new EntityNotFoundException("No athletes associated with this sports event.");
                         } else {
@@ -276,21 +276,21 @@ public class AdminEventMenu {
 
     /**
      * Displays a list of all events.
-     * @param controller the controller to retrieve events from
+     * @param applicationController the controller to retrieve events from
      */
-    public static void handleViewEvents(Controller controller) {
+    public static void handleViewEvents(ApplicationController applicationController) {
         System.out.println("=== View Events ===");
-        controller.getAllEvents();
+        applicationController.getAllEvents();
     }
 
     /**
      * Handles updating an existing event with new information.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage event updates
+     * @param applicationController the controller to manage event updates
      */
-    public static void handleUpdateEvent(Scanner scanner, Controller controller) {
+    public static void handleUpdateEvent(Scanner scanner, ApplicationController applicationController) {
         System.out.println("=== Update Event ===");
-        List<Event> events = controller.getAllEvents();
+        List<Event> events = applicationController.getAllEvents();
         if (events.isEmpty()) {
             System.out.println("No events available.");
             return;
@@ -307,7 +307,7 @@ public class AdminEventMenu {
             System.out.println("Invalid Event ID.");
             return;
         }
-        Event event = controller.findEventByID(eventId);
+        Event event = applicationController.findEventByID(eventId);
         if (event == null) {
             System.out.println("Event not found.");
             return;
@@ -353,23 +353,23 @@ public class AdminEventMenu {
             }
         }
         if (event instanceof Concert) {
-            manageArtistsForConcert(scanner, controller, (Concert) event);
+            manageArtistsForConcert(scanner, applicationController, (Concert) event);
         } else if (event instanceof SportsEvent) {
-            manageAthletesForSportsEvent(scanner, controller, (SportsEvent) event);
+            manageAthletesForSportsEvent(scanner, applicationController, (SportsEvent) event);
         }
-        controller.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
+        applicationController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
         System.out.println("Event updated successfully.");
     }
 
     /**
      * Handles deleting an event by its ID.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage event deletion
+     * @param applicationController the controller to manage event deletion
      */
-    public static void handleDeleteEvent(Scanner scanner, Controller controller) {
+    public static void handleDeleteEvent(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Delete Event ===");
-            List<Event> events = controller.getAllEvents();
+            List<Event> events = applicationController.getAllEvents();
             if (events.isEmpty()) {
                 throw new EntityNotFoundException("Events not found.");
             } else {
@@ -381,7 +381,7 @@ public class AdminEventMenu {
             int eventID;
             try {
                 eventID = Integer.parseInt(scanner.nextLine());
-                controller.deleteEvent(eventID);
+                applicationController.deleteEvent(eventID);
                 System.out.println("Event deleted successfully.");
             } catch (NumberFormatException e) {
                 System.out.println("Invalid Event ID. Please enter a valid number.");

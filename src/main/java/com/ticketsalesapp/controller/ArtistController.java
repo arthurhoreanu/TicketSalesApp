@@ -2,9 +2,11 @@ package main.java.com.ticketsalesapp.controller;
 
 import main.java.com.ticketsalesapp.model.event.Artist;
 import main.java.com.ticketsalesapp.service.ArtistService;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ArtistController {
     private final ArtistService artistService;
 

@@ -5,9 +5,12 @@ import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
 import main.java.com.ticketsalesapp.repository.BaseRepository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class AthleteService {
     private final BaseRepository<Athlete> athleteBaseRepository;
 

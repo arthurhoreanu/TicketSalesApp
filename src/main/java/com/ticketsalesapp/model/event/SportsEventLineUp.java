@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.model.event;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
@@ -26,7 +26,7 @@ public class SportsEventLineUp implements Identifiable {
     @JoinColumn(name = "athlete_id", nullable = false)
     private Athlete athlete;
 
-    static Controller controller = ControllerProvider.getController();
+    static ApplicationController applicationController = ControllerProvider.getController();
 
     public SportsEventLineUp() {}
 
@@ -78,8 +78,8 @@ public class SportsEventLineUp implements Identifiable {
         int id = Integer.parseInt(fields[0]);
         int sportsEventID = Integer.parseInt(fields[1]);
         int athleteID = Integer.parseInt(fields[2]);
-        SportsEvent sportsEvent = controller.findSportsEventByID(sportsEventID);
-        Athlete athlete = controller.findAthleteByID(athleteID);
+        SportsEvent sportsEvent = applicationController.findSportsEventByID(sportsEventID);
+        Athlete athlete = applicationController.findAthleteByID(athleteID);
         SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(sportsEvent, athlete);
         sportsEventLineUp.setID(id);
         return sportsEventLineUp;

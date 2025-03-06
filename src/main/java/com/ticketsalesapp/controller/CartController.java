@@ -5,6 +5,7 @@ import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.event.Event;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
 import main.java.com.ticketsalesapp.service.CartService;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * The CartController class provides methods to manage the cart of the current customer.
  * It allows adding, removing, clearing tickets, finalizing the cart, and retrieving cart details.
  */
+@Component
 public class CartController {
     private final CartService cartService;
 
