@@ -1,15 +1,14 @@
 package main.java.com.ticketsalesapp.repository;
 
 import main.java.com.ticketsalesapp.model.Identifiable;
-import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Repository
-public class InMemoryBaseRepository<T extends Identifiable> implements BaseRepository<T> {
+@org.springframework.stereotype.Repository
+public class InMemoryRepository<T extends Identifiable> implements Repository<T> {
     private final Map<Integer, T> data = new HashMap<>();
 
     /**

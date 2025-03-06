@@ -7,11 +7,10 @@ import main.java.com.ticketsalesapp.model.ticket.Cart;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.event.Event;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.YearMonth;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final BaseRepository<Cart> cartBaseRepository;
+    private final Repository<Cart> cartRepository;
 
     /**
      * Creates a new cart for a given customer and event.
@@ -38,7 +37,7 @@ public class CartService {
             throw new ValidationException("Event cannot be null.");
         }
         Cart cart = new Cart(customer, event);
-        cartBaseRepository.create(cart);
+        cartRepository.create(cart);
         return cart;
     }
 
@@ -67,7 +66,7 @@ public class CartService {
             cart.addTicket(ticket);
 
             updateTotalPrice(cart); // Update total price after adding a ticket
-            cartBaseRepository.update(cart);
+            cartRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -92,7 +91,7 @@ public class CartService {
         }
         try {
             cart.removeTicket(ticket);
-            cartBaseRepository.update(cart);
+            cartRepository.update(cart);
             return true;
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -111,7 +110,7 @@ public class CartService {
         }
         double totalPrice = cart.calculateTotalPrice();
         cart.setTotalPrice(totalPrice);
-        cartBaseRepository.update(cart);
+        cartRepository.update(cart);
     }
 
     /**
@@ -125,7 +124,7 @@ public class CartService {
         }
         cart.clearCart();
         cart.setTotalPrice(0.0);
-        cartBaseRepository.update(cart);
+        cartRepository.update(cart);
     }
 
     /**
@@ -149,17 +148,7 @@ public class CartService {
      * @return The cart if found, or null otherwise.
      */
     public Optional<Cart> findCartByID(int cartID) {
-        return cartBaseRepository.read(cartID);
-    }
-
-    /**
-     * Retrieves all tickets in a given cart.
-     *
-     * @param cart The cart for which to retrieve tickets.
-     * @return A list of tickets in the cart.
-     */
-    public List<Ticket> getTicketsInCart(Cart cart) {
-        return cart.getTickets();
+        return cartRepository.read(cartID);
     }
 
     /**
@@ -173,24 +162,24 @@ public class CartService {
      * @param cvv            The CVV code of the card.
      * @throws IllegalArgumentException If any of the input validation checks fail.
      */
-    public void processPayment(Cart cart, String cardNumber, String cardholderName,
-                               int expiryMonth, int expiryYear, String cvv) {
-        validateCardDetails(cardNumber, cardholderName, expiryMonth, expiryYear, cvv);
-
-        Customer customer = cart.getCustomer();
-        double paymentAmount = cart.calculateTotalPrice();
-
-        if (paymentAmount <= 0) {
-            throw new BusinessLogicException("Cannot process payment. Total amount is invalid.");
-        }
-
-        for (Ticket ticket : cart.getTickets()) {
-            ticket.markAsSold(customer);
-            ticket.setCustomer(customer);
-        }
-
-        cart.setPaymentProcessed(true);
-    }
+//    public void processPayment(Cart cart, String cardNumber, String cardholderName,
+//                               int expiryMonth, int expiryYear, String cvv) {
+//        validateCardDetails(cardNumber, cardholderName, expiryMonth, expiryYear, cvv);
+//
+//        Customer customer = cart.getCustomer();
+//        double paymentAmount = cart.calculateTotalPrice();
+//
+//        if (paymentAmount <= 0) {
+//            throw new BusinessLogicException("Cannot process payment. Total amount is invalid.");
+//        }
+//
+//        for (Ticket ticket : cart.getTickets()) {
+//            ticket.markAsSold(customer);
+//            ticket.setCustomer(customer);
+//        }
+//
+//        cart.setPaymentProcessed(true);
+//    }
 
     /**
      * Validates the card details provided by the user.

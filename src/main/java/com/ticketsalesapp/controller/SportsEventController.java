@@ -18,12 +18,12 @@ public class SportsEventController {
         this.sportsEventService = sportsEventService;
     }
 
-    public boolean createSportsEvent(String eventName, String eventDescription,
-                                     LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                     int venueID, EventStatus eventStatus) {
-        return sportsEventService.createSportsEvent(eventName, eventDescription,
-                startDateTime, endDateTime, venueID, eventStatus);
-    }
+//    public boolean createSportsEvent(String eventName, String eventDescription,
+//                                     LocalDateTime startDateTime, LocalDateTime endDateTime,
+//                                     int venueID, EventStatus eventStatus) {
+//        return sportsEventService.createSportsEvent(eventName, eventDescription,
+//                startDateTime, endDateTime, venueID, eventStatus);
+//    }
 
     public boolean addAthleteToEvent(int eventID, int athleteID) {
         return sportsEventService.addAthleteToEvent(eventID, athleteID);

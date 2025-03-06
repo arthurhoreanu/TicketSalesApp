@@ -2,8 +2,6 @@ package main.java.com.ticketsalesapp.model.venue;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.controller.ApplicationController;
-import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
@@ -38,7 +36,6 @@ public class Row implements Identifiable {
     @OneToMany(mappedBy = "row", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats = new ArrayList<>();
 
-    static ApplicationController applicationController = ControllerProvider.getController();
 
     // Default constructor for JPA
     public Row() {}
@@ -105,37 +102,5 @@ public class Row implements Identifiable {
                 ", section=" + (section != null ? section.getID() : "null") +
                 ", seatsCount=" + seats.size() +
                 '}';
-    }
-
-    // CSV Methods
-
-    /**
-     * Converts the Row object into a CSV representation.
-     *
-     * @return A comma-separated string representing the row.
-     */
-    @Override
-    public String toCsv() {
-        return String.join(",",
-                String.valueOf(rowID),
-                String.valueOf(rowCapacity),
-                String.valueOf(section != null ? section.getID() : "null")
-        );
-    }
-
-    /**
-     * Creates a Row object from a CSV string.
-     *
-     * @param csvLine The CSV string.
-     * @return A Row object.
-     */
-    public static Row fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int rowID = Integer.parseInt(fields[0].trim());
-        int rowCapacity = Integer.parseInt(fields[1].trim());
-        int sectionID = Integer.parseInt(fields[2].trim());
-
-        // Create the Row object with the Section retrieved from the controller
-        return new Row(rowID, rowCapacity, applicationController.findSectionByID(sectionID));
     }
 }

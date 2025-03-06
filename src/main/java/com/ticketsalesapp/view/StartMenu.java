@@ -2,11 +2,14 @@ package main.java.com.ticketsalesapp.view;
 
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.repository.factory.*;
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
 /**
  * Displays the initial menu to choose the data representation (InMemory, File, DB).
  */
+@Component
 public class StartMenu {
 
     public static RepositoryFactory select(Scanner scanner) {
@@ -22,12 +25,12 @@ public class StartMenu {
                 case "1":
                     System.out.println("You selected InMemory storage.");
                     return new InMemoryRepositoryFactory();
-                case "2":
-                    System.out.println("You selected File storage.");
-                    return new FileRepositoryFactory();
-                case "3":
-                    System.out.println("You selected Database storage.");
-                    return new DBRepositoryFactory();
+//                case "2":
+//                    System.out.println("You selected File storage.");
+//                    return new FileRepositoryFactory();
+//                case "3":
+//                    System.out.println("You selected Database storage.");
+//                    return new DBRepositoryFactory();
                 default:
                     throw new ValidationException("Invalid choice. Please select a valid option (1, 2, or 3).");
             }

@@ -56,27 +56,4 @@ public class SportsEvent extends Event {
                 ", " + super.toString() +
                 '}';
     }
-
-    @Override
-    public String toCsv() {
-        return getID() + "," +
-                getEventName() + "," +
-                getEventDescription() + "," +
-                getStartDateTime() + "," +
-                getEndDateTime() + "," +
-                getVenueID() + "," +
-                getEventStatus() + ",";
-    }
-
-    public static SportsEvent fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int id = Integer.parseInt(fields[0]);
-        String eventName = fields[1];
-        String eventDescription = fields[2];
-        LocalDateTime startDateTime = LocalDateTime.parse(fields[3]);
-        LocalDateTime endDateTime = LocalDateTime.parse(fields[4]);
-        int venueID = Integer.parseInt(fields[5]);
-        EventStatus eventStatus = EventStatus.valueOf(fields[6]);
-        return new SportsEvent(id,eventName,eventDescription,startDateTime,endDateTime,venueID,eventStatus);
-    }
 }

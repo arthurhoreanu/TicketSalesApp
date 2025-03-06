@@ -2,8 +2,6 @@ package main.java.com.ticketsalesapp.model.ticket;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.controller.ApplicationController;
-import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 import main.java.com.ticketsalesapp.model.event.Event;
 import main.java.com.ticketsalesapp.model.user.Customer;
@@ -43,8 +41,6 @@ public class Cart implements Identifiable {
     @Column(name = "total_price", nullable = false)
     private double totalPrice = 0.0;
 
-    static ApplicationController applicationController = ControllerProvider.getController();
-
     public Cart() {}
 
     public Cart(Customer customer, Event event) {
@@ -81,13 +77,6 @@ public class Cart implements Identifiable {
 
     public void setPaymentProcessed(boolean paymentProcessed) {
         isPaymentProcessed = paymentProcessed;
-    }
-
-    public List<Ticket> getTickets() {
-        if (tickets.isEmpty() && cartID > 0) {
-            tickets = applicationController.findTicketsByCartID(cartID);
-        }
-        return tickets;
     }
 
     public void setTickets(List<Ticket> tickets) {
@@ -151,31 +140,6 @@ public class Cart implements Identifiable {
                 (event != null ? event.getID() : "null") + "," +
                 isPaymentProcessed + "," +
                 totalPrice;
-    }
-
-    public static Cart fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int cartID = Integer.parseInt(fields[0].trim());
-        Customer customer = applicationController.findCustomerById(Integer.parseInt(fields[1].trim()));
-        Event event = applicationController.findEventByID(Integer.parseInt(fields[2].trim()));
-        boolean isPaymentProcessed = Boolean.parseBoolean(fields[3].trim());
-        double totalPrice = Double.parseDouble(fields[4].trim());
-
-        Cart cart = new Cart(customer, event);
-        cart.setCartID(cartID);
-        cart.setPaymentProcessed(isPaymentProcessed);
-        cart.setTotalPrice(totalPrice);
-        return cart;
-    }
-
-    @Override
-    public String toString() {
-        return "Cart{" +
-                "cartID=" + cartID +
-                ", customerID=" + (customer != null ? customer.getID() : "null") +
-                ", eventID=" + (event != null ? event.getID() : "not loaded") +
-                ", isPaymentProcessed=" + isPaymentProcessed +
-                '}';
     }
 
 }

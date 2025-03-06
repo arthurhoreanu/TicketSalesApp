@@ -2,13 +2,10 @@ package main.java.com.ticketsalesapp.model.venue;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.controller.ApplicationController;
-import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
 
 import javax.persistence.*;
-import java.util.Optional;
 
 /**
  * Represents a seat in a venue section, with details such as its ID, parent row, reservation status,
@@ -42,8 +39,6 @@ public class Seat implements Identifiable {
     @Getter
     @OneToOne(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Ticket ticket; // 1:1 relationship with Ticket
-
-    static ApplicationController applicationController = ControllerProvider.getController();
 
     /**
      * Default constructor for JPA, CSV, and InMemory compatibility.
@@ -104,38 +99,4 @@ public class Seat implements Identifiable {
                 ", ticketID=" + (ticket != null ? ticket.getID() : "null") +
                 '}';
     }
-
-    // CSV Methods
-
-    /**
-     * Converts the Seat object into a CSV representation.
-     *
-     * @return A comma-separated string representing the seat.
-     */
-    @Override
-    public String toCsv() {
-        return String.join(",",
-                String.valueOf(seatID),
-                String.valueOf(number),
-                String.valueOf(isReserved),
-                row != null ? String.valueOf(row.getID()) : "null",
-                ticket != null ? String.valueOf(ticket.getID()) : "null"
-        );
-    }
-
-    /**
-     * Creates a Seat object from a CSV string.
-     *
-     * @param csvLine The CSV string.
-     * @return A Seat object.
-     */
-    public static Seat fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int seatID = Integer.parseInt(fields[0].trim());
-        int number = Integer.parseInt(fields[1].trim());
-        boolean isReserved = Boolean.parseBoolean(fields[2].trim());
-        int rowID = Integer.parseInt(fields[3].trim());
-
-        Optional<Row> row = applicationController.findRowByID(rowID);
-        return new Seat(seatID, number, isReserved, row.get());    }
 }

@@ -97,17 +97,4 @@ public class Athlete implements Identifiable, FavouriteEntity {
     public String toString() {
         return "Athlete{" + "athleteID=" + athleteID + ", athleteName='" + athleteName + '\'' + ", athleteSport='" + athleteSport + '\'' + '}';
     }
-
-    public static Athlete fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int athleteID = Integer.parseInt(fields[0]);
-        String athleteName = fields[1];
-        String athleteSport = fields[2];
-        return new Athlete(athleteID, athleteName, athleteSport);
-    }
-
-    @Override
-    public String toCsv() {
-        return getID() + "," + getName() + "," + getAthleteSport();
-    }
 }

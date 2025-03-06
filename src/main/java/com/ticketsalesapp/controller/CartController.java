@@ -106,16 +106,16 @@ public class CartController {
      * @param cart The cart for which to retrieve tickets.
      * @return A list of tickets in the cart.
      */
-    public List<Ticket> getTicketsInCart(Cart cart) {
-        List<Ticket> tickets = cartService.getTicketsInCart(cart);
-        if (tickets.isEmpty()) {
-            System.out.println("The cart is empty.");
-        } else {
-            System.out.println("Tickets in cart:");
-            tickets.forEach(ticket -> System.out.println(ticket));
-        }
-        return tickets;
-    }
+//    public List<Ticket> getTicketsInCart(Cart cart) {
+//        List<Ticket> tickets = cartService.getTicketsInCart(cart);
+//        if (tickets.isEmpty()) {
+//            System.out.println("The cart is empty.");
+//        } else {
+//            System.out.println("Tickets in cart:");
+//            tickets.forEach(ticket -> System.out.println(ticket));
+//        }
+//        return tickets;
+//    }
 
     /**
      * Finds a cart by its ID.
@@ -133,14 +133,14 @@ public class CartController {
         return cart;
     }
 
-    public void processPayment(Cart cart, String cardNumber, String cardholderName, int expiryMonth, int expiryYear, String cvv) {
-        try {
-            cartService.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv);
-            System.out.println("Payment processed successfully.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Payment failed: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("An unexpected error occurred during payment processing: " + e.getMessage());
-        }
-    }
+//    public void processPayment(Cart cart, String cardNumber, String cardholderName, int expiryMonth, int expiryYear, String cvv) {
+//        try {
+//            cartService.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv);
+//            System.out.println("Payment processed successfully.");
+//        } catch (IllegalArgumentException e) {
+//            System.out.println("Payment failed: " + e.getMessage());
+//        } catch (Exception e) {
+//            System.out.println("An unexpected error occurred during payment processing: " + e.getMessage());
+//        }
+//    }
 }

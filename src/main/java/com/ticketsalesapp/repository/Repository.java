@@ -5,7 +5,7 @@ import main.java.com.ticketsalesapp.model.Identifiable;
 import java.util.List;
 import java.util.Optional;
 
-public interface BaseRepository<T extends Identifiable> {
+public interface Repository<T extends Identifiable> {
 
     /**
      * Creates and adds an object to the repository.

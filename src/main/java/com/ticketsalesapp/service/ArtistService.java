@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Artist;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ArtistService {
-    private final BaseRepository<Artist> artistBaseRepository;
+    private final Repository<Artist> artistRepository;
 
     /**
      * Creates a new artist and adds it to the repository.
@@ -27,7 +26,7 @@ public class ArtistService {
             throw new BusinessLogicException("Artist with name '" + artistName + "' already exists.");
         }
         Artist artist = new Artist(0, artistName, genre);
-        artistBaseRepository.create(artist);
+        artistRepository.create(artist);
         return true;
     }
 
@@ -48,7 +47,7 @@ public class ArtistService {
         }
         artist.setArtistName(newName);
         artist.setGenre(newGenre);
-        artistBaseRepository.update(artist);
+        artistRepository.update(artist);
         return true;
     }
 
@@ -62,7 +61,7 @@ public class ArtistService {
         if(artist == null) {
             throw new ValidationException("Artist with id '" + artistId + "' does not exist.");
         }
-        artistBaseRepository.delete(artistId);
+        artistRepository.delete(artistId);
         return true;
     }
 
@@ -71,7 +70,7 @@ public class ArtistService {
      * @return A list of all artists in the repository.
      */
     public List<Artist> getAllArtists() {
-        return artistBaseRepository.getAll();
+        return artistRepository.getAll();
     }
 
     /**
@@ -80,7 +79,7 @@ public class ArtistService {
      * @return The artist with the specified ID, or null if no artist was found.
      */
     public Artist findArtistByID(int artistID) {
-        return artistBaseRepository.getAll().stream().filter(artist -> artist.getID() == artistID).findFirst().orElse(null);
+        return artistRepository.getAll().stream().filter(artist -> artist.getID() == artistID).findFirst().orElse(null);
     }
 
     /**
@@ -89,7 +88,7 @@ public class ArtistService {
      * @return The artist with the specified name, or null if no artist was found.
      */
     public Artist findArtistByName(String artistName) {
-        return artistBaseRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
+        return artistRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
     }
 
     /**
@@ -99,7 +98,7 @@ public class ArtistService {
      */
     public List<Artist> findArtistsByGenre(String genre) {
         List<Artist> artistsInGenre = new ArrayList<>();
-        for (Artist artist : artistBaseRepository.getAll()) {
+        for (Artist artist : artistRepository.getAll()) {
             if (artist.getGenre().equalsIgnoreCase(genre)) {
                 artistsInGenre.add(artist);
             }

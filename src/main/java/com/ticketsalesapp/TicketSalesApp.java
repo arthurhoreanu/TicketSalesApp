@@ -4,20 +4,23 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-public class TicketSalesApp {
+public class TicketSalesApp implements CommandLineRunner {
+
+    private final ConsoleApp consoleApp;
+
+    public TicketSalesApp(ConsoleApp consoleApp) {
+        this.consoleApp = consoleApp;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(TicketSalesApp.class, args);
     }
 
-    @Bean
-    public CommandLineRunner run(ApplicationContext context) {
-        return args -> {
-            ConsoleApp consoleApp = context.getBean(ConsoleApp.class);
-            ConsoleApp.run();
-        };
+    @Override
+    public void run(String... args) {
+        consoleApp.run();
     }
 }

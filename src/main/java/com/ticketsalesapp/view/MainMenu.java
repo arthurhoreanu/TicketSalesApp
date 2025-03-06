@@ -1,23 +1,31 @@
 package main.java.com.ticketsalesapp.view;
 
-import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
 /**
  * Displays the starting menu for new users, allowing account creation or exiting the application.
  */
+@Component
 public class MainMenu {
+
+    private final AccountAction accountAction;
+
+    @Autowired
+    public MainMenu(AccountAction accountAction) {
+        this.accountAction = accountAction;
+    }
 
     /**
      * Displays the start menu options and processes the user's choice.
-     * Users can create an account or exit the application.
      *
-     * @param scanner    the scanner used to read user input
-     * @param applicationController the controller managing account-related actions
+     * @param scanner the scanner used to read user input
      * @return true if the application should continue running; false if it should exit
      */
-    public static boolean display(Scanner scanner, ApplicationController applicationController) {
+    public boolean display(Scanner scanner) {
         System.out.println("==== Welcome to the App ====");
         System.out.println("1. Create Account");
         System.out.println("0. Exit");
@@ -29,7 +37,7 @@ public class MainMenu {
         try {
             switch (choice) {
                 case "1":
-                    AccountAction.handleCreateAccount(scanner, applicationController);
+                    accountAction.handleCreateAccount(scanner);
                     break;
                 case "0":
                     System.out.println("Exiting the application. Goodbye!");

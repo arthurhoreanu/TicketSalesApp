@@ -2,8 +2,6 @@ package main.java.com.ticketsalesapp.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.controller.ApplicationController;
-import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
@@ -32,8 +30,6 @@ public class ConcertLineUp implements Identifiable {
     @JoinColumn(name = "artist_id", nullable = false)
     private Artist artist;
 
-    static ApplicationController applicationController = ControllerProvider.getController();
-
     public ConcertLineUp() {}
 
     public ConcertLineUp(Concert concert, Artist artist) {
@@ -56,22 +52,5 @@ public class ConcertLineUp implements Identifiable {
                 ", concert=" + concert +
                 ", artist=" + artist +
                 '}';
-    }
-
-    @Override
-    public String toCsv() {
-        return id + "," + concert.getID() + "," + artist.getID();
-    }
-
-    public static ConcertLineUp fromCsv(String line) {
-        String[] fields = line.split(",");
-        int id = Integer.parseInt(fields[0]);
-        int concertID = Integer.parseInt(fields[1]);
-        int artistID = Integer.parseInt(fields[2]);
-        Concert concert = applicationController.findConcertByID(concertID);
-        Artist artist = applicationController.findArtistByID(artistID);
-        ConcertLineUp concertLineUp = new ConcertLineUp(concert, artist);
-        concertLineUp.setID(id);
-        return concertLineUp;
     }
 }

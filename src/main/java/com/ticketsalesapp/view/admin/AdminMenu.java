@@ -1,23 +1,25 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.ValidationException;
+import main.java.com.ticketsalesapp.model.user.Admin;
+import main.java.com.ticketsalesapp.service.user.AdminService;
 import main.java.com.ticketsalesapp.view.AccountAction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
 
-/**
- * Represents the menu for admin users, providing various management options such as user account deletion,
- * and management of events, tickets, venues, artists, and athletes.
- */
+@Component
 public class AdminMenu {
 
-    /**
-     * Displays the admin menu and processes the selected option.
-     * @param scanner    the scanner to read user input
-     * @param applicationController the controller to handle administrative actions
-     * @return a boolean indicating if the application should continue running (false if exit is chosen)
-     */
-    public static boolean display(Scanner scanner, ApplicationController applicationController) {
+    private final AdminService adminService;
+
+    @Autowired
+    public AdminMenu(AdminService adminService) {
+        this.adminService = adminService;
+    }
+
+    public boolean display(Scanner scanner, Admin admin) {
         try {
             System.out.println("==== Admin Menu ====");
             System.out.println("1. Logout");
@@ -35,26 +37,25 @@ public class AdminMenu {
 
             switch (choice) {
                 case "1":
-                    applicationController.logout();
                     System.out.println("Logged out successfully.");
-                    break;
+                    return false;
                 case "2":
-                    AccountAction.handleDeleteUserAccount(scanner, applicationController);
+//   TODO                 AccountAction.handleDeleteUserAccount(scanner, adminService);
                     break;
                 case "3":
-                    AdminEventMenu.display(scanner, applicationController);
+                    System.out.println("Manage Events - Not implemented yet.");
                     break;
                 case "4":
-                    AdminTicketMenu.display(scanner, applicationController);
+                    System.out.println("Manage Tickets - Not implemented yet.");
                     break;
                 case "5":
-                    AdminVenueMenu.display(scanner, applicationController);
+                    System.out.println("Manage Venues - Not implemented yet.");
                     break;
                 case "6":
-                    AdminArtistMenu.display(scanner, applicationController);
+                    System.out.println("Manage Artists - Not implemented yet.");
                     break;
                 case "7":
-                    AdminAthleteMenu.display(scanner, applicationController);
+                    System.out.println("Manage Athletes - Not implemented yet.");
                     break;
                 case "0":
                     System.out.println("Exiting the application. Goodbye!");
