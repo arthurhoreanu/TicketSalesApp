@@ -12,7 +12,7 @@ import main.java.com.ticketsalesapp.model.venue.Row;
 import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Section;
 import main.java.com.ticketsalesapp.model.venue.Venue;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class VenueService {
-    private final BaseRepository<Venue> venueBaseRepository;
-    private final BaseRepository<Section> sectionBaseRepository;
-    private final BaseRepository<Row> rowBaseRepository;
-    private final BaseRepository<Seat> seatBaseRepository;
+    private final Repository<Venue> venueRepository;
+    private final Repository<Section> sectionRepository;
+    private final Repository<Row> rowRepository;
+    private final Repository<Seat> seatRepository;
 
     // Seat
 
@@ -37,7 +37,7 @@ public class VenueService {
         if (findRowByID(seat.getRow().getID()) == null) {
             throw new BusinessLogicException("Row associated with the seat does not exist.");
         }
-        seatBaseRepository.update(seat);
+        seatRepository.update(seat);
     }
 
     /**
@@ -56,16 +56,16 @@ public class VenueService {
         seat.setNumber(seatNumber);
         seat.setRow(row.get());
         row.get().addSeat(seat);
-        seatBaseRepository.create(seat);
+        seatRepository.create(seat);
         return seat;
     }
 
     public void deleteSeatsByRow(int rowId) {
-        List<Seat> seats = seatBaseRepository.getAll().stream()
+        List<Seat> seats = seatRepository.getAll().stream()
                 .filter(seat -> seat.getRow().getID() == rowId)
                 .toList();
         for (Seat seat : seats) {
-            seatBaseRepository.delete(seat.getID());
+            seatRepository.delete(seat.getID());
         }
     }
 
@@ -84,7 +84,7 @@ public class VenueService {
         if (row != null) {
             row.removeSeat(seat);
         }
-        seatBaseRepository.delete(seatID);
+        seatRepository.delete(seatID);
         return true;
     }
 
@@ -95,7 +95,7 @@ public class VenueService {
      * @return the Seat object, or null if not found.
      */
     public Optional<Seat> findSeatByID(int seatId) {
-        return seatBaseRepository.read(seatId);
+        return seatRepository.read(seatId);
     }
 
     /**
@@ -104,7 +104,7 @@ public class VenueService {
      * @return a list of all Seats.
      */
     public List<Seat> getAllSeats() {
-        return seatBaseRepository.getAll();
+        return seatRepository.getAll();
     }
 
     /**
@@ -136,7 +136,7 @@ public class VenueService {
         ticket.setTicketType(ticketType);
         seat.setReserved(true);
         seat.setTicket(ticket);
-        seatBaseRepository.update(seat);
+        seatRepository.update(seat);
         return true;
     }
 
@@ -156,7 +156,7 @@ public class VenueService {
         }
         seat.setReserved(false);
         seat.setTicket(null);
-        seatBaseRepository.update(seat);
+        seatRepository.update(seat);
     }
 
     /**
@@ -188,7 +188,7 @@ public class VenueService {
             throw new BusinessLogicException("Section cannot be null.");
         }
         Row row = new Row(0, rowCapacity, section);
-        rowBaseRepository.create(row);
+        rowRepository.create(row);
         section.addRow(row);
         return row;
     }
@@ -200,17 +200,17 @@ public class VenueService {
         }
         Row row = rowOptional.get();
         row.setRowCapacity(rowCapacity);
-        rowBaseRepository.update(row);
+        rowRepository.update(row);
         return Optional.of(row);
     }
 
     public void deleteRowsBySection(int sectionID) {
-        List<Row> rows = rowBaseRepository.getAll().stream().
+        List<Row> rows = rowRepository.getAll().stream().
                 filter(row -> row.getSection().getID() == sectionID)
                 .toList();
         for (Row row : rows) {
             deleteSeatsByRow(row.getID());
-            rowBaseRepository.delete(row.getID());
+            rowRepository.delete(row.getID());
         }
     }
 
@@ -220,15 +220,15 @@ public class VenueService {
             throw new EntityNotFoundException("Row not found with ID: " + rowID);
         }
         deleteSeatsByRow(rowID);
-        rowBaseRepository.delete(rowID);
+        rowRepository.delete(rowID);
     }
 
     public Optional<Row> findRowByID(int rowId) {
-        return rowBaseRepository.read(rowId);
+        return rowRepository.read(rowId);
     }
 
     public List<Row> getAllRows() {
-        return rowBaseRepository.getAll();
+        return rowRepository.getAll();
     }
 
     /**
@@ -247,9 +247,9 @@ public class VenueService {
         for (int i = 1; i <= numberOfSeats; i++) {
             Seat seat = new Seat(0, i, false, row); // Create the Seat object
             row.addSeat(seat); // Add the Seat to the Row's seats list
-            seatBaseRepository.create(seat); // Persist the Seat in the repository
+            seatRepository.create(seat); // Persist the Seat in the repository
         }
-        rowBaseRepository.update(row); // Persist the updated Row with its seats
+        rowRepository.update(row); // Persist the updated Row with its seats
     }
 
     /**
@@ -346,7 +346,7 @@ public class VenueService {
         section.setSectionName(sectionName);
         section.setVenue(venue);
         section.setSectionCapacity(sectionCapacity);
-        sectionBaseRepository.create(section); // Persist the new section
+        sectionRepository.create(section); // Persist the new section
         return section;
     }
 
@@ -359,23 +359,23 @@ public class VenueService {
      * @return the updated Section object, or null if the Section does not exist.
      */
     public Object updateSection(int sectionId, String sectionName, int sectionCapacity) {
-        Optional<Section> sectionOptional = sectionBaseRepository.read(sectionId);
+        Optional<Section> sectionOptional = sectionRepository.read(sectionId);
         if (sectionOptional.isEmpty()) {
             return null;
         }
         Section section = sectionOptional.get();
         section.setSectionName(sectionName);
         section.setSectionCapacity(sectionCapacity);
-        return sectionBaseRepository.update(section);
+        return sectionRepository.update(section);
     }
 
     public void deleteSectionByVenue(int venueID) {
-        List<Section> sections = sectionBaseRepository.getAll().stream().
+        List<Section> sections = sectionRepository.getAll().stream().
                 filter(section -> section.getVenue().getID() == venueID)
                 .toList();
         for (Section section : sections) {
             deleteRowsBySection(section.getID());
-            sectionBaseRepository.delete(section.getID());
+            sectionRepository.delete(section.getID());
         }
     }
 
@@ -386,12 +386,12 @@ public class VenueService {
      * @return true if the Section was successfully deleted, false otherwise.
      */
     public void deleteSection(int sectionID) {
-        Optional<Section> section = sectionBaseRepository.read(sectionID);
+        Optional<Section> section = sectionRepository.read(sectionID);
         if (section.isEmpty()) {
             throw new EntityNotFoundException("Section not found with ID: " + sectionID);
         }
         deleteRowsBySection(sectionID);
-        sectionBaseRepository.delete(sectionID);
+        sectionRepository.delete(sectionID);
     }
 
     /**
@@ -401,7 +401,7 @@ public class VenueService {
      * @return the Section object if found, null otherwise.
      */
     public Optional<Section> findSectionByID(int sectionId) {
-        return sectionBaseRepository.read(sectionId);
+        return sectionRepository.read(sectionId);
     }
 
     /**
@@ -410,11 +410,11 @@ public class VenueService {
      * @return a list of all Sections.
      */
     public List<Section> getAllSections() {
-        return sectionBaseRepository.getAll();
+        return sectionRepository.getAll();
     }
 
     public void addRowsToSection(int sectionId, int numberOfRows, int rowCapacity) {
-        Optional<Section> sectionOptional = sectionBaseRepository.read(sectionId);
+        Optional<Section> sectionOptional = sectionRepository.read(sectionId);
         if (sectionOptional.isEmpty()) {
             throw new EntityNotFoundException("Section not found");
         }
@@ -422,7 +422,7 @@ public class VenueService {
         for (int i = 0; i < numberOfRows; i++) {
             createRow(section, rowCapacity);
         }
-        sectionBaseRepository.update(section);
+        sectionRepository.update(section);
     }
 
     /**
@@ -432,7 +432,7 @@ public class VenueService {
      * @return a list of Sections matching the given name.
      */
     public List<Section> findSectionsByName(String name) {
-        return sectionBaseRepository.getAll().stream()
+        return sectionRepository.getAll().stream()
                 .filter(section -> section.getSectionName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
     }
@@ -445,7 +445,7 @@ public class VenueService {
      * @return a list of available Seats in the Section.
      */
     public List<Seat> getAvailableSeatsInSection(int sectionId, int eventId) {
-        Optional<Section> section = sectionBaseRepository.read(sectionId);
+        Optional<Section> section = sectionRepository.read(sectionId);
         if (section.isEmpty()) {
             return new ArrayList<>(); // Section not found
         }
@@ -481,7 +481,7 @@ public class VenueService {
         venue.setLocation(location);
         venue.setVenueCapacity(capacity);
         venue.setHasSeats(hasSeats);
-        venueBaseRepository.create(venue);
+        venueRepository.create(venue);
         if (!hasSeats) {
             addSectionToVenue(venue.getID(), 1, capacity, "Default Section");
         }
@@ -492,14 +492,14 @@ public class VenueService {
      * Retrieves a Venue by its ID.
      */
     public Optional<Venue> findVenueByID(int venueId) {
-        return venueBaseRepository.read(venueId);
+        return venueRepository.read(venueId);
     }
 
     /**
      * Finds Venues by location or name.
      */
     public List<Venue> findVenuesByLocationOrName(String keyword) {
-        return venueBaseRepository.getAll().stream()
+        return venueRepository.getAll().stream()
                 .filter(venue -> venue.getVenueName().equalsIgnoreCase(keyword) || venue.getLocation().equalsIgnoreCase(keyword))
                 .collect(Collectors.toList());
     }
@@ -511,7 +511,7 @@ public class VenueService {
      * @return the Venue object if found, null otherwise.
      */
     public Venue findVenueByName(String name) {
-        return venueBaseRepository.getAll().stream()
+        return venueRepository.getAll().stream()
                 .filter(venue -> venue.getVenueName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
@@ -521,14 +521,14 @@ public class VenueService {
      * Retrieves all Venues from the in-memory repository.
      */
     public List<Venue> getAllVenues() {
-        return venueBaseRepository.getAll();
+        return venueRepository.getAll();
     }
 
     /**
      * Updates an existing Venue.
      */
     public Object updateVenue(int venueId, String name, String location, int capacity, boolean hasSeats) {
-        Optional<Venue> venueOptional = venueBaseRepository.read(venueId);
+        Optional<Venue> venueOptional = venueRepository.read(venueId);
         if (venueOptional.isEmpty()) {
             return null;
         }
@@ -537,19 +537,19 @@ public class VenueService {
         venue.setLocation(location);
         venue.setVenueCapacity(capacity);
         venue.setHasSeats(hasSeats);
-        return venueBaseRepository.update(venue);
+        return venueRepository.update(venue);
     }
 
     /**
      * Deletes a Venue and its associated Sections.
      */
     public boolean deleteVenue(int venueId) {
-        Optional<Venue> venue = venueBaseRepository.read(venueId);
+        Optional<Venue> venue = venueRepository.read(venueId);
         if (venue.isEmpty()) {
             return false;
         }
         deleteSectionByVenue(venueId);
-        venueBaseRepository.delete(venueId);
+        venueRepository.delete(venueId);
         return true;
     }
 
@@ -557,7 +557,7 @@ public class VenueService {
      * Adds a Section to a Venue.
      */
     public void addSectionToVenue(int venueId, int numberOfSections, int sectionCapacity, String defaultSectionName) {
-        Optional<Venue> venueOptional = venueBaseRepository.read(venueId);
+        Optional<Venue> venueOptional = venueRepository.read(venueId);
         if (venueOptional.isEmpty()) {
             throw new EntityNotFoundException("Venue not found");
         }
@@ -569,17 +569,17 @@ public class VenueService {
                 throw new ValidationException("Duplicate section name: " + sectionName);
             }
             Section section = createSection(venue, sectionCapacity, sectionName);
-            sectionBaseRepository.create(section);
+            sectionRepository.create(section);
         }
         loadSectionsForVenue(venue);
-        venueBaseRepository.update(venue);
+        venueRepository.update(venue);
     }
 
     /**
      * Retrieves all Sections associated with a specific Venue.
      */
     public List<Section> getSectionsByVenueID(int venueId) {
-        return sectionBaseRepository.getAll().stream()
+        return sectionRepository.getAll().stream()
                 .filter(section -> section.getVenue().getID() == venueId)
                 .collect(Collectors.toList());
     }

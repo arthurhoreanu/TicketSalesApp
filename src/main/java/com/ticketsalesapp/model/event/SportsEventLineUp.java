@@ -2,12 +2,9 @@ package main.java.com.ticketsalesapp.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.controller.ApplicationController;
-import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
-import java.util.Optional;
 
 /**
  * Represents the association between a SportsEvent and an Athlete.
@@ -33,8 +30,6 @@ public class SportsEventLineUp implements Identifiable {
     @JoinColumn(name = "athlete_id", nullable = false)
     private Athlete athlete;
 
-    static ApplicationController applicationController = ControllerProvider.getController();
-
     public SportsEventLineUp() {}
 
     public SportsEventLineUp(SportsEvent sportsEvent, Athlete athlete) {
@@ -57,22 +52,5 @@ public class SportsEventLineUp implements Identifiable {
                 ", sportsEvent=" + sportsEvent +
                 ", athlete=" + athlete +
                 '}';
-    }
-
-    @Override
-    public String toCsv() {
-        return id + "," + sportsEvent.getID() + "," + athlete.getID();
-    }
-
-    public static SportsEventLineUp fromCsv(String csv) {
-        String[] fields = csv.split(",");
-        int id = Integer.parseInt(fields[0]);
-        int sportsEventID = Integer.parseInt(fields[1]);
-        int athleteID = Integer.parseInt(fields[2]);
-        Optional<SportsEvent> sportsEvent = applicationController.findSportsEventByID(sportsEventID);
-        Athlete athlete = applicationController.findAthleteByID(athleteID);
-        SportsEventLineUp sportsEventLineUp = new SportsEventLineUp(sportsEvent.get(), athlete);
-        sportsEventLineUp.setID(id);
-        return sportsEventLineUp;
     }
 }

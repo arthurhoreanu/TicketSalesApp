@@ -9,7 +9,7 @@ import main.java.com.ticketsalesapp.model.event.EventStatus;
 import main.java.com.ticketsalesapp.model.event.SportsEvent;
 import main.java.com.ticketsalesapp.model.event.SportsEventLineUp;
 import main.java.com.ticketsalesapp.model.venue.Venue;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,29 +19,29 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SportsEventService {
-    private final BaseRepository<SportsEvent> sportsEventRepository;
-    private final BaseRepository<SportsEventLineUp> sportsEventLineUpBaseRepository;
+    private final Repository<SportsEvent> sportsEventRepository;
+    private final Repository<SportsEventLineUp> sportsEventLineUpRepository;
     private final VenueService venueService;
     private final AthleteService athleteService;
 
-    public boolean createSportsEvent(String eventName, String eventDescription,
-                                     LocalDateTime startDateTime, LocalDateTime endDateTime,
-                                     int venueID, EventStatus eventStatus) {
-        validateEventData(eventName, startDateTime, endDateTime);
-        Venue venue = venueService.findVenueByID(venueID);
-        if (venue == null) {
-            throw new EntityNotFoundException("Venue not found");
-        }
-
-        SportsEvent sportsEvent = new SportsEvent();
-        sportsEvent.setEventName(eventName);
-        sportsEvent.setEventDescription(eventDescription);
-        sportsEvent.setStartDateTime(startDateTime);
-        sportsEvent.setEndDateTime(endDateTime);
-        sportsEvent.setVenueID(venueID); // Adăugat setarea venue ID
-        sportsEvent.setEventStatus(eventStatus);
-        return sportsEventRepository.create(sportsEvent);
-    }
+//    public boolean createSportsEvent(String eventName, String eventDescription,
+//                                     LocalDateTime startDateTime, LocalDateTime endDateTime,
+//                                     int venueID, EventStatus eventStatus) {
+//        validateEventData(eventName, startDateTime, endDateTime);
+//        Venue venue = venueService.findVenueByID(venueID);
+//        if (venue == null) {
+//            throw new EntityNotFoundException("Venue not found");
+//        }
+//
+//        SportsEvent sportsEvent = new SportsEvent();
+//        sportsEvent.setEventName(eventName);
+//        sportsEvent.setEventDescription(eventDescription);
+//        sportsEvent.setStartDateTime(startDateTime);
+//        sportsEvent.setEndDateTime(endDateTime);
+//        sportsEvent.setVenueID(venueID); // Adăugat setarea venue ID
+//        sportsEvent.setEventStatus(eventStatus);
+//        return sportsEventRepository.create(sportsEvent);
+//    }
 
     public boolean addAthleteToEvent(int eventID, int athleteID) {
         Optional<SportsEvent> sportsEventOpt = findSportsEventByID(eventID);
@@ -52,7 +52,7 @@ public class SportsEventService {
         }
 
         SportsEventLineUp lineUp = new SportsEventLineUp(sportsEventOpt.get(), athlete);
-        return sportsEventLineUpBaseRepository.create(lineUp);
+        return sportsEventLineUpRepository.create(lineUp);
     }
 
     public boolean removeAthleteFromEvent(int eventID, int athleteID) {
@@ -63,13 +63,13 @@ public class SportsEventService {
             return false;
         }
 
-        SportsEventLineUp lineUp = sportsEventLineUpBaseRepository.getAll().stream()
+        SportsEventLineUp lineUp = sportsEventLineUpRepository.getAll().stream()
                 .filter(lu -> lu.getSportsEvent().getID() == eventID && lu.getAthlete().getID() == athleteID)
                 .findFirst()
                 .orElse(null);
 
         if (lineUp != null) {
-            return sportsEventLineUpBaseRepository.delete(lineUp.getID());
+            return sportsEventLineUpRepository.delete(lineUp.getID());
         }
         return false;
     }
@@ -84,7 +84,7 @@ public class SportsEventService {
     }
 
     public List<Athlete> getAthletesForEvent(int eventID) {
-        return sportsEventLineUpBaseRepository.getAll().stream()
+        return sportsEventLineUpRepository.getAll().stream()
                 .filter(lu -> lu.getSportsEvent().getID() == eventID)
                 .map(SportsEventLineUp::getAthlete)
                 .toList();

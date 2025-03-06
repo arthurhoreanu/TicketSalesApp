@@ -97,17 +97,4 @@ public class Artist implements Identifiable, FavouriteEntity {
     public String toString() {
         return "Artist{" + "artistID=" + artistID + ", artistName='" + artistName + '\'' + ", genre='" + genre + '\'' + '}';
     }
-
-    public static Artist fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int artistID = Integer.parseInt(fields[0]);
-        String artistName = fields[1];
-        String genre = fields[2];
-        return new Artist(artistID, artistName, genre);
-    }
-
-    @Override
-    public String toCsv() {
-        return getID() + "," + getArtistName() + "," + getGenre();
-    }
 }

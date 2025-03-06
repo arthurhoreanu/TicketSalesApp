@@ -2,8 +2,6 @@ package main.java.com.ticketsalesapp.model.venue;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.controller.ApplicationController;
-import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
@@ -46,8 +44,6 @@ public class Section implements Identifiable {
     @Getter
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Row> rows = new ArrayList<>();
-
-    static ApplicationController applicationController = ControllerProvider.getController();
 
     // Default constructor for JPA
     public Section() {}
@@ -113,42 +109,5 @@ public class Section implements Identifiable {
                 ", venue=" + (venue != null ? venue.getID() : "null") +
                 ", rowsCount=" + rows.size() +
                 '}';
-    }
-
-    // CSV Methods
-
-    /**
-     * Converts the Section object into a CSV representation.
-     *
-     * @return A comma-separated string representing the Section.
-     */
-    @Override
-    public String toCsv() {
-        return String.join(",",
-                String.valueOf(sectionID),
-                sectionName,
-                String.valueOf(sectionCapacity),
-                String.valueOf(venue != null ? venue.getID() : "null")
-        );
-    }
-
-    /**
-     * Creates a Section object from a CSV string.
-     *
-     * @param csvLine The CSV string.
-     * @return A Section object.
-     */
-    public static Section fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int sectionID = Integer.parseInt(fields[0].trim());
-        String sectionName = fields[1].trim();
-        int sectionCapacity = Integer.parseInt(fields[2].trim());
-        int venueID = Integer.parseInt(fields[3].trim());
-
-        // Create the Section object with the Venue retrieved from the controller
-        Section section = new Section(sectionID, sectionName, sectionCapacity, applicationController.findSectionByID(venueID));
-
-        // No need to initialize rows; it's already initialized
-        return section;
     }
 }

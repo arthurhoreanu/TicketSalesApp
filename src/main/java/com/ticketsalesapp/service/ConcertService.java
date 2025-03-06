@@ -6,7 +6,7 @@ import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.*;
 import main.java.com.ticketsalesapp.model.venue.Venue;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,8 +19,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ConcertService {
-    private final BaseRepository<Concert> concertRepository;
-    private final BaseRepository<ConcertLineUp> concertLineUpBaseRepository;
+    private final Repository<Concert> concertRepository;
+    private final Repository<ConcertLineUp> concertLineUpRepository;
     private final VenueService venueService;
     private final ArtistService artistService;
 
@@ -50,7 +50,7 @@ public class ConcertService {
             return false;
         }
         ConcertLineUp lineUp = new ConcertLineUp(concertOpt.get(), artist);
-        return concertLineUpBaseRepository.create(lineUp);
+        return concertLineUpRepository.create(lineUp);
     }
 
     public void removeArtistFromConcert(int concertID, int artistID) {
@@ -59,12 +59,12 @@ public class ConcertService {
         if (concertOpt.isEmpty() || artist == null) {
             return;
         }
-        ConcertLineUp lineUp = concertLineUpBaseRepository.getAll().stream()
+        ConcertLineUp lineUp = concertLineUpRepository.getAll().stream()
                 .filter(lu -> lu.getConcert().getID() == concertID && lu.getArtist().getID() == artistID)
                 .findFirst()
                 .orElse(null);
         if (lineUp != null) {
-            concertLineUpBaseRepository.delete(lineUp.getID());
+            concertLineUpRepository.delete(lineUp.getID());
         }
     }
 
@@ -78,7 +78,7 @@ public class ConcertService {
     }
 
     public List<Artist> getArtistsForConcert(int concertID) {
-        return concertLineUpBaseRepository.getAll().stream()
+        return concertLineUpRepository.getAll().stream()
                 .filter(lu -> lu.getConcert().getID() == concertID)
                 .map(ConcertLineUp::getArtist)
                 .toList();

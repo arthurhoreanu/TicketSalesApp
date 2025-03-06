@@ -112,39 +112,4 @@ public class Venue implements Identifiable {
                 '}';
     }
 
-    // CSV Methods
-
-    /**
-     * Converts the Venue object into a CSV representation.
-     *
-     * @return A comma-separated string representing the venue.
-     */
-    public String toCsv() {
-        return String.join(",",
-                String.valueOf(getID()),
-                getVenueName(),
-                getLocation(),
-                String.valueOf(getVenueCapacity()),
-                String.valueOf(hasSeats)
-        );
-    }
-
-    /**
-     * Creates a Venue object from a CSV string.
-     *
-     * @param csvLine The CSV string.
-     * @return A Venue object.
-     */
-    public static Venue fromCsv(String csvLine) {
-        String[] fields = csvLine.split(",");
-        int venueID = Integer.parseInt(fields[0].trim());
-        String venueName = fields[1].trim();
-        String location = fields[2].trim();
-        int venueCapacity = Integer.parseInt(fields[3].trim());
-        boolean hasSeats = Boolean.parseBoolean(fields[4].trim());
-
-        // No need to initialize sections list; it's already initialized
-        return new Venue(venueID, venueName, location, venueCapacity, hasSeats);
-    }
-
 }

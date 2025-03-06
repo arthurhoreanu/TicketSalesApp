@@ -10,7 +10,7 @@ import main.java.com.ticketsalesapp.model.ticket.TicketType;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Venue;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TicketService {
 
-    private final BaseRepository<Ticket> ticketBaseRepository;
+    private final Repository<Ticket> ticketRepository;
     private final VenueService venueService;
 
     /**
@@ -70,7 +70,7 @@ public class TicketService {
 
         // Save tickets to repository
         for (Ticket ticket : allTickets) {
-            ticketBaseRepository.create(ticket);
+            ticketRepository.create(ticket);
         }
 
         return allTickets;
@@ -180,7 +180,7 @@ public class TicketService {
      * @return a list of tickets for the specified event.
      */
     public List<Ticket> getTicketsByEvent(Event event) {
-        return ticketBaseRepository.getAll().stream()
+        return ticketRepository.getAll().stream()
                 .filter(ticket -> ticket.getEvent().equals(event))
                 .collect(Collectors.toList());
     }
@@ -204,7 +204,7 @@ public class TicketService {
      * @return a list of tickets associated with the specified cart ID.
      */
     public List<Ticket> findTicketsByCartID(int cartID) {
-        return ticketBaseRepository.getAll().stream()
+        return ticketRepository.getAll().stream()
                 .filter(ticket -> ticket.getCart() != null && ticket.getCart().getID() == cartID)
                 .collect(Collectors.toList());
     }
@@ -216,7 +216,7 @@ public class TicketService {
      */
     public void updateTicket(Ticket ticket) {
         ticket.setCustomer(ticket.getCustomer());
-        ticketBaseRepository.update(ticket);
+        ticketRepository.update(ticket);
     }
 
     /**
@@ -226,7 +226,7 @@ public class TicketService {
      * @return the ticket with the specified ID, or null if not found.
      */
     public Optional<Ticket> findTicketByID(int ticketID) {
-        return ticketBaseRepository.read(ticketID);
+        return ticketRepository.read(ticketID);
     }
 
     /**
@@ -237,7 +237,7 @@ public class TicketService {
     public void deleteTicket(int ticketID) {
         Optional<Ticket> ticket = findTicketByID(ticketID);
         if (ticket.isPresent()) {
-            ticketBaseRepository.delete(ticketID);
+            ticketRepository.delete(ticketID);
         }
     }
 
@@ -312,7 +312,7 @@ public class TicketService {
         if (customer == null) {
             throw new ValidationException("Customer cannot be null.");
         }
-        return ticketBaseRepository.getAll().stream()
+        return ticketRepository.getAll().stream()
                 .filter(ticket -> customer.equals(ticket.getCustomer()))
                 .collect(Collectors.toList());
     }

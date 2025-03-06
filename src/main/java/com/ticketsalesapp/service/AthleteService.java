@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
-import main.java.com.ticketsalesapp.repository.BaseRepository;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AthleteService {
-    private final BaseRepository<Athlete> athleteBaseRepository;
+    private final Repository<Athlete> athleteRepository;
 
     /**
      * Creates a new athlete and adds them to the repository.
@@ -27,7 +26,7 @@ public class AthleteService {
             throw new BusinessLogicException("Athlete with name '" + athleteName + "' already exists.");
         }
         Athlete athlete = new Athlete(0, athleteName, sport);
-        athleteBaseRepository.create(athlete);
+        athleteRepository.create(athlete);
         return true;
     }
 
@@ -48,7 +47,7 @@ public class AthleteService {
         }
         athlete.setAthleteName(newName);
         athlete.setAthleteSport(newSport);
-        athleteBaseRepository.update(athlete);
+        athleteRepository.update(athlete);
         return true;
     }
 
@@ -62,7 +61,7 @@ public class AthleteService {
         if (athlete == null) {
             throw new ValidationException("Athlete with ID " + athleteID + " does not exist.");
         }
-        athleteBaseRepository.delete(athleteID);
+        athleteRepository.delete(athleteID);
         return true;
     }
 
@@ -71,7 +70,7 @@ public class AthleteService {
      * @return A list of all athletes in the repository.
      */
     public List<Athlete> getAllAthletes() {
-        return athleteBaseRepository.getAll();
+        return athleteRepository.getAll();
     }
 
     /**
@@ -80,7 +79,7 @@ public class AthleteService {
      * @return The athlete with the specified ID, or null if no athlete was found.
      */
     public Athlete findAthleteByID(int athleteID) {
-        return athleteBaseRepository.getAll().stream().filter(athlete -> athlete.getID() == athleteID).findFirst().orElse(null);
+        return athleteRepository.getAll().stream().filter(athlete -> athlete.getID() == athleteID).findFirst().orElse(null);
     }
 
     /**
@@ -89,7 +88,7 @@ public class AthleteService {
      * @return The athlete with the specified name, or null if no athlete was found.
      */
     public Athlete findAthleteByName(String athleteName) {
-        return athleteBaseRepository.getAll().stream().filter(athlete -> athlete.getAthleteName().equalsIgnoreCase(athleteName)).findFirst().orElse(null);
+        return athleteRepository.getAll().stream().filter(athlete -> athlete.getAthleteName().equalsIgnoreCase(athleteName)).findFirst().orElse(null);
     }
 
 
@@ -100,7 +99,7 @@ public class AthleteService {
      */
     public List<Athlete> findAthletesBySport(String sport) {
         List<Athlete> athletesInSport = new ArrayList<>();
-        for (Athlete athlete : athleteBaseRepository.getAll()) {
+        for (Athlete athlete : athleteRepository.getAll()) {
             if (athlete.getAthleteSport().equalsIgnoreCase(sport)) {
                 athletesInSport.add(athlete);
             }
