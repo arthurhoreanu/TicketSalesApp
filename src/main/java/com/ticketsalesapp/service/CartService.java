@@ -1,5 +1,6 @@
 package main.java.com.ticketsalesapp.service;
 
+import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.ticket.Cart;
@@ -7,21 +8,20 @@ import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.event.Event;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
 import main.java.com.ticketsalesapp.repository.BaseRepository;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class for managing Cart-related operations.
  */
+@Service
+@RequiredArgsConstructor
 public class CartService {
 
     private final BaseRepository<Cart> cartBaseRepository;
-
-    public CartService(RepositoryFactory repositoryFactory) {
-        this.cartBaseRepository = repositoryFactory.createCartRepository();
-    }
 
     /**
      * Creates a new cart for a given customer and event.
@@ -148,7 +148,7 @@ public class CartService {
      * @param cartID The ID of the cart to find.
      * @return The cart if found, or null otherwise.
      */
-    public Cart findCartByID(int cartID) {
+    public Optional<Cart> findCartByID(int cartID) {
         return cartBaseRepository.read(cartID);
     }
 

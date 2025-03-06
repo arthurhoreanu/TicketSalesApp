@@ -18,6 +18,7 @@ public class Ticket implements Identifiable {
 
     @Id
     @Column(name = "ticket_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ticketID;
 
     @ManyToOne(fetch = FetchType.LAZY)

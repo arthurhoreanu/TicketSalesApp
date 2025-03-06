@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.venue;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
@@ -19,20 +21,29 @@ public class Section implements Identifiable {
 
     private static int idCounter = 1; // Static counter for unique IDs
 
+    @Setter
     @Id
     @Column(name = "section_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int sectionID;
 
+    @Getter
+    @Setter
     @Column(name = "section_name", nullable = false)
     private String sectionName;
 
+    @Getter
+    @Setter
     @Column(name = "section_capacity", nullable = false)
     private int sectionCapacity;
 
+    @Getter
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
+    @Getter
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Row> rows = new ArrayList<>();
 
@@ -64,38 +75,6 @@ public class Section implements Identifiable {
     @Override
     public void setID(int sectionID) {
         this.sectionID = sectionID;
-    }
-
-    public void setSectionID(int sectionID) {
-        this.sectionID = sectionID;
-    }
-
-    public String getSectionName() {
-        return sectionName;
-    }
-
-    public void setSectionName(String sectionName) {
-        this.sectionName = sectionName;
-    }
-
-    public int getSectionCapacity() {
-        return sectionCapacity;
-    }
-
-    public void setSectionCapacity(int sectionCapacity) {
-        this.sectionCapacity = sectionCapacity;
-    }
-
-    public Venue getVenue() {
-        return venue;
-    }
-
-    public void setVenue(Venue venue) {
-        this.venue = venue;
-    }
-
-    public List<Row> getRows() {
-        return rows;
     }
 
     public void setRows(List<Row> rows) {

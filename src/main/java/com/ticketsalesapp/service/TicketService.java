@@ -1,5 +1,6 @@
 package main.java.com.ticketsalesapp.service;
 
+import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
@@ -10,25 +11,23 @@ import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Venue;
 import main.java.com.ticketsalesapp.repository.BaseRepository;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Service class for managing ticket-related operations.
  */
+@Service
+@RequiredArgsConstructor
 public class TicketService {
 
     private final BaseRepository<Ticket> ticketBaseRepository;
     private final VenueService venueService;
-
-    public TicketService(RepositoryFactory repositoryFactory, VenueService venueService) {
-        this.ticketBaseRepository = repositoryFactory.createTicketRepository();
-        this.venueService = venueService;
-    }
 
     /**
      * Generates tickets for an event based on its available seats or venue capacity.
@@ -226,7 +225,7 @@ public class TicketService {
      * @param ticketID the ID of the ticket to find.
      * @return the ticket with the specified ID, or null if not found.
      */
-    public Ticket findTicketByID(int ticketID) {
+    public Optional<Ticket> findTicketByID(int ticketID) {
         return ticketBaseRepository.read(ticketID);
     }
 
@@ -236,8 +235,8 @@ public class TicketService {
      * @param ticketID the ID of the ticket to delete.
      */
     public void deleteTicket(int ticketID) {
-        Ticket ticket = findTicketByID(ticketID);
-        if (ticket != null) {
+        Optional<Ticket> ticket = findTicketByID(ticketID);
+        if (ticket.isPresent()) {
             ticketBaseRepository.delete(ticketID);
         }
     }

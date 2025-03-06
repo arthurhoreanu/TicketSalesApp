@@ -1,5 +1,6 @@
 package main.java.com.ticketsalesapp.service;
 
+import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
@@ -11,12 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AthleteService {
     private final BaseRepository<Athlete> athleteBaseRepository;
-
-    public AthleteService(RepositoryFactory repositoryFactory) {
-        this.athleteBaseRepository = repositoryFactory.createAthleteRepository();
-    }
 
     /**
      * Creates a new athlete and adds them to the repository.

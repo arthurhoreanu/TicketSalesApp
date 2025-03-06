@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.venue;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
@@ -10,23 +12,30 @@ import java.util.List;
  * Represents a venue for events, containing details such as its unique ID, name, location, and capacity.
  * Includes relationships with Sections (1:N).
  */
+@Getter
 @Entity
 @Table(name = "venue")
 public class Venue implements Identifiable {
 
+    @Setter
     @Id
     @Column(name = "venue_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int venueID;
 
+    @Setter
     @Column(name = "venue_name", nullable = false)
     private String venueName;
 
+    @Setter
     @Column(name = "location", nullable = false)
     private String location;
 
+    @Setter
     @Column(name = "venue_capacity", nullable = false)
     private int venueCapacity;
 
+    @Setter
     @Column(name = "has_seats", nullable = false)
     private boolean hasSeats;
 
@@ -62,42 +71,6 @@ public class Venue implements Identifiable {
     @Override
     public void setID(int venueID) {
         this.venueID = venueID;
-    }
-
-    public String getVenueName() {
-        return venueName;
-    }
-
-    public void setVenueName(String venueName) {
-        this.venueName = venueName;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public int getVenueCapacity() {
-        return venueCapacity;
-    }
-
-    public void setVenueCapacity(int venueCapacity) {
-        this.venueCapacity = venueCapacity;
-    }
-
-    public boolean isHasSeats() {
-        return hasSeats;
-    }
-
-    public void setHasSeats(boolean hasSeats) {
-        this.hasSeats = hasSeats;
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     public void setSections(List<Section> sections) {
@@ -174,11 +147,4 @@ public class Venue implements Identifiable {
         return new Venue(venueID, venueName, location, venueCapacity, hasSeats);
     }
 
-    public int getVenueID() {
-        return venueID;
-    }
-
-    public void setVenueID(int venueID) {
-        this.venueID = venueID;
-    }
 }

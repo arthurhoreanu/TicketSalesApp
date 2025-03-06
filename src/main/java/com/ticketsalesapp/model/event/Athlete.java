@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
@@ -17,11 +19,30 @@ public class Athlete implements Identifiable, FavouriteEntity {
 
     @Id
     @Column(name = "athlete_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int athleteID;
 
+    /**
+     * -- SETTER --
+     *  Sets a new name for the athlete.
+     * -- GETTER --
+     *  Gets the athlete's name.
+     *
+     */
+    @Getter
+    @Setter
     @Column(name = "athlete_name", nullable = false)
     private String athleteName;
 
+    /**
+     * -- SETTER --
+     *  Sets a new sport for the athlete.
+     * -- GETTER --
+     *  Gets the sport associated with the athlete.
+     *
+     */
+    @Getter
+    @Setter
     @Column(name = "athlete_sport", nullable = false)
     private String athleteSport;
 
@@ -56,7 +77,7 @@ public class Athlete implements Identifiable, FavouriteEntity {
     }
 
     public void setID(int id) {
-        this.athleteID = id; // Pentru Athlete
+        this.athleteID = id;
     }
 
     /**
@@ -66,38 +87,6 @@ public class Athlete implements Identifiable, FavouriteEntity {
     @Override
     public String getName() {
         return this.athleteName;
-    }
-
-    /**
-     * Gets the athlete's name.
-     * @return the athlete's name
-     */
-    public String getAthleteName() {
-        return athleteName;
-    }
-
-    /**
-     * Sets a new name for the athlete.
-     * @param athleteName the new name of the athlete
-     */
-    public void setAthleteName(String athleteName) {
-        this.athleteName = athleteName;
-    }
-
-    /**
-     * Gets the sport associated with the athlete.
-     * @return the sport of the athlete
-     */
-    public String getAthleteSport() {
-        return athleteSport;
-    }
-
-    /**
-     * Sets a new sport for the athlete.
-     * @param athleteSport the new sport of the athlete
-     */
-    public void setAthleteSport(String athleteSport) {
-        this.athleteSport = athleteSport;
     }
 
     /**

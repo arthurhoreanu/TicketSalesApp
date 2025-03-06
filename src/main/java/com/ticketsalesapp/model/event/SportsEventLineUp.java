@@ -1,5 +1,7 @@
 package main.java.com.ticketsalesapp.model.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
@@ -18,10 +20,14 @@ public class SportsEventLineUp implements Identifiable {
     @Column(name = "sports_event_lineup_id")
     private int id;
 
+    @Setter
+    @Getter
     @ManyToOne
     @JoinColumn(name = "sports_event_id", nullable = false)
     private SportsEvent sportsEvent;
 
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "athlete_id", nullable = false)
     private Athlete athlete;
@@ -41,22 +47,6 @@ public class SportsEventLineUp implements Identifiable {
 
     public void setID(int id) {
         this.id = id;
-    }
-
-    public SportsEvent getSportsEvent() {
-        return sportsEvent;
-    }
-
-    public void setSportsEvent(SportsEvent sportsEvent) {
-        this.sportsEvent = sportsEvent;
-    }
-
-    public Athlete getAthlete() {
-        return athlete;
-    }
-
-    public void setAthlete(Athlete athlete) {
-        this.athlete = athlete;
     }
 
     @Override

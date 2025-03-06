@@ -13,6 +13,7 @@ public class Concert extends Event {
 
     @Id
     @Column(name = "concert_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int eventID;
 
     @Column(name = "event_name", nullable = false)
