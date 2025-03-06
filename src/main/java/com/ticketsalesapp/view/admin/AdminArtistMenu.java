@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Artist;
@@ -14,9 +14,9 @@ public class AdminArtistMenu {
     /**
      * Displays the artist management menu and processes the selected options.
      * @param scanner the scanner to read user input
-     * @param controller the controller to handle artist management actions
+     * @param applicationController the controller to handle artist management actions
      */
-    public static void display(Scanner scanner, Controller controller) {
+    public static void display(Scanner scanner, ApplicationController applicationController) {
         boolean inArtistMenu = true;
         while (inArtistMenu) {
             try {
@@ -33,16 +33,16 @@ public class AdminArtistMenu {
 
                 switch (choice) {
                     case "1":
-                        handleCreateArtist(scanner, controller);
+                        handleCreateArtist(scanner, applicationController);
                         break;
                     case "2":
-                        handleViewArtists(controller);
+                        handleViewArtists(applicationController);
                         break;
                     case "3":
-                        handleUpdateArtist(scanner, controller);
+                        handleUpdateArtist(scanner, applicationController);
                         break;
                     case "4":
-                        handleDeleteArtist(scanner, controller);
+                        handleDeleteArtist(scanner, applicationController);
                         break;
                     case "0":
                         inArtistMenu = false;
@@ -60,9 +60,9 @@ public class AdminArtistMenu {
     /**
      * Handles the creation of a new artist.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage artist creation
+     * @param applicationController the controller to manage artist creation
      */
-    public static void handleCreateArtist(Scanner scanner, Controller controller) {
+    public static void handleCreateArtist(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Create Artist ===");
             System.out.print("Enter artist name: ");
@@ -75,7 +75,7 @@ public class AdminArtistMenu {
             if (genre.isEmpty()) {
                 throw new ValidationException("Artist genre cannot be empty.");
             }
-            controller.createArtist(artistName, genre);
+            applicationController.createArtist(artistName, genre);
             System.out.println("Artist created successfully.");
         } catch (ValidationException e) {
             System.out.println(e.getMessage());
@@ -84,28 +84,28 @@ public class AdminArtistMenu {
 
     /**
      * Displays a list of all artists.
-     * @param controller the controller to retrieve artists from
+     * @param applicationController the controller to retrieve artists from
      */
-    public static void handleViewArtists(Controller controller) {
+    public static void handleViewArtists(ApplicationController applicationController) {
         System.out.println("=== View Artists ===");
-        controller.getAllArtists();
+        applicationController.getAllArtists();
     }
 
     /**
      * Handles updating an existing artist with new information.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage artist updates
+     * @param applicationController the controller to manage artist updates
      */
-    public static void handleUpdateArtist(Scanner scanner, Controller controller) {
+    public static void handleUpdateArtist(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Update Artist ===");
-            controller.getAllArtists();
+            applicationController.getAllArtists();
             System.out.print("Enter artist ID to update: ");
             int artistID = Integer.parseInt(scanner.nextLine());
             if (artistID <= 0) {
                 throw new ValidationException("Artist ID must be greater than 0.");
             }
-            Artist artist = controller.findArtistByID(artistID);
+            Artist artist = applicationController.findArtistByID(artistID);
             if (artist == null) {
                 throw new EntityNotFoundException("Artist does not exist.");
             }
@@ -119,7 +119,7 @@ public class AdminArtistMenu {
             if (newGenre.isEmpty()) {
                 newGenre = artist.getGenre();
             }
-            controller.updateArtist(artistID, newName, newGenre);
+            applicationController.updateArtist(artistID, newName, newGenre);
             System.out.println("Artist updated successfully.");
         } catch (ValidationException | EntityNotFoundException e) {
             System.out.println(e.getMessage());
@@ -129,16 +129,16 @@ public class AdminArtistMenu {
     /**
      * Handles deleting an artist by their ID.
      * @param scanner the scanner to read user input
-     * @param controller the controller to manage artist deletion
+     * @param applicationController the controller to manage artist deletion
      */
-    public static void handleDeleteArtist(Scanner scanner, Controller controller) {
+    public static void handleDeleteArtist(Scanner scanner, ApplicationController applicationController) {
         System.out.println("=== Delete Artist ===");
-        controller.getAllArtists();
+        applicationController.getAllArtists();
         System.out.print("Enter artist ID to delete: ");
         int artistID;
         try {
             artistID = Integer.parseInt(scanner.nextLine());
-            controller.deleteArtist(artistID);
+            applicationController.deleteArtist(artistID);
             System.out.println("Artist deleted successfully.");
         } catch (NumberFormatException e) {
             System.out.println("Invalid artist ID. Please enter a valid number.");

@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.model.venue;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
@@ -32,7 +32,7 @@ public class Seat implements Identifiable {
     @OneToOne(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Ticket ticket; // 1:1 relationship with Ticket
 
-    static Controller controller = ControllerProvider.getController();
+    static ApplicationController applicationController = ControllerProvider.getController();
 
     /**
      * Default constructor for JPA, CSV, and InMemory compatibility.
@@ -153,6 +153,6 @@ public class Seat implements Identifiable {
         boolean isReserved = Boolean.parseBoolean(fields[2].trim());
         int rowID = Integer.parseInt(fields[3].trim());
 
-        Row row = controller.findRowByID(rowID);
+        Row row = applicationController.findRowByID(rowID);
         return new Seat(seatID, number, isReserved, row);    }
 }

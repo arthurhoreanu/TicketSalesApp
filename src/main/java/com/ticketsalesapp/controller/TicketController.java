@@ -5,12 +5,14 @@ import main.java.com.ticketsalesapp.model.ticket.Ticket;
 import main.java.com.ticketsalesapp.model.ticket.TicketType;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.service.TicketService;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * Controller for managing ticket-related operations.
  */
+@Component
 public class TicketController {
     private final TicketService ticketService;
 

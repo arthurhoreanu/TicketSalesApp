@@ -13,11 +13,13 @@ import main.java.com.ticketsalesapp.model.venue.Section;
 import main.java.com.ticketsalesapp.model.venue.Venue;
 import main.java.com.ticketsalesapp.repository.BaseRepository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class VenueService {
     private final BaseRepository<Venue> venueBaseRepository;
     private final BaseRepository<Section> sectionBaseRepository;

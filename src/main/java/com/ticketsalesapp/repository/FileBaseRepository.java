@@ -50,9 +50,10 @@ public class FileBaseRepository<T extends Identifiable> implements BaseRepositor
      * Creates a new object in the CSV file.
      *
      * @param obj The object to create and store.
+     * @return
      */
     @Override
-    public void create(T obj) {
+    public boolean create(T obj) {
         lock.lock();
         try {
             if (obj.getID() == 0) {
@@ -68,6 +69,7 @@ public class FileBaseRepository<T extends Identifiable> implements BaseRepositor
         } finally {
             lock.unlock();
         }
+        return false;
     }
 
     /**
@@ -93,9 +95,10 @@ public class FileBaseRepository<T extends Identifiable> implements BaseRepositor
      * Updates an existing object in the repository.
      *
      * @param obj The updated object to save.
+     * @return
      */
     @Override
-    public void update(T obj) {
+    public boolean update(T obj) {
         lock.lock();
         try {
             delete(obj.getID());
@@ -103,15 +106,17 @@ public class FileBaseRepository<T extends Identifiable> implements BaseRepositor
         } finally {
             lock.unlock();
         }
+        return false;
     }
 
     /**
      * Deletes an object by ID from the repository.
      *
      * @param id The ID of the object to delete.
+     * @return
      */
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         lock.lock();
         try {
             File originalFile = new File(filePath);
@@ -145,6 +150,7 @@ public class FileBaseRepository<T extends Identifiable> implements BaseRepositor
         } finally {
             lock.unlock();
         }
+        return false;
     }
 
     /**

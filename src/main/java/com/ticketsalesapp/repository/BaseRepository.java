@@ -9,9 +9,11 @@ public interface BaseRepository<T extends Identifiable> {
 
     /**
      * Creates and adds an object to the repository.
+     *
      * @param obj The object to be added to the repository.
+     * @return
      */
-    void create(T obj);
+    boolean create(T obj);
 
     /**
      * Retrieves an object from the repository by its ID.
@@ -21,15 +23,19 @@ public interface BaseRepository<T extends Identifiable> {
 
     /**
      * Updates an existing object in the repository.
+     *
      * @param obj The object to be updated in the repository.
+     * @return
      */
-    void update(T obj);
+    boolean update(T obj);
 
     /**
      * Deletes an object from the repository by its ID.
+     *
      * @param id The ID of the object to be deleted.
+     * @return
      */
-    void delete(Integer id);
+    boolean delete(Integer id);
 
     /**
      * Retrieves all objects from the repository.

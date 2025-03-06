@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.model.ticket;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.model.ControllerProvider;
 import main.java.com.ticketsalesapp.model.Identifiable;
 import main.java.com.ticketsalesapp.model.event.Event;
@@ -34,7 +34,7 @@ public class Cart implements Identifiable {
     @Column(name = "total_price", nullable = false)
     private double totalPrice = 0.0;
 
-    static Controller controller = ControllerProvider.getController();
+    static ApplicationController applicationController = ControllerProvider.getController();
 
     public Cart() {}
 
@@ -100,7 +100,7 @@ public class Cart implements Identifiable {
 
     public List<Ticket> getTickets() {
         if (tickets.isEmpty() && cartID > 0) {
-            tickets = controller.findTicketsByCartID(cartID);
+            tickets = applicationController.findTicketsByCartID(cartID);
         }
         return tickets;
     }
@@ -171,8 +171,8 @@ public class Cart implements Identifiable {
     public static Cart fromCsv(String csvLine) {
         String[] fields = csvLine.split(",");
         int cartID = Integer.parseInt(fields[0].trim());
-        Customer customer = controller.findCustomerByID(Integer.parseInt(fields[1].trim()));
-        Event event = controller.findEventByID(Integer.parseInt(fields[2].trim()));
+        Customer customer = applicationController.findCustomerByID(Integer.parseInt(fields[1].trim()));
+        Event event = applicationController.findEventByID(Integer.parseInt(fields[2].trim()));
         boolean isPaymentProcessed = Boolean.parseBoolean(fields[3].trim());
         double totalPrice = Double.parseDouble(fields[4].trim());
 

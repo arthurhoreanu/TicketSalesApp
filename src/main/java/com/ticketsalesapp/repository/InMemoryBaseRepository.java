@@ -13,15 +13,18 @@ public class InMemoryBaseRepository<T extends Identifiable> implements BaseRepos
 
     /**
      * Adds an object to the repository if it does not already exist.
+     *
      * @param obj The object to be added to the repository.
+     * @return
      */
     @Override
-    public void create(T obj) {
+    public boolean create(T obj) {
         if (obj.getID() == 0) {
             int newId = data.keySet().stream().max(Integer::compareTo).orElse(0) + 1;
             obj.setID(newId);
         }
         data.putIfAbsent(obj.getID(), obj);
+        return false;
     }
 
     /**
@@ -35,20 +38,26 @@ public class InMemoryBaseRepository<T extends Identifiable> implements BaseRepos
 
     /**
      * Updates an existing object in the repository.
+     *
      * @param obj The object to be updated in the repository.
+     * @return
      */
     @Override
-    public void update(T obj) {
+    public boolean update(T obj) {
         data.replace(obj.getID(), obj);
+        return false;
     }
 
     /**
      * Removes an object from the repository by its ID.
+     *
      * @param id The ID of the object to be removed.
+     * @return
      */
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         data.remove(id);
+        return false;
     }
 
     /**

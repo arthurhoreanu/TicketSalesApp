@@ -5,26 +5,36 @@ import main.java.com.ticketsalesapp.model.event.*;
 import main.java.com.ticketsalesapp.model.ticket.Cart;
 import main.java.com.ticketsalesapp.model.ticket.Ticket;
 import main.java.com.ticketsalesapp.model.ticket.TicketType;
+import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.user.User;
 import main.java.com.ticketsalesapp.model.venue.Row;
 import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Section;
 import main.java.com.ticketsalesapp.model.venue.Venue;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-public class Controller {
+/**
+ * Main application controller that serves as a facade for all specific controllers.
+ * This design was chosen because:
+ * - It provides a single point of access for the UI layer
+ * - Keeps the specific controllers focused on their domain
+ * - Makes it easy to maintain and extend functionality
+ */
+
+@Component
+public class ApplicationController {
     private final ArtistController artistController;
     private final AthleteController athleteController;
     private final VenueController venueController;
     private final TicketController ticketController;
     private final CartController cartController;
     private final CustomerController customerController;
-    private final EventController eventController;
-    private final UserController userController;
+    private final ConcertController concertController;
+    private final AdminController adminController;
 
     /**
      * Constructs a new Controller instance that manages various aspects of the application, including user accounts,
@@ -37,21 +47,21 @@ public class Controller {
      * @param ticketController The controller responsible for managing tickets.
      * @param cartController The controller responsible for managing shopping carts.
      * @param customerController The controller responsible for managing customers.
-     * @param eventController The controller responsible for managing events.
-     * @param userController The controller responsible for managing user accounts.
+     * @param concertController The controller responsible for managing events.
+     * @param adminController The controller responsible for managing user accounts.
      */
-    public Controller(ArtistController artistController, AthleteController athleteController,
-                     VenueController venueController, TicketController ticketController,
-                      CartController cartController, CustomerController customerController,
-                      EventController eventController, UserController userController) {
+    public ApplicationController(ArtistController artistController, AthleteController athleteController,
+                                 VenueController venueController, TicketController ticketController,
+                                 CartController cartController, CustomerController customerController,
+                                 ConcertController concertController, AdminController adminController) {
         this.artistController = artistController;
         this.athleteController = athleteController;
         this.venueController = venueController;
         this.ticketController = ticketController;
         this.cartController = cartController;
         this.customerController = customerController;
-        this.eventController = eventController;
-        this.userController = userController;
+        this.concertController = concertController;
+        this.adminController = adminController;
     }
 
     // 1. Artist
@@ -191,7 +201,7 @@ public class Controller {
     public List<String> getTicketAvailabilityByType(Event event) {
         return ticketController.getTicketAvailabilityByType(event);}
     public double getBasePriceForEvent(int eventId) {
-        return eventController.getBasePriceForEvent(eventId);}
+        return concertController.getBasePriceForEvent(eventId);}
     public List<Ticket> getAvailableTicketsByType(Event event, TicketType ticketType) {
         return ticketController.getAvailableTicketsByType(event, ticketType);}
     public List<Ticket> getTicketsByCustomer(Customer customer) {
@@ -216,71 +226,74 @@ public class Controller {
         cartController.processPayment(cart, cardNumber, cardholderName, expiryMonth, expiryYear, cvv);}
 
     // 6. Customer
-    public boolean addFavourite(FavouriteEntity item) {
-        return customerController.addFavourite(item);}
-    public boolean removeFavourite(FavouriteEntity item) {
-        return customerController.removeFavourite(item);}
-    public Set<FavouriteEntity> getFavourites() {
-        return customerController.getFavourites();}
-    public void setCurrentCustomer(Customer customer) {
-        customerController.setCurrentCustomer(customer);}
+    public void customerLogin(String username, String password) {
+        customerController.login(username, password);}
+    public void customerLogout() {
+        customerController.logout();}
+    public boolean createCustomer(String username, String email, String password) {
+        return customerController.createCustomer(username, email, password);}
     public Customer getCurrentCustomer() {
         return customerController.getCurrentCustomer();}
+    public Customer findCustomerById(int id) {
+        return customerController.findCustomerById(id);}
+    public void addFavourite(FavouriteEntity item) {
+        customerController.addFavourite(item);}
+    public void removeFavourite(FavouriteEntity item) {
+        customerController.removeFavourite(item);}
+    public Set<FavouriteEntity> getFavourites() {
+        return customerController.getFavourites();}
+
 
     // 7. Event
     public boolean addArtistToConcert(int eventId, int artistId) {
-        return eventController.addArtistToConcert(eventId, artistId);}
+        return concertController.addArtistToConcert(eventId, artistId);}
     public boolean addAthleteToSportsEvent(int eventId, int athleteId) {
-        return eventController.addAthleteToSportsEvent(eventId, athleteId);}
+        return concertController.addAthleteToSportsEvent(eventId, athleteId);}
     public Event findEventByID(int eventId) {
-        return eventController.findEventByID(eventId);}
+        return concertController.findEventByID(eventId);}
     public List<Event> getEventsByLocation(String locationOrVenueName) {
-        return eventController.getEventsByLocation(locationOrVenueName);}
+        return concertController.getEventsByLocation(locationOrVenueName);}
     public List<Event> getUpcomingEventsForArtist(int artistID) {
-        return eventController.getUpcomingEventsForArtist(artistID);}
+        return concertController.getUpcomingEventsForArtist(artistID);}
     public List<Event> getUpcomingEventsForAthlete(int athleteID) {
-        return eventController.getUpcomingEventsForAthlete(athleteID);}
+        return concertController.getUpcomingEventsForAthlete(athleteID);}
     public Concert createConcert(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        return eventController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
+        return concertController.createConcert(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
     public SportsEvent createSportsEvent(String eventName, String eventDescription, LocalDateTime startDateTime, LocalDateTime endDateTime, int venueID, EventStatus eventStatus) {
-        return eventController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
-    public boolean updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
-        return eventController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);}
-    public boolean deleteEvent(int eventId) {
-        return eventController.deleteEvent(eventId);}
+        return concertController.createSportsEvent(eventName, eventDescription, startDateTime, endDateTime, venueID, eventStatus);}
+    public void updateEvent(int eventId, String newName, String newDescription, LocalDateTime newStartDateTime, LocalDateTime newEndDateTime, EventStatus newStatus) {
+        concertController.updateEvent(eventId, newName, newDescription, newStartDateTime, newEndDateTime, newStatus);
+    }
+    public void deleteEvent(int eventId) {
+        concertController.deleteEvent(eventId);
+    }
     public List<Event> getAllEvents() {
-        return eventController.getAllEvents();}
+        return concertController.getAllEvents();}
     public Concert findConcertByID(int concertID) {
-        return eventController.findConcertByID(concertID);}
+        return concertController.findConcertByID(concertID);}
     public SportsEvent findSportsEventByID(int sportsEventID) {
-        return eventController.findSportsEventByID(sportsEventID);}
-    public boolean removeArtistFromConcert(int eventID, int artistID) {
-        return eventController.removeArtistFromConcert(eventID, artistID);}
-    public boolean removeAthleteFromSportsEvent(int eventID, int athleteID) {
-        return eventController.removeAthleteFromSportsEvent(eventID, athleteID);}
+        return concertController.findSportsEventByID(sportsEventID);}
+    public void removeArtistFromConcert(int eventID, int artistID) {
+        concertController.removeArtistFromConcert(eventID, artistID);
+    }
+    public void removeAthleteFromSportsEvent(int eventID, int athleteID) {
+        concertController.removeAthleteFromSportsEvent(eventID, athleteID);
+    }
     public List<Artist> getArtistsByConcert(int concertID) {
-        return eventController.getArtistsByConcert(concertID);}
+        return concertController.getArtistsByConcert(concertID);}
     public List<Athlete> getAthletesBySportsEvent(int sportsEventID) {
-        return eventController.getAthletesBySportsEvent(sportsEventID);}
+        return concertController.getAthletesBySportsEvent(sportsEventID);}
 
-    // 8. User
-    public Customer findCustomerByID(int customerID) {
-        return userController.findCustomerByID(customerID);}
-    public User getCurrentUser() {
-        return userController.getCurrentUser();}
-    public List<User> getAllUsers() {
-        return userController.getAllUsers();}
-    public boolean isUsernameTaken(String username) {
-        return userController.isUsernameTaken(username);}
-    public boolean domainEmail(String email) {
-        return userController.domainEmail(email);}
-    public boolean createAccount(String role, String username, String email, String password) {
-        return userController.createAccount(role, username, email, password);}
-    public boolean login(String username, String password) {
-        return userController.login(username, password);}
-    public boolean logout() {
-        return userController.logout();}
-    public boolean deleteAccount(int id) {
-        return userController.deleteAccount(id);}
+    // 8. Admin
+    public boolean adminLogin(String username, String password) {
+        return adminController.login(username, password);}
+    public boolean adminLogout() {
+        return adminController.logout();}
+    public boolean createAdmin(String username, String email, String password) {
+        return adminController.createAdmin(username, email, password);}
+    public Admin getCurrentAdmin() {
+        return adminController.getCurrentAdmin();}
+    public Admin findAdminById(int id) {
+        return adminController.findAdminById(id);}
 
 }

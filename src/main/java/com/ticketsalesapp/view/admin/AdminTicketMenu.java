@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Event;
@@ -20,9 +20,9 @@ public class AdminTicketMenu {
      * Displays the Ticket Management menu to the admin and handles menu selection.
      *
      * @param scanner    The {@code Scanner} object used to read user input.
-     * @param controller The {@code Controller} object used to perform operations on tickets and events.
+     * @param applicationController The {@code Controller} object used to perform operations on tickets and events.
      */
-    public static void display(Scanner scanner, Controller controller) {
+    public static void display(Scanner scanner, ApplicationController applicationController) {
         boolean inTicketMenu = true;
         while (inTicketMenu) {
             try {
@@ -39,16 +39,16 @@ public class AdminTicketMenu {
 
                 switch (choice) {
                     case "1":
-                        handleGenerateTickets(scanner, controller);
+                        handleGenerateTickets(scanner, applicationController);
                         break;
                     case "2":
-                        handleViewTicketsForEvent(scanner, controller);
+                        handleViewTicketsForEvent(scanner, applicationController);
                         break;
                     case "3":
-                        handleDeleteTicket(scanner, controller);
+                        handleDeleteTicket(scanner, applicationController);
                         break;
                     case "4":
-                        handleViewTicketDetails(scanner, controller);
+                        handleViewTicketDetails(scanner, applicationController);
                         break;
                     case "0":
                         inTicketMenu = false;
@@ -66,12 +66,12 @@ public class AdminTicketMenu {
     /**
      * Allows the admin to generate tickets for a specific event.
      */
-    private static void handleGenerateTickets(Scanner scanner, Controller controller) {
+    private static void handleGenerateTickets(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Generate Tickets for Event ===");
-            Event event = selectEvent(scanner, controller);
+            Event event = selectEvent(scanner, applicationController);
             if (event == null) return;
-            Venue venue = controller.findVenueByID(event.getVenueID());
+            Venue venue = applicationController.findVenueByID(event.getVenueID());
             if (venue == null) {
                 throw new EntityNotFoundException("Venue with ID " + event.getVenueID() + " not found.");
             }
@@ -84,7 +84,7 @@ public class AdminTicketMenu {
             System.out.print("Enter Number of STANDARD Tickets to Generate: ");
             int standardCount = Integer.parseInt(scanner.nextLine());
             try {
-                List<Ticket> generatedTickets = controller.generateTicketsForEvent(event, basePrice, earlyBirdCount, vipCount, standardCount);
+                List<Ticket> generatedTickets = applicationController.generateTicketsForEvent(event, basePrice, earlyBirdCount, vipCount, standardCount);
                 System.out.println(generatedTickets.size() + " tickets generated successfully.");
             } catch (IllegalArgumentException e) {
                 System.out.println("Error: " + e.getMessage());
@@ -97,12 +97,12 @@ public class AdminTicketMenu {
     /**
      * Displays all tickets for a specific event.
      */
-    private static void handleViewTicketsForEvent(Scanner scanner, Controller controller) {
+    private static void handleViewTicketsForEvent(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== View Tickets for Event ===");
-            Event event = selectEvent(scanner, controller);
+            Event event = selectEvent(scanner, applicationController);
             if (event == null) return;
-            List<Ticket> tickets = controller.getTicketsByEvent(event);
+            List<Ticket> tickets = applicationController.getTicketsByEvent(event);
             if (tickets.isEmpty()) {
                 throw new EntityNotFoundException("Ticket not found for this event.");
             } else {
@@ -122,14 +122,14 @@ public class AdminTicketMenu {
     /**
      * Allows the admin to delete a specific ticket by its ID.
      */
-    private static void handleDeleteTicket(Scanner scanner, Controller controller) {
+    private static void handleDeleteTicket(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Delete Ticket by ID ===");
             System.out.print("Enter Ticket ID: ");
             int ticketID = Integer.parseInt(scanner.nextLine());
             if (ticketID <= 0)
                 throw new ValidationException("Ticket ID must be a positive integer.");
-            controller.deleteTicket(ticketID);
+            applicationController.deleteTicket(ticketID);
             System.out.println("Ticket deleted successfully.");
         } catch (ValidationException e) {
             System.out.println("Error: " + e.getMessage());
@@ -139,14 +139,14 @@ public class AdminTicketMenu {
     /**
      * Allows the admin to view the details of a specific ticket by its ID.
      */
-    private static void handleViewTicketDetails(Scanner scanner, Controller controller) {
+    private static void handleViewTicketDetails(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== View Ticket Details by ID ===");
             System.out.print("Enter Ticket ID: ");
             int ticketID = Integer.parseInt(scanner.nextLine());
             if (ticketID <= 0)
                 throw new ValidationException("Ticket ID must be a positive integer.");
-            Ticket ticket = controller.findTicketByID(ticketID);
+            Ticket ticket = applicationController.findTicketByID(ticketID);
             if (ticket != null) {
                 System.out.println("Ticket Details: ");
                 System.out.println(ticket);
@@ -162,12 +162,12 @@ public class AdminTicketMenu {
      * Helper method to select an event from the available events.
      *
      * @param scanner    The {@code Scanner} object used to read user input.
-     * @param controller The {@code Controller} object used to retrieve event data.
+     * @param applicationController The {@code Controller} object used to retrieve event data.
      * @return The selected Event, or null if invalid.
      */
-    private static Event selectEvent(Scanner scanner, Controller controller) {
+    private static Event selectEvent(Scanner scanner, ApplicationController applicationController) {
         try {
-            List<Event> events = controller.getAllEvents();
+            List<Event> events = applicationController.getAllEvents();
             if (events.isEmpty()) {
                 throw new EntityNotFoundException("No events found.");
             }
@@ -179,7 +179,7 @@ public class AdminTicketMenu {
             int eventID = Integer.parseInt(scanner.nextLine());
             if (eventID <= 0)
                 throw new ValidationException("Event ID must be greater than 0.");
-            Event event = controller.findEventByID(eventID);
+            Event event = applicationController.findEventByID(eventID);
             if (event == null) {
                 throw new EntityNotFoundException("No event found with the given ID.");
             }

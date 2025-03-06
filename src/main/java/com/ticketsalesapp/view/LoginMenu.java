@@ -1,13 +1,13 @@
 package main.java.com.ticketsalesapp.view;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 
 import java.util.Scanner;
 
 public class LoginMenu {
 
-    public static boolean display(Scanner scanner, Controller controller) {
+    public static boolean display(Scanner scanner, ApplicationController applicationController) {
         System.out.println("==== Main Menu ====");
         System.out.println("1. Create Account");
         System.out.println("2. Login");
@@ -20,10 +20,10 @@ public class LoginMenu {
         try {
             switch (choice) {
                 case "1":
-                    AccountAction.handleCreateAccount(scanner, controller);
+                    AccountAction.handleCreateAccount(scanner, applicationController);
                     break;
                 case "2":
-                    AccountAction.handleLogin(scanner, controller);
+                    AccountAction.handleLogin(scanner, applicationController);
                     break;
                 case "0":
                     System.out.println("Exiting the application. Goodbye!");

@@ -31,7 +31,7 @@ public class ApplicationTest {
     private static ArtistService artistService;
     private static AthleteService athleteService;
     private static VenueService venueService;
-    private static EventService eventService;
+    private static ConcertService concertService;
     private static TicketService ticketService;
     private static CartService cartService;
     private static CustomerService customerService;
@@ -41,12 +41,12 @@ public class ApplicationTest {
     private static ArtistController artistController;
     private static AthleteController athleteController;
     private static VenueController venueController;
-    private static EventController eventController;
+    private static ConcertController concertController;
     private static TicketController ticketController;
     private static CartController cartController;
     private static CustomerController customerController;
-    private static UserController userController;
-    private static Controller controller;
+    private static AdminController adminController;
+    private static ApplicationController applicationController;
 
     /**
      * Sets up dependencies before each test.
@@ -60,7 +60,7 @@ public class ApplicationTest {
         artistService = new ArtistService(repositoryFactory);
         athleteService = new AthleteService(repositoryFactory);
         venueService = new VenueService(repositoryFactory, repositoryFactory, repositoryFactory, repositoryFactory);
-        eventService = new EventService(repositoryFactory, repositoryFactory, repositoryFactory, venueService,
+        concertService = new ConcertService(repositoryFactory, repositoryFactory, repositoryFactory, venueService,
                 artistService, athleteService);
         ticketService = new TicketService(repositoryFactory, venueService);
         cartService = new CartService(repositoryFactory);
@@ -71,14 +71,14 @@ public class ApplicationTest {
         artistController = new ArtistController(artistService);
         athleteController = new AthleteController(athleteService);
         venueController = new VenueController(venueService);
-        eventController = new EventController(eventService);
+        concertController = new ConcertController(concertService);
         ticketController = new TicketController(ticketService);
         cartController = new CartController(cartService);
         customerController = new CustomerController(customerService);
-        userController = new UserController(adminService);
-        Controller mockController = new Controller(artistController, athleteController, venueController, ticketController,
-                cartController, customerController, eventController, userController);
-        ControllerProvider.initializeController(mockController);
+        adminController = new AdminController(adminService);
+        ApplicationController mockApplicationController = new ApplicationController(artistController, athleteController, venueController, ticketController,
+                cartController, customerController, concertController, adminController);
+        ControllerProvider.initializeController(mockApplicationController);
     }
 
     /**
@@ -226,31 +226,31 @@ public class ApplicationTest {
         // 2. CREATE EVENTS
         LocalDateTime startDateTimeConcert = LocalDateTime.of(2024, 5, 15, 20, 0);
         LocalDateTime endDateTimeConcert = LocalDateTime.of(2024, 5, 15, 23, 0);
-        Concert concert = eventService.createConcert("Rock Night", "An amazing rock concert",
+        Concert concert = concertService.createConcert("Rock Night", "An amazing rock concert",
                 startDateTimeConcert, endDateTimeConcert, venue.getID(), EventStatus.SCHEDULED);
 
         LocalDateTime startDateTimeSports = LocalDateTime.of(2024, 6, 20, 18, 0);
         LocalDateTime endDateTimeSports = LocalDateTime.of(2024, 6, 20, 21, 0);
-        SportsEvent sportsEvent = eventService.createSportsEvent("Basketball Finals", "The championship game",
+        SportsEvent sportsEvent = concertService.createSportsEvent("Basketball Finals", "The championship game",
                 startDateTimeSports, endDateTimeSports, venue.getID(), EventStatus.SCHEDULED);
 
         assertNotNull(concert, "Concert should be created.");
         assertNotNull(sportsEvent, "Sports event should be created.");
-        assertEquals(2, eventService.getAllEvents().size(), "Two events should be created.");
+        assertEquals(2, concertService.getAllEvents().size(), "Two events should be created.");
 
         // 3. READ
-        Concert retrievedConcert = eventService.findConcertByID(concert.getID());
-        SportsEvent retrievedSportsEvent = eventService.findSportsEventByID(sportsEvent.getID());
+        Concert retrievedConcert = concertService.findConcertByID(concert.getID());
+        SportsEvent retrievedSportsEvent = concertService.findSportsEventByID(sportsEvent.getID());
         assertNotNull(retrievedConcert, "Concert should be retrievable.");
         assertNotNull(retrievedSportsEvent, "Sports Event should be retrievable.");
         assertEquals("Rock Night", retrievedConcert.getEventName(), "Concert name should match.");
         assertEquals("Basketball Finals", retrievedSportsEvent.getEventName(), "Sports Event name should match.");
 
         // 4. UPDATE
-        eventService.updateEvent(concert.getID(), "Rock Night Updated", "A rock concert to remember",
+        concertService.updateEvent(concert.getID(), "Rock Night Updated", "A rock concert to remember",
                 startDateTimeConcert.plusDays(1), endDateTimeConcert.plusDays(1), EventStatus.CANCELLED);
 
-        Concert updatedConcert = eventService.findConcertByID(concert.getID());
+        Concert updatedConcert = concertService.findConcertByID(concert.getID());
         assertNotNull(updatedConcert, "Updated concert should still exist.");
         assertEquals("Rock Night Updated", updatedConcert.getEventName(), "Updated concert name should match.");
         assertEquals(EventStatus.CANCELLED, updatedConcert.getEventStatus(), "Updated concert status should match.");
@@ -259,8 +259,8 @@ public class ApplicationTest {
         assertTrue(artistService.createArtist("The Rolling Stones", "Rock"), "Artist should be created.");
         Artist artist = artistService.findArtistByID(1);
         assertNotNull(artist, "Artist should be retrievable.");
-        assertTrue(eventService.addArtistToConcert(concert.getID(), artist.getID()), "Artist should be added to concert.");
-        List<Artist> concertArtists = eventService.getArtistsByConcert(concert.getID());
+        assertTrue(concertService.addArtistToConcert(concert.getID(), artist.getID()), "Artist should be added to concert.");
+        List<Artist> concertArtists = concertService.getArtistsByConcert(concert.getID());
         assertEquals(1, concertArtists.size(), "Concert should have one artist.");
         assertEquals("The Rolling Stones", concertArtists.get(0).getArtistName(), "Artist name should match.");
 
@@ -268,15 +268,15 @@ public class ApplicationTest {
         assertTrue(athleteService.createAthlete("LeBron James", "Basketball"), "Athlete should be created.");
         Athlete athlete = athleteService.findAthleteByID(1);
         assertNotNull(athlete, "Athlete should be retrievable.");
-        assertTrue(eventService.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID()), "Athlete should be added to sports event.");
-        List<Athlete> sportsEventAthletes = eventService.getAthletesBySportsEvent(sportsEvent.getID());
+        assertTrue(concertService.addAthleteToSportsEvent(sportsEvent.getID(), athlete.getID()), "Athlete should be added to sports event.");
+        List<Athlete> sportsEventAthletes = concertService.getAthletesBySportsEvent(sportsEvent.getID());
         assertEquals(1, sportsEventAthletes.size(), "Sports event should have one athlete.");
         assertEquals("LeBron James", sportsEventAthletes.get(0).getAthleteName(), "Athlete name should match.");
 
         // 7. DELETE
-        assertTrue(eventService.deleteEvent(concert.getID()), "Concert should be deleted.");
-        assertTrue(eventService.deleteEvent(sportsEvent.getID()), "Sports event should be deleted.");
-        assertEquals(0, eventService.getAllEvents().size(), "No events should remain after deletion.");
+        assertTrue(concertService.deleteEvent(concert.getID()), "Concert should be deleted.");
+        assertTrue(concertService.deleteEvent(sportsEvent.getID()), "Sports event should be deleted.");
+        assertEquals(0, concertService.getAllEvents().size(), "No events should remain after deletion.");
     }
 
     /**
@@ -304,12 +304,12 @@ public class ApplicationTest {
         // 3. CREATE EVENTS
         LocalDateTime startDateTimeWithSeats = LocalDateTime.of(2024, 8, 10, 20, 0);
         LocalDateTime endDateTimeWithSeats = LocalDateTime.of(2024, 8, 10, 23, 0);
-        Concert concertWithSeats = eventService.createConcert("Orchestra Night", "A night of symphonies",
+        Concert concertWithSeats = concertService.createConcert("Orchestra Night", "A night of symphonies",
                 startDateTimeWithSeats, endDateTimeWithSeats, venueWithSeats.getID(), EventStatus.SCHEDULED);
 
         LocalDateTime startDateTimeWithoutSeats = LocalDateTime.of(2024, 9, 5, 18, 0);
         LocalDateTime endDateTimeWithoutSeats = LocalDateTime.of(2024, 9, 5, 21, 0);
-        Concert concertWithoutSeats = eventService.createConcert("Open Air Festival", "An amazing music festival",
+        Concert concertWithoutSeats = concertService.createConcert("Open Air Festival", "An amazing music festival",
                 startDateTimeWithoutSeats, endDateTimeWithoutSeats, venueWithoutSeats.getID(), EventStatus.SCHEDULED);
 
         assertNotNull(concertWithSeats, "Concert with seats should be created.");
@@ -381,12 +381,12 @@ public class ApplicationTest {
         // Create events
         LocalDateTime startDateTimeWithSeats = LocalDateTime.of(2024, 8, 10, 20, 0);
         LocalDateTime endDateTimeWithSeats = LocalDateTime.of(2024, 8, 10, 23, 0);
-        Concert concertWithSeats = eventService.createConcert("Classical Night", "A night of classical music",
+        Concert concertWithSeats = concertService.createConcert("Classical Night", "A night of classical music",
                 startDateTimeWithSeats, endDateTimeWithSeats, venueWithSeats.getID(), EventStatus.SCHEDULED);
 
         LocalDateTime startDateTimeWithoutSeats = LocalDateTime.of(2024, 9, 5, 18, 0);
         LocalDateTime endDateTimeWithoutSeats = LocalDateTime.of(2024, 9, 5, 21, 0);
-        Concert concertWithoutSeats = eventService.createConcert("Open Air Festival", "An amazing music festival",
+        Concert concertWithoutSeats = concertService.createConcert("Open Air Festival", "An amazing music festival",
                 startDateTimeWithoutSeats, endDateTimeWithoutSeats, venueWithoutSeats.getID(), EventStatus.SCHEDULED);
 
         assertNotNull(concertWithSeats, "Concert with seats should be created.");
@@ -475,37 +475,37 @@ public class ApplicationTest {
         LocalDateTime date3 = LocalDateTime.now().plusDays(30);
         LocalDateTime date4 = LocalDateTime.now().plusDays(40);
 
-        Concert concert1 = eventService.createConcert("Coldplay Live", "Pop concert", date1, date2, venue1.getID(), EventStatus.SCHEDULED);
-        eventService.addArtistToConcert(concert1.getID(), artist.getID());
-        Concert concert2 = eventService.createConcert("Adele's Show", "Exclusive concert", date3, date4, venue2.getID(), EventStatus.SCHEDULED);
-        eventService.addArtistToConcert(concert2.getID(), secondArtist.getID());
+        Concert concert1 = concertService.createConcert("Coldplay Live", "Pop concert", date1, date2, venue1.getID(), EventStatus.SCHEDULED);
+        concertService.addArtistToConcert(concert1.getID(), artist.getID());
+        Concert concert2 = concertService.createConcert("Adele's Show", "Exclusive concert", date3, date4, venue2.getID(), EventStatus.SCHEDULED);
+        concertService.addArtistToConcert(concert2.getID(), secondArtist.getID());
 
-        SportsEvent sportsEvent1 = eventService.createSportsEvent("Basketball Finals", "Exciting game", date1, date2, venue1.getID(), EventStatus.SCHEDULED);
-        eventService.addAthleteToSportsEvent(sportsEvent1.getID(), athlete.getID());
-        SportsEvent sportsEvent2 = eventService.createSportsEvent("Soccer Match", "Intense competition", date3, date4, venue2.getID(), EventStatus.SCHEDULED);
-        eventService.addAthleteToSportsEvent(sportsEvent2.getID(), secondArtist.getID());
+        SportsEvent sportsEvent1 = concertService.createSportsEvent("Basketball Finals", "Exciting game", date1, date2, venue1.getID(), EventStatus.SCHEDULED);
+        concertService.addAthleteToSportsEvent(sportsEvent1.getID(), athlete.getID());
+        SportsEvent sportsEvent2 = concertService.createSportsEvent("Soccer Match", "Intense competition", date3, date4, venue2.getID(), EventStatus.SCHEDULED);
+        concertService.addAthleteToSportsEvent(sportsEvent2.getID(), secondArtist.getID());
 
         // 5. SUGGEST EVENTS BASED ON FAVORITES
 
         // Add events for favorite artists
-        List<Event> suggestedEvents = new ArrayList<>(eventService.getUpcomingEventsForArtist(artist.getID()));
+        List<Event> suggestedEvents = new ArrayList<>(concertService.getUpcomingEventsForArtist(artist.getID()));
 
         // Add related events for same genre
         List<Artist> relatedArtists = artistService.findArtistsByGenre(artist.getGenre());
         for (Artist relatedArtist : relatedArtists) {
             if (!relatedArtist.equals(artist)) {
-                suggestedEvents.addAll(eventService.getUpcomingEventsForArtist(relatedArtist.getID()));
+                suggestedEvents.addAll(concertService.getUpcomingEventsForArtist(relatedArtist.getID()));
             }
         }
 
         // Add events for favorite athletes
-        suggestedEvents.addAll(eventService.getUpcomingEventsForAthlete(athlete.getID()));
+        suggestedEvents.addAll(concertService.getUpcomingEventsForAthlete(athlete.getID()));
 
         // Add related events for same sport
         List<Athlete> relatedAthletes = athleteService.findAthletesBySport(athlete.getAthleteSport());
         for (Athlete relatedAthlete : relatedAthletes) {
             if (!relatedAthlete.equals(athlete)) {
-                suggestedEvents.addAll(eventService.getUpcomingEventsForAthlete(relatedAthlete.getID()));
+                suggestedEvents.addAll(concertService.getUpcomingEventsForAthlete(relatedAthlete.getID()));
             }
         }
 
@@ -541,9 +541,9 @@ public class ApplicationTest {
             List<Event> suggestedEvents = new ArrayList<>();
             for (FavouriteEntity favourite : favourites) {
                 if (favourite instanceof Artist artist) {
-                    suggestedEvents.addAll(eventService.getUpcomingEventsForArtist(artist.getID()));
+                    suggestedEvents.addAll(concertService.getUpcomingEventsForArtist(artist.getID()));
                 } else if (favourite instanceof Athlete athlete) {
-                    suggestedEvents.addAll(eventService.getUpcomingEventsForAthlete(athlete.getID()));
+                    suggestedEvents.addAll(concertService.getUpcomingEventsForAthlete(athlete.getID()));
                 }
             }
 

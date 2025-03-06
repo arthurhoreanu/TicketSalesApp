@@ -1,6 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.Controller;
+import main.java.com.ticketsalesapp.controller.ApplicationController;
 import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.venue.Row;
@@ -19,7 +19,7 @@ public class AdminVenueMenu {
     /**
      * Displays the Venue Management menu to the admin and handles menu selection.
      */
-    public static void display(Scanner scanner, Controller controller) {
+    public static void display(Scanner scanner, ApplicationController applicationController) {
         boolean inVenueMenu = true;
         while (inVenueMenu) {
             try {
@@ -36,22 +36,22 @@ public class AdminVenueMenu {
                 String choice = scanner.nextLine();
                 switch (choice) {
                     case "1":
-                        handleAddVenue(scanner, controller);
+                        handleAddVenue(scanner, applicationController);
                         break;
                     case "2":
-                        handleViewVenues(controller);
+                        handleViewVenues(applicationController);
                         break;
                     case "3":
-                        handleAddSectionToVenue(scanner, controller);
+                        handleAddSectionToVenue(scanner, applicationController);
                         break;
                     case "4":
-                        handleAddRowsAndSeatsToSection(scanner, controller);
+                        handleAddRowsAndSeatsToSection(scanner, applicationController);
                         break;
                     case "5":
-                        handleViewFullVenueStructure(scanner, controller);
+                        handleViewFullVenueStructure(scanner, applicationController);
                         break;
                     case "6":
-                        handleDeleteVenue(scanner, controller);
+                        handleDeleteVenue(scanner, applicationController);
                         break;
                     case "0":
                         inVenueMenu = false;
@@ -69,7 +69,7 @@ public class AdminVenueMenu {
     /**
      * Handles adding a new venue.
      */
-    private static void handleAddVenue(Scanner scanner, Controller controller) {
+    private static void handleAddVenue(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Add Venue ===");
             System.out.print("Enter venue name: ");
@@ -89,7 +89,7 @@ public class AdminVenueMenu {
             }
             System.out.print("Does the venue have seats (true/false)? ");
             boolean hasSeats = Boolean.parseBoolean(scanner.nextLine());
-            controller.createVenue(name, location, capacity, hasSeats);
+            applicationController.createVenue(name, location, capacity, hasSeats);
         } catch (ValidationException e) {
             System.out.println(e.getMessage());
         }
@@ -98,9 +98,9 @@ public class AdminVenueMenu {
     /**
      * Displays all venues.
      */
-    private static void handleViewVenues(Controller controller) {
+    private static void handleViewVenues(ApplicationController applicationController) {
         System.out.println("=== View Venues ===");
-        List<Venue> venues = controller.getAllVenues();
+        List<Venue> venues = applicationController.getAllVenues();
         if (venues.isEmpty()) {
             System.out.println("No venues available.");
         } else {
@@ -116,16 +116,16 @@ public class AdminVenueMenu {
     /**
      * Handles adding a section to a venue.
      */
-    private static void handleAddSectionToVenue(Scanner scanner, Controller controller) {
+    private static void handleAddSectionToVenue(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Add Section to Venue ===");
-            handleViewVenues(controller);
+            handleViewVenues(applicationController);
             System.out.print("Enter Venue ID: ");
             int venueID = Integer.parseInt(scanner.nextLine());
             if (venueID <= 0) {
                 throw new ValidationException("Venue ID cannot be zero or negative.");
             }
-            Venue venue = controller.findVenueByID(venueID);
+            Venue venue = applicationController.findVenueByID(venueID);
             if (venue == null) {
                 throw new EntityNotFoundException("Venue with ID " + venueID + " not found.");
             }
@@ -144,7 +144,7 @@ public class AdminVenueMenu {
             if (sectionNamePrefix.trim().isEmpty()) {
                 throw new ValidationException("Section name prefix cannot be empty.");
             }
-            controller.addSectionToVenue(venueID, numberOfSections, sectionCapacity, sectionNamePrefix);
+            applicationController.addSectionToVenue(venueID, numberOfSections, sectionCapacity, sectionNamePrefix);
             System.out.println("Sections added successfully.");
         } catch (ValidationException | EntityNotFoundException e) {
             System.out.println(e.getMessage());
@@ -154,20 +154,20 @@ public class AdminVenueMenu {
     /**
      * Handles adding rows and seats to a section.
      */
-    private static void handleAddRowsAndSeatsToSection(Scanner scanner, Controller controller) {
+    private static void handleAddRowsAndSeatsToSection(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Add Rows and Seats ===");
-            handleViewVenues(controller);
+            handleViewVenues(applicationController);
             System.out.print("Enter Venue ID: ");
             int venueID = Integer.parseInt(scanner.nextLine());
             if (venueID <= 0) {
                 throw new ValidationException("Venue ID cannot be zero or negative.");
             }
-            Venue venue = controller.findVenueByID(venueID);
+            Venue venue = applicationController.findVenueByID(venueID);
             if (venue == null) {
                 throw new EntityNotFoundException("Venue not found.");
             }
-            List<Section> sections = controller.getSectionsByVenueID(venueID);
+            List<Section> sections = applicationController.getSectionsByVenueID(venueID);
             if (sections.isEmpty()) {
                 return;
             }
@@ -176,7 +176,7 @@ public class AdminVenueMenu {
             if (sectionID <= 0) {
                 throw new ValidationException("Section ID cannot be zero or negative.");
             }
-            Section section = controller.findSectionByID(sectionID);
+            Section section = applicationController.findSectionByID(sectionID);
             if (section == null) {
                 throw new EntityNotFoundException("Section not found.");
             }
@@ -191,8 +191,8 @@ public class AdminVenueMenu {
                 throw new ValidationException("Number of seats per row cannot be zero or negative.");
             }
             for (int i = 0; i < numberOfRows; i++) {
-                Row row = controller.createRow(section, seatsPerRow);
-                controller.addSeatsToRow(row.getID(), seatsPerRow);
+                Row row = applicationController.createRow(section, seatsPerRow);
+                applicationController.addSeatsToRow(row.getID(), seatsPerRow);
             }
             System.out.println("Rows and seats added successfully to section: " + section.getSectionName());
         } catch (ValidationException | EntityNotFoundException e) {
@@ -203,24 +203,24 @@ public class AdminVenueMenu {
     /**
      * Displays the full structure of a venue.
      */
-    private static void handleViewFullVenueStructure(Scanner scanner, Controller controller) {
+    private static void handleViewFullVenueStructure(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== View Full Venue Structure ===");
             // Display all venues
-            handleViewVenues(controller);
+            handleViewVenues(applicationController);
 
             // Prompt user to select a venue by ID
             System.out.print("Enter Venue ID: ");
             int venueId = Integer.parseInt(scanner.nextLine());
 
             // Find the selected venue
-            Venue venue = controller.findVenueByID(venueId);
+            Venue venue = applicationController.findVenueByID(venueId);
             if (venue == null) {
                 throw new EntityNotFoundException("Venue not found.");
             }
 
             // Load sections for the venue to ensure proper relationship
-            controller.loadSectionsForVenue(venue);
+            applicationController.loadSectionsForVenue(venue);
 
             // Display the venue details
             System.out.println("Venue: " + venue.getVenueName() + " (Location: " + venue.getLocation() + ")");
@@ -234,7 +234,7 @@ public class AdminVenueMenu {
                 System.out.println("  Section: " + section.getSectionName() + " (Capacity: " + section.getSectionCapacity() + ")");
 
                 // Fetch rows dynamically for the section
-                List<Row> rows = controller.findRowsBySection(section.getID());
+                List<Row> rows = applicationController.findRowsBySection(section.getID());
                 if (rows.isEmpty()) {
                     System.out.println("    No rows found in this section.");
                     continue;
@@ -244,7 +244,7 @@ public class AdminVenueMenu {
                     System.out.println("    Row: " + row.getID() + " (Seats: " + row.getSeats().size() + ")");
 
                     // Fetch seats dynamically for the row
-                    List<Seat> seats = controller.getSeatsByRow(row.getID());
+                    List<Seat> seats = applicationController.getSeatsByRow(row.getID());
                     if (seats.isEmpty()) {
                         System.out.println("      No seats found in this row.");
                     } else {
@@ -263,16 +263,16 @@ public class AdminVenueMenu {
     /**
      * Handles the deletion of a venue and all its associated components.
      */
-    private static void handleDeleteVenue(Scanner scanner, Controller controller) {
+    private static void handleDeleteVenue(Scanner scanner, ApplicationController applicationController) {
         try {
             System.out.println("=== Delete Venue ===");
-            handleViewVenues(controller);
+            handleViewVenues(applicationController);
             System.out.print("Enter Venue ID to delete: ");
             int venueId = Integer.parseInt(scanner.nextLine());
             if (venueId <= 0) {
                 throw new ValidationException("Venue ID cannot be zero or negative.");
             }
-            Venue venue = controller.findVenueByID(venueId);
+            Venue venue = applicationController.findVenueByID(venueId);
             if (venue == null) {
                 throw new EntityNotFoundException("Venue not found.");
             }
@@ -281,7 +281,7 @@ public class AdminVenueMenu {
             String confirmation = scanner.nextLine();
 
             if (confirmation.equalsIgnoreCase("yes")) {
-                boolean deleted = controller.deleteVenue(venueId);
+                boolean deleted = applicationController.deleteVenue(venueId);
                 if (deleted) {
                     System.out.println("Venue and all its components were successfully deleted.");
                 } else {

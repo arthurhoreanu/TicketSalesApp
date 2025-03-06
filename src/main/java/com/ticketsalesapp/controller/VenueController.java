@@ -8,12 +8,14 @@ import main.java.com.ticketsalesapp.model.venue.Seat;
 import main.java.com.ticketsalesapp.model.venue.Section;
 import main.java.com.ticketsalesapp.model.venue.Venue;
 import main.java.com.ticketsalesapp.service.VenueService;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * Controller for managing venue-related operations.
  */
+@Component
 public class VenueController {
     private final VenueService venueService;
 
