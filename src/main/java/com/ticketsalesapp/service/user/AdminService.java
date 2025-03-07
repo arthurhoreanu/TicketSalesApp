@@ -21,41 +21,59 @@ public class AdminService {
         this.userSession = userSession;
     }
 
-    public boolean login(String username, String password) {
-        var user = adminRepository.getAll().stream()
-                .filter(a -> a.getUsername().equals(username) && a.getPassword().equals(password))
-                .findFirst();
-        if (user.isPresent()) {
-            userSession.setCurrentUser(user.get());
-            return true;
-        }
-        return false;
-    }
-
-    public void logout() {
-        userSession.logout();
-    }
-
     public void createAdmin(String username, String email, String password) {
-        if (adminRepository.getAll().stream().anyMatch(a -> a.getUsername().equals(username))) {
-            throw new ValidationException("Username already taken");
+        if (usernameExists(username)) {
+            throw new ValidationException("Username already taken.");
         }
-        if (!domainEmail("@tsc.com")) {
-            throw new ValidationException("Invalid email domain");
+        if (!domainEmail(email)) {
+            throw new ValidationException("Invalid email domain.");
         }
         Admin admin = new Admin(generateNewId(), username, email, password);
         adminRepository.create(admin);
     }
+
+    public boolean usernameExists(String username) {
+        return adminRepository.getAll().stream().anyMatch(a -> a.getUsername().equals(username));
+    }
+
+    public boolean domainEmail(String email) {
+        return email.endsWith("@tsc.com");
+    }
+
+    public Admin login(String username, String password) throws BusinessLogicException {
+        if (username == null || username.trim().isEmpty()) {
+            throw new BusinessLogicException("Username cannot be empty");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new BusinessLogicException("Password cannot be empty");
+        }
+
+        Admin admin = adminRepository.getAll().stream()
+                .filter(a -> a.getUsername().equals(username) && a.getPassword().equals(password))
+                .findFirst()
+                .orElseThrow(() -> new BusinessLogicException("Invalid credentials"));
+
+        userSession.setCurrentUser(admin);
+        return admin;
+    }
+
+    public void logout() throws BusinessLogicException {
+        if (userSession.getCurrentUser().isEmpty()) {
+            throw new BusinessLogicException("No user is currently logged in");
+        }
+        userSession.logout();
+    }
+
+
+
+
+
 
     private int generateNewId() {
         return adminRepository.getAll().stream()
                 .mapToInt(Admin::getID)
                 .max()
                 .orElse(0) + 1;
-    }
-
-    private boolean domainEmail(String email) {
-        return email.endsWith("@tsc.com");
     }
 
     public Admin findAdminById(int id) {
@@ -74,11 +92,4 @@ public class AdminService {
         return adminRepository.getAll();
     }
 
-    public Admin findByUsernameAndPassword(String username, String password)
-        throws BusinessLogicException {
-        return adminRepository.getAll().stream()
-            .filter(a -> a.getUsername().equals(username) && a.getPassword().equals(password))
-            .findFirst()
-            .orElseThrow(() -> new BusinessLogicException("Admin not found"));
-        }
 }

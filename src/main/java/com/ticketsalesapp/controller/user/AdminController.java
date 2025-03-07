@@ -14,27 +14,39 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    public void login(String username, String password) {
-        if (adminService.login(username, password)) {
-            System.out.println("✅ Admin logged in successfully.");
-        } else {
-            System.out.println("❌ Invalid credentials.");
-        }
-    }
-
-    public void logout() {
-        adminService.logout();
-        System.out.println("✅ Admin logged out successfully.");
-    }
-
     public void createAdmin(String username, String email, String password) {
-        try {
-            adminService.createAdmin(username, email, password);
-            System.out.println("✅ Admin created successfully.");
-        } catch (ValidationException e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+        adminService.createAdmin(username, email, password);
     }
+
+    public boolean usernameExists(String username) {
+        return adminService.usernameExists(username);
+    }
+
+    public boolean domainEmail(String email) {
+        return adminService.domainEmail(email);
+    }
+
+
+    public Admin login(String username, String password) throws BusinessLogicException {
+        return adminService.login(username, password);
+    }
+
+    public void logout() throws BusinessLogicException {
+        adminService.logout();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void findAdminById(int id) {
         try {

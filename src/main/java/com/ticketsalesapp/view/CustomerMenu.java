@@ -24,10 +24,12 @@ import java.util.*;
 public class CustomerMenu {
 
     private final CustomerService customerService;
+    private final AccountAction accountAction;
 
     @Autowired
-    public CustomerMenu(CustomerService customerService) {
+    public CustomerMenu(CustomerService customerService, AccountAction accountAction) {
         this.customerService = customerService;
+        this.accountAction = accountAction;
     }
 
     public boolean display(Scanner scanner, Customer customer) {
@@ -48,8 +50,7 @@ public class CustomerMenu {
 
                 switch (choice) {
                     case "1":
-                        System.out.println("Logged out successfully.");
-                        return false;
+                        return accountAction.handleLogout(customer);
                     case "2":
                         System.out.println("Search Events by Artists/Athletes - Not implemented yet.");
                         break;
