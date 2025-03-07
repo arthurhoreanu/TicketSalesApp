@@ -17,11 +17,11 @@ public class UserSession {
         return Optional.ofNullable(currentUser);
     }
 
-    public boolean isAdmin() {
+    public boolean isAdmin(User currentUser) {
         return currentUser instanceof Admin;
     }
 
-    public boolean isCustomer() {
+    public boolean isCustomer(User currentUser) {
         return currentUser instanceof Customer;
     }
 

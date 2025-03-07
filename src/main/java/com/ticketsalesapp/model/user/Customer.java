@@ -3,7 +3,6 @@ package main.java.com.ticketsalesapp.model.user;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.FavouriteEntity;
 import main.java.com.ticketsalesapp.model.ticket.Cart;
 
 import java.util.HashMap;
@@ -33,5 +32,15 @@ public class Customer extends User {
 
     public void removeFavourite(FavouriteEntity item) {
         favourites.remove(item);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

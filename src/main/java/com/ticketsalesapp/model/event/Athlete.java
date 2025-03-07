@@ -2,7 +2,7 @@ package main.java.com.ticketsalesapp.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.FavouriteEntity;
+import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
 import main.java.com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;

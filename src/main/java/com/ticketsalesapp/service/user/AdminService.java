@@ -64,7 +64,19 @@ public class AdminService {
         userSession.logout();
     }
 
+    public List<Admin> getAllAdmins() {
+        return adminRepository.getAll();
+    }
 
+    public Admin findAdminById(int id) {
+        return adminRepository.read(id)
+                .orElseThrow(() -> new BusinessLogicException("Admin not found"));
+    }
+
+    public void deleteAdmin(int id) {
+        findAdminById(id);
+        adminRepository.delete(id);
+    }
 
 
 
@@ -76,20 +88,11 @@ public class AdminService {
                 .orElse(0) + 1;
     }
 
-    public Admin findAdminById(int id) {
-        return adminRepository.read(id)
-                .orElseThrow(() -> new BusinessLogicException("Admin not found"));
-    }
-
     public Admin getCurrentAdmin() {
         return userSession.getCurrentUser()
                 .filter(user -> user instanceof Admin)
                 .map(user -> (Admin) user)
                 .orElseThrow(() -> new BusinessLogicException("No customer is logged in."));
-    }
-
-    public List<Admin> getAllAdmins() {
-        return adminRepository.getAll();
     }
 
 }

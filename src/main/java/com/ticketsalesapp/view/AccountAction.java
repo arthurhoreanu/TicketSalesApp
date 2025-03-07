@@ -4,10 +4,10 @@ import main.java.com.ticketsalesapp.controller.user.AdminController;
 import main.java.com.ticketsalesapp.controller.user.CustomerController;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.model.user.User;
 import main.java.com.ticketsalesapp.service.user.AdminService;
 import main.java.com.ticketsalesapp.service.user.CustomerService;
+import main.java.com.ticketsalesapp.service.user.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +20,15 @@ public class AccountAction {
     private final CustomerController customerController;
     private final CustomerService customerService;
     private final AdminService adminService;
+    private final UserSession userSession;
 
     @Autowired
-    public AccountAction(AdminController adminController, CustomerController customerController, CustomerService customerService, AdminService adminService) {
+    public AccountAction(AdminController adminController, CustomerController customerController, CustomerService customerService, AdminService adminService, UserSession userSession) {
         this.adminController = adminController;
         this.customerController = customerController;
         this.customerService = customerService;
         this.adminService = adminService;
+        this.userSession = userSession;
     }
 
     public void handleCreateAccount(Scanner scanner) {
@@ -122,18 +124,90 @@ public class AccountAction {
     }
 
     public boolean handleLogout(User user) throws BusinessLogicException {
-        if (user instanceof Admin) {
+        if (userSession.isAdmin(user)) {
             adminController.logout();
         } else {
             customerController.logout();
         }
         System.out.println("Logged out successfully.");
-
-        // Verificăm dacă există utilizatori în repo-uri
-        if (!adminService.getAllAdmins().isEmpty() || !customerService.getAllCustomers().isEmpty()) {
-            return true;  // Există utilizatori, ar trebui să mergem la login
-        }
-        return false;  // Nu există utilizatori, ieșim din aplicație
+        return !adminService.getAllAdmins().isEmpty() || !customerService.getAllCustomers().isEmpty();
     }
+
+    public void handleDeleteAccount(User user, Scanner scanner) throws BusinessLogicException {
+        if (!userSession.isAdmin(user)) {
+            throw new BusinessLogicException("Only administrators can delete accounts");
+        }
+
+        System.out.println("=== Delete User Account ===");
+        System.out.println("1. Delete Admin Account");
+        System.out.println("2. Delete Customer Account");
+        System.out.print("Choose account type to delete (1/2): ");
+
+        String choice = scanner.nextLine();
+
+        switch (choice) {
+            case "1":
+                System.out.println("\n=== Administrators List ===");
+                var admins = adminController.getAllAdmins();
+
+                if (admins.isEmpty()) {
+                    System.out.println("No administrators found in the system.");
+                    break;
+                }
+
+                admins.forEach(System.out::println);
+                System.out.print("\nEnter Admin ID to delete: ");
+                try {
+                    int adminId = Integer.parseInt(scanner.nextLine());
+
+                    // Verify if the current admin wants to delete their account
+                    if (adminId == user.getID()) {
+                        System.out.println("You cannot delete your own account during an active session!");
+                        break;
+                    }
+
+                    if (adminController.findAdminById(adminId) != null) {
+                        adminController.deleteAdmin(adminId);
+                        System.out.println("Admin with ID " + adminId + " was successfully deleted.");
+                    } else {
+                        System.out.println("No admin found with ID: " + adminId);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new BusinessLogicException("Invalid ID format. Please enter a valid number.");
+                }
+                break;
+
+            case "2":
+                System.out.println("\n=== Customers List ===");
+                var customers = customerController.getAllCustomers();
+
+                if (customers.isEmpty()) {
+                    System.out.println("No customers found in the system.");
+                    break;
+                }
+
+                customers.forEach(System.out::println);
+                System.out.print("\nEnter Customer ID to delete: ");
+                try {
+                    int customerId = Integer.parseInt(scanner.nextLine());
+                    if (customerController.findCustomerById(customerId) != null) {
+                        customerController.deleteCustomer(customerId);
+                        System.out.println("Customer with ID " + customerId + " was successfully deleted.");
+                        break;
+                    } else {
+                        System.out.println("No customer found with ID: " + customerId);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new BusinessLogicException("Invalid ID format. Please enter a valid number.");
+                }
+
+                break;
+
+            default:
+                System.out.println("Invalid choice. Please select 1 for Admin or 2 for Customer.");
+                break;
+        }
+    }
+
 
 }

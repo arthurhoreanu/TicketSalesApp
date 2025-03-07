@@ -1,5 +1,6 @@
 package main.java.com.ticketsalesapp.view.admin;
 
+import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.service.user.AdminService;
@@ -13,12 +14,10 @@ import java.util.Scanner;
 @Component
 public class AdminMenu {
 
-    private final AdminService adminService;
     private final AccountAction accountAction;
 
     @Autowired
-    public AdminMenu(AdminService adminService, AccountAction accountAction) {
-        this.adminService = adminService;
+    public AdminMenu(AccountAction accountAction) {
         this.accountAction = accountAction;
     }
 
@@ -42,7 +41,7 @@ public class AdminMenu {
                 case "1":
                     return accountAction.handleLogout(admin);
                 case "2":
-//   TODO                 AccountAction.handleDeleteUserAccount(scanner, adminService);
+                    accountAction.handleDeleteAccount(admin, scanner);
                     break;
                 case "3":
                     System.out.println("Manage Events - Not implemented yet.");

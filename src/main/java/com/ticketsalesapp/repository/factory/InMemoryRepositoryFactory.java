@@ -10,11 +10,7 @@ public class InMemoryRepositoryFactory implements RepositoryFactory {
 
     @Override
     public Repository<Admin> createAdminRepository() {
-        Repository<Admin> adminRepository = new InMemoryRepository<>();
-        // Adaugă un admin default
-        Admin defaultAdmin = new Admin(1, "admin", "admin@tsc.com", "admin");
-        adminRepository.create(defaultAdmin);
-        return adminRepository;
+        return new InMemoryRepository<>();
     }
 
     @Override

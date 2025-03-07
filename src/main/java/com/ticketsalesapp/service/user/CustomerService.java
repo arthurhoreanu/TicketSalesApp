@@ -1,11 +1,9 @@
 package main.java.com.ticketsalesapp.service.user;
 
-import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.FavouriteEntity;
+import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
 import main.java.com.ticketsalesapp.repository.Repository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.stereotype.Service;
@@ -60,21 +58,29 @@ public class CustomerService {
         userSession.logout();
     }
 
-
-
-
-
-
-
-
-
-
-
+    public List<Customer> getAllCustomers() {
+        return customerRepository.getAll();
+    }
 
     public Customer findCustomerById(int id) {
         return customerRepository.read(id)
                 .orElseThrow(() -> new BusinessLogicException("Customer not found"));
     }
+
+    public void deleteCustomer(int id) {
+        findCustomerById(id);
+        customerRepository.delete(id);
+    }
+
+
+
+
+
+
+
+
+
+
 
     public void addFavourite(FavouriteEntity item) {
         if (item == null) {
@@ -114,10 +120,6 @@ public class CustomerService {
                 .mapToInt(Customer::getID)
                 .max()
                 .orElse(0) + 1;
-    }
-
-    public List<Customer> getAllCustomers() {
-        return customerRepository.getAll();
     }
 
     public Customer findByUsernameAndPassword(String username, String password)
