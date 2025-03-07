@@ -72,23 +72,29 @@ public class ConsoleApp {
                         running = false;
                     }
                 }
-            } else if (currentUser instanceof Admin) {
+
+            } else if (userSession.isAdmin(currentUser)) {
                 boolean shouldContinue = adminMenu.display(scanner, (Admin) currentUser);
                 if (!shouldContinue) {
-                    running = false;
-                } else {
-                    currentUser = null;  // Back to "LogIn Menu"
+                    // If current user chooses to "Logout" or "Exit"
+                    if (userSession.getCurrentUser().isEmpty()) {
+                        currentUser = null;  // Back to "LogIn Menu"
+                    } else {
+                        running = false;  // Completely exit the app
+                    }
                 }
-            } else if (currentUser instanceof Customer) {
+            } else if (userSession.isCustomer(currentUser)) {
                 boolean shouldContinue = customerMenu.display(scanner, (Customer) currentUser);
                 if (!shouldContinue) {
-                    running = false;
-                } else {
-                    currentUser = null;  // Back to "LogIn Menu"
+                    // If current user chooses to "Logout" or "Exit"
+                    if (userSession.getCurrentUser().isEmpty()) {
+                        currentUser = null;  // Back to "LogIn Menu"
+                    } else {
+                        running = false;  // Completely exit the app
+                    }
                 }
             }
         }
-
         scanner.close();
     }
 }

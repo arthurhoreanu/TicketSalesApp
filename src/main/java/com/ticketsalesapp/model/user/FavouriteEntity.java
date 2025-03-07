@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.model;
+package main.java.com.ticketsalesapp.model.user;
 
 /**
  * Interface representing an entity (artist/athlete) that can be marked as a favorite.

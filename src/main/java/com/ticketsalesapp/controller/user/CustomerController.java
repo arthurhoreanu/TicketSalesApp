@@ -2,12 +2,12 @@ package main.java.com.ticketsalesapp.controller.user;
 
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.FavouriteEntity;
+import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
 import main.java.com.ticketsalesapp.service.user.CustomerService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -34,6 +34,17 @@ public class CustomerController {
         customerService.logout();
     }
 
+    public List<Customer> getAllCustomers() {
+        return customerService.getAllCustomers();
+    }
+
+    public Customer findCustomerById(int id) {
+        return customerService.findCustomerById(id);
+    }
+
+    public void deleteCustomer(int id) {
+        customerService.deleteCustomer(id);
+    }
 
 
 
@@ -53,15 +64,6 @@ public class CustomerController {
             System.out.println("👤 Logged in customer: " + customer);
         } else {
             System.out.println("❌ No customer is currently logged in.");
-        }
-    }
-
-    public void findCustomerById(int id) {
-        try {
-            Customer customer = customerService.findCustomerById(id);
-            System.out.println("🔍 Found customer: " + customer);
-        } catch (BusinessLogicException e) {
-            System.out.println("❌ Error: " + e.getMessage());
         }
     }
 

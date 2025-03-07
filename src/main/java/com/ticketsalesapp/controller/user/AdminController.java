@@ -1,10 +1,11 @@
 package main.java.com.ticketsalesapp.controller.user;
 
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.service.user.AdminService;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class AdminController {
@@ -35,27 +36,24 @@ public class AdminController {
         adminService.logout();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void findAdminById(int id) {
-        try {
-            Admin admin = adminService.findAdminById(id);
-            System.out.println("🔍 Found admin: " + admin);
-        } catch (BusinessLogicException e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+    public List<Admin> getAllAdmins() {
+        return adminService.getAllAdmins();
     }
+
+    public Admin findAdminById(int id) {
+        return adminService.findAdminById(id);
+    }
+
+    public void deleteAdmin(int id) {
+        adminService.deleteAdmin(id);
+    }
+
+
+
+
+
+
+
 
     public void getCurrentAdmin() {
         Admin admin = adminService.getCurrentAdmin();
