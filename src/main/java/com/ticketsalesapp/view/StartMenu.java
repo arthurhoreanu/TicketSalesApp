@@ -16,8 +16,8 @@ public class StartMenu {
         try {
             System.out.println("==== Choose Data Representation ====");
             System.out.println("1. InMemory");
-            System.out.println("2. File");
-            System.out.println("3. Database");
+//            System.out.println("2. File"); // TODO later
+//            System.out.println("3. Database"); // TODO later
             System.out.print("Your choice: ");
 
             String choice = scanner.nextLine();

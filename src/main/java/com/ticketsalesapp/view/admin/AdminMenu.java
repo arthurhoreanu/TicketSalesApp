@@ -4,6 +4,7 @@ import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.service.user.AdminService;
 import main.java.com.ticketsalesapp.view.AccountAction;
+import main.java.com.ticketsalesapp.view.LoginMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +14,12 @@ import java.util.Scanner;
 public class AdminMenu {
 
     private final AdminService adminService;
+    private final AccountAction accountAction;
 
     @Autowired
-    public AdminMenu(AdminService adminService) {
+    public AdminMenu(AdminService adminService, AccountAction accountAction) {
         this.adminService = adminService;
+        this.accountAction = accountAction;
     }
 
     public boolean display(Scanner scanner, Admin admin) {
@@ -37,8 +40,7 @@ public class AdminMenu {
 
             switch (choice) {
                 case "1":
-                    System.out.println("Logged out successfully.");
-                    return false;
+                    return accountAction.handleLogout(admin);
                 case "2":
 //   TODO                 AccountAction.handleDeleteUserAccount(scanner, adminService);
                     break;

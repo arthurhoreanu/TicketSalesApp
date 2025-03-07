@@ -2,6 +2,7 @@ package main.java.com.ticketsalesapp.controller.user;
 
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
+import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
 import main.java.com.ticketsalesapp.service.user.CustomerService;
@@ -17,27 +18,34 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    public void login(String username, String password) {
-        if (customerService.login(username, password)) {
-            System.out.println("✅ Customer logged in successfully.");
-        } else {
-            System.out.println("❌ Invalid credentials.");
-        }
-    }
-
-    public void logout() {
-        customerService.logout();
-        System.out.println("✅ Customer logged out successfully.");
-    }
-
     public void createCustomer(String username, String email, String password) {
-        try {
-            customerService.createCustomer(username, email, password);
-            System.out.println("✅ Customer created successfully.");
-        } catch (ValidationException e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
+        customerService.createCustomer(username, email, password);
     }
+
+    public boolean usernameExists(String username) {
+        return customerService.usernameExists(username);
+    }
+
+    public Customer login(String username, String password) throws BusinessLogicException {
+        return customerService.login(username, password);
+    }
+
+    public void logout() throws BusinessLogicException {
+        customerService.logout();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void getCurrentCustomer() {
         Customer customer = customerService.getCurrentCustomer();

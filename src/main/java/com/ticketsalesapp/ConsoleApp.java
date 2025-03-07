@@ -43,26 +43,49 @@ public class ConsoleApp {
     public void run() {
         Scanner scanner = new Scanner(System.in);
 
+        // 1. Choose data representation
         this.repositoryFactory = StartMenu.select(scanner);
-
         boolean running = true;
 
+        // 2. No users in our repos
+        running = mainMenu.display(scanner);
+        if (!running) {
+            scanner.close();
+            return;
+        }
+
+        // 3. Main loop
         while (running) {
             if (currentUser == null) {
-                if (userSession.getCurrentUser().isEmpty()) {
+                // Are there users in our repos?
+                boolean hasUsers = !adminService.getAllAdmins().isEmpty() ||
+                        !customerService.getAllCustomers().isEmpty();
+
+                if (!hasUsers) {
+                    // If we somehow don't, go back to "No Users Menu"
                     running = mainMenu.display(scanner);
                     if (!running) break;
-                }
-                currentUser = loginMenu.display(scanner);
-                if (currentUser == null) {
-                    running = false;
+                } else {
+                    // If we do, then "LogIn Menu"
+                    currentUser = loginMenu.display(scanner);
+                    if (currentUser == null) {
+                        running = false;
+                    }
                 }
             } else if (currentUser instanceof Admin) {
-                running = adminMenu.display(scanner, (Admin) currentUser);
-                if (!running) currentUser = null;
+                boolean shouldContinue = adminMenu.display(scanner, (Admin) currentUser);
+                if (!shouldContinue) {
+                    running = false;
+                } else {
+                    currentUser = null;  // Back to "LogIn Menu"
+                }
             } else if (currentUser instanceof Customer) {
-                running = customerMenu.display(scanner, (Customer) currentUser);
-                if (!running) currentUser = null;
+                boolean shouldContinue = customerMenu.display(scanner, (Customer) currentUser);
+                if (!shouldContinue) {
+                    running = false;
+                } else {
+                    currentUser = null;  // Back to "LogIn Menu"
+                }
             }
         }
 

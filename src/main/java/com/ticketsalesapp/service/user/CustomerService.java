@@ -3,6 +3,7 @@ package main.java.com.ticketsalesapp.service.user;
 import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
+import main.java.com.ticketsalesapp.model.user.Admin;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.FavouriteEntity;
 import main.java.com.ticketsalesapp.repository.Repository;
@@ -23,29 +24,52 @@ public class CustomerService {
         this.userSession = userSession;
     }
 
-    public boolean login(String username, String password) {
-        var customer = customerRepository.getAll().stream()
-                .filter(c -> c.getUsername().equals(username) && c.getPassword().equals(password))
-                .findFirst();
-
-        if (customer.isPresent()) {
-            userSession.setCurrentUser(customer.get());
-            return true;
-        }
-        return false;
-    }
-
-    public void logout() {
-        userSession.logout();
-    }
-
     public void createCustomer(String username, String email, String password) {
-        if (customerRepository.getAll().stream().anyMatch(a -> a.getUsername().equals(username))) {
+        if (usernameExists(username)) {
             throw new ValidationException("Username already taken");
         }
         Customer customer = new Customer(generateNewId(), username, email, password);
         customerRepository.create(customer);
     }
+
+    public boolean usernameExists(String username) {
+        return customerRepository.getAll().stream().anyMatch(c -> c.getUsername().equals(username));
+    }
+
+    public Customer login(String username, String password) throws BusinessLogicException {
+        if (username == null || username.trim().isEmpty()) {
+            throw new BusinessLogicException("Username cannot be empty");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new BusinessLogicException("Password cannot be empty");
+        }
+
+        Customer customer = customerRepository.getAll().stream()
+                .filter(a -> a.getUsername().equals(username) && a.getPassword().equals(password))
+                .findFirst()
+                .orElseThrow(() -> new BusinessLogicException("Invalid credentials"));
+
+        userSession.setCurrentUser(customer);
+        return customer;
+    }
+
+    public void logout() throws BusinessLogicException {
+        if (userSession.getCurrentUser().isEmpty()) {
+            throw new BusinessLogicException("No user is currently logged in");
+        }
+        userSession.logout();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     public Customer findCustomerById(int id) {
         return customerRepository.read(id)
