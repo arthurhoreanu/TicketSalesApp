@@ -72,16 +72,6 @@ public class CustomerService {
         customerRepository.delete(id);
     }
 
-
-
-
-
-
-
-
-
-
-
     public void addFavourite(FavouriteEntity item) {
         if (item == null) {
             throw new ValidationException("Cannot add a null item to favourites.");
@@ -117,7 +107,7 @@ public class CustomerService {
 
     private int generateNewId() {
         return customerRepository.getAll().stream()
-                .mapToInt(Customer::getID)
+                .mapToInt(Customer::getId)
                 .max()
                 .orElse(0) + 1;
     }

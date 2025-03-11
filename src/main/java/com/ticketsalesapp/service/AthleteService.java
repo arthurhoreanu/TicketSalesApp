@@ -79,7 +79,7 @@ public class AthleteService {
      * @return The athlete with the specified ID, or null if no athlete was found.
      */
     public Athlete findAthleteByID(int athleteID) {
-        return athleteRepository.getAll().stream().filter(athlete -> athlete.getID() == athleteID).findFirst().orElse(null);
+        return athleteRepository.getAll().stream().filter(athlete -> athlete.getId() == athleteID).findFirst().orElse(null);
     }
 
     /**

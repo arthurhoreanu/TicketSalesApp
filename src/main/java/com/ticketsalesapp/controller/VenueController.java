@@ -621,6 +621,6 @@ public class VenueController {
      */
     public void loadSectionsForVenue(Venue venue) {
         venueService.loadSectionsForVenue(venue);
-        System.out.println("Sections loaded for Venue ID " + venue.getID() + ".");
+        System.out.println("Sections loaded for Venue ID " + venue.getId() + ".");
     }
 }

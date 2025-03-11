@@ -72,11 +72,11 @@ public class Athlete implements Identifiable, FavouriteEntity {
      * @return the athlete's ID
      */
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return this.athleteID;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.athleteID = id;
     }
 

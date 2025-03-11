@@ -15,10 +15,12 @@ import java.util.Scanner;
 public class AdminMenu {
 
     private final AccountAction accountAction;
+    private final AdminArtistMenu adminArtistMenu;
 
     @Autowired
-    public AdminMenu(AccountAction accountAction) {
+    public AdminMenu(AccountAction accountAction, AdminArtistMenu adminArtistMenu) {
         this.accountAction = accountAction;
+        this.adminArtistMenu = adminArtistMenu;
     }
 
     public boolean display(Scanner scanner, Admin admin) {
@@ -53,7 +55,7 @@ public class AdminMenu {
                     System.out.println("Manage Venues - Not implemented yet.");
                     break;
                 case "6":
-                    System.out.println("Manage Artists - Not implemented yet.");
+                    adminArtistMenu.display(scanner);
                     break;
                 case "7":
                     System.out.println("Manage Athletes - Not implemented yet.");

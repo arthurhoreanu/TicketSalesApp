@@ -72,11 +72,11 @@ public class Artist implements Identifiable, FavouriteEntity {
      * @return the artist's ID
      */
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return this.artistID;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.artistID = id;
     }
 

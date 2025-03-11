@@ -5,6 +5,7 @@ import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
 import main.java.com.ticketsalesapp.service.user.CustomerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Component
 public class CustomerController {
+
     private final CustomerService customerService;
 
     public CustomerController(CustomerService customerService) {
@@ -45,18 +47,6 @@ public class CustomerController {
     public void deleteCustomer(int id) {
         customerService.deleteCustomer(id);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     public void getCurrentCustomer() {
         Customer customer = customerService.getCurrentCustomer();

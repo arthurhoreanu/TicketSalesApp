@@ -1,33 +1,35 @@
 package main.java.com.ticketsalesapp.service;
 
-import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Artist;
 import main.java.com.ticketsalesapp.repository.Repository;
+import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ArtistService {
+
     private final Repository<Artist> artistRepository;
+
+    public ArtistService(RepositoryFactory repositoryFactory) {
+        this.artistRepository = repositoryFactory.createArtistRepository();
+    }
 
     /**
      * Creates a new artist and adds it to the repository.
      * @param artistName The name of the artist.
      * @param genre The genre of the artist.
-     * @return true if the artist was successfully created and added to the repository, false otherwise.
      */
-    public boolean createArtist(String artistName, String genre) {
-        if (findArtistByName(artistName) != null) {
+    public void createArtist(String artistName, String genre) {
+        if (findArtistByName(artistName).isPresent()) {
             throw new BusinessLogicException("Artist with name '" + artistName + "' already exists.");
         }
-        Artist artist = new Artist(0, artistName, genre);
+        Artist artist = new Artist(generateNewId(), artistName, genre);
         artistRepository.create(artist);
-        return true;
     }
 
     /**
@@ -35,34 +37,24 @@ public class ArtistService {
      * @param artistId The ID of the artist to be updated.
      * @param newName The new name for the artist.
      * @param newGenre The new genre for the artist.
-     * @return true if the artist was found and successfully updated, false if the artist was not found.
      */
-    public boolean updateArtist(int artistId, String newName, String newGenre) {
-        Artist artist = findArtistByID(artistId);
-        if(artist == null) {
-            throw new ValidationException("Artist with id '" + artistId + "' does not exist.");
-        }
+    public void updateArtist(int artistId, String newName, String newGenre) {
+        Artist artist = findArtistById(artistId);
         if (newName == null || newName.isBlank()) {
             throw new BusinessLogicException("Artist name cannot be null or empty.");
         }
         artist.setArtistName(newName);
         artist.setGenre(newGenre);
         artistRepository.update(artist);
-        return true;
     }
 
     /**
      * Deletes an artist from the repository by their ID.
      * @param artistId The ID of the artist to be deleted.
-     * @return true if the artist was found and successfully deleted, false if the artist was not found.
      */
-    public boolean deleteArtist(int artistId) {
-        Artist artist = findArtistByID(artistId);
-        if(artist == null) {
-            throw new ValidationException("Artist with id '" + artistId + "' does not exist.");
-        }
+    public void deleteArtist(int artistId) {
+        findArtistById(artistId);
         artistRepository.delete(artistId);
-        return true;
     }
 
     /**
@@ -78,8 +70,9 @@ public class ArtistService {
      * @param artistID The ID of the artist to be found.
      * @return The artist with the specified ID, or null if no artist was found.
      */
-    public Artist findArtistByID(int artistID) {
-        return artistRepository.getAll().stream().filter(artist -> artist.getID() == artistID).findFirst().orElse(null);
+    public Artist findArtistById(int artistID) {
+        return artistRepository.read(artistID)
+                .orElseThrow(() -> new BusinessLogicException("Artist not found"));
     }
 
     /**
@@ -87,8 +80,10 @@ public class ArtistService {
      * @param artistName The name of the artist to be found.
      * @return The artist with the specified name, or null if no artist was found.
      */
-    public Artist findArtistByName(String artistName) {
-        return artistRepository.getAll().stream().filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName)).findFirst().orElse(null);
+    public Optional<Artist> findArtistByName(String artistName) {
+        return artistRepository.getAll().stream()
+                .filter(artist -> artist.getArtistName().equalsIgnoreCase(artistName))
+                .findFirst();
     }
 
     /**
@@ -104,5 +99,12 @@ public class ArtistService {
             }
         }
         return artistsInGenre;
+    }
+
+    private int generateNewId() {
+        return artistRepository.getAll().stream()
+                .mapToInt(Artist::getId)
+                .max()
+                .orElse(0) + 1;
     }
 }

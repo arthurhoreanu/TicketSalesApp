@@ -52,12 +52,12 @@ public class Cart implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return cartID;
     }
 
     @Override
-    public void setID(int cartID){
+    public void setId(int cartID){
         this.cartID = cartID;
     }
 
@@ -136,8 +136,8 @@ public class Cart implements Identifiable {
 
     public String toCsv() {
         return cartID + "," +
-                (customer != null ? customer.getID() : "null") + "," +
-                (event != null ? event.getID() : "null") + "," +
+                (customer != null ? customer.getId() : "null") + "," +
+                (event != null ? event.getId() : "null") + "," +
                 isPaymentProcessed + "," +
                 totalPrice;
     }

@@ -48,7 +48,7 @@ public class TicketService {
         List<Ticket> allTickets = new ArrayList<>();
         if (venue.get().isHasSeats()) {
             // Generate tickets for venues with seats
-            List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(event.getVenueID(), event.getID());
+            List<Seat> availableSeats = venueService.getAvailableSeatsInVenue(event.getVenueID(), event.getId());
             if (availableSeats.size() < (earlyBirdCount + vipCount + standardCount)) {
                 throw new BusinessLogicException("Not enough available seats to generate tickets.");
             }
@@ -144,7 +144,7 @@ public class TicketService {
     public void reserveTicket(Ticket ticket, Customer customer) {
         if (ticket.getSeat() != null) {
             venueService.reserveSeat(
-                    ticket.getSeat().getID(),
+                    ticket.getSeat().getId(),
                     ticket.getEvent(),
                     customer,
                     ticket.getPrice(),
@@ -165,7 +165,7 @@ public class TicketService {
      */
     public void releaseTicket(Ticket ticket) {
         if (ticket.getSeat() != null) {
-            venueService.unreserveSeat(ticket.getSeat().getID());
+            venueService.unreserveSeat(ticket.getSeat().getId());
         }
         ticket.setSold(false);
         ticket.setCustomer(null);
@@ -205,7 +205,7 @@ public class TicketService {
      */
     public List<Ticket> findTicketsByCartID(int cartID) {
         return ticketRepository.getAll().stream()
-                .filter(ticket -> ticket.getCart() != null && ticket.getCart().getID() == cartID)
+                .filter(ticket -> ticket.getCart() != null && ticket.getCart().getId() == cartID)
                 .collect(Collectors.toList());
     }
 

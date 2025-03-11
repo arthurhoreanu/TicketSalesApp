@@ -61,12 +61,12 @@ public class Seat implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return seatID;
     }
 
     @Override
-    public void setID(int seatID) {
+    public void setId(int seatID) {
         this.seatID = seatID;
     }
 
@@ -95,8 +95,8 @@ public class Seat implements Identifiable {
                 "seatID=" + seatID +
                 ", number=" + number +
                 ", isReserved=" + isReserved +
-                ", rowID=" + (row != null && row.getID() != null ? row.getID() : "not loaded") +
-                ", ticketID=" + (ticket != null ? ticket.getID() : "null") +
+                ", rowID=" + (row != null && row.getId() != null ? row.getId() : "not loaded") +
+                ", ticketID=" + (ticket != null ? ticket.getId() : "null") +
                 '}';
     }
 }

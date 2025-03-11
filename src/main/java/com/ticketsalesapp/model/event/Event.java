@@ -47,12 +47,12 @@ public abstract class Event implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return eventID;
     }
 
     @Override
-    public void setID(int eventID) {
+    public void setId(int eventID) {
         this.eventID = eventID;
     }
 

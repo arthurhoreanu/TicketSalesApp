@@ -9,6 +9,7 @@ import java.util.List;
 
 @Component
 public class AdminController {
+
     private final AdminService adminService;
 
     public AdminController(AdminService adminService) {
@@ -26,7 +27,6 @@ public class AdminController {
     public boolean domainEmail(String email) {
         return adminService.domainEmail(email);
     }
-
 
     public Admin login(String username, String password) throws BusinessLogicException {
         return adminService.login(username, password);
@@ -47,13 +47,6 @@ public class AdminController {
     public void deleteAdmin(int id) {
         adminService.deleteAdmin(id);
     }
-
-
-
-
-
-
-
 
     public void getCurrentAdmin() {
         Admin admin = adminService.getCurrentAdmin();

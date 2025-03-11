@@ -37,11 +37,11 @@ public class ConcertLineUp implements Identifiable {
         this.artist = artist;
     }
 
-    public Integer getID() {
+    public Integer getId() {
         return id;
     }
 
-    public void setID(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
