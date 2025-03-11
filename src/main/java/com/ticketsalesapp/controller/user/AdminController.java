@@ -56,4 +56,12 @@ public class AdminController {
             System.out.println("❌ No admin is currently logged in.");
         }
     }
+
+    public void displayAllAdmins() {
+        List<Admin> admins = adminService.getAllAdmins();
+        if (admins.isEmpty()) {
+            System.out.println("There are no admins in the database.");
+        }
+        admins.forEach(System.out::println);
+    }
 }

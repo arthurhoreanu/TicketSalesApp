@@ -83,4 +83,12 @@ public class CustomerController {
             System.out.println("⭐ Favourite items: " + favourites);
         }
     }
+
+    public void diplayAllCustomers() {
+        List<Customer> customers = customerService.getAllCustomers();
+        if (customers.isEmpty()) {
+            System.out.println("There are no customers in the database.");
+        }
+        customers.forEach(System.out::println);
+    }
 }

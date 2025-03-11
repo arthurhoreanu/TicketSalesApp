@@ -43,7 +43,7 @@ public class SportsEventService {
 
     public boolean addAthleteToEvent(int eventID, int athleteID) {
         Optional<SportsEvent> sportsEventOpt = findSportsEventByID(eventID);
-        Athlete athlete = athleteService.findAthleteByID(athleteID);
+        Athlete athlete = athleteService.findAthleteById(athleteID);
 
         if (sportsEventOpt.isEmpty() || athlete == null) {
             return false;
@@ -55,7 +55,7 @@ public class SportsEventService {
 
     public boolean removeAthleteFromEvent(int eventID, int athleteID) {
         Optional<SportsEvent> eventOpt = findSportsEventByID(eventID);
-        Athlete athlete = athleteService.findAthleteByID(athleteID);
+        Athlete athlete = athleteService.findAthleteById(athleteID);
 
         if (eventOpt.isEmpty() || athlete == null) {
             return false;

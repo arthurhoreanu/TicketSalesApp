@@ -81,4 +81,12 @@ public class ArtistController {
     public List<Artist> findArtistsByGenre(String genre) {
         return artistService.findArtistsByGenre(genre);
     }
+
+    public void displayAllArtists() {
+        List<Artist> artists = artistService.getAllArtists();
+        if(artists.isEmpty()) {
+            System.out.println("There are no artists in the database.");
+        }
+        artists.forEach(System.out::println);
+    }
 }

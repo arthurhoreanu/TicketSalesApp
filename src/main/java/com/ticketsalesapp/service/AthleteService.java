@@ -1,68 +1,62 @@
 package main.java.com.ticketsalesapp.service;
 
-import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
 import main.java.com.ticketsalesapp.repository.Repository;
+import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class AthleteService {
+
     private final Repository<Athlete> athleteRepository;
+
+    public AthleteService(RepositoryFactory repositoryFactory) {
+        this.athleteRepository = repositoryFactory.createAthleteRepository();
+    }
 
     /**
      * Creates a new athlete and adds them to the repository.
      * @param athleteName The name of the athlete.
      * @param sport The sport genre the athlete specializes in.
-     * @return true if the athlete was successfully created and added to the repository, false otherwise.
      */
-    public boolean createAthlete(String athleteName, String sport) {
-        if (findAthleteByName(athleteName) != null) {
+    public void createAthlete(String athleteName, String sport) {
+        validateInput(athleteName, "Athlete name cannot be empty.");
+        validateInput(sport, "Sport cannot be empty.");
+        if (findAthleteByName(athleteName).isPresent()) {
             throw new BusinessLogicException("Athlete with name '" + athleteName + "' already exists.");
         }
-        Athlete athlete = new Athlete(0, athleteName, sport);
+        Athlete athlete = new Athlete(generateNewId(), athleteName, sport);
         athleteRepository.create(athlete);
-        return true;
     }
 
     /**
      * Updates an existing athlete's details.
-     * @param athleteID The ID of the athlete to be updated.
+     * @param athleteId The ID of the athlete to be updated.
      * @param newName The new name for the athlete.
      * @param newSport The new sport genre for the athlete.
-     * @return true if the athlete was found and successfully updated, false if the athlete was not found.
      */
-    public boolean updateAthlete(int athleteID, String newName, String newSport) {
-        Athlete athlete = findAthleteByID(athleteID);
-        if (athlete == null) {
-            throw new ValidationException("Athlete with ID " + athleteID + " does not exist.");
-        }
+    public void updateAthlete(int athleteId, String newName, String newSport) {
+        Athlete athlete = findAthleteById(athleteId);
         if (newName == null || newName.isBlank()) {
             throw new ValidationException("Athlete name cannot be null or empty.");
         }
         athlete.setAthleteName(newName);
         athlete.setAthleteSport(newSport);
         athleteRepository.update(athlete);
-        return true;
     }
 
     /**
      * Deletes an athlete from the repository by their ID.
-     * @param athleteID The ID of the athlete to be deleted.
-     * @return true if the athlete was found and successfully deleted, false if the athlete was not found.
+     * @param athleteId The ID of the athlete to be deleted.
      */
-    public boolean deleteAthlete(int athleteID) {
-        Athlete athlete = findAthleteByID(athleteID);
-        if (athlete == null) {
-            throw new ValidationException("Athlete with ID " + athleteID + " does not exist.");
-        }
-        athleteRepository.delete(athleteID);
-        return true;
+    public void deleteAthlete(int athleteId) {
+        findAthleteById(athleteId);
+        athleteRepository.delete(athleteId);
     }
 
     /**
@@ -75,11 +69,12 @@ public class AthleteService {
 
     /**
      * Finds an athlete by their ID.
-     * @param athleteID The ID of the athlete to be found.
+     * @param athleteId The ID of the athlete to be found.
      * @return The athlete with the specified ID, or null if no athlete was found.
      */
-    public Athlete findAthleteByID(int athleteID) {
-        return athleteRepository.getAll().stream().filter(athlete -> athlete.getId() == athleteID).findFirst().orElse(null);
+    public Athlete findAthleteById(int athleteId) {
+        return athleteRepository.read(athleteId)
+                .orElseThrow(() -> new BusinessLogicException("Athlete not found"));
     }
 
     /**
@@ -87,10 +82,11 @@ public class AthleteService {
      * @param athleteName The name of the athlete to be found.
      * @return The athlete with the specified name, or null if no athlete was found.
      */
-    public Athlete findAthleteByName(String athleteName) {
-        return athleteRepository.getAll().stream().filter(athlete -> athlete.getAthleteName().equalsIgnoreCase(athleteName)).findFirst().orElse(null);
+    public Optional<Athlete> findAthleteByName(String athleteName) {
+        return athleteRepository.getAll().stream()
+                .filter(artist -> artist.getAthleteName().equalsIgnoreCase(athleteName))
+                .findFirst();
     }
-
 
     /**
      * Finds all athletes participating in a specific sport.
@@ -105,5 +101,18 @@ public class AthleteService {
             }
         }
         return athletesInSport;
+    }
+
+    private int generateNewId() {
+        return athleteRepository.getAll().stream()
+                .mapToInt(Athlete::getId)
+                .max()
+                .orElse(0) + 1;
+    }
+
+    private void validateInput(String value, String errorMessage) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ValidationException(errorMessage);
+        }
     }
 }

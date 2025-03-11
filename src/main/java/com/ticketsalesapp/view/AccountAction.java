@@ -142,14 +142,7 @@ public class AccountAction {
         switch (choice) {
             case "1":
                 System.out.println("\n=== Administrators List ===");
-                var admins = adminController.getAllAdmins();
-
-                if (admins.isEmpty()) {
-                    System.out.println("No administrators found in the system.");
-                    break;
-                }
-
-                admins.forEach(System.out::println);
+                adminController.displayAllAdmins();
                 System.out.print("\nEnter Admin ID to delete: ");
                 try {
                     int adminId = Integer.parseInt(scanner.nextLine());
@@ -173,14 +166,7 @@ public class AccountAction {
 
             case "2":
                 System.out.println("\n=== Customers List ===");
-                var customers = customerController.getAllCustomers();
-
-                if (customers.isEmpty()) {
-                    System.out.println("No customers found in the system.");
-                    break;
-                }
-
-                customers.forEach(System.out::println);
+                customerController.getAllCustomers();
                 System.out.print("\nEnter Customer ID to delete: ");
                 try {
                     int customerId = Integer.parseInt(scanner.nextLine());
