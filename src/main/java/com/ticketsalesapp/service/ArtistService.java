@@ -1,6 +1,7 @@
 package main.java.com.ticketsalesapp.service;
 
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
+import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Artist;
 import main.java.com.ticketsalesapp.repository.Repository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
@@ -25,6 +26,8 @@ public class ArtistService {
      * @param genre The genre of the artist.
      */
     public void createArtist(String artistName, String genre) {
+        validateInput(artistName, "Artist name cannot be empty.");
+        validateInput(genre, "Genre cannot be empty.");
         if (findArtistByName(artistName).isPresent()) {
             throw new BusinessLogicException("Artist with name '" + artistName + "' already exists.");
         }
@@ -106,5 +109,11 @@ public class ArtistService {
                 .mapToInt(Artist::getId)
                 .max()
                 .orElse(0) + 1;
+    }
+
+    private void validateInput(String value, String errorMessage) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ValidationException(errorMessage);
+        }
     }
 }

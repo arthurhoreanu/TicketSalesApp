@@ -16,11 +16,13 @@ public class AdminMenu {
 
     private final AccountAction accountAction;
     private final AdminArtistMenu adminArtistMenu;
+    private final AdminAthleteMenu adminAthleteMenu;
 
     @Autowired
-    public AdminMenu(AccountAction accountAction, AdminArtistMenu adminArtistMenu) {
+    public AdminMenu(AccountAction accountAction, AdminArtistMenu adminArtistMenu, AdminAthleteMenu adminAthleteMenu) {
         this.accountAction = accountAction;
         this.adminArtistMenu = adminArtistMenu;
+        this.adminAthleteMenu = adminAthleteMenu;
     }
 
     public boolean display(Scanner scanner, Admin admin) {
@@ -58,7 +60,7 @@ public class AdminMenu {
                     adminArtistMenu.display(scanner);
                     break;
                 case "7":
-                    System.out.println("Manage Athletes - Not implemented yet.");
+                    adminAthleteMenu.display(scanner);
                     break;
                 case "0":
                     System.out.println("Exiting the application. Goodbye!");

@@ -97,11 +97,7 @@ public class AdminArtistMenu {
      */
     public void handleViewArtists() {
         System.out.println("=== View Artists ===");
-        List<Artist> artists = artistController.getAllArtists();
-        if (artists.isEmpty()) {
-            System.out.println("There are no artists in the database.");
-        }
-        artists.forEach(System.out::println);
+        artistController.displayAllArtists();
     }
 
     /**
@@ -111,11 +107,7 @@ public class AdminArtistMenu {
     public  void handleUpdateArtist(Scanner scanner) {
         try {
             System.out.println("=== Update Artist ===");
-            List<Artist> artists = artistController.getAllArtists();
-            if (artists.isEmpty()) {
-                System.out.println("There are no artists in the database.");
-            }
-            artists.forEach(System.out::println);
+            artistController.displayAllArtists();
             System.out.print("Enter artist ID to update: ");
             int artistID = Integer.parseInt(scanner.nextLine());
             Artist artist = artistController.findArtistById(artistID);
@@ -142,11 +134,7 @@ public class AdminArtistMenu {
      */
     public  void handleDeleteArtist(Scanner scanner) {
         System.out.println("=== Delete Artist ===");
-        List<Artist> artists = artistController.getAllArtists();
-        if (artists.isEmpty()) {
-            System.out.println("There are no artists in the database.");
-        }
-        artists.forEach(System.out::println);
+        artistController.displayAllArtists();
         System.out.print("Enter artist ID to delete: ");
         int artistID;
         try {

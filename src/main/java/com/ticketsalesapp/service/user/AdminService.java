@@ -21,6 +21,9 @@ public class AdminService {
     }
 
     public void createAdmin(String username, String email, String password) {
+        validateInput(username, "Username cannot be empty.");
+        validateInput(email, "Email cannot be empty.");
+        validateInput(password, "Password cannot be empty.");
         if (usernameExists(username)) {
             throw new ValidationException("Username already taken.");
         }
@@ -89,6 +92,12 @@ public class AdminService {
                 .filter(user -> user instanceof Admin)
                 .map(user -> (Admin) user)
                 .orElseThrow(() -> new BusinessLogicException("No customer is logged in."));
+    }
+
+    private void validateInput(String value, String errorMessage) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ValidationException(errorMessage);
+        }
     }
 
 }

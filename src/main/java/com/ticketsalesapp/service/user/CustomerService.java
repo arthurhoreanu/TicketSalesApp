@@ -23,8 +23,11 @@ public class CustomerService {
     }
 
     public void createCustomer(String username, String email, String password) {
+        validateInput(username, "Username cannot be empty.");
+        validateInput(email, "Email cannot be empty.");
+        validateInput(password, "Password cannot be empty.");
         if (usernameExists(username)) {
-            throw new ValidationException("Username already taken");
+            throw new ValidationException("Username already taken.");
         }
         Customer customer = new Customer(generateNewId(), username, email, password);
         customerRepository.create(customer);
@@ -119,4 +122,10 @@ public class CustomerService {
             .findFirst()
             .orElseThrow(() -> new BusinessLogicException("Customer not found"));
         }
+
+    private void validateInput(String value, String errorMessage) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ValidationException(errorMessage);
+        }
+    }
 }
