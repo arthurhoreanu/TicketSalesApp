@@ -83,10 +83,10 @@ public class TicketController {
         }
         List<Ticket> tickets = ticketService.getTicketsByEvent(event);
         if (!tickets.isEmpty()) {
-            System.out.println("Tickets for Event ID " + event.getID() + ":");
+            System.out.println("Tickets for Event ID " + event.getId() + ":");
             tickets.forEach(System.out::println);
         } else {
-            System.out.println("No tickets found for Event ID " + event.getID() + ".");
+            System.out.println("No tickets found for Event ID " + event.getId() + ".");
         }
         return tickets;
     }
@@ -104,10 +104,10 @@ public class TicketController {
         }
         List<Ticket> availableTickets = ticketService.getAvailableTicketsForEvent(event);
         if (!availableTickets.isEmpty()) {
-            System.out.println("Available tickets for Event ID " + event.getID() + ":");
+            System.out.println("Available tickets for Event ID " + event.getId() + ":");
             availableTickets.forEach(System.out::println);
         } else {
-            System.out.println("No available tickets for Event ID " + event.getID() + ".");
+            System.out.println("No available tickets for Event ID " + event.getId() + ".");
         }
         return availableTickets;
     }

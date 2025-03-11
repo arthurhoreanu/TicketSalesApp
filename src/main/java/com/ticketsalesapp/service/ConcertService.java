@@ -45,7 +45,7 @@ public class ConcertService {
 
     public boolean addArtistToConcert(int concertID, int artistID) {
         Optional<Concert> concertOpt = Optional.ofNullable(findConcertByID(concertID));
-        Artist artist = artistService.findArtistByID(artistID);
+        Artist artist = artistService.findArtistById(artistID);
         if (concertOpt.isEmpty() || artist == null) {
             return false;
         }
@@ -55,16 +55,16 @@ public class ConcertService {
 
     public void removeArtistFromConcert(int concertID, int artistID) {
         Optional<Concert> concertOpt = Optional.ofNullable(findConcertByID(concertID));
-        Artist artist = artistService.findArtistByID(artistID);
+        Artist artist = artistService.findArtistById(artistID);
         if (concertOpt.isEmpty() || artist == null) {
             return;
         }
         ConcertLineUp lineUp = concertLineUpRepository.getAll().stream()
-                .filter(lu -> lu.getConcert().getID() == concertID && lu.getArtist().getID() == artistID)
+                .filter(lu -> lu.getConcert().getId() == concertID && lu.getArtist().getId() == artistID)
                 .findFirst()
                 .orElse(null);
         if (lineUp != null) {
-            concertLineUpRepository.delete(lineUp.getID());
+            concertLineUpRepository.delete(lineUp.getId());
         }
     }
 
@@ -79,7 +79,7 @@ public class ConcertService {
 
     public List<Artist> getArtistsForConcert(int concertID) {
         return concertLineUpRepository.getAll().stream()
-                .filter(lu -> lu.getConcert().getID() == concertID)
+                .filter(lu -> lu.getConcert().getId() == concertID)
                 .map(ConcertLineUp::getArtist)
                 .toList();
     }

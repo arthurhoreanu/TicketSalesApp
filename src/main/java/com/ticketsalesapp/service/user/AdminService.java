@@ -3,7 +3,6 @@ package main.java.com.ticketsalesapp.service.user;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.model.user.Customer;
 import main.java.com.ticketsalesapp.repository.Repository;
 import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.stereotype.Service;
@@ -74,16 +73,13 @@ public class AdminService {
     }
 
     public void deleteAdmin(int id) {
-        findAdminById(id);
-        adminRepository.delete(id);
+       findAdminById(id);
+       adminRepository.delete(id);
     }
-
-
-
 
     private int generateNewId() {
         return adminRepository.getAll().stream()
-                .mapToInt(Admin::getID)
+                .mapToInt(Admin::getId)
                 .max()
                 .orElse(0) + 1;
     }

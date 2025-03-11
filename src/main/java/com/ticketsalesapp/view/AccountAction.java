@@ -5,8 +5,6 @@ import main.java.com.ticketsalesapp.controller.user.CustomerController;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.user.User;
-import main.java.com.ticketsalesapp.service.user.AdminService;
-import main.java.com.ticketsalesapp.service.user.CustomerService;
 import main.java.com.ticketsalesapp.service.user.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,16 +16,12 @@ public class AccountAction {
 
     private final AdminController adminController;
     private final CustomerController customerController;
-    private final CustomerService customerService;
-    private final AdminService adminService;
     private final UserSession userSession;
 
     @Autowired
-    public AccountAction(AdminController adminController, CustomerController customerController, CustomerService customerService, AdminService adminService, UserSession userSession) {
+    public AccountAction(AdminController adminController, CustomerController customerController, UserSession userSession) {
         this.adminController = adminController;
         this.customerController = customerController;
-        this.customerService = customerService;
-        this.adminService = adminService;
         this.userSession = userSession;
     }
 
@@ -130,7 +124,7 @@ public class AccountAction {
             customerController.logout();
         }
         System.out.println("Logged out successfully.");
-        return !adminService.getAllAdmins().isEmpty() || !customerService.getAllCustomers().isEmpty();
+        return !adminController.getAllAdmins().isEmpty() || !customerController.getAllCustomers().isEmpty();
     }
 
     public void handleDeleteAccount(User user, Scanner scanner) throws BusinessLogicException {
@@ -161,7 +155,7 @@ public class AccountAction {
                     int adminId = Integer.parseInt(scanner.nextLine());
 
                     // Verify if the current admin wants to delete their account
-                    if (adminId == user.getID()) {
+                    if (adminId == user.getId()) {
                         System.out.println("You cannot delete your own account during an active session!");
                         break;
                     }

@@ -2,13 +2,11 @@ package main.java.com.ticketsalesapp.service;
 
 import lombok.RequiredArgsConstructor;
 import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
 import main.java.com.ticketsalesapp.exception.ValidationException;
 import main.java.com.ticketsalesapp.model.event.Athlete;
 import main.java.com.ticketsalesapp.model.event.EventStatus;
 import main.java.com.ticketsalesapp.model.event.SportsEvent;
 import main.java.com.ticketsalesapp.model.event.SportsEventLineUp;
-import main.java.com.ticketsalesapp.model.venue.Venue;
 import main.java.com.ticketsalesapp.repository.Repository;
 import org.springframework.stereotype.Service;
 
@@ -64,12 +62,12 @@ public class SportsEventService {
         }
 
         SportsEventLineUp lineUp = sportsEventLineUpRepository.getAll().stream()
-                .filter(lu -> lu.getSportsEvent().getID() == eventID && lu.getAthlete().getID() == athleteID)
+                .filter(lu -> lu.getSportsEvent().getId() == eventID && lu.getAthlete().getId() == athleteID)
                 .findFirst()
                 .orElse(null);
 
         if (lineUp != null) {
-            return sportsEventLineUpRepository.delete(lineUp.getID());
+            return sportsEventLineUpRepository.delete(lineUp.getId());
         }
         return false;
     }
@@ -85,7 +83,7 @@ public class SportsEventService {
 
     public List<Athlete> getAthletesForEvent(int eventID) {
         return sportsEventLineUpRepository.getAll().stream()
-                .filter(lu -> lu.getSportsEvent().getID() == eventID)
+                .filter(lu -> lu.getSportsEvent().getId() == eventID)
                 .map(SportsEventLineUp::getAthlete)
                 .toList();
     }

@@ -74,12 +74,12 @@ public class Ticket implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return ticketID;
     }
 
     @Override
-    public void setID(int ticketID) {
+    public void setId(int ticketID) {
         this.ticketID = ticketID;
     }
 
@@ -171,9 +171,9 @@ public class Ticket implements Identifiable {
     public String toString() {
         return "Ticket{" +
                 "ticketID=" + ticketID +
-                ", event=" + (event != null ? event.getID() : "null") +
-                ", seat=" + (seat != null ? seat.getID() : "null") +
-                ", customer=" + (customer != null ? customer.getID() : "null") +
+                ", event=" + (event != null ? event.getId() : "null") +
+                ", seat=" + (seat != null ? seat.getId() : "null") +
+                ", customer=" + (customer != null ? customer.getId() : "null") +
                 ", price=" + price +
                 ", ticketType=" + ticketType +
                 ", isSold=" + isSold +

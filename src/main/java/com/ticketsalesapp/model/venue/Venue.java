@@ -64,12 +64,12 @@ public class Venue implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return venueID;
     }
 
     @Override
-    public void setID(int venueID) {
+    public void setId(int venueID) {
         this.venueID = venueID;
     }
 

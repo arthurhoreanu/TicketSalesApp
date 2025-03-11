@@ -34,7 +34,7 @@ public class VenueService {
         if (seat == null) {
             throw new ValidationException("Seat cannot be null.");
         }
-        if (findRowByID(seat.getRow().getID()) == null) {
+        if (findRowByID(seat.getRow().getId()) == null) {
             throw new BusinessLogicException("Row associated with the seat does not exist.");
         }
         seatRepository.update(seat);
@@ -62,10 +62,10 @@ public class VenueService {
 
     public void deleteSeatsByRow(int rowId) {
         List<Seat> seats = seatRepository.getAll().stream()
-                .filter(seat -> seat.getRow().getID() == rowId)
+                .filter(seat -> seat.getRow().getId() == rowId)
                 .toList();
         for (Seat seat : seats) {
-            seatRepository.delete(seat.getID());
+            seatRepository.delete(seat.getId());
         }
     }
 
@@ -174,11 +174,11 @@ public class VenueService {
         Seat seat = seatOptional.get();
         return seat.isReserved()
                 && seat.getTicket() != null
-                && seat.getTicket().getEvent().getID() == eventId;
+                && seat.getTicket().getEvent().getId() == eventId;
     }
 
     public boolean isSeatForEvent(Seat seat, int eventId) {
-        return seat.getTicket() != null && seat.getTicket().getEvent().getID() == eventId;
+        return seat.getTicket() != null && seat.getTicket().getEvent().getId() == eventId;
     }
 
     // Row
@@ -206,11 +206,11 @@ public class VenueService {
 
     public void deleteRowsBySection(int sectionID) {
         List<Row> rows = rowRepository.getAll().stream().
-                filter(row -> row.getSection().getID() == sectionID)
+                filter(row -> row.getSection().getId() == sectionID)
                 .toList();
         for (Row row : rows) {
-            deleteSeatsByRow(row.getID());
-            rowRepository.delete(row.getID());
+            deleteSeatsByRow(row.getId());
+            rowRepository.delete(row.getId());
         }
     }
 
@@ -295,7 +295,7 @@ public class VenueService {
         }
 
         Row row = section.get().getRows().stream()
-                .filter(r -> r.getID() == rowId)
+                .filter(r -> r.getId() == rowId)
                 .findFirst()
                 .orElse(null);
         if (row == null) {
@@ -371,11 +371,11 @@ public class VenueService {
 
     public void deleteSectionByVenue(int venueID) {
         List<Section> sections = sectionRepository.getAll().stream().
-                filter(section -> section.getVenue().getID() == venueID)
+                filter(section -> section.getVenue().getId() == venueID)
                 .toList();
         for (Section section : sections) {
-            deleteRowsBySection(section.getID());
-            sectionRepository.delete(section.getID());
+            deleteRowsBySection(section.getId());
+            sectionRepository.delete(section.getId());
         }
     }
 
@@ -454,7 +454,7 @@ public class VenueService {
             availableSeats.addAll(
                     row.getSeats().stream()
                             .filter(seat -> !seat.isReserved() && seat.getTicket() != null
-                                    && seat.getTicket().getEvent().getID() == eventId)
+                                    && seat.getTicket().getEvent().getId() == eventId)
                             .toList()
             );
         }
@@ -483,7 +483,7 @@ public class VenueService {
         venue.setHasSeats(hasSeats);
         venueRepository.create(venue);
         if (!hasSeats) {
-            addSectionToVenue(venue.getID(), 1, capacity, "Default Section");
+            addSectionToVenue(venue.getId(), 1, capacity, "Default Section");
         }
         return venue;
     }
@@ -580,12 +580,12 @@ public class VenueService {
      */
     public List<Section> getSectionsByVenueID(int venueId) {
         return sectionRepository.getAll().stream()
-                .filter(section -> section.getVenue().getID() == venueId)
+                .filter(section -> section.getVenue().getId() == venueId)
                 .collect(Collectors.toList());
     }
 
     public void loadSectionsForVenue(Venue venue) {
-        List<Section> sections = getSectionsByVenueID(venue.getID());
+        List<Section> sections = getSectionsByVenueID(venue.getId());
         venue.setSections(sections); // Populate the sections list
     }
 

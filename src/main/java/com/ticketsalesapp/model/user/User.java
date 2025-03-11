@@ -26,12 +26,12 @@ public abstract class User implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return userId;
     }
 
     @Override
-    public void setID(int id) {
+    public void setId(int id) {
         this.userId = id;
     }
 

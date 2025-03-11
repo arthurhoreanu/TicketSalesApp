@@ -9,7 +9,7 @@ public interface FavouriteEntity {
      * Gets the unique ID of the favorite entity.
      * @return the ID of the entity
      */
-    Integer getID();
+    Integer getId();
 
     /**
      * Gets the name of the favorite entity.

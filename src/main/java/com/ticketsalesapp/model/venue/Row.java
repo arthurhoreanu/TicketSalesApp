@@ -54,12 +54,12 @@ public class Row implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return rowID;
     }
 
     @Override
-    public void setID(int rowID) {
+    public void setId(int rowID) {
         this.rowID = rowID;
     }
 
@@ -99,7 +99,7 @@ public class Row implements Identifiable {
         return "Row{" +
                 "rowID=" + rowID +
                 ", rowCapacity=" + rowCapacity +
-                ", section=" + (section != null ? section.getID() : "null") +
+                ", section=" + (section != null ? section.getId() : "null") +
                 ", seatsCount=" + seats.size() +
                 '}';
     }

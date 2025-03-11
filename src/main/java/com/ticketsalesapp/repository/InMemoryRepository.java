@@ -19,11 +19,11 @@ public class InMemoryRepository<T extends Identifiable> implements Repository<T>
      */
     @Override
     public boolean create(T obj) {
-        if (obj.getID() == 0) {
+        if (obj.getId() == 0) {
             int newId = data.keySet().stream().max(Integer::compareTo).orElse(0) + 1;
-            obj.setID(newId);
+            obj.setId(newId);
         }
-        data.putIfAbsent(obj.getID(), obj);
+        data.putIfAbsent(obj.getId(), obj);
         return false;
     }
 
@@ -45,7 +45,7 @@ public class InMemoryRepository<T extends Identifiable> implements Repository<T>
      */
     @Override
     public boolean update(T obj) {
-        data.replace(obj.getID(), obj);
+        data.replace(obj.getId(), obj);
         return false;
     }
 

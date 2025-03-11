@@ -64,12 +64,12 @@ public class Section implements Identifiable {
     }
 
     @Override
-    public Integer getID() {
+    public Integer getId() {
         return sectionID;
     }
 
     @Override
-    public void setID(int sectionID) {
+    public void setId(int sectionID) {
         this.sectionID = sectionID;
     }
 
@@ -106,7 +106,7 @@ public class Section implements Identifiable {
                 "sectionID=" + sectionID +
                 ", sectionName='" + sectionName + '\'' +
                 ", sectionCapacity=" + sectionCapacity +
-                ", venue=" + (venue != null ? venue.getID() : "null") +
+                ", venue=" + (venue != null ? venue.getId() : "null") +
                 ", rowsCount=" + rows.size() +
                 '}';
     }
