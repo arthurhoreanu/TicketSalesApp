@@ -1,20 +1,7 @@
-package main.java.com.ticketsalesapp.view;
+package com.ticketsalesapp.view;
 
-import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.*;
-import main.java.com.ticketsalesapp.model.event.Artist;
-import main.java.com.ticketsalesapp.model.event.Athlete;
-import main.java.com.ticketsalesapp.model.event.Event;
-import main.java.com.ticketsalesapp.model.ticket.Cart;
-import main.java.com.ticketsalesapp.model.ticket.Ticket;
-import main.java.com.ticketsalesapp.model.ticket.TicketType;
-import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.venue.Seat;
-import main.java.com.ticketsalesapp.model.venue.Section;
-import main.java.com.ticketsalesapp.model.venue.Venue;
-import main.java.com.ticketsalesapp.service.user.CustomerService;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.model.user.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,12 +10,10 @@ import java.util.*;
 @Component
 public class CustomerMenu {
 
-    private final CustomerService customerService;
+
     private final AccountAction accountAction;
 
-    @Autowired
-    public CustomerMenu(CustomerService customerService, AccountAction accountAction) {
-        this.customerService = customerService;
+    public CustomerMenu(AccountAction accountAction) {
         this.accountAction = accountAction;
     }
 

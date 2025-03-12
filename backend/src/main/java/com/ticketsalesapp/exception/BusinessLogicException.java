@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.exception;
+package com.ticketsalesapp.exception;
 
 public class BusinessLogicException extends RuntimeException {
     public BusinessLogicException(String message) {

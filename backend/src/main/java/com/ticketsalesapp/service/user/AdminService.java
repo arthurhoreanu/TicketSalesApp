@@ -1,10 +1,10 @@
-package main.java.com.ticketsalesapp.service.user;
+package com.ticketsalesapp.service.user;
 
-import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.repository.Repository;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import com.ticketsalesapp.exception.BusinessLogicException;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.model.user.Admin;
+import com.ticketsalesapp.repository.Repository;
+import com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package main.java.com.ticketsalesapp.repository;
+package com.ticketsalesapp.repository;
 
-import main.java.com.ticketsalesapp.model.Identifiable;
+import com.ticketsalesapp.model.Identifiable;
 
 import java.util.HashMap;
 import java.util.List;

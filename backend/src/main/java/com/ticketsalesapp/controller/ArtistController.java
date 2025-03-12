@@ -1,7 +1,7 @@
-package main.java.com.ticketsalesapp.controller;
+package com.ticketsalesapp.controller;
 
-import main.java.com.ticketsalesapp.model.event.Artist;
-import main.java.com.ticketsalesapp.service.ArtistService;
+import com.ticketsalesapp.model.event.Artist;
+import com.ticketsalesapp.service.ArtistService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

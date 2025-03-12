@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.model.event;
+package com.ticketsalesapp.model.event;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

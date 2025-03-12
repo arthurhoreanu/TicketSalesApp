@@ -1,8 +1,8 @@
-package main.java.com.ticketsalesapp.controller.user;
+package com.ticketsalesapp.controller.user;
 
-import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.service.user.AdminService;
+import com.ticketsalesapp.exception.BusinessLogicException;
+import com.ticketsalesapp.model.user.Admin;
+import com.ticketsalesapp.service.user.AdminService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

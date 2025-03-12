@@ -1,9 +1,9 @@
-package main.java.com.ticketsalesapp.view.admin;
+package com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.AthleteController;
-import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.event.Athlete;
+import com.ticketsalesapp.controller.AthleteController;
+import com.ticketsalesapp.exception.EntityNotFoundException;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.model.event.Athlete;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

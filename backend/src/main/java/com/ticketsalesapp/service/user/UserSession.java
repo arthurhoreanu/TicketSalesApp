@@ -1,9 +1,9 @@
-package main.java.com.ticketsalesapp.service.user;
+package com.ticketsalesapp.service.user;
 
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.user.User;
+import com.ticketsalesapp.model.user.Admin;
+import com.ticketsalesapp.model.user.Customer;
+import com.ticketsalesapp.model.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -11,6 +11,11 @@ import java.util.Optional;
 @Setter
 @Component
 public class UserSession {
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
     private User currentUser;
 
     public Optional<User> getCurrentUser() {

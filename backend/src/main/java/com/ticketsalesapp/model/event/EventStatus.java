@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.model.event;
+package com.ticketsalesapp.model.event;
 
 /**
  * Enum representing the possible statuses for an event.

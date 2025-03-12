@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp;
+package com.ticketsalesapp;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

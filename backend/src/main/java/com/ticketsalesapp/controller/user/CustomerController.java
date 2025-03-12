@@ -1,10 +1,10 @@
-package main.java.com.ticketsalesapp.controller.user;
+package com.ticketsalesapp.controller.user;
 
-import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
-import main.java.com.ticketsalesapp.service.user.CustomerService;
+import com.ticketsalesapp.exception.BusinessLogicException;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.model.user.Customer;
+import com.ticketsalesapp.model.user.FavouriteEntity;
+import com.ticketsalesapp.service.user.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

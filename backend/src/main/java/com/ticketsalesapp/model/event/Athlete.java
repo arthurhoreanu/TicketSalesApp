@@ -1,9 +1,9 @@
-package main.java.com.ticketsalesapp.model.event;
+package com.ticketsalesapp.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
-import main.java.com.ticketsalesapp.model.Identifiable;
+import com.ticketsalesapp.model.user.FavouriteEntity;
+import com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,20 +29,13 @@ public class Athlete implements Identifiable, FavouriteEntity {
      *  Gets the athlete's name.
      *
      */
-    @Getter
-    @Setter
     @Column(name = "athlete_name", nullable = false)
     private String athleteName;
 
-    /**
-     * -- SETTER --
-     *  Sets a new sport for the athlete.
-     * -- GETTER --
-     *  Gets the sport associated with the athlete.
-     *
-     */
-    @Getter
-    @Setter
+    public String getAthleteSport() {
+        return athleteSport;
+    }
+
     @Column(name = "athlete_sport", nullable = false)
     private String athleteSport;
 
@@ -96,5 +89,33 @@ public class Athlete implements Identifiable, FavouriteEntity {
     @Override
     public String toString() {
         return "Athlete{" + "athleteID=" + athleteID + ", athleteName='" + athleteName + '\'' + ", athleteSport='" + athleteSport + '\'' + '}';
+    }
+
+    public int getAthleteID() {
+        return athleteID;
+    }
+
+    public String getAthleteName() {
+        return athleteName;
+    }
+
+    public List<SportsEvent> getSportsEvents() {
+        return sportsEvents;
+    }
+
+    public void setAthleteID(int athleteID) {
+        this.athleteID = athleteID;
+    }
+
+    public void setAthleteName(String athleteName) {
+        this.athleteName = athleteName;
+    }
+
+    public void setAthleteSport(String athleteSport) {
+        this.athleteSport = athleteSport;
+    }
+
+    public void setSportsEvents(List<SportsEvent> sportsEvents) {
+        this.sportsEvents = sportsEvents;
     }
 }

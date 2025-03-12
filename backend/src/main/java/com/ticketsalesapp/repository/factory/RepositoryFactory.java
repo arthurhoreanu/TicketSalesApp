@@ -1,10 +1,10 @@
-package main.java.com.ticketsalesapp.repository.factory;
+package com.ticketsalesapp.repository.factory;
 
-import main.java.com.ticketsalesapp.model.event.Artist;
-import main.java.com.ticketsalesapp.model.event.Athlete;
-import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.repository.*;
+import com.ticketsalesapp.model.event.Artist;
+import com.ticketsalesapp.model.event.Athlete;
+import com.ticketsalesapp.model.user.Admin;
+import com.ticketsalesapp.model.user.Customer;
+import com.ticketsalesapp.repository.*;
 
 public interface RepositoryFactory {
     Repository<Admin> createAdminRepository();

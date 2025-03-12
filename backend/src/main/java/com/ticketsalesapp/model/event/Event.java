@@ -1,8 +1,8 @@
-package main.java.com.ticketsalesapp.model.event;
+package com.ticketsalesapp.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.Identifiable;
+import com.ticketsalesapp.model.Identifiable;
 
 import java.time.LocalDateTime;
 

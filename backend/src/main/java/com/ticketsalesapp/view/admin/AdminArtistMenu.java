@@ -1,10 +1,10 @@
-package main.java.com.ticketsalesapp.view.admin;
+package com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.controller.ArtistController;
-import main.java.com.ticketsalesapp.exception.EntityNotFoundException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.event.Artist;
-import main.java.com.ticketsalesapp.service.ArtistService;
+import com.ticketsalesapp.controller.ArtistController;
+import com.ticketsalesapp.exception.EntityNotFoundException;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.model.event.Artist;
+import com.ticketsalesapp.service.ArtistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

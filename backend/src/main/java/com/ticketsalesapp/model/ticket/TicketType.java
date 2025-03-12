@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.model.ticket;
+package com.ticketsalesapp.model.ticket;
 
 /**
  * Represents the type of ticket, specifying the level of access or service provided.

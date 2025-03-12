@@ -1,7 +1,7 @@
-package main.java.com.ticketsalesapp.view;
+package com.ticketsalesapp.view;
 
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.repository.factory.*;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.repository.factory.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;

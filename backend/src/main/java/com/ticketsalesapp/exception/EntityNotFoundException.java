@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.exception;
+package com.ticketsalesapp.exception;
 
 public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException(String message) {

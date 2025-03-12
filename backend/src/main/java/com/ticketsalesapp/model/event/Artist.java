@@ -1,9 +1,9 @@
-package main.java.com.ticketsalesapp.model.event;
+package com.ticketsalesapp.model.event;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.user.FavouriteEntity;
-import main.java.com.ticketsalesapp.model.Identifiable;
+import com.ticketsalesapp.model.user.FavouriteEntity;
+import com.ticketsalesapp.model.Identifiable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -22,27 +22,9 @@ public class Artist implements Identifiable, FavouriteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int artistID;
 
-    /**
-     * -- SETTER --
-     *  Sets a new name for the artist.
-     * -- GETTER --
-     *  Gets the artist's name.
-     *
-     */
-    @Getter
-    @Setter
     @Column(name = "artist_name", nullable = false)
     private String artistName;
 
-    /**
-     * -- SETTER --
-     *  Sets a new genre for the artist.
-     * -- GETTER --
-     *  Gets the genre associated with the artist.
-     *
-     */
-    @Getter
-    @Setter
     @Column(name = "genre", nullable = false)
     private String genre;
 
@@ -96,5 +78,37 @@ public class Artist implements Identifiable, FavouriteEntity {
     @Override
     public String toString() {
         return "Artist{" + "artistID=" + artistID + ", artistName='" + artistName + '\'' + ", genre='" + genre + '\'' + '}';
+    }
+
+    public int getArtistID() {
+        return artistID;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public List<Concert> getConcerts() {
+        return concerts;
+    }
+
+    public void setArtistID(int artistID) {
+        this.artistID = artistID;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public void setConcerts(List<Concert> concerts) {
+        this.concerts = concerts;
     }
 }

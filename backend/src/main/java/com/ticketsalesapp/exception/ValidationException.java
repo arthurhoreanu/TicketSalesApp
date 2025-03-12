@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.exception;
+package com.ticketsalesapp.exception;
 
 public class ValidationException extends RuntimeException {
     public ValidationException(String message) {

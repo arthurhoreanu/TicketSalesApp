@@ -1,14 +1,14 @@
-package main.java.com.ticketsalesapp;
+package com.ticketsalesapp;
 
-import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.model.user.Customer;
-import main.java.com.ticketsalesapp.model.user.User;
-import main.java.com.ticketsalesapp.service.user.AdminService;
-import main.java.com.ticketsalesapp.service.user.CustomerService;
-import main.java.com.ticketsalesapp.service.user.UserSession;
-import main.java.com.ticketsalesapp.view.admin.AdminMenu;
-import main.java.com.ticketsalesapp.view.*;
-import main.java.com.ticketsalesapp.repository.factory.RepositoryFactory;
+import com.ticketsalesapp.model.user.Admin;
+import com.ticketsalesapp.model.user.Customer;
+import com.ticketsalesapp.model.user.User;
+import com.ticketsalesapp.service.user.AdminService;
+import com.ticketsalesapp.service.user.CustomerService;
+import com.ticketsalesapp.service.user.UserSession;
+import com.ticketsalesapp.view.admin.AdminMenu;
+import com.ticketsalesapp.view.*;
+import com.ticketsalesapp.repository.factory.RepositoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

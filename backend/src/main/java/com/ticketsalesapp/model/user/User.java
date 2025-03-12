@@ -1,9 +1,9 @@
-package main.java.com.ticketsalesapp.model.user;
+package com.ticketsalesapp.model.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.Identifiable;
+import com.ticketsalesapp.model.Identifiable;
 
 /**
  * Represents a general user in the system, containing basic information.

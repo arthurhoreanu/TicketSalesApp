@@ -1,4 +1,4 @@
-package main.java.com.ticketsalesapp.model.user;
+package com.ticketsalesapp.model.user;
 
 /**
  * Interface representing an entity (artist/athlete) that can be marked as a favorite.
@@ -7,12 +7,14 @@ package main.java.com.ticketsalesapp.model.user;
 public interface FavouriteEntity {
     /**
      * Gets the unique ID of the favorite entity.
+     *
      * @return the ID of the entity
      */
     Integer getId();
 
     /**
      * Gets the name of the favorite entity.
+     *
      * @return the name of the entity
      */
     String getName();

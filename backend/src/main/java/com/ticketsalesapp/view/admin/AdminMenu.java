@@ -1,11 +1,11 @@
-package main.java.com.ticketsalesapp.view.admin;
+package com.ticketsalesapp.view.admin;
 
-import main.java.com.ticketsalesapp.exception.BusinessLogicException;
-import main.java.com.ticketsalesapp.exception.ValidationException;
-import main.java.com.ticketsalesapp.model.user.Admin;
-import main.java.com.ticketsalesapp.service.user.AdminService;
-import main.java.com.ticketsalesapp.view.AccountAction;
-import main.java.com.ticketsalesapp.view.LoginMenu;
+import com.ticketsalesapp.exception.BusinessLogicException;
+import com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.model.user.Admin;
+import com.ticketsalesapp.service.user.AdminService;
+import com.ticketsalesapp.view.AccountAction;
+import com.ticketsalesapp.view.LoginMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

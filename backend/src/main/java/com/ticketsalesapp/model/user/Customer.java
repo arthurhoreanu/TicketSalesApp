@@ -1,29 +1,46 @@
-package main.java.com.ticketsalesapp.model.user;
+package com.ticketsalesapp.model.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import main.java.com.ticketsalesapp.model.ticket.Cart;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a customer user with specific preferences, favourites, and a shopping cart.
  */
 @Getter
 @Setter
-@NoArgsConstructor
 public class Customer extends User {
     private Set<FavouriteEntity> favourites = new HashSet<>();
     private Map<Integer, Integer> preferredSections = new HashMap<>();
-    private Cart cart;
+//    private Cart cart;
 
     public Customer(int userId, String username, String email, String password) {
         super(userId, username, email, password);
         this.preferredSections = new HashMap<>();
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Set<FavouriteEntity> getFavourites() {
+        return favourites;
+    }
+
+    @Override
+    public Integer getId(){
+        return super.getId();
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
     }
 
     public void addFavourite(FavouriteEntity item) {

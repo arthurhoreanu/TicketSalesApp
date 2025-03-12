@@ -1,6 +1,6 @@
-package main.java.com.ticketsalesapp.view;
+package com.ticketsalesapp.view;
 
-import main.java.com.ticketsalesapp.exception.ValidationException;
+import com.ticketsalesapp.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
